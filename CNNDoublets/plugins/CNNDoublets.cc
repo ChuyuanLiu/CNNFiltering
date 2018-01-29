@@ -2,7 +2,7 @@
 //
 // Package:    CNNFiltering/CNNDoublets
 // Class:      CNNDoublets
-// 
+//
 /**\class CNNDoublets CNNDoublets.cc CNNFiltering/CNNDoublets/plugins/CNNDoublets.cc
 
  Description: [one line class summary]
@@ -19,17 +19,31 @@
 
 // system include files
 #include <memory>
+#include <vector>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/stream/EDProducer.h"
+#include "FWCore/ParameterSet/interface/ConfigurationDescriptions.h"
+#include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
+#include "FWCore/Framework/interface/ConsumesCollector.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/Utilities/interface/EDGetToken.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/StreamID.h"
 
+#include "SimTracker/TrackerHitAssociation/interface/ClusterTPAssociation.h"
+
+#include "RecoTracker/TkHitPairs/interface/HitPairGeneratorFromLayerPair.h"
+#include "RecoTracker/TkHitPairs/interface/IntermediateHitDoublets.h"
+
+#include "DataFormats/Provenance/interface/ProductID.h"
+#include "DataFormats/Common/interface/Handle.h"
+
+#include "RecoTracker/TkHitPairs/interface/RecHitsSortedInPhi.h"
 
 //
 // class declaration
@@ -47,6 +61,8 @@ class CNNDoublets : public edm::stream::EDProducer<> {
       virtual void produce(edm::Event&, const edm::EventSetup&) override;
       virtual void endStream() override;
 
+      int doubletSize;
+      edm::EDGetTokenT<IntermediateHitDoublets> intHitDoublets_;
       //virtual void beginRun(edm::Run const&, edm::EventSetup const&) override;
       //virtual void endRun(edm::Run const&, edm::EventSetup const&) override;
       //virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
@@ -67,26 +83,19 @@ class CNNDoublets : public edm::stream::EDProducer<> {
 //
 // constructors and destructor
 //
-CNNDoublets::CNNDoublets(const edm::ParameterSet& iConfig)
+CNNDoublets::CNNDoublets(const edm::ParameterSet& iConfig):
+intHitDoublets_(consumes<IntermediateHitDoublets>(ps.getParameter<edm::InputTag>("doublets"))),
 {
-   //register your products
-/* Examples
-   produces<ExampleData2>();
 
-   //if do put with a label
-   produces<ExampleData2>("label");
- 
-   //if you want to put into the Run
-   produces<ExampleData2,InRun>();
-*/
-   //now do what ever other initialization is needed
-  
+  produces<HitDoublets>("testOutput");
+  doubletSize = 0;
+
 }
 
 
 CNNDoublets::~CNNDoublets()
 {
- 
+
    // do anything here that needs to be done at destruction time
    // (e.g. close files, deallocate resources etc.)
 
@@ -101,13 +110,23 @@ CNNDoublets::~CNNDoublets()
 void
 CNNDoublets::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-   using namespace edm;
+
+   edm::Handle<IntermediateHitDoublets> iHd;
+   event.getByToken(intHitDoublets_,iHd);
+
+   std::unique_ptr<HitDoublets> oiHd(iHd.doublets());
+
+   oiHd
+   for (IntermediateHitDoublets::const_iterator hD = iHd->begin(); hD != iHd->end(); ++hD)
+
+   iEvent.put(oiHd,"newProdDoublets");
+
 /* This is an event example
    //Read 'ExampleData' from the Event
    Handle<ExampleData> pIn;
    iEvent.getByLabel("example",pIn);
 
-   //Use the ExampleData to create an ExampleData2 which 
+   //Use the ExampleData to create an ExampleData2 which
    // is put into the Event
    iEvent.put(std::make_unique<ExampleData2>(*pIn));
 */
@@ -117,7 +136,7 @@ CNNDoublets::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    ESHandle<SetupData> pSetup;
    iSetup.get<SetupRecord>().get(pSetup);
 */
- 
+
 }
 
 // ------------ method called once each stream before processing any runs, lumis or events  ------------
@@ -138,7 +157,7 @@ CNNDoublets::beginRun(edm::Run const&, edm::EventSetup const&)
 {
 }
 */
- 
+
 // ------------ method called when ending the processing of a run  ------------
 /*
 void
@@ -146,7 +165,7 @@ CNNDoublets::endRun(edm::Run const&, edm::EventSetup const&)
 {
 }
 */
- 
+
 // ------------ method called when starting to processes a luminosity block  ------------
 /*
 void
@@ -154,7 +173,7 @@ CNNDoublets::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup c
 {
 }
 */
- 
+
 // ------------ method called when ending the processing of a luminosity block  ------------
 /*
 void
@@ -162,7 +181,7 @@ CNNDoublets::endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup con
 {
 }
 */
- 
+
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
 CNNDoublets::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
