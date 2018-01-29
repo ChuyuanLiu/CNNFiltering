@@ -85,7 +85,7 @@ class CNNDoublets : public edm::stream::EDProducer<> {
 //
 CNNDoublets::CNNDoublets(const edm::ParameterSet& iConfig):
 intHitDoublets_(consumes<IntermediateHitDoublets>(iConfig.getParameter<edm::InputTag>("doublets"))),
-
+tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap")))
 {
 
   produces<IntermediateHitDoublets>("newProdDoublets");
@@ -115,6 +115,9 @@ CNNDoublets::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    std::cout<<"CNNDoublets Producer"<<std::endl;
    edm::Handle<IntermediateHitDoublets> iHd;
    iEvent.getByToken(intHitDoublets_,iHd);
+
+   edm::Handle<ClusterTPAssociation> tpClust;
+   iEvent.getByToken(tpMap_,tpClust);
 
    std::unique_ptr<IntermediateHitDoublets> oiHd(new IntermediateHitDoublets);
    std::cout<<*iHd->regionSize()<<std::endl;
