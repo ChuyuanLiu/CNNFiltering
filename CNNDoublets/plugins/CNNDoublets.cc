@@ -84,7 +84,8 @@ class CNNDoublets : public edm::stream::EDProducer<> {
 // constructors and destructor
 //
 CNNDoublets::CNNDoublets(const edm::ParameterSet& iConfig):
-intHitDoublets_(consumes<IntermediateHitDoublets>(iConfig.getParameter<edm::InputTag>("doublets")))
+intHitDoublets_(consumes<IntermediateHitDoublets>(iConfig.getParameter<edm::InputTag>("doublets"))),
+
 {
 
   produces<IntermediateHitDoublets>("newProdDoublets");
@@ -111,11 +112,12 @@ void
 CNNDoublets::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 
+   std::cout<<"CNNDoublets Producer"<<std::endl;
    edm::Handle<IntermediateHitDoublets> iHd;
    iEvent.getByToken(intHitDoublets_,iHd);
 
    std::unique_ptr<IntermediateHitDoublets> oiHd(new IntermediateHitDoublets);
-
+   std::cout<<*iHd->regionSize()<<std::endl;
    iEvent.put(std::move(oiHd),"newProdDoublets");
 
 /* This is an event example
