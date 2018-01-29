@@ -87,7 +87,7 @@ CNNDoublets::CNNDoublets(const edm::ParameterSet& iConfig):
 intHitDoublets_(consumes<IntermediateHitDoublets>(iConfig.getParameter<edm::InputTag>("doublets")))
 {
 
-  produces<IntermediateHitDoublets>("testOutput");
+  produces<IntermediateHitDoublets>("newProdDoublets");
   doubletSize = 0;
 
 }
