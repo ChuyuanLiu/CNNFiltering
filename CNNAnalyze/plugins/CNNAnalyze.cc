@@ -97,10 +97,10 @@ class CNNAnalyze : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 //
 CNNAnalyze::CNNAnalyze(const edm::ParameterSet& iConfig):
 intHitDoublets_(consumes<IntermediateHitDoublets>(iConfig.getParameter<edm::InputTag>("doublets"))),
-tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap"))),
-consumesMany<IntermediateHitDoublets>()
+tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap")))
 {
    //now do what ever initialization is needed
+   consumesMany<IntermediateHitDoublets>();
    usesResource("TFileService");
 
 }
