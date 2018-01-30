@@ -161,7 +161,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                 std::cout << "No TP Matched "<<std::endl;
               for(auto ip=range.first; ip != range.second; ++ip) {
 		              // const auto tpKey = ip->second.key();
-                  const auto tpPdgId = (i*p->second).pdgId();
+                  const auto tpPdgId = (*ip->second).pdgId();
                   std::cout << tpPdgId  << std::endl;
 		}
      }

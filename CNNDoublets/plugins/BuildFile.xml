@@ -17,5 +17,5 @@
 <use   name="DataFormats/Common"/>
 <use   name="SimDataFormats/CrossingFrame"/>
 <use   name="SimDataFormats/TrackingHit"/>
-<use   name="SimDataFormats/TrackerDigiSimLink"/>cd ..
+<use   name="SimDataFormats/TrackerDigiSimLink"/>
 <flags EDM_PLUGIN="1"/>
