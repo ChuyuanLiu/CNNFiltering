@@ -139,18 +139,23 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
    {
-     //HitDoublets lDoublets(lIt->doublets());
-     std::cout << lIt->doublets().size() << std::endl;
-     for (size_t i = 0; i < lDoublets.size(); i++)
+//     HitDoublets lDoublets = std::move(lIt->doublets());
+     std::cout << "Size: " << lIt->doublets().size() << std::endl;
+     for (size_t i = 0; i < lIt->doublets().size(); i++)
      {
-              int inId = result.innerHitId(i);
-              int outId = result.outerHitId(i);
+              int inId = lIt->doublets().innerHitId(i);
+              int outId = lIt->doublets().outerHitId(i);
 
-              RecHitsSortedInPhi::Hit innerHit = result.hit(i, HitDoublets::inner);
-              RecHitsSortedInPhi::Hit outerHit = result.hit(i, HitDoublets::outer);
+              RecHitsSortedInPhi::Hit innerHit = lIt->doublets().hit(i, HitDoublets::inner);
+              RecHitsSortedInPhi::Hit outerHit = lIt->doublets().hit(i, HitDoublets::outer);
 
-              auto range = clusterToTPMap.equal_range(dynamic_cast<const BaseTrackerRecHit&>(innerHit).firstClusterRef());
-      }
+              auto range = tpClust->equal_range(innerHit->firstClusterRef());
+     	      
+              for(auto ip=range.first; ip != range.second; ++ip) {
+		const auto tpKey = ip->second.key();
+                std::cout << tpKey  << std::endl;
+		} 
+     }
    }
    // auto range = clusterToTPMap.equal_range(dynamic_cast<const BaseTrackerRecHit&>(hit).firstClusterRef());
    //      for(auto ip=range.first; ip != range.second; ++ip) {
