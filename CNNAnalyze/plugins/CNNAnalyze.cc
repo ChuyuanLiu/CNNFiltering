@@ -141,6 +141,16 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    {
      //HitDoublets lDoublets(lIt->doublets());
      std::cout << lIt->doublets().size() << std::endl;
+     for (size_t i = 0; i < lDoublets.size(); i++)
+     {
+              int inId = result.innerHitId(i);
+              int outId = result.outerHitId(i);
+
+              RecHitsSortedInPhi::Hit innerHit = result.hit(i, HitDoublets::inner);
+              RecHitsSortedInPhi::Hit outerHit = result.hit(i, HitDoublets::outer);
+
+              auto range = clusterToTPMap.equal_range(dynamic_cast<const BaseTrackerRecHit&>(innerHit).firstClusterRef());
+      }
    }
    // auto range = clusterToTPMap.equal_range(dynamic_cast<const BaseTrackerRecHit&>(hit).firstClusterRef());
    //      for(auto ip=range.first; ip != range.second; ++ip) {
