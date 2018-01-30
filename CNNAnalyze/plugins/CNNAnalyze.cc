@@ -43,8 +43,11 @@
 
 #include "DataFormats/Provenance/interface/ProductID.h"
 #include "DataFormats/Common/interface/Handle.h"
+#include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHit.h"
+#include "DataFormats/TrackerRecHit2D/interface/BaseTrackerRecHit.h"
 
 #include "RecoTracker/TkHitPairs/interface/RecHitsSortedInPhi.h"
+
 
 #include <iostream>
 #include <string>
@@ -133,6 +136,20 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    test << tpClust->size()  << std::endl;
    test << iHd->regionSize()  << std::endl;
+
+   for (std::vector<LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
+   {
+     HitDoublets lDoublets = lIt->doublets();
+     std::cout << lDoublets.size() << std::endl;
+   }
+   // auto range = clusterToTPMap.equal_range(dynamic_cast<const BaseTrackerRecHit&>(hit).firstClusterRef());
+   //      for(auto ip=range.first; ip != range.second; ++ip) {
+   //        const auto tpKey = ip->second.key();
+   //        if(tpKeyToIndex.find(tpKey) == tpKeyToIndex.end()) // filter out TPs not given as an input
+   //          continue;
+   //        func(tpKey);
+   //      }
+
 
 }
 
