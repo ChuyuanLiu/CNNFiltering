@@ -47,7 +47,7 @@
 #include "DataFormats/TrackerRecHit2D/interface/BaseTrackerRecHit.h"
 
 #include "RecoTracker/TkHitPairs/interface/RecHitsSortedInPhi.h"
-
+#include "RecoTracker/TkHitPairs/interface/IntermediateHitDoublets.h"
 
 #include <iostream>
 #include <string>
@@ -137,10 +137,10 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    test << tpClust->size()  << std::endl;
    test << iHd->regionSize()  << std::endl;
 
-   for (std::vector<LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
+   for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
    {
-     HitDoublets lDoublets = lIt->doublets();
-     std::cout << lDoublets.size() << std::endl;
+     //HitDoublets lDoublets(lIt->doublets());
+     std::cout << lIt->doublets().size() << std::endl;
    }
    // auto range = clusterToTPMap.equal_range(dynamic_cast<const BaseTrackerRecHit&>(hit).firstClusterRef());
    //      for(auto ip=range.first; ip != range.second; ++ip) {
