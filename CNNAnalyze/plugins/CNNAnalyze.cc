@@ -156,12 +156,12 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
               RecHitsSortedInPhi::Hit outerHit = lIt->doublets().hit(i, HitDoublets::outer);
 
               auto range = tpClust->equal_range(innerHit->firstClusterRef());
-
-              if(range.firs == tpClust->end())
+              std::cout << "Doublet no. "  << i << " hit no. " << inId << std::endl;
+              if(range.first == tpClust->end())
                 std::cout << "No TP Matched "<<std::endl;
               for(auto ip=range.first; ip != range.second; ++ip) {
 		              // const auto tpKey = ip->second.key();
-                  const auto tpPdgId = ip->second.pdgId();
+                  const auto tpPdgId = (i*p->second).pdgId();
                   std::cout << tpPdgId  << std::endl;
 		}
      }

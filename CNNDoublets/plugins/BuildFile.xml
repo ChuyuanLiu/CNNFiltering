@@ -13,7 +13,7 @@
 <use   name="TrackingTools/TransientTrackingRecHit"/>
 <use   name="RecoTracker/TkMSParametrization"/>
 <use   name="RecoTracker/TkSeedingLayers"/>
-<use   name="SimTracker/TrackerHitAssociation">
+<use   name="SimTracker/TrackerHitAssociation"/>
 <use   name="DataFormats/Common"/>
 <use   name="SimDataFormats/CrossingFrame"/>
 <use   name="SimDataFormats/TrackingHit"/>
