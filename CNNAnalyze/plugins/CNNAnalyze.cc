@@ -97,7 +97,8 @@ class CNNAnalyze : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 //
 CNNAnalyze::CNNAnalyze(const edm::ParameterSet& iConfig):
 intHitDoublets_(consumes<IntermediateHitDoublets>(iConfig.getParameter<edm::InputTag>("doublets"))),
-tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap")))
+tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap"))),
+consumesMany<IntermediateHitDoublets>()
 {
    //now do what ever initialization is needed
    usesResource("TFileService");
@@ -131,6 +132,11 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    edm::Handle<ClusterTPAssociation> tpClust;
    iEvent.getByToken(tpMap_,tpClust);
 
+   std::vector<edm::Handle<IntermediateHitDoublets> > intDoublets;
+   iEvent.getManyByType(intDoublets);
+
+   std::cout <<"No. of intdoubltes collections: " << intDoublets.size()<< std::endl;
+
    std::string fileName = "test.txt";
    std::ofstream test(fileName, std::ofstream::app);
 
@@ -145,20 +151,19 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      {
               int inId = lIt->doublets().innerHitId(i);
               int outId = lIt->doublets().outerHitId(i);
-	      
-		std::cout <<"Doublets no."<<i<<"Hit no." << inId<<std::endl;
+
               RecHitsSortedInPhi::Hit innerHit = lIt->doublets().hit(i, HitDoublets::inner);
               RecHitsSortedInPhi::Hit outerHit = lIt->doublets().hit(i, HitDoublets::outer);
 
               auto range = tpClust->equal_range(innerHit->firstClusterRef());
-     	        if(range.second == tpClust->end())
-                std::cout << "No TP Matched "<<std::endl;
 
+              if(range.firs == tpClust->end())
+                std::cout << "No TP Matched "<<std::endl;
               for(auto ip=range.first; ip != range.second; ++ip) {
-	
-       		  auto tpPdgId = (*ip->second).pdgId();
-                  std::cout << " - " << tpPdgId  << std::endl;
-		} 
+		              // const auto tpKey = ip->second.key();
+                  const auto tpPdgId = ip->second.pdgId();
+                  std::cout << tpPdgId  << std::endl;
+		}
      }
    }
    // auto range = clusterToTPMap.equal_range(dynamic_cast<const BaseTrackerRecHit&>(hit).firstClusterRef());
