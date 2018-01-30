@@ -45,6 +45,10 @@
 
 #include "RecoTracker/TkHitPairs/interface/RecHitsSortedInPhi.h"
 
+#include <iostream>
+#include <string>
+#include <fstream>
+
 //
 // class declaration
 //
@@ -121,8 +125,14 @@ CNNDoublets::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.getByToken(tpMap_,tpClust);
 
    std::unique_ptr<IntermediateHitDoublets> oiHd(new IntermediateHitDoublets);
-   std::cout<<*iHd->regionSize()<<std::endl;
+   std::cout<<iHd->regionSize()<<std::endl;
    iEvent.put(std::move(oiHd),"newProdDoublets");
+
+   std::string fileName = "test.txt";
+   std::ofstream test(fileName, std::ofstream::app);
+
+   test << tpClust->size()  << std::endl;
+   test << iHd->regionSize()  << std::endl;
 
 /* This is an event example
    //Read 'ExampleData' from the Event
