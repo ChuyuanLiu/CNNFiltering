@@ -2,7 +2,7 @@
 //
 // Package:    CNNFiltering/CNNAnalyze
 // Class:      CNNAnalyze
-// 
+//
 /**\class CNNAnalyze CNNAnalyze.cc CNNFiltering/CNNAnalyze/plugins/CNNAnalyze.cc
 
  Description: [one line class summary]
@@ -17,17 +17,38 @@
 //
 
 
-// system include files
-#include <memory>
-
-// user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/one/EDAnalyzer.h"
 
+// system include files
+#include <memory>
+#include <vector>
+
+// user include files
+#include "FWCore/ParameterSet/interface/ConfigurationDescriptions.h"
+#include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
+#include "FWCore/Framework/interface/ConsumesCollector.h"
+
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/Utilities/interface/EDGetToken.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/Utilities/interface/StreamID.h"
+
+#include "SimTracker/TrackerHitAssociation/interface/ClusterTPAssociation.h"
+
+#include "RecoTracker/TkHitPairs/interface/HitPairGeneratorFromLayerPair.h"
+#include "RecoTracker/TkHitPairs/interface/IntermediateHitDoublets.h"
+
+#include "DataFormats/Provenance/interface/ProductID.h"
+#include "DataFormats/Common/interface/Handle.h"
+
+#include "RecoTracker/TkHitPairs/interface/RecHitsSortedInPhi.h"
+
+#include <iostream>
+#include <string>
+#include <fstream>
 //
 // class declaration
 //
@@ -51,7 +72,13 @@ class CNNAnalyze : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
       virtual void endJob() override;
 
-      // ----------member data ---------------------------
+        // ----------member data ---------------------------
+
+      int doubletSize;
+      edm::EDGetTokenT<IntermediateHitDoublets> intHitDoublets_;
+      edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
+
+
 };
 
 //
@@ -65,8 +92,9 @@ class CNNAnalyze : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 //
 // constructors and destructor
 //
-CNNAnalyze::CNNAnalyze(const edm::ParameterSet& iConfig)
-
+CNNAnalyze::CNNAnalyze(const edm::ParameterSet& iConfig):
+intHitDoublets_(consumes<IntermediateHitDoublets>(iConfig.getParameter<edm::InputTag>("doublets"))),
+tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap")))
 {
    //now do what ever initialization is needed
    usesResource("TFileService");
@@ -76,7 +104,7 @@ CNNAnalyze::CNNAnalyze(const edm::ParameterSet& iConfig)
 
 CNNAnalyze::~CNNAnalyze()
 {
- 
+
    // do anything here that needs to be done at desctruction time
    // (e.g. close files, deallocate resources etc.)
 
@@ -93,29 +121,31 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
 
+   std::cout<<"CNNDoublets Analyzer"<<std::endl;
+   edm::Handle<IntermediateHitDoublets> iHd;
+   iEvent.getByToken(intHitDoublets_,iHd);
 
+   edm::Handle<ClusterTPAssociation> tpClust;
+   iEvent.getByToken(tpMap_,tpClust);
 
-#ifdef THIS_IS_AN_EVENT_EXAMPLE
-   Handle<ExampleData> pIn;
-   iEvent.getByLabel("example",pIn);
-#endif
-   
-#ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
-   ESHandle<SetupData> pSetup;
-   iSetup.get<SetupRecord>().get(pSetup);
-#endif
+   std::string fileName = "test.txt";
+   std::ofstream test(fileName, std::ofstream::app);
+
+   test << tpClust->size()  << std::endl;
+   test << iHd->regionSize()  << std::endl;
+
 }
 
 
 // ------------ method called once each job just before starting event loop  ------------
-void 
+void
 CNNAnalyze::beginJob()
 {
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
-void 
-CNNAnalyze::endJob() 
+void
+CNNAnalyze::endJob()
 {
 }
 
