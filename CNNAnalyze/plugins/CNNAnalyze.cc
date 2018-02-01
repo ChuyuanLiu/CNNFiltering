@@ -172,8 +172,8 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
               auto rangeIn = tpClust->equal_range(innerHit->firstClusterRef());
               auto rangeOut = tpClust->equal_range(outerHit->firstClusterRef());
               std::cout << "Doublet no. "  << i << " hit no. " << inId << std::endl;
-              if(range.first == tpClust->end())
-                std::cout << "No TP Matched "<<std::endl;
+              // if(range.first == tpClust->end())
+              //   std::cout << "No TP Matched "<<std::endl;
               for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
               {
 		              // const auto tpKey = ip->second.key();
