@@ -125,6 +125,9 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
 
+   int detOnArr[10] = {0,1,2,3,14,15,16,29,30,31};
+   std::vector<int> detOn(detOnArr,detOnArr+sizeof(detOnArr)/sizeof(int));
+
    std::cout<<"CNNDoublets Analyzer"<<std::endl;
    edm::Handle<IntermediateHitDoublets> iHd;
    iEvent.getByToken(intHitDoublets_,iHd);
@@ -143,6 +146,9 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    test << tpClust->size()  << std::endl;
    test << iHd->regionSize()  << std::endl;
 
+   float padHalfSize = 7.5;
+   int padSize = (int)(padHalfSize*2);
+
    for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
    {
 //     HitDoublets lDoublets = std::move(lIt->doublets());
@@ -151,19 +157,36 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      {
               int inId = lIt->doublets().innerHitId(i);
               int outId = lIt->doublets().outerHitId(i);
+              DetLayer const * innerLayer = detLayer(HitDoublets::inner);
+              DetLayer const * outerLayer = detLayer(HitDoublets::outer);
 
               RecHitsSortedInPhi::Hit innerHit = lIt->doublets().hit(i, HitDoublets::inner);
               RecHitsSortedInPhi::Hit outerHit = lIt->doublets().hit(i, HitDoublets::outer);
 
-              auto range = tpClust->equal_range(innerHit->firstClusterRef());
+              int detSeqIn = innerLayer.detLayer()->seqNum();
+              int detSeqOut = outerLayer.detLayer()->seqNum();
+
+              std::vector<int>::iterator detOnItOne = find(detOn.begin(),detOn.end(),innerLayer.detLayer()->seqNum());
+              std::vector<int>::iterator detOnItTwo = find(detOn.begin(),detOn.end(),outerLayer.detLayer()->seqNum());
+
+              auto rangeIn = tpClust->equal_range(innerHit->firstClusterRef());
+              auto rangeOut = tpClust->equal_range(outerHit->firstClusterRef());
               std::cout << "Doublet no. "  << i << " hit no. " << inId << std::endl;
               if(range.first == tpClust->end())
                 std::cout << "No TP Matched "<<std::endl;
-              for(auto ip=range.first; ip != range.second; ++ip) {
+              for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
+              {
 		              // const auto tpKey = ip->second.key();
                   const auto tpPdgId = (*ip->second).pdgId();
-                  std::cout << tpPdgId  << std::endl;
-		}
+                  std::cout << "Inner " << (*ip->first)<<" - "<< (*ip->second).key() << " - "<< tpPdgId  << std::endl;
+              }
+
+              for(auto ip=rangeOut.first; ip != rangeOut.second; ++ip)
+              {
+		              // const auto tpKey = ip->second.key();
+                  const auto tpPdgId = (*ip->second).pdgId();
+                  std::cout << "Outer " << (*ip->first)<<" - "<< (*ip->second).key() << " - "<< tpPdgId  << std::endl;
+              }
      }
    }
    // auto range = clusterToTPMap.equal_range(dynamic_cast<const BaseTrackerRecHit&>(hit).firstClusterRef());
