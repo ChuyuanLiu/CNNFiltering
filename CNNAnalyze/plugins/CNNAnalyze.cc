@@ -157,8 +157,8 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      {
               int inId = lIt->doublets().innerHitId(i);
               int outId = lIt->doublets().outerHitId(i);
-              DetLayer const * innerLayer = detLayer(HitDoublets::inner);
-              DetLayer const * outerLayer = detLayer(HitDoublets::outer);
+              DetLayer const * innerLayer = lIt->doublets().detLayer(HitDoublets::inner);
+              DetLayer const * outerLayer = lIt->doublets().detLayer(HitDoublets::outer);
 
               RecHitsSortedInPhi::Hit innerHit = lIt->doublets().hit(i, HitDoublets::inner);
               RecHitsSortedInPhi::Hit outerHit = lIt->doublets().hit(i, HitDoublets::outer);
