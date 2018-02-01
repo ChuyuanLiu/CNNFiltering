@@ -166,8 +166,8 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
               int detSeqIn = innerLayer->seqNum();
               int detSeqOut = outerLayer->seqNum();
 
-              std::vector<int>::iterator detOnItOne = find(detOn.begin(),detOn.end(),innerLayer.detLayer()->seqNum());
-              std::vector<int>::iterator detOnItTwo = find(detOn.begin(),detOn.end(),outerLayer.detLayer()->seqNum());
+              std::vector<int>::iterator detOnItOne = find(detOn.begin(),detOn.end(),innerLayer->seqNum());
+              std::vector<int>::iterator detOnItTwo = find(detOn.begin(),detOn.end(),outerLayer->seqNum());
 
               auto rangeIn = tpClust->equal_range(innerHit->firstClusterRef());
               auto rangeOut = tpClust->equal_range(outerHit->firstClusterRef());
