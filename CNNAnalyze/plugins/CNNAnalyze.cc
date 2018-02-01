@@ -163,8 +163,8 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
               RecHitsSortedInPhi::Hit innerHit = lIt->doublets().hit(i, HitDoublets::inner);
               RecHitsSortedInPhi::Hit outerHit = lIt->doublets().hit(i, HitDoublets::outer);
 
-              int detSeqIn = innerLayer.detLayer()->seqNum();
-              int detSeqOut = outerLayer.detLayer()->seqNum();
+              int detSeqIn = innerLayer->seqNum();
+              int detSeqOut = outerLayer->seqNum();
 
               std::vector<int>::iterator detOnItOne = find(detOn.begin(),detOn.end(),innerLayer.detLayer()->seqNum());
               std::vector<int>::iterator detOnItTwo = find(detOn.begin(),detOn.end(),outerLayer.detLayer()->seqNum());
