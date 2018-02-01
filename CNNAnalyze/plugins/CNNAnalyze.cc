@@ -178,14 +178,14 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
               {
 		              // const auto tpKey = ip->second.key();
                   const auto tpPdgId = (*ip->second).pdgId();
-                  std::cout << "Inner " << (*ip->first)<<" - "<< (*ip->second).key() << " - "<< tpPdgId  << std::endl;
+                  std::cout << "Inner " << ip->second.key() << " - "<< tpPdgId  << std::endl;
               }
 
               for(auto ip=rangeOut.first; ip != rangeOut.second; ++ip)
               {
 		              // const auto tpKey = ip->second.key();
                   const auto tpPdgId = (*ip->second).pdgId();
-                  std::cout << "Outer " << (*ip->first)<<" - "<< (*ip->second).key() << " - "<< tpPdgId  << std::endl;
+                  std::cout << "Outer " << ip->second.key() << " - "<< tpPdgId  << std::endl;
               }
      }
    }
