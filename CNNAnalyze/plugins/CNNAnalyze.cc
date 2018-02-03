@@ -144,7 +144,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    auto const& tokens = getterOfProducts_.tokens();
 
-   std::vector<edm::Handle<Thing> > handles;
+   std::vector<edm::Handle<IntermediateHitDoublets> > handles;
    getterOfProducts_.fillHandles(event, handles);
 
    // std::vector<edm::Handle<IntermediateHitDoublets> > intDoublets;
@@ -152,6 +152,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    for (auto const& handle : handles)
     std::cout << handle.provenance()->moduleLabel()<< std::endl;
+    
    std::string fileName = "test.txt";
    std::ofstream test(fileName, std::ofstream::app);
 
