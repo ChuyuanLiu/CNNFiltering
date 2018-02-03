@@ -36,6 +36,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/StreamID.h"
 #include "FWCore/Framework/interface/GetterOfProducts.h"
+#include "FWCore/Framework/interface/ProcessMatch.h"
 
 #include "SimTracker/TrackerHitAssociation/interface/ClusterTPAssociation.h"
 
@@ -99,7 +100,7 @@ class CNNAnalyze : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 // constructors and destructor
 //
 CNNAnalyze::CNNAnalyze(const edm::ParameterSet& iConfig):
-processName_(par.getParameter<std::string>("processName")),
+processName_(iConfig.getParameter<std::string>("processName")),
 intHitDoublets_(consumes<IntermediateHitDoublets>(iConfig.getParameter<edm::InputTag>("doublets"))),
 tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap"))),
 getterOfProducts_(edm::ProcessMatch(processName_), this)
@@ -145,14 +146,14 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    auto const& tokens = getterOfProducts_.tokens();
 
    std::vector<edm::Handle<IntermediateHitDoublets> > handles;
-   getterOfProducts_.fillHandles(event, handles);
+   getterOfProducts_.fillHandles(iEvent, handles);
 
    // std::vector<edm::Handle<IntermediateHitDoublets> > intDoublets;
    // iEvent.getManyByType(intDoublets);
 
    for (auto const& handle : handles)
     std::cout << handle.provenance()->moduleLabel()<< std::endl;
-    
+
    std::string fileName = "test.txt";
    std::ofstream test(fileName, std::ofstream::app);
 
