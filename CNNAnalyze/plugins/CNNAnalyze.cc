@@ -143,8 +143,6 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    edm::Handle<ClusterTPAssociation> tpClust;
    iEvent.getByToken(tpMap_,tpClust);
 
-   auto const& tokens = getterOfProducts_.tokens();
-
    std::vector<edm::Handle<IntermediateHitDoublets> > handles;
    getterOfProducts_.fillHandles(iEvent, handles);
 
@@ -152,8 +150,10 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    // iEvent.getManyByType(intDoublets);
 
    for (auto const& handle : handles)
-    std::cout << handle.provenance()->moduleLabel()<< std::endl;
-
+   {
+     if(!handle.failedToGet())
+     std::cout << handle.provenance()->moduleLabel()<< std::endl;
+   }
    std::string fileName = "test.txt";
    std::ofstream test(fileName, std::ofstream::app);
 
