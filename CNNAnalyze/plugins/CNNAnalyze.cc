@@ -143,8 +143,8 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    edm::Handle<ClusterTPAssociation> tpClust;
    iEvent.getByToken(tpMap_,tpClust);
 
-   std::vector<edm::Handle<IntermediateHitDoublets> > handles;
-   getterOfProducts_.fillHandles(iEvent, handles);
+   // std::vector<edm::Handle<IntermediateHitDoublets> > handles;
+   // getterOfProducts_.fillHandles(iEvent, handles);
 
    // std::vector<edm::Handle<IntermediateHitDoublets> > intDoublets;
    // iEvent.getManyByType(intDoublets);
