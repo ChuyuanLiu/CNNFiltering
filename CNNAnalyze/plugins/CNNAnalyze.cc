@@ -23,6 +23,7 @@
 // system include files
 #include <memory>
 #include <vector>
+#include <algorithm>
 
 // user include files
 #include "FWCore/ParameterSet/interface/ConfigurationDescriptions.h"
@@ -83,7 +84,7 @@ class CNNAnalyze : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       std::string processName_;
       edm::EDGetTokenT<IntermediateHitDoublets> intHitDoublets_;
       edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
-      edm::GetterOfProducts<IntermediateHitDoublets> getterOfProducts_;
+      // edm::GetterOfProducts<IntermediateHitDoublets> getterOfProducts_;
 
 
 };
@@ -102,13 +103,12 @@ class CNNAnalyze : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 CNNAnalyze::CNNAnalyze(const edm::ParameterSet& iConfig):
 processName_(iConfig.getParameter<std::string>("processName")),
 intHitDoublets_(consumes<IntermediateHitDoublets>(iConfig.getParameter<edm::InputTag>("doublets"))),
-tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap"))),
-getterOfProducts_(edm::ProcessMatch(processName_), this)
+tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap")))
+// getterOfProducts_(edm::ProcessMatch(processName_), this)
 {
    //now do what ever initialization is needed
    // consumesMany<IntermediateHitDoublets>();
-
-   callWhenNewProductsRegistered(getterOfProducts_);
+   // callWhenNewProductsRegistered(getterOfProducts_);
    usesResource("TFileService");
 
 }
@@ -149,11 +149,12 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    // std::vector<edm::Handle<IntermediateHitDoublets> > intDoublets;
    // iEvent.getManyByType(intDoublets);
 
-   for (auto const& handle : handles)
-   {
-     if(!handle.failedToGet())
-     std::cout << handle.provenance()->moduleLabel()<< std::endl;
-   }
+   // for (auto const& handle : handles)
+   // {
+   //   if(!handle.failedToGet())
+   //   std::cout << handle.provenance()->moduleLabel()<< std::endl;
+   // }
+
    std::string fileName = "test.txt";
    std::ofstream test(fileName, std::ofstream::app);
 
@@ -186,9 +187,16 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
               auto rangeIn = tpClust->equal_range(innerHit->firstClusterRef());
               auto rangeOut = tpClust->equal_range(outerHit->firstClusterRef());
               std::cout << "Doublet no. "  << i << " hit no. " << inId << std::endl;
+
+              std::vector< std::pair<int,int> > kPdgIn, kPdgOut, kIntersection;
               // if(range.first == tpClust->end())
               //   std::cout << "No TP Matched "<<std::endl;
               for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
+                kPdgIn.push_back({ip->second.key(),(*ip->second).pdgId()});
+
+              for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
+                kPdgOut.push_back({ip->second.key(),(*ip->second).pdgId()});
+
               {
 		              // const auto tpKey = ip->second.key();
                   const auto tpPdgId = (*ip->second).pdgId();
@@ -201,6 +209,14 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                   const auto tpPdgId = (*ip->second).pdgId();
                   std::cout << "Outer " << ip->second.key() << " - "<< tpPdgId  << std::endl;
               }
+
+
+              std::set_intersection(kPdgIn.begin(), kPdgIn.end(),
+                         kPdgOut.begin(), kPdgOut.end(),
+                         std::back_inserter(kIntersection));
+
+              std::cout << "Intersection : "<< kIntersection << std::endl;
+
      }
    }
    // auto range = clusterToTPMap.equal_range(dynamic_cast<const BaseTrackerRecHit&>(hit).firstClusterRef());
