@@ -197,6 +197,14 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
               for(auto ip=rangeOut.first; ip != rangeOut.second; ++ip)
                 kPdgOut.push_back({ip->second.key(),(*ip->second).pdgId()});
 
+              std::set_intersection(kPdgIn.begin(), kPdgIn.end(),kPdgOut.begin(), kPdgOut.end(), std::back_inserter(kIntersection));
+              std::cout << "Intersection : "<< kIntersection.size() << std::endl;
+
+              if (kIntersection.size()>0)
+              {
+                 std::cout << " - " << (std::find(kPdgIn.begin(), kPdgIn.end(), kIntersection[0]) - kPdgIn.begin()) + rangeIn.first).second.key <<std::endl;
+              }
+
                 for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
               {
 		              // const auto tpKey = ip->second.key();
@@ -212,11 +220,6 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
               }
 
 
-              std::set_intersection(kPdgIn.begin(), kPdgIn.end(),
-                         kPdgOut.begin(), kPdgOut.end(),
-                         std::back_inserter(kIntersection));
-
-              std::cout << "Intersection : "<< kIntersection.size() << std::endl;
 
      }
    }
