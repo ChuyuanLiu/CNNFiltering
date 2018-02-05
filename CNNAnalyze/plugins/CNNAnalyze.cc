@@ -194,9 +194,10 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
               for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
                 kPdgIn.push_back({ip->second.key(),(*ip->second).pdgId()});
 
-              for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
+              for(auto ip=rangeOut.first; ip != rangeOut.second; ++ip)
                 kPdgOut.push_back({ip->second.key(),(*ip->second).pdgId()});
 
+                for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
               {
 		              // const auto tpKey = ip->second.key();
                   const auto tpPdgId = (*ip->second).pdgId();
