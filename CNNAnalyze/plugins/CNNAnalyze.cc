@@ -202,10 +202,14 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
               // if (kIntersection.size()>0)
 
-              auto particle = ((std::find(kPdgIn.begin(), kPdgIn.end(), kIntersection[0]) - kPdgIn.begin()) + rangeIn.first);
+
 
               if (kIntersection.size()>0)
-                  particle->second.key();
+              {
+                  auto particle = ((std::find(kPdgIn.begin(), kPdgIn.end(), kIntersection[0]) - kPdgIn.begin()) + rangeIn.first);
+                  std::cout << particle->second.key() << std::endl;
+              }
+
                 for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
               {
 		              // const auto tpKey = ip->second.key();
