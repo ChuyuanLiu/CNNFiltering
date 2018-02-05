@@ -215,7 +215,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                          kPdgOut.begin(), kPdgOut.end(),
                          std::back_inserter(kIntersection));
 
-              std::cout << "Intersection : "<< kIntersection << std::endl;
+              std::cout << "Intersection : "<< kIntersection.size() << std::endl;
 
      }
    }
