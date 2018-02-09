@@ -86,6 +86,9 @@ class CNNAnalyze : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
       // edm::GetterOfProducts<IntermediateHitDoublets> getterOfProducts_;
 
+      float padHalfSize;
+      int padSize;
+
 
 };
 
@@ -111,6 +114,9 @@ tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap
    // callWhenNewProductsRegistered(getterOfProducts_);
    usesResource("TFileService");
 
+   padHalfSize = 8;
+   padSize = (int)(padHalfSize*2);
+
 }
 
 
@@ -133,15 +139,18 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
 
-   int detOnArr[10] = {0,1,2,3,14,15,16,29,30,31};
-   std::vector<int> detOn(detOnArr,detOnArr+sizeof(detOnArr)/sizeof(int));
+   // int detOnArr[10] = {0,1,2,3,14,15,16,29,30,31};
+   // std::vector<int> detOn(detOnArr,detOnArr+sizeof(detOnArr)/sizeof(int));
 
    std::cout<<"CNNDoublets Analyzer"<<std::endl;
+
    edm::Handle<IntermediateHitDoublets> iHd;
    iEvent.getByToken(intHitDoublets_,iHd);
 
    edm::Handle<ClusterTPAssociation> tpClust;
    iEvent.getByToken(tpMap_,tpClust);
+
+   std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}; //seqNumbers of pixel detectors 0,1,2,3 barrel 14,15,16, fwd 29,30,31 bkw
 
    // std::vector<edm::Handle<IntermediateHitDoublets> > handles;
    // getterOfProducts_.fillHandles(iEvent, handles);
@@ -161,8 +170,18 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    test << tpClust->size()  << std::endl;
    test << iHd->regionSize()  << std::endl;
 
-   float padHalfSize = 7.5;
-   int padSize = (int)(padHalfSize*2);
+   std::vector< RecHitsSortedInPhi::Hit> hits;
+   std::vector< SiPixelRecHit> siHits;
+   std::vector< SiPixelRecHit::ClusterRef> clusters;
+   std::vector< DetId> detIds;
+   std::vector<GeomDet*> geomDets;
+
+   std::vector <unsigned int> hitIds, subDetIds, detSeqs;
+
+   std::vector< std::vector< float>> hitPars;
+   std::vector< float > inHitPars, outHitPars;
+   std::vector< float > inTP, outTP, theTP;
+   float ax1, ax2, diffADC = 0.0;
 
    for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
    {
@@ -170,45 +189,225 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      std::cout << "Size: " << lIt->doublets().size() << std::endl;
      for (size_t i = 0; i < lIt->doublets().size(); i++)
      {
-              int inId = lIt->doublets().innerHitId(i);
-              int outId = lIt->doublets().outerHitId(i);
-              DetLayer const * innerLayer = lIt->doublets().detLayer(HitDoublets::inner);
-              DetLayer const * outerLayer = lIt->doublets().detLayer(HitDoublets::outer);
 
-              RecHitsSortedInPhi::Hit innerHit = lIt->doublets().hit(i, HitDoublets::inner);
-              RecHitsSortedInPhi::Hit outerHit = lIt->doublets().hit(i, HitDoublets::outer);
+       hits.clear(); siHits.clear(); clusters.clear();
+       detIds.clear(); geomDets.clear(); hitIds.clear();
+       subDetIds.clear(); detSeqs.clear(); hitPars.clear(); theTP.clear();
 
-              int detSeqIn = innerLayer->seqNum();
-              int detSeqOut = outerLayer->seqNum();
+       hits.push_back(lIt->doublets().hit(i, HitDoublets::inner)); //TODO CHECK EMPLACEBACK
+       hits.push_back(lIt->doublets().hit(i, HitDoublets::outer);
 
-              std::vector<int>::iterator detOnItOne = find(detOn.begin(),detOn.end(),innerLayer->seqNum());
-              std::vector<int>::iterator detOnItTwo = find(detOn.begin(),detOn.end(),outerLayer->seqNum());
+       for (auto h : hits)
+       {
+         detIds.push_back(h->hit()->geographicalId());
+         subDetIds.push_back((h->hit()->geographicalId()).subdetId());
+       }
+       // innerDetId = innerHit->hit()->geographicalId();
 
-              auto rangeIn = tpClust->equal_range(innerHit->firstClusterRef());
-              auto rangeOut = tpClust->equal_range(outerHit->firstClusterRef());
-              std::cout << "Doublet no. "  << i << " hit no. " << inId << std::endl;
+       if (! (((subDetIds[0]==1) || (subDetIds[0]==2)) && ((subDetIds[1]==1) || (subDetIds[1]==2)))) continue;
 
-              std::vector< std::pair<int,int> > kPdgIn, kPdgOut, kIntersection;
+       hitIds.push_back(lIt->doublets().innerHitId(i));
+       hitIds.push_back(lIt->doublets().outerHitId(i));
+
+       DetLayer const * innerLayer = lIt->doublets().detLayer(HitDoublets::inner);
+       if(find(detOn.begin(),detOn.end(),innerLayer)==detOn.end()) continue;   //TODO change to std::map ?
+
+       DetLayer const * outerLayer = lIt->doublets().detLayer(HitDoublets::outer);
+       if(find(detOn.begin(),detOn.end(),outerLayer)==detOn.end()) continue;
+
+       siHits.push_back(dynamic_cast<SiPixelRecHit*>((innerHit)));
+       siHits.push_back(dynamic_cast<SiPixelRecHit*>((innerHit)));
+
+       clusters.push_back(siHits[0]->cluster());
+       clusters.push_back(siHits[1]->cluster());
+
+       detSeqs.push_back(innerLayer->seqNum());
+       detSeqs.push_back(outerLayer->seqNum());
+
+       geomDets.push_back(hits[0]->det());
+       geomDets.push_back(hits[1]->det());
+
+       hitPars.push_back(inHitPars);
+       hitPars.push_back(outHitPars);
+
+       for(int j = 0; j < 2; ++j)
+       {
+       //4
+              hitPars[j].push_back((hits[j]->hit()->globalState()).position.x());
+              hitPars[j].push_back((hits[j]->hit()->globalState()).position.y());
+              hitPars[j].push_back((hits[j]->hit()->globalState()).position.z());
+
+              hitPars[j].push_back(lIt->doublets().phi(i,j)); //Phi //FIXME
+              hitPars[j].push_back(lIt->doublets().r(i,j)); //R //TODO add theta and DR
+
+              hitPars[j].push_back(detSeqs[j]); //det number
+
+              //Module labels
+              if(subDetIds[j]==1) //barrel
+              {
+                hitPars[j].push_back(float(true)); //isBarrel
+                hitPars[j].push_back(PXBDetId(detIds[j]).layer());
+                hitPars[j].push_back(PXBDetId(detIds[j]).ladder());
+                hitPars[j].push_back(-1.0);
+                hitPars[j].push_back(-1.0);
+                hitPars[j].push_back(-1.0);
+                hitPars[j].push_back(-1.0);
+                hitPars[j].push_back(PXBDetId(detIds[j]).module());
+              }
+              else
+              {
+                hitPars[j].push_back(float(false)); //isBarrel
+                hitPars[j].push_back(-1.0);
+                hitPars[j].push_back(-1.0);
+                hitPars[j].push_back(PXFDetId(detIds[j]).side());
+                hitPars[j].push_back(PXFDetId(detIds[j]).disk());
+                hitPars[j].push_back(PXFDetId(detIds[j]).panel());
+                hitPars[j].push_back(PXFDetId(detIds[j]).module());
+              }
+
+              //Module orientation
+              ax1 = innerDet->surface().toGlobal(Local3DPoint(0.,0.,0.)).perp();
+              ax2 = innerDet->surface().toGlobal(Local3DPoint(0.,0.,1.)).perp();
+
+              hitPars[j].push_back(float(ax1<ax2)); //isFlipped
+              hitPars[j].push_back(ax1); //Module orientation y
+              hitPars[j].push_back(ax2); //Module orientation x
+
+
+              //TODO check CLusterRef & OmniClusterRef
+
+              //ClusterInformations
+              hitPars[j].push_back((float)clusters[j]->x());
+              hitPars[j].push_back((float)clusters[j]->y());
+              hitPars[j].push_back((float)clusters[j]->size());
+              hitPars[j].push_back((float)clusters[j]->sizeX());
+              hitPars[j].push_back((float)clusters[j]->sizeY());
+              hitPars[j].push_back((float)clusters[j]->pixel(0).adc);
+              hitPars[j].push_back(float(clusters[j]->charge())/float(clusters[j]->size())); //avg pixel charge
+
+              diffADC -= clusters[j]->charge(); diffADC *= -1.0; //At the end == Outer Hit ADC - Inner Hit ADC
+
+              hitPars[j].push_back((float)(clusters[j]->sizeX() > padSize));
+              hitPars[j].push_back((float)(clusters[j]->sizeY() > padSize));
+
+              hitPars[j].push_back((float)siHits[j]->spansTwoROCs());
+              hitPars[j].push_back((float)siHits[j]->hasBadPixels());
+              hitPars[j].push_back((float)siHits[j]->isOnEdge());
+
+              //Cluster Pad
+              TH2F hClust("hClust","hClust",
+                                      padSize,
+                                      clusters[j]->x()-padHalfSize,
+                                      clusters[j]->x()+padHalfSize,
+                                      padSize,
+                                      clusters[j]->y()-padHalfSize,
+                                      clusters[j]->y()+padHalfSize);
+
+             //Initialization
+              for (int nx = 0; nx < padSize; ++nx)
+               for (int ny = 0; ny < padSize; ++ny)
+                hClust.SetBinContent(nx,ny,0.0);
+
+              for (int k = 0; k < clusters[j]->size(); ++k)
+                hClust.SetBinContent(clusters[j]->FindBin((float)clusters[j]->pixel(k).x, (float)clusters[j]->pixel(k).y),(float)clusters[j]->pixel(k).adc);
+
+              //Linearizing the cluster
+              for (int ny = padSize; ny>0; --ny)
+              {
+                int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
+                hitPars[j].push_back(hClust.GetBinContent(n));
+              }
+
+              //ADC sum
+              hitPars[j].push_back(float(clusters[j]->charge());
+
+
+            }
+
+        //Tp Matching
+        auto rangeIn = tpClust->equal_range(innerHit->firstClusterRef());
+        auto rangeOut = tpClust->equal_range(outerHit->firstClusterRef());
+        std::cout << "Doublet no. "  << i << " hit no. " << inId << std::endl;
+
+        std::vector< std::pair<int,int> > kPdgIn, kPdgOut, kIntersection;
               // if(range.first == tpClust->end())
               //   std::cout << "No TP Matched "<<std::endl;
-              for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
-                kPdgIn.push_back({ip->second.key(),(*ip->second).pdgId()});
+        for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
+          kPdgIn.push_back({ip->second.key(),(*ip->second).pdgId()});
 
-              for(auto ip=rangeOut.first; ip != rangeOut.second; ++ip)
-                kPdgOut.push_back({ip->second.key(),(*ip->second).pdgId()});
+        for(auto ip=rangeOut.first; ip != rangeOut.second; ++ip)
+          kPdgOut.push_back({ip->second.key(),(*ip->second).pdgId()});
 
-              std::set_intersection(kPdgIn.begin(), kPdgIn.end(),kPdgOut.begin(), kPdgOut.end(), std::back_inserter(kIntersection));
-              std::cout << "Intersection : "<< kIntersection.size() << std::endl;
+        if(rangeIn.first == rangeIn.second) std::cout<<"In unmatched"<<std::endl;
+        std::set_intersection(kPdgIn.begin(), kPdgIn.end(),kPdgOut.begin(), kPdgOut.end(), std::back_inserter(kIntersection));
+        std::cout << "Intersection : "<< kIntersection.size() << std::endl;
 
-              // if (kIntersection.size()>0)
+        //TODO in case of unmatched but associated to a tp we could save both tp to study the missmatching
+        //Matched :D
+        if (kIntersection.size()>0)
+        {
+          // in case of multiple tp matching both hits use the first one for labels
+          auto kPar = ((std::find(kPdgIn.begin(), kPdgIn.end(), kIntersection[0]) - kPdgIn.begin()) + rangeIn.first);
 
+          auto particle = *kPar->second;
+          TrackingParticle::Vector momTp = particle.momentum();
+          TrackingParticle::Point  verTp  = particle.vertex();
 
+          std::cout << kPar->second.key() << std::endl;
 
-              if (kIntersection.size()>0)
-              {
-                  auto particle = ((std::find(kPdgIn.begin(), kPdgIn.end(), kIntersection[0]) - kPdgIn.begin()) + rangeIn.first);
-                  std::cout << particle->second.key() << std::endl;
-              }
+          theTP.push_back(1.0); // 1
+          theTP.push_back(kPar->second.key()); // 2
+          theTP.push_back(momTp.x()); // 3
+          theTP.push_back(momTp.y()); // 4
+          theTP.push_back(momTp.z()); // 5
+          theTP.push_back(particle.pt());
+
+          theTP.push_back(particle.mt());
+          theTP.push_back(particle.et());
+          theTP.push_back(particle.massSqr());
+
+          theTP.push_back(particle.pdgId());
+          theTP.push_back(particle.charge());
+
+          theTP.push_back(particle.numberOfTrackerHits()); //TODO no. pixel hits?
+          theTP.push_back(particle.numberOfTrackerLayers());
+          //TODO is cosmic?
+          theTP.push_back(particle.phi());
+          theTP.push_back(particle.eta());
+          theTP.push_back(particle.rapidity());
+
+          theTP.push_back((verTp.x());
+          theTP.push_back((verTp.y());
+          theTP.push_back((verTp.z());
+          theTP.push_back((-verTp.x()*sin(momTp.phi())+verTp.y()*cos(momTp.phi()))); //dxy
+          theTP.push_back((verTp.z() - (verTp.x() * momTp.x()+
+                            verTp.y() *
+                            momTp.y())/sqrt(momTp.perp2()) *
+                            momTp.z()/sqrt(momTp.perp2()))); //dz //TODO Check MomVert //search parametersDefiner
+
+          /*
+          //W.R.T. PCA
+          edm::ESHandle<ParametersDefinerForTP> parametersDefinerTPHandle;
+          setup.get<TrackAssociatorRecord>().get(parametersDefiner,parametersDefinerTPHandle);
+          auto parametersDefinerTP = parametersDefinerTPHandle->clone();
+
+          TrackingParticle::Vector momentum = parametersDefinerTP->momentum(event,setup,tpr);
+          TrackingParticle::Point vertex = parametersDefinerTP->vertex(event,setup,tpr);
+          dxySim = (-vertex.x()*sin(momentum.phi())+vertex.y()*cos(momentum.phi()));
+          dzSim = vertex.z() - (vertex.x()*momentum.x()+vertex.y()*momentum.y())/sqrt(momentum.perp2())
+          * momentum.z()/sqrt(momentum.perp2());
+          */
+
+          theTP.push_back(tpar.eventId().bunchCrossing());
+
+          //TODO Check for other parameters
+
+        }
+        else
+        {
+          //Not matched :S
+
+        }
 
                 for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
               {
