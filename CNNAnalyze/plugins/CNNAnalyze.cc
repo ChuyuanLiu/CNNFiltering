@@ -57,7 +57,6 @@
 #include <fstream>
 
 #include "TH2F.h"
-#include ""
 #include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
 #include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
