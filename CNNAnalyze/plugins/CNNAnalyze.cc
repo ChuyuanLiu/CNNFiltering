@@ -171,10 +171,10 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    test << iHd->regionSize()  << std::endl;
 
    std::vector< RecHitsSortedInPhi::Hit> hits;
-   std::vector< SiPixelRecHit> siHits;
+   std::vector< SiPixelRecHit*> siHits;
    std::vector< SiPixelRecHit::ClusterRef> clusters;
    std::vector< DetId> detIds;
-   std::vector<GeomDet*> geomDets;
+   std::vector< const GeomDet*> geomDets;
 
    std::vector <unsigned int> hitIds, subDetIds, detSeqs;
 
@@ -195,7 +195,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        subDetIds.clear(); detSeqs.clear(); hitPars.clear(); theTP.clear();
 
        hits.push_back(lIt->doublets().hit(i, HitDoublets::inner)); //TODO CHECK EMPLACEBACK
-       hits.push_back(lIt->doublets().hit(i, HitDoublets::outer);
+       hits.push_back(lIt->doublets().hit(i, HitDoublets::outer));
 
        for (auto h : hits)
        {
@@ -210,13 +210,13 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        hitIds.push_back(lIt->doublets().outerHitId(i));
 
        DetLayer const * innerLayer = lIt->doublets().detLayer(HitDoublets::inner);
-       if(find(detOn.begin(),detOn.end(),innerLayer)==detOn.end()) continue;   //TODO change to std::map ?
+       if(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum())==detOn.end()) continue;   //TODO change to std::map ?
 
        DetLayer const * outerLayer = lIt->doublets().detLayer(HitDoublets::outer);
-       if(find(detOn.begin(),detOn.end(),outerLayer)==detOn.end()) continue;
+       if(find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum())==detOn.end()) continue;
 
-       siHits.push_back(dynamic_cast<SiPixelRecHit*>((innerHit)));
-       siHits.push_back(dynamic_cast<SiPixelRecHit*>((innerHit)));
+       siHits.push_back(dynamic_cast<SiPixelRecHit*>((hits[0])));
+       siHits.push_back(dynamic_cast<SiPixelRecHit*>((hits[1])));
 
        clusters.push_back(siHits[0]->cluster());
        clusters.push_back(siHits[1]->cluster());
