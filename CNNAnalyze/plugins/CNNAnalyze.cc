@@ -320,13 +320,17 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                 hClust.SetBinContent(nx,ny,0.0);
 
               for (int k = 0; k < clusters[j]->size(); ++k)
-                hClust.SetBinContent(clusters[j]->FindBin((float)clusters[j]->pixel(k).x, (float)clusters[j]->pixel(k).y),(float)clusters[j]->pixel(k).adc);
+                hClust.SetBinContent(hClust.FindBin((float)clusters[j]->pixel(k).x, (float)clusters[j]->pixel(k).y),(float)clusters[j]->pixel(k).adc);
 
               //Linearizing the cluster
+
               for (int ny = padSize; ny>0; --ny)
               {
+                for(int nx = 0; nx<padSize; nx++)
+                {
                 int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
                 hitPars[j].push_back(hClust.GetBinContent(n));
+                }
               }
 
               //ADC sum
