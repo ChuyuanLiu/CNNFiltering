@@ -210,10 +210,10 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        hitIds.push_back(lIt->doublets().outerHitId(i));
 
        DetLayer const * innerLayer = lIt->doublets().detLayer(HitDoublets::inner);
-       if(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum())==detOn.end()) continue;   //TODO change to std::map ?
+       if(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum())==pixelDets.end()) continue;   //TODO change to std::map ?
 
        DetLayer const * outerLayer = lIt->doublets().detLayer(HitDoublets::outer);
-       if(find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum())==detOn.end()) continue;
+       if(find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum())==pixelDets.end()) continue;
 
        siHits.push_back(dynamic_cast<SiPixelRecHit*>((hits[0])));
        siHits.push_back(dynamic_cast<SiPixelRecHit*>((hits[1])));
@@ -230,15 +230,17 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        hitPars.push_back(inHitPars);
        hitPars.push_back(outHitPars);
 
+
        for(int j = 0; j < 2; ++j)
        {
+              auto layer = HitDoublets::layer[j]
        //4
               hitPars[j].push_back((hits[j]->hit()->globalState()).position.x());
               hitPars[j].push_back((hits[j]->hit()->globalState()).position.y());
               hitPars[j].push_back((hits[j]->hit()->globalState()).position.z());
 
-              hitPars[j].push_back(lIt->doublets().phi(i,j)); //Phi //FIXME
-              hitPars[j].push_back(lIt->doublets().r(i,j)); //R //TODO add theta and DR
+              hitPars[j].push_back(lIt->doublets().phi(i,layer)); //Phi //FIXME
+              hitPars[j].push_back(lIt->doublets().r(i,layer)); //R //TODO add theta and DR
 
               hitPars[j].push_back(detSeqs[j]); //det number
 
@@ -266,8 +268,8 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
               }
 
               //Module orientation
-              ax1 = innerDet->surface().toGlobal(Local3DPoint(0.,0.,0.)).perp();
-              ax2 = innerDet->surface().toGlobal(Local3DPoint(0.,0.,1.)).perp();
+              ax1 = geomDets[j]->surface().toGlobal(Local3DPoint(0.,0.,0.)).perp();
+              ax2 = geomDets[j]->surface().toGlobal(Local3DPoint(0.,0.,1.)).perp();
 
               hitPars[j].push_back(float(ax1<ax2)); //isFlipped
               hitPars[j].push_back(ax1); //Module orientation y
