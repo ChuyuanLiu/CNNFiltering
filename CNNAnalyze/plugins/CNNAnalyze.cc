@@ -333,7 +333,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
               }
 
               //ADC sum
-              hitPars[j].push_back(float(clusters[j]->charge());
+              hitPars[j].push_back(float(clusters[j]->charge()));
 
 
             }
@@ -413,7 +413,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
           * momentum.z()/sqrt(momentum.perp2());
           */
 
-          theTP.push_back(tpar.eventId().bunchCrossing());
+          theTP.push_back(particle.eventId().bunchCrossing());
 
           //TODO Check for other parameters
 
