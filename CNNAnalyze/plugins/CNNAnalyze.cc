@@ -55,6 +55,14 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+
+#include "TH2F.h"
+#include ""
+#include "DataFormats/DetId/interface/DetId.h"
+#include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
+#include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
+#include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHit.h"
+
 //
 // class declaration
 //
@@ -171,7 +179,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    test << iHd->regionSize()  << std::endl;
 
    std::vector< RecHitsSortedInPhi::Hit> hits;
-   std::vector< SiPixelRecHit*> siHits;
+   std::vector< const SiPixelRecHit*> siHits;
    std::vector< SiPixelRecHit::ClusterRef> clusters;
    std::vector< DetId> detIds;
    std::vector< const GeomDet*> geomDets;
@@ -215,8 +223,8 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        DetLayer const * outerLayer = lIt->doublets().detLayer(HitDoublets::outer);
        if(find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum())==pixelDets.end()) continue;
 
-       siHits.push_back(dynamic_cast<SiPixelRecHit*>((hits[0])));
-       siHits.push_back(dynamic_cast<SiPixelRecHit*>((hits[1])));
+       siHits.push_back(dynamic_cast<const SiPixelRecHit*>((hits[0])));
+       siHits.push_back(dynamic_cast<const SiPixelRecHit*>((hits[1])));
 
        clusters.push_back(siHits[0]->cluster());
        clusters.push_back(siHits[1]->cluster());
@@ -230,17 +238,18 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        hitPars.push_back(inHitPars);
        hitPars.push_back(outHitPars);
 
+       HitDoublets::layer layers[2] = {HitDoublets::inner, HitDoublets::outer};
 
        for(int j = 0; j < 2; ++j)
        {
-              auto layer = HitDoublets::layer[j]
+
        //4
               hitPars[j].push_back((hits[j]->hit()->globalState()).position.x());
               hitPars[j].push_back((hits[j]->hit()->globalState()).position.y());
               hitPars[j].push_back((hits[j]->hit()->globalState()).position.z());
 
-              hitPars[j].push_back(lIt->doublets().phi(i,layer)); //Phi //FIXME
-              hitPars[j].push_back(lIt->doublets().r(i,layer)); //R //TODO add theta and DR
+              hitPars[j].push_back(lIt->doublets().phi(i,layers[j])); //Phi //FIXME
+              hitPars[j].push_back(lIt->doublets().r(i,layers[j])); //R //TODO add theta and DR
 
               hitPars[j].push_back(detSeqs[j]); //det number
 
