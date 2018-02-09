@@ -340,9 +340,10 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             }
 
         //Tp Matching
-        auto rangeIn = tpClust->equal_range(innerHit->firstClusterRef());
-        auto rangeOut = tpClust->equal_range(outerHit->firstClusterRef());
-        std::cout << "Doublet no. "  << i << " hit no. " << inId << std::endl;
+        auto rangeIn = tpClust->equal_range(hits[0]->firstClusterRef());
+        auto rangeOut = tpClust->equal_range(hits[1]->firstClusterRef());
+
+        std::cout << "Doublet no. "  << i << " hit no. " << lIt->doublets().innerHitId(i) << std::endl;
 
         std::vector< std::pair<int,int> > kPdgIn, kPdgOut, kIntersection;
               // if(range.first == tpClust->end())
@@ -391,9 +392,9 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
           theTP.push_back(particle.eta());
           theTP.push_back(particle.rapidity());
 
-          theTP.push_back((verTp.x());
-          theTP.push_back((verTp.y());
-          theTP.push_back((verTp.z());
+          theTP.push_back(verTp.x());
+          theTP.push_back(verTp.y());
+          theTP.push_back(verTp.z());
           theTP.push_back((-verTp.x()*sin(momTp.phi())+verTp.y()*cos(momTp.phi()))); //dxy
           theTP.push_back((verTp.z() - (verTp.x() * momTp.x()+
                             verTp.y() *
