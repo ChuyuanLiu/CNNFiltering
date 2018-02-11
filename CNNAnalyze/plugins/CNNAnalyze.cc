@@ -94,7 +94,7 @@ class CNNAnalyze : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       // edm::GetterOfProducts<IntermediateHitDoublets> getterOfProducts_;
 
       float padHalfSize;
-      int padSize;
+      int padSize, tParams;
 
 
 };
@@ -123,6 +123,7 @@ tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap
 
    padHalfSize = 8;
    padSize = (int)(padHalfSize*2);
+   tParams = 22;
 
 }
 
@@ -375,21 +376,21 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
           theTP.push_back(momTp.x()); // 3
           theTP.push_back(momTp.y()); // 4
           theTP.push_back(momTp.z()); // 5
-          theTP.push_back(particle.pt());
+          theTP.push_back(particle.pt()); //6
 
           theTP.push_back(particle.mt());
           theTP.push_back(particle.et());
-          theTP.push_back(particle.massSqr());
+          theTP.push_back(particle.massSqr()); //9
 
           theTP.push_back(particle.pdgId());
-          theTP.push_back(particle.charge());
+          theTP.push_back(particle.charge()); //11
 
           theTP.push_back(particle.numberOfTrackerHits()); //TODO no. pixel hits?
           theTP.push_back(particle.numberOfTrackerLayers());
           //TODO is cosmic?
           theTP.push_back(particle.phi());
           theTP.push_back(particle.eta());
-          theTP.push_back(particle.rapidity());
+          theTP.push_back(particle.rapidity()); //16
 
           theTP.push_back(verTp.x());
           theTP.push_back(verTp.y());
@@ -398,7 +399,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
           theTP.push_back((verTp.z() - (verTp.x() * momTp.x()+
                             verTp.y() *
                             momTp.y())/sqrt(momTp.perp2()) *
-                            momTp.z()/sqrt(momTp.perp2()))); //dz //TODO Check MomVert //search parametersDefiner
+                            momTp.z()/sqrt(momTp.perp2()))); //21 //dz //TODO Check MomVert //search parametersDefiner
 
           /*
           //W.R.T. PCA
@@ -413,26 +414,26 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
           * momentum.z()/sqrt(momentum.perp2());
           */
 
-          theTP.push_back(particle.eventId().bunchCrossing());
+          theTP.push_back(particle.eventId().bunchCrossing()); //22
 
           //TODO Check for other parameters
 
         }
         else
           //Not matched :S
-          for (size_t i = 0; i < 20; i++) {
+          for (int i = 0; i < tParams; i++) {
             theTP.push_back(-1.0);
           }
 
-          for (size_t j = 0; j < 2; j++)
-            for (size_t i = 0; i < hitPars[j].size(); i++)
-              test << hitPars[j][i] << "\t";
+        for (int j = 0; j < 2; j++)
+          for (size_t i = 0; i < hitPars[j].size(); i++)
+            test << hitPars[j][i] << "\t";
 
-          for (size_t i = 0; i < theTP.size(); i++)
-            test << theTP[i] << "\t";
+        for (size_t i = 0; i < theTP.size(); i++)
+          test << theTP[i] << "\t";
 
-          test << std::endl;
-          test << hitPars.size() << " -- " << theTP.size() << std::endl << std::endl;
+        test << std::endl;
+        test << hitPars[0].size() << " -- " <<  hitPars[1].size() << " -- " << theTP.size() << std::endl << std::endl;
 
 
                 for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
