@@ -424,13 +424,14 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             theTP.push_back(-1.0);
           }
 
-          for (size_t i = 0; i < count; i++) {
+          for (size_t i = 0; i < hitPars.size(); i++) {
             test << hitPars[i] << "\t";
           }
           for (size_t i = 0; i < theTP.size(); i++) {
             test << theTP[i] << "\t"
           }
           test << std::endl;
+          test << hitPars.size() << " -- " << theTP.size() << std::endl << std::endl;
 
                 for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
               {
