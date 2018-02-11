@@ -174,8 +174,6 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    std::string fileName = "test.txt";
    std::ofstream test(fileName, std::ofstream::app);
 
-   test << tpClust->size()  << std::endl;
-   test << iHd->regionSize()  << std::endl;
 
    std::vector< RecHitsSortedInPhi::Hit> hits;
    std::vector< const SiPixelRecHit*> siHits;
@@ -338,6 +336,8 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
             }
 
+        hitPars[j].push_back(diffADC);
+
         //Tp Matching
         auto rangeIn = tpClust->equal_range(hits[0]->firstClusterRef());
         auto rangeOut = tpClust->equal_range(hits[1]->firstClusterRef());
@@ -419,10 +419,18 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
         }
         else
-        {
           //Not matched :S
+          for (size_t i = 0; i < 20; i++) {
+            theTP.push_back(-1.0);
+          }
 
-        }
+          for (size_t i = 0; i < count; i++) {
+            test << hitPars[i] << "\t";
+          }
+          for (size_t i = 0; i < theTP.size(); i++) {
+            test << theTP[i] << "\t"
+          }
+          test << std::endl;
 
                 for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
               {
