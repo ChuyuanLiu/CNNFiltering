@@ -18,4 +18,5 @@
 <use   name="SimDataFormats/CrossingFrame"/>
 <use   name="SimDataFormats/TrackingHit"/>
 <use   name="SimDataFormats/TrackerDigiSimLink"/>
+<use   name="SimDataFormats/TrackingAnalysis"/>
 <flags EDM_PLUGIN="1"/>
