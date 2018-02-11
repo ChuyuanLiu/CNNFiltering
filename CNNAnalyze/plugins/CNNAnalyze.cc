@@ -242,26 +242,25 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        {
 
        //4
-              hitPars[j].push_back((hits[j]->hit()->globalState()).position.x());
+              hitPars[j].push_back((hits[j]->hit()->globalState()).position.x()); //1
               hitPars[j].push_back((hits[j]->hit()->globalState()).position.y());
-              hitPars[j].push_back((hits[j]->hit()->globalState()).position.z());
+              hitPars[j].push_back((hits[j]->hit()->globalState()).position.z()); //3
 
               hitPars[j].push_back(lIt->doublets().phi(i,layers[j])); //Phi //FIXME
               hitPars[j].push_back(lIt->doublets().r(i,layers[j])); //R //TODO add theta and DR
 
-              hitPars[j].push_back(detSeqs[j]); //det number
+              hitPars[j].push_back(detSeqs[j]); //det number //6
 
               //Module labels
               if(subDetIds[j]==1) //barrel
               {
-                hitPars[j].push_back(float(true)); //isBarrel
+                hitPars[j].push_back(float(true)); //isBarrel //7
                 hitPars[j].push_back(PXBDetId(detIds[j]).layer());
                 hitPars[j].push_back(PXBDetId(detIds[j]).ladder());
                 hitPars[j].push_back(-1.0);
                 hitPars[j].push_back(-1.0);
                 hitPars[j].push_back(-1.0);
-                hitPars[j].push_back(-1.0);
-                hitPars[j].push_back(PXBDetId(detIds[j]).module());
+                hitPars[j].push_back(PXBDetId(detIds[j]).module()); //14
               }
               else
               {
@@ -275,7 +274,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
               }
 
               //Module orientation
-              ax1 = geomDets[j]->surface().toGlobal(Local3DPoint(0.,0.,0.)).perp();
+              ax1 = geomDets[j]->surface().toGlobal(Local3DPoint(0.,0.,0.)).perp(); //15
               ax2 = geomDets[j]->surface().toGlobal(Local3DPoint(0.,0.,1.)).perp();
 
               hitPars[j].push_back(float(ax1<ax2)); //isFlipped
@@ -286,22 +285,22 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
               //TODO check CLusterRef & OmniClusterRef
 
               //ClusterInformations
-              hitPars[j].push_back((float)clusters[j]->x());
+              hitPars[j].push_back((float)clusters[j]->x()); //20
               hitPars[j].push_back((float)clusters[j]->y());
               hitPars[j].push_back((float)clusters[j]->size());
               hitPars[j].push_back((float)clusters[j]->sizeX());
               hitPars[j].push_back((float)clusters[j]->sizeY());
-              hitPars[j].push_back((float)clusters[j]->pixel(0).adc);
+              hitPars[j].push_back((float)clusters[j]->pixel(0).adc); //25
               hitPars[j].push_back(float(clusters[j]->charge())/float(clusters[j]->size())); //avg pixel charge
 
               diffADC -= clusters[j]->charge(); diffADC *= -1.0; //At the end == Outer Hit ADC - Inner Hit ADC
 
-              hitPars[j].push_back((float)(clusters[j]->sizeX() > padSize));
+              hitPars[j].push_back((float)(clusters[j]->sizeX() > padSize));//27
               hitPars[j].push_back((float)(clusters[j]->sizeY() > padSize));
 
               hitPars[j].push_back((float)siHits[j]->spansTwoROCs());
               hitPars[j].push_back((float)siHits[j]->hasBadPixels());
-              hitPars[j].push_back((float)siHits[j]->isOnEdge());
+              hitPars[j].push_back((float)siHits[j]->isOnEdge()); //31
 
               //Cluster Pad
               TH2F hClust("hClust","hClust",
