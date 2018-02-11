@@ -433,6 +433,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
           test << std::endl;
           test << hitPars.size() << " -- " << theTP.size() << std::endl << std::endl;
 
+
                 for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
               {
 		              // const auto tpKey = ip->second.key();
