@@ -66,7 +66,7 @@
 #include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
 #include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHit.h"
-
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
 //
 // class declaration
 //
