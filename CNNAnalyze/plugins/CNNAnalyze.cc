@@ -134,6 +134,9 @@ tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap
 
    cnntree->Branch("test",      &test,          "test/I");
 
+   edm::InputTag beamSpotTag = iConfig.getParameter<edm::InputTag>("beamSpot");
+   bsSrc_ = consumes<reco::BeamSpot>(beamSpotTag);
+
    padHalfSize = 8;
    padSize = (int)(padHalfSize*2);
    tParams = 22;
@@ -179,9 +182,6 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    std::vector<int> partiList{11,13,15,22,111,211,311,321,2212,2112,3122,223};
 
    //The Beamspot
-   edm::InputTag beamSpotTag = iConfig.getParameter<edm::InputTag>("beamSpot");
-   bsSrc_ = consumes<reco::BeamSpot>(beamSpotTag);
-
    edm::Handle<reco::BeamSpot> recoBeamSpotHandle;
    iEvent.getByToken(bsSrc_,recoBeamSpotHandle);
    reco::BeamSpot const & bs = *recoBeamSpotHandle;
