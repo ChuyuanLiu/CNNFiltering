@@ -92,6 +92,7 @@ class CNNAnalyze : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       std::string processName_;
       edm::EDGetTokenT<IntermediateHitDoublets> intHitDoublets_;
       edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
+      edm::EDGetTokenT<reco::BeamSpot>  bsSrc_;
       // edm::GetterOfProducts<IntermediateHitDoublets> getterOfProducts_;
 
       float padHalfSize;
@@ -171,6 +172,14 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}; //seqNumbers of pixel detectors 0,1,2,3 barrel 14,15,16, fwd 29,30,31 bkw
    std::vector<int> partiList{11,13,15,22,111,211,311,321,2212,2112,3122,223};
+
+   //The Beamspot
+   edm::InputTag beamSpotTag = pset.getParameter<edm::InputTag>("beamSpot");
+   bsSrc_ = consumes<reco::BeamSpot>(beamSpotTag);
+
+   edm::Handle<reco::BeamSpot> recoBeamSpotHandle;
+   event.getByToken(bsSrc_,recoBeamSpotHandle);
+   reco::BeamSpot const & bs = *recoBeamSpotHandle;
 
    // std::vector<edm::Handle<IntermediateHitDoublets> > handles;
    // getterOfProducts_.fillHandles(iEvent, handles);
@@ -412,49 +421,49 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
           for (int i = 0; i < tParams; i++)
             theTP.push_back(-1.0);
 
-        if(rangeOut.first != rangeOut.second)
-        {
-          auto particle = *rangeOut.first->second;
-          TrackingParticle::Vector momTp = particle.momentum();
-          TrackingParticle::Point  verTp  = particle.vertex();
-
-          // std::cout << kPar->second.key() << std::endl;
-
-          theTP.push_back(1.0); // 1
-          theTP.push_back(kPar->second.key()); // 2
-          theTP.push_back(momTp.x()); // 3
-          theTP.push_back(momTp.y()); // 4
-          theTP.push_back(momTp.z()); // 5
-          theTP.push_back(particle.pt()); //6
-
-          theTP.push_back(particle.mt());
-          theTP.push_back(particle.et());
-          theTP.push_back(particle.massSqr()); //9
-
-          theTP.push_back(particle.pdgId());
-          theTP.push_back(particle.charge()); //11
-
-          theTP.push_back(particle.numberOfTrackerHits()); //TODO no. pixel hits?
-          theTP.push_back(particle.numberOfTrackerLayers());
-          //TODO is cosmic?
-          theTP.push_back(particle.phi());
-          theTP.push_back(particle.eta());
-          theTP.push_back(particle.rapidity()); //16
-
-          theTP.push_back(verTp.x());
-          theTP.push_back(verTp.y());
-          theTP.push_back(verTp.z());
-          theTP.push_back((-verTp.x()*sin(momTp.phi())+verTp.y()*cos(momTp.phi()))); //dxy
-          theTP.push_back((verTp.z() - (verTp.x() * momTp.x()+
-                            verTp.y() *
-                            momTp.y())/sqrt(momTp.perp2()) *
-                            momTp.z()/sqrt(momTp.perp2()))); //21 //dz //TODO Check MomVert //search parametersDefiner
-
-          theTP.push_back(particle.eventId().bunchCrossing());
-        }
-        else
-          for (int i = 0; i < tParams; i++)
-            theTP.push_back(-1.0);
+        // if(rangeOut.first != rangeOut.second)
+        // {
+        //   auto particle = *rangeOut.first->second;
+        //   TrackingParticle::Vector momTp = particle.momentum();
+        //   TrackingParticle::Point  verTp  = particle.vertex();
+        //
+        //   // std::cout << kPar->second.key() << std::endl;
+        //
+        //   theTP.push_back(1.0); // 1
+        //   theTP.push_back(kPar->second.key()); // 2
+        //   theTP.push_back(momTp.x()); // 3
+        //   theTP.push_back(momTp.y()); // 4
+        //   theTP.push_back(momTp.z()); // 5
+        //   theTP.push_back(particle.pt()); //6
+        //
+        //   theTP.push_back(particle.mt());
+        //   theTP.push_back(particle.et());
+        //   theTP.push_back(particle.massSqr()); //9
+        //
+        //   theTP.push_back(particle.pdgId());
+        //   theTP.push_back(particle.charge()); //11
+        //
+        //   theTP.push_back(particle.numberOfTrackerHits()); //TODO no. pixel hits?
+        //   theTP.push_back(particle.numberOfTrackerLayers());
+        //   //TODO is cosmic?
+        //   theTP.push_back(particle.phi());
+        //   theTP.push_back(particle.eta());
+        //   theTP.push_back(particle.rapidity()); //16
+        //
+        //   theTP.push_back(verTp.x());
+        //   theTP.push_back(verTp.y());
+        //   theTP.push_back(verTp.z());
+        //   theTP.push_back((-verTp.x()*sin(momTp.phi())+verTp.y()*cos(momTp.phi()))); //dxy
+        //   theTP.push_back((verTp.z() - (verTp.x() * momTp.x()+
+        //                     verTp.y() *
+        //                     momTp.y())/sqrt(momTp.perp2()) *
+        //                     momTp.z()/sqrt(momTp.perp2()))); //21 //dz //TODO Check MomVert //search parametersDefiner
+        //
+        //   theTP.push_back(particle.eventId().bunchCrossing());
+        // }
+        // else
+        //   for (int i = 0; i < tParams; i++)
+        //     theTP.push_back(-1.0);
 
         //TODO in case of unmatched but associated to a tp we could save both tp to study the missmatching
         //Matched :D
