@@ -12,7 +12,9 @@ import FWCore.ParameterSet.Config as cms
 
 CNNDetTriplet = cms.EDProducer('CNNAnalyze',
         doublets    = cms.InputTag( "initialStepHitDoublets" ),
-        tpMap       = cms.InputTag( "tpClusterProducer" )
+        tpMap       = cms.InputTag( "tpClusterProducer" ),
+        beamSpot    = cms.InputTag("offlineBeamSpot"),
+        infoPileUp  = cms.InputTag("addPileupInfo")
 )
 
 
