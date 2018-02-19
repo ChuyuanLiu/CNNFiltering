@@ -19,6 +19,6 @@
 <use   name="SimDataFormats/TrackingAnalysis"/>
 <use   name="CommonTools/UtilAlgos"/>
 <use   name="SimDataFormats/PileupSummaryInfo"/>
-<use   name="SimDataFormats/Vertex"/>s
+<use   name="SimDataFormats/Vertex"/>
 
 <flags EDM_PLUGIN="1"/>
