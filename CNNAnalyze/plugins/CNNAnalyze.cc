@@ -193,7 +193,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    edm::Handle<reco::BeamSpot> recoBeamSpotHandle;
    iEvent.getByToken(bsSrc_,recoBeamSpotHandle);
    reco::BeamSpot const & bs = *recoBeamSpotHandle;
-   theBeamSpotV = Vertex(bs.position(), bs.covariance3D());
+   theBeamSpotV = reco::Vertex(bs.position(), bs.covariance3D());
 
    // theBeamSpotV.position().x(), theBeamSpotV.position().y(), theBeamSpotV.position().z()
 
