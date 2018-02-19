@@ -227,7 +227,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    std::string fileName = std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
    fileName += "dnn_doublets.txt";
-   std::ofstream outCNNFileFile(fileName, std::ofstream::app);
+   std::ofstream outCNNFile(fileName, std::ofstream::app);
 
 
    std::vector< RecHitsSortedInPhi::Hit> hits;
@@ -567,7 +567,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
         outCNNFile << runNumber << "\t" << eveNumber << "\t" << lumNumber << "\t";
         outCNNFile <<innerLayer->seqNum() << "\t" << outerLayer->seqNum();
-        outCNNFile << bs.x0() << "\t" << bs.y0() << "\t" << bs.position().z0() << "\t" << bs.sigmaZ() << "\t";
+        outCNNFile << bs.x0() << "\t" << bs.y0() << "\t" << bs.z0() << "\t" << bs.sigmaZ() << "\t";
         for (int j = 0; j < 2; j++)
           for (size_t i = 0; i < hitPars[j].size(); i++)
             outCNNFile << hitPars[j][i] << "\t";
