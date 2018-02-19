@@ -185,18 +185,20 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    cnntree->Fill();
 
+   int eveNumber = iEvent.id().event();
+   int runNumber = iEvent.id().run();
+   int lumNumber = iEvent.id().luminosityBlock();
+
    std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}; //seqNumbers of pixel detectors 0,1,2,3 barrel 14,15,16, fwd 29,30,31 bkw
    std::vector<int> partiList{11,13,15,22,111,211,311,321,2212,2112,3122,223};
 
-   reco::Vertex thePrimaryV, theBeamSpotV;
+   // reco::Vertex thePrimaryV, theBeamSpotV;
 
    //The Beamspot
    edm::Handle<reco::BeamSpot> recoBeamSpotHandle;
    iEvent.getByToken(bsSrc_,recoBeamSpotHandle);
    reco::BeamSpot const & bs = *recoBeamSpotHandle;
-   theBeamSpotV = reco::Vertex(bs.position(), bs.covariance3D());
-
-   // theBeamSpotV.position().x(), theBeamSpotV.position().y(), theBeamSpotV.position().z()
+   // reco::Vertex theBeamSpotV(bs.position(), bs.covariance3D());
 
    edm::Handle< std::vector<PileupSummaryInfo> > puinfoH;
    iEvent.getByToken(infoPileUp_,puinfoH);
