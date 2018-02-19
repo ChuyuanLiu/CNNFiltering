@@ -132,12 +132,12 @@ intHitDoublets_(consumes<IntermediateHitDoublets>(iConfig.getParameter<edm::Inpu
 tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap")))
 {
 
-   usesResource("TFileService");
+   // usesResource("TFileService");
+   //
+   // edm::Service<TFileService> fs;
+   // cnntree = fs->make<TTree>("CNNTree","Doublets Tree");
 
-   edm::Service<TFileService> fs;
-   cnntree = fs->make<TTree>("CNNTree","Doublets Tree");
-
-   cnntree->Branch("test",      &test,          "test/I");
+   // cnntree->Branch("test",      &test,          "test/I");
 
    edm::InputTag beamSpotTag = iConfig.getParameter<edm::InputTag>("beamSpot");
    bsSrc_ = consumes<reco::BeamSpot>(beamSpotTag);
@@ -181,9 +181,9 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    edm::Handle<ClusterTPAssociation> tpClust;
    iEvent.getByToken(tpMap_,tpClust);
 
-   test = iEvent.id().event();
-
-   cnntree->Fill();
+   // test = iEvent.id().event();
+   //
+   // cnntree->Fill();
 
    int eveNumber = iEvent.id().event();
    int runNumber = iEvent.id().run();
