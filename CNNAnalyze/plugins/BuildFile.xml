@@ -20,5 +20,6 @@
 <use   name="CommonTools/UtilAlgos"/>
 <use   name="SimDataFormats/PileupSummaryInfo"/>
 <use   name="DataFormats/VertexReco/"/>
+<use   name="SimDataFormats/Vertex"/>
 
 <flags EDM_PLUGIN="1"/>
