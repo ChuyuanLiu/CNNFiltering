@@ -391,7 +391,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
           // std::cout << kPar->second.key() << std::endl;
 
           theTP.push_back(1.0); // 1
-          theTP.push_back(kPar->second.key()); // 2
+          theTP.push_back(rangeIn.first->second.key()); // 2
           theTP.push_back(momTp.x()); // 3
           theTP.push_back(momTp.y()); // 4
           theTP.push_back(momTp.z()); // 5
