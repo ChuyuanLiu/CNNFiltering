@@ -140,7 +140,7 @@ tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap
    edm::InputTag beamSpotTag = iConfig.getParameter<edm::InputTag>("beamSpot");
    bsSrc_ = consumes<reco::BeamSpot>(beamSpotTag);
 
-   infoPileUp = consumes<std::vector<PileupSummaryInfo> >(pset.getParameter< edm::InputTag >("label_pileupinfo"));
+   infoPileUp = consumes<std::vector<PileupSummaryInfo> >(iConfig.getParameter< edm::InputTag >("infoPileUp"));
 
    padHalfSize = 8;
    padSize = (int)(padHalfSize*2);
@@ -186,7 +186,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}; //seqNumbers of pixel detectors 0,1,2,3 barrel 14,15,16, fwd 29,30,31 bkw
    std::vector<int> partiList{11,13,15,22,111,211,311,321,2212,2112,3122,223};
 
-   Vertex thePrimaryV, theBeamSpotV;
+   reco::Vertex thePrimaryV, theBeamSpotV;
 
    //The Beamspot
    edm::Handle<reco::BeamSpot> recoBeamSpotHandle;
@@ -201,7 +201,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    theBeamSpotV.position().x(), theBeamSpotV.position().y(), theBeamSpotV.position().z()
 
    edm::Handle< std::vector<PileupSummaryInfo> > puinfoH;
-   event.getByToken(label_pileupinfo,puinfoH);
+   event.getByToken(infoPileUp,puinfoH);
    PileupSummaryInfo puinfo;
 
    for (unsigned int puinfo_ite=0;puinfo_ite<(*puinfoH).size();++puinfo_ite){
