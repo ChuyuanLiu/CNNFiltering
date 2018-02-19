@@ -45,6 +45,8 @@
 
 #include "SimTracker/TrackerHitAssociation/interface/ClusterTPAssociation.h"
 
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+
 #include "RecoTracker/TkHitPairs/interface/HitPairGeneratorFromLayerPair.h"
 #include "RecoTracker/TkHitPairs/interface/IntermediateHitDoublets.h"
 
@@ -98,6 +100,7 @@ class CNNAnalyze : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       edm::EDGetTokenT<IntermediateHitDoublets> intHitDoublets_;
       edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
       edm::EDGetTokenT<reco::BeamSpot>  bsSrc_;
+      edm::EDGetTokenT<std::vector<PileupSummaryInfo>>  bsSrc_;
       // edm::GetterOfProducts<IntermediateHitDoublets> getterOfProducts_;
 
       float padHalfSize;
@@ -136,6 +139,8 @@ tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap
 
    edm::InputTag beamSpotTag = iConfig.getParameter<edm::InputTag>("beamSpot");
    bsSrc_ = consumes<reco::BeamSpot>(beamSpotTag);
+
+   infoPileUp = consumes<std::vector<PileupSummaryInfo> >(pset.getParameter< edm::InputTag >("label_pileupinfo"));
 
    padHalfSize = 8;
    padSize = (int)(padHalfSize*2);
@@ -181,10 +186,32 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}; //seqNumbers of pixel detectors 0,1,2,3 barrel 14,15,16, fwd 29,30,31 bkw
    std::vector<int> partiList{11,13,15,22,111,211,311,321,2212,2112,3122,223};
 
+   Vertex thePrimaryV, theBeamSpotV;
+
    //The Beamspot
    edm::Handle<reco::BeamSpot> recoBeamSpotHandle;
    iEvent.getByToken(bsSrc_,recoBeamSpotHandle);
    reco::BeamSpot const & bs = *recoBeamSpotHandle;
+
+   if ( theBeamSpot.isValid() ) {
+     bs = *theBeamSpot;
+     theBeamSpotV = Vertex(bs.position(), bs.covariance3D());
+   }
+
+   theBeamSpotV.position().x(), theBeamSpotV.position().y(), theBeamSpotV.position().z()
+
+   edm::Handle< std::vector<PileupSummaryInfo> > puinfoH;
+   event.getByToken(label_pileupinfo,puinfoH);
+   PileupSummaryInfo puinfo;
+
+   for (unsigned int puinfo_ite=0;puinfo_ite<(*puinfoH).size();++puinfo_ite){
+     if ((*puinfoH)[puinfo_ite].getBunchCrossing()==0){
+       puinfo=(*puinfoH)[puinfo_ite];
+       break;
+     }
+   }
+
+   int puNumInt = puinfo.getPU_NumInteractions();
 
    // std::vector<edm::Handle<IntermediateHitDoublets> > handles;
    // getterOfProducts_.fillHandles(iEvent, handles);
