@@ -54,6 +54,7 @@
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHit.h"
 #include "DataFormats/TrackerRecHit2D/interface/BaseTrackerRecHit.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
 
 #include "RecoTracker/TkHitPairs/interface/RecHitsSortedInPhi.h"
 #include "RecoTracker/TkHitPairs/interface/IntermediateHitDoublets.h"
@@ -100,7 +101,7 @@ class CNNAnalyze : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       edm::EDGetTokenT<IntermediateHitDoublets> intHitDoublets_;
       edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
       edm::EDGetTokenT<reco::BeamSpot>  bsSrc_;
-      edm::EDGetTokenT<std::vector<PileupSummaryInfo>>  bsSrc_;
+      edm::EDGetTokenT<std::vector<PileupSummaryInfo>>  infoPileUp_;
       // edm::GetterOfProducts<IntermediateHitDoublets> getterOfProducts_;
 
       float padHalfSize;
@@ -140,7 +141,7 @@ tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap
    edm::InputTag beamSpotTag = iConfig.getParameter<edm::InputTag>("beamSpot");
    bsSrc_ = consumes<reco::BeamSpot>(beamSpotTag);
 
-   infoPileUp = consumes<std::vector<PileupSummaryInfo> >(iConfig.getParameter< edm::InputTag >("infoPileUp"));
+   infoPileUp_ = consumes<std::vector<PileupSummaryInfo> >(iConfig.getParameter< edm::InputTag >("infoPileUp"));
 
    padHalfSize = 8;
    padSize = (int)(padHalfSize*2);
@@ -197,7 +198,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    // theBeamSpotV.position().x(), theBeamSpotV.position().y(), theBeamSpotV.position().z()
 
    edm::Handle< std::vector<PileupSummaryInfo> > puinfoH;
-   event.getByToken(infoPileUp,puinfoH);
+   iEvent.getByToken(infoPileUp_,puinfoH);
    PileupSummaryInfo puinfo;
 
    for (unsigned int puinfo_ite=0;puinfo_ite<(*puinfoH).size();++puinfo_ite){
