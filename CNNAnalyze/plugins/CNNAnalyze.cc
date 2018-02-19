@@ -225,7 +225,8 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    //   std::cout << handle.provenance()->moduleLabel()<< std::endl;
    // }
 
-   std::string fileName = "test.txt";
+   std::string fileName = std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
+   fileName += "dnn_doublets.txt";
    std::ofstream outCNNFileFile(fileName, std::ofstream::app);
 
 
