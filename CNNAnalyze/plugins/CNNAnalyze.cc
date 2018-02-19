@@ -226,7 +226,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    // }
 
    std::string fileName = "test.txt";
-   std::ofstream test(fileName, std::ofstream::app);
+   std::ofstream outCNNFileFile(fileName, std::ofstream::app);
 
 
    std::vector< RecHitsSortedInPhi::Hit> hits;
@@ -564,15 +564,19 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             theTP.push_back(-1.0);
           }
 
+        outCNNFile << runNumber << "\t" << eveNumber << "\t" << lumNumber << "\t";
+        outCNNFile <<innerLayer->seqNum() << "\t" << outerLayer->seqNum();
+        outCNNFile << bs.x0() << "\t" << bs.y0() << "\t" << bs.position().z0() << "\t" << bs.sigmaZ() << "\t";
         for (int j = 0; j < 2; j++)
           for (size_t i = 0; i < hitPars[j].size(); i++)
-            test << hitPars[j][i] << "\t";
+            outCNNFile << hitPars[j][i] << "\t";
 
         for (size_t i = 0; i < theTP.size(); i++)
-          test << theTP[i] << "\t";
+          outCNNFile << theTP[i] << "\t";
 
-        test << std::endl;
-        test << hitPars[0].size() << " -- " <<  hitPars[1].size() << " -- " << theTP.size() << std::endl << std::endl;
+        outCNNFile << 542.1369;
+        outCNNFile << std::endl;
+        // outCNNFile << hitPars[0].size() << " -- " <<  hitPars[1].size() << " -- " << theTP.size() << std::endl << std::endl;
 
 
 
