@@ -38,6 +38,10 @@
 #include "FWCore/Utilities/interface/StreamID.h"
 #include "FWCore/Framework/interface/GetterOfProducts.h"
 #include "FWCore/Framework/interface/ProcessMatch.h"
+#include "FWCore/ServiceRegistry/interface/ServiceRegistry.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 #include "SimTracker/TrackerHitAssociation/interface/ClusterTPAssociation.h"
 
