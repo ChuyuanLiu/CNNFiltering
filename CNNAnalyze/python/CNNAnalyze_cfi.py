@@ -24,63 +24,63 @@ import FWCore.ParameterSet.Config as cms
 # ++IntermediateHitDoublets "tobTecStepHitDoubletsTripl" "" "RECO" (productId = 3:319)
 # ++IntermediateHitDoublets "tripletElectronHitDoublets" "" "RECO" (productId = 3:320)
 
-detachedQuadStepCNN = cms.EDProducer('CNNAnalyze',
+detachedQuadStepCNN = cms.EDAnalyzer('CNNAnalyze',
         doublets    = cms.InputTag( "detachedQuadStepHitDoublets" ),
         tpMap       = cms.InputTag( "tpClusterProducer" ),
         beamSpot    = cms.InputTag("offlineBeamSpot"),
         infoPileUp  = cms.InputTag("addPileupInfo")
 )
 
-detachedTripletStepCNN = cms.EDProducer('CNNAnalyze',
+detachedTripletStepCNN = cms.EDAnalyzer('CNNAnalyze',
         doublets    = cms.InputTag( "detachedTripletStepHitDoublets" ),
         tpMap       = cms.InputTag( "tpClusterProducer" ),
         beamSpot    = cms.InputTag("offlineBeamSpot"),
         infoPileUp  = cms.InputTag("addPileupInfo")
 )
 
-initialStepPreSplittingCNN = cms.EDProducer('CNNAnalyze',
+initialStepPreSplittingCNN = cms.EDAnalyzer('CNNAnalyze',
         doublets    = cms.InputTag( "initialStepHitDoubletsPreSplitting" ),
         tpMap       = cms.InputTag( "tpClusterProducer" ),
         beamSpot    = cms.InputTag("offlineBeamSpot"),
         infoPileUp  = cms.InputTag("addPileupInfo")
 )
 
-lowPtQuadStepCNN = cms.EDProducer('CNNAnalyze',
+lowPtQuadStepCNN = cms.EDAnalyzer('CNNAnalyze',
         doublets    = cms.InputTag( "lowPtQuadStepHitDoublets" ),
         tpMap       = cms.InputTag( "tpClusterProducer" ),
         beamSpot    = cms.InputTag("offlineBeamSpot"),
         infoPileUp  = cms.InputTag("addPileupInfo")
 )
 
-mixedTripletStepACNN = cms.EDProducer('CNNAnalyze',
+mixedTripletStepACNN = cms.EDAnalyzer('CNNAnalyze',
         doublets    = cms.InputTag( "mixedTripletStepHitDoubletsA" ),
         tpMap       = cms.InputTag( "tpClusterProducer" ),
         beamSpot    = cms.InputTag("offlineBeamSpot"),
         infoPileUp  = cms.InputTag("addPileupInfo")
 )
 
-mixedTripletStepBCNN = cms.EDProducer('CNNAnalyze',
+mixedTripletStepBCNN = cms.EDAnalyzer('CNNAnalyze',
         doublets    = cms.InputTag( "mixedTripletStepHitDoubletsB" ),
         tpMap       = cms.InputTag( "tpClusterProducer" ),
         beamSpot    = cms.InputTag("offlineBeamSpot"),
         infoPileUp  = cms.InputTag("addPileupInfo")
 )
 
-pixelLessStepCNN = cms.EDProducer('CNNAnalyze',
+pixelLessStepCNN = cms.EDAnalyzer('CNNAnalyze',
         doublets    = cms.InputTag( "pixelLessStepHitDoublets" ),
         tpMap       = cms.InputTag( "tpClusterProducer" ),
         beamSpot    = cms.InputTag("offlineBeamSpot"),
         infoPileUp  = cms.InputTag("addPileupInfo")
 )
 
-tobTecStepCNN = cms.EDProducer('CNNAnalyze',
+tobTecStepCNN = cms.EDAnalyzer('CNNAnalyze',
         doublets    = cms.InputTag( "tobTecStepHitDoubletsTripl" ),
         tpMap       = cms.InputTag( "tpClusterProducer" ),
         beamSpot    = cms.InputTag("offlineBeamSpot"),
         infoPileUp  = cms.InputTag("addPileupInfo")
 )
 
-tripletElectronCNN = cms.EDProducer('CNNAnalyze',
+tripletElectronCNN = cms.EDAnalyzer('CNNAnalyze',
         doublets    = cms.InputTag( "tripletElectronHitDoublets" ),
         tpMap       = cms.InputTag( "tpClusterProducer" ),
         beamSpot    = cms.InputTag("offlineBeamSpot"),
