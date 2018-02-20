@@ -89,7 +89,7 @@ tobTecStepCNN = cms.EDAnalyzer('CNNAnalyze',
 )
 
 tripletElectronCNN = cms.EDAnalyzer('CNNAnalyze',
-        processName = cms.InputTag( "tripletElectronHitDoublets" ),
+        processName = cms.string( "tripletElectronHitDoublets" ),
         doublets    = cms.InputTag( "tripletElectronHitDoublets" ),
         tpMap       = cms.InputTag( "tpClusterProducer" ),
         beamSpot    = cms.InputTag("offlineBeamSpot"),
