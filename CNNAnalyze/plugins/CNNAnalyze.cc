@@ -246,7 +246,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
    {
 //     HitDoublets lDoublets = std::move(lIt->doublets());
-     std::cout << "Size: " << lIt->doublets().size() << std::endl;
+     // std::cout << "Size: " << lIt->doublets().size() << std::endl;
      for (size_t i = 0; i < lIt->doublets().size(); i++)
      {
 
