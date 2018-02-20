@@ -410,49 +410,49 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         std::set_intersection(kPdgIn.begin(), kPdgIn.end(),kPdgOut.begin(), kPdgOut.end(), std::back_inserter(kIntersection));
         // std::cout << "Intersection : "<< kIntersection.size() << std::endl;
 
-        if(rangeIn.first != rangeIn.second)
-        {
-          auto particle = *rangeIn.first->second;
-          TrackingParticle::Vector momTp = particle.momentum();
-          TrackingParticle::Point  verTp  = particle.vertex();
-
-          // std::cout << kPar->second.key() << std::endl;
-
-          theTP.push_back(1.0); // 1
-          theTP.push_back(rangeIn.first->second.key()); // 2
-          theTP.push_back(momTp.x()); // 3
-          theTP.push_back(momTp.y()); // 4
-          theTP.push_back(momTp.z()); // 5
-          theTP.push_back(particle.pt()); //6
-
-          theTP.push_back(particle.mt());
-          theTP.push_back(particle.et());
-          theTP.push_back(particle.massSqr()); //9
-
-          theTP.push_back(particle.pdgId());
-          theTP.push_back(particle.charge()); //11
-
-          theTP.push_back(particle.numberOfTrackerHits()); //TODO no. pixel hits?
-          theTP.push_back(particle.numberOfTrackerLayers());
-          //TODO is cosmic?
-          theTP.push_back(particle.phi());
-          theTP.push_back(particle.eta());
-          theTP.push_back(particle.rapidity()); //16
-
-          theTP.push_back(verTp.x());
-          theTP.push_back(verTp.y());
-          theTP.push_back(verTp.z());
-          theTP.push_back((-verTp.x()*sin(momTp.phi())+verTp.y()*cos(momTp.phi()))); //dxy
-          theTP.push_back((verTp.z() - (verTp.x() * momTp.x()+
-                            verTp.y() *
-                            momTp.y())/sqrt(momTp.perp2()) *
-                            momTp.z()/sqrt(momTp.perp2()))); //21 //dz //TODO Check MomVert //search parametersDefiner
-
-          theTP.push_back(particle.eventId().bunchCrossing());
-        }
-        else
-          for (int i = 0; i < tParams; i++)
-            theTP.push_back(-1.0);
+        // if(rangeIn.first != rangeIn.second)
+        // {
+        //   auto particle = *rangeIn.first->second;
+        //   TrackingParticle::Vector momTp = particle.momentum();
+        //   TrackingParticle::Point  verTp  = particle.vertex();
+        //
+        //   // std::cout << kPar->second.key() << std::endl;
+        //
+        //   theTP.push_back(1.0); // 1
+        //   theTP.push_back(rangeIn.first->second.key()); // 2
+        //   theTP.push_back(momTp.x()); // 3
+        //   theTP.push_back(momTp.y()); // 4
+        //   theTP.push_back(momTp.z()); // 5
+        //   theTP.push_back(particle.pt()); //6
+        //
+        //   theTP.push_back(particle.mt());
+        //   theTP.push_back(particle.et());
+        //   theTP.push_back(particle.massSqr()); //9
+        //
+        //   theTP.push_back(particle.pdgId());
+        //   theTP.push_back(particle.charge()); //11
+        //
+        //   theTP.push_back(particle.numberOfTrackerHits()); //TODO no. pixel hits?
+        //   theTP.push_back(particle.numberOfTrackerLayers());
+        //   //TODO is cosmic?
+        //   theTP.push_back(particle.phi());
+        //   theTP.push_back(particle.eta());
+        //   theTP.push_back(particle.rapidity()); //16
+        //
+        //   theTP.push_back(verTp.x());
+        //   theTP.push_back(verTp.y());
+        //   theTP.push_back(verTp.z());
+        //   theTP.push_back((-verTp.x()*sin(momTp.phi())+verTp.y()*cos(momTp.phi()))); //dxy
+        //   theTP.push_back((verTp.z() - (verTp.x() * momTp.x()+
+        //                     verTp.y() *
+        //                     momTp.y())/sqrt(momTp.perp2()) *
+        //                     momTp.z()/sqrt(momTp.perp2()))); //21 //dz //TODO Check MomVert //search parametersDefiner
+        //
+        //   theTP.push_back(particle.eventId().bunchCrossing());
+        // }
+        // else
+        //   for (int i = 0; i < tParams; i++)
+        //     theTP.push_back(-1.0);
 
         // if(rangeOut.first != rangeOut.second)
         // {
