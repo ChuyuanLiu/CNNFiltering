@@ -28,7 +28,7 @@ particleLabs = ["label","tpKey","px","py","pz","pt","mT","eT","mSqr","pdgId",
                 "charge","nTrackerHits","nTrackerLayers","phi","eta","rapidity"
                 "vX","vY","vZ","dXY","dZ","bunchCrossing"]
 
-dataLab = headLab + inHitLabs + particleLabs + particleLabs + ["dummyFlag"]
+dataLab = headLab + inHitLabs + outHitLabs + particleLabs + ["dummyFlag"]
 
 
 import pandas as pd
@@ -40,7 +40,7 @@ def npDoubletsLoad(path,fileslimit,cols):
 
     start = time.time()
 
-    datafiles = np.array([f for f in listdir(path) if (isfile(join(path, f)) and  f.lower().endswith(("txt","gz")) and "_dataset." in f)])
+    datafiles = np.array([f for f in listdir(path) if (isfile(join(path, f)) and  f.lower().endswith(("txt","gz")) and "dnn_doublets" in f)])
 
     print("Loading " + str(len(datafiles)) + " dataset file(s) . . .")
 
