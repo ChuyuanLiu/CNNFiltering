@@ -226,7 +226,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    // }
 
    std::string fileName = std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
-   fileName += "dnn_doublets.txt";
+   fileName += "_dnn_doublets.txt";
    std::ofstream outCNNFile(fileName, std::ofstream::app);
 
 
