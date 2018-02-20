@@ -173,7 +173,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    // int detOnArr[10] = {0,1,2,3,14,15,16,29,30,31};
    // std::vector<int> detOn(detOnArr,detOnArr+sizeof(detOnArr)/sizeof(int));
 
-   std::cout<<"CNNDoublets Analyzer"<<std::endl;
+   // std::cout<<"CNNDoublets Analyzer"<<std::endl;
 
    edm::Handle<IntermediateHitDoublets> iHd;
    iEvent.getByToken(intHitDoublets_,iHd);
@@ -395,7 +395,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         auto rangeIn = tpClust->equal_range(hits[0]->firstClusterRef());
         auto rangeOut = tpClust->equal_range(hits[1]->firstClusterRef());
 
-        std::cout << "Doublet no. "  << i << " hit no. " << lIt->doublets().innerHitId(i) << std::endl;
+        // std::cout << "Doublet no. "  << i << " hit no. " << lIt->doublets().innerHitId(i) << std::endl;
 
         std::vector< std::pair<int,int> > kPdgIn, kPdgOut, kIntersection;
               // if(range.first == tpClust->end())
@@ -406,9 +406,9 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         for(auto ip=rangeOut.first; ip != rangeOut.second; ++ip)
           kPdgOut.push_back({ip->second.key(),(*ip->second).pdgId()});
 
-        if(rangeIn.first == rangeIn.second) std::cout<<"In unmatched"<<std::endl;
+        // if(rangeIn.first == rangeIn.second) std::cout<<"In unmatched"<<std::endl;
         std::set_intersection(kPdgIn.begin(), kPdgIn.end(),kPdgOut.begin(), kPdgOut.end(), std::back_inserter(kIntersection));
-        std::cout << "Intersection : "<< kIntersection.size() << std::endl;
+        // std::cout << "Intersection : "<< kIntersection.size() << std::endl;
 
         if(rangeIn.first != rangeIn.second)
         {
