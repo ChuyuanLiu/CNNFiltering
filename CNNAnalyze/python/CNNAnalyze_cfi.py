@@ -25,7 +25,7 @@ import FWCore.ParameterSet.Config as cms
 # ++IntermediateHitDoublets "tripletElectronHitDoublets" "" "RECO" (productId = 3:320)
 
 detachedQuadStepCNN = cms.EDAnalyzer('CNNAnalyze',
-        processName = cms.string( "detachedQuadStepHitDoublets" )
+        processName = cms.string( "detachedQuadStepHitDoublets"),
         doublets    = cms.InputTag( "detachedQuadStepHitDoublets" ),
         tpMap       = cms.InputTag( "tpClusterProducer" ),
         beamSpot    = cms.InputTag("offlineBeamSpot"),
@@ -33,7 +33,7 @@ detachedQuadStepCNN = cms.EDAnalyzer('CNNAnalyze',
 )
 
 detachedTripletStepCNN = cms.EDAnalyzer('CNNAnalyze',
-        processName = cms.string( "detachedTripletStepHitDoublets" )
+        processName = cms.string( "detachedTripletStepHitDoublets" ),
         doublets    = cms.InputTag( "detachedTripletStepHitDoublets" ),
         tpMap       = cms.InputTag( "tpClusterProducer" ),
         beamSpot    = cms.InputTag("offlineBeamSpot"),
@@ -41,7 +41,7 @@ detachedTripletStepCNN = cms.EDAnalyzer('CNNAnalyze',
 )
 
 initialStepPreSplittingCNN = cms.EDAnalyzer('CNNAnalyze',
-        processName = cms.string( "initialStepHitDoubletsPreSplitting" )
+        processName = cms.string( "initialStepHitDoubletsPreSplitting"),
         doublets    = cms.InputTag( "initialStepHitDoubletsPreSplitting" ),
         tpMap       = cms.InputTag( "tpClusterProducer" ),
         beamSpot    = cms.InputTag("offlineBeamSpot"),
@@ -57,7 +57,7 @@ lowPtQuadStepCNN = cms.EDAnalyzer('CNNAnalyze',
 )
 
 mixedTripletStepACNN = cms.EDAnalyzer('CNNAnalyze',
-        processName = cms.string( "mixedTripletStepHitDoubletsA" ),
+        processName = cms.string( "mixedTripletStepHitDoubletsA"),
         doublets    = cms.InputTag( "mixedTripletStepHitDoubletsA" ),
         tpMap       = cms.InputTag( "tpClusterProducer" ),
         beamSpot    = cms.InputTag("offlineBeamSpot"),
