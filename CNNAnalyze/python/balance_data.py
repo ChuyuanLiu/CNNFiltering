@@ -1,6 +1,7 @@
 import os
 from dataset import Dataset
 import argparse
+import pandas as pd
 
 parser = argparse.ArgumentParser(prog="balanceHDF")
 parser.add_argument('--read', type=str, default="./",help='files path')
