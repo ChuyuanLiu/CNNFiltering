@@ -43,7 +43,7 @@ inHitLabs = [ "in" + str(i) for i in hitLabs]
 outHitLabs = [ "out" + str(i) for i in hitLabs]
 
 particleLabs = ["label","tpKey","px","py","pz","pt","mT","eT","mSqr","pdgId",
-                "charge","nTrackerHits","nTrackerLayers","phi","eta","rapidity"
+                "charge","nTrackerHits","nTrackerLayers","phi","eta","rapidity",
                 "vX","vY","vZ","dXY","dZ","bunchCrossing"]
 
 dataLab = headLab + inHitLabs + outHitLabs + particleLabs + ["dummyFlag"]

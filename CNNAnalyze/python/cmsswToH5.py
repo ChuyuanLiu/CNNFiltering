@@ -25,7 +25,7 @@ inHitLabs = [ "in" + str(i) for i in hitLabs]
 outHitLabs = [ "out" + str(i) for i in hitLabs]
 
 particleLabs = ["label","tpKey","px","py","pz","pt","mT","eT","mSqr","pdgId",
-                "charge","nTrackerHits","nTrackerLayers","phi","eta","rapidity"
+                "charge","nTrackerHits","nTrackerLayers","phi","eta","rapidity",
                 "vX","vY","vZ","dXY","dZ","bunchCrossing"]
 
 dataLab = headLab + inHitLabs + outHitLabs + particleLabs + ["dummyFlag"]
@@ -68,6 +68,8 @@ def npDoubletsLoad(path,fileslimit,cols):
             if cols:
                 dfDoublets.columns = dataLab
             #print(dfDoublets.head())
+            if legacy:
+                dfDoublets.drop("Ax1","Ax2"],)
             dfDoublets.to_hdf(singlePath + idName + "_" + d.replace(".txt",".h5"),'data',append=True)
             listdata.append(dfDoublets)
 
