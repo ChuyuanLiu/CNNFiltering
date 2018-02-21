@@ -24,11 +24,11 @@ def to_categorical(y, num_classes=None):
 
 target_lab = "label"
 
-headLab = ["run","evt","lumi","detSeqIn","detSeqOut","bSX","bSY","bSZ","bSdZ"]
+headLab = ["run","evt","lumi","detSeqIn","detSeqOut"]#"bSX","bSY","bSZ","bSdZ"]
 
 hitCoord = ["X","Y","Z","Phi","R"]
 
-hitDet = ["DetSeq","IsBarrel","Layer","Ladder","Side","Disk","Panel","Module","IsFlipped","Ax1","Ax2"]
+hitDet = ["DetSeq","IsBarrel","Layer","Ladder","Side","Disk","Panel","Module","IsFlipped"]#,"Ax1","Ax2"]
 
 hitClust = ["ClustX","ClustY","ClustSize","ClustSizeX","ClustSizeY","PixelZero",
             "AvgCharge","OverFlowX","OverFlowY","IsBig","IsBad","IsEdge"]
