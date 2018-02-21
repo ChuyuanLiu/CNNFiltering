@@ -6,7 +6,7 @@ import argparse
 
 from math import floor
 
-headLab = ["run","evt","detSeqIn","detSeqOut","bSX","bSY","bSZ","bSdZ"]
+headLab = ["run","evt","lumi","detSeqIn","detSeqOut","bSX","bSY","bSZ","bSdZ"]
 
 hitCoord = ["X","Y","Z","Phi","R"]
 
@@ -94,4 +94,4 @@ if __name__ == '__main__':
     #parser.add_argument('--debug', type=bool, default=False,help='debug printouts')
     args = parser.parse_args()
 
-    npDoubletsLoad(args.read,args.flimit,args.colums)
+    npDoubletsLoad(args.read,args.flimit,args.columns)

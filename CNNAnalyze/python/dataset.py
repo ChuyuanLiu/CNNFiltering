@@ -18,7 +18,7 @@ def to_categorical(y, num_classes=None):
     return categorical
 
 
-target_lab = "pdgId"
+target_lab = "label"
 
 headLab = ["run","evt","detSeqIn","detSeqOut","bSX","bSY","bSZ","bSdZ"]
 

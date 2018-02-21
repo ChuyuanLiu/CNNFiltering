@@ -1,97 +1,46 @@
 import os
-from os import listdir
-from os.path import isfile, join
-import sys, time
+from dataset import Dataset
 import argparse
 
-from math import floor
+parser = argparse.ArgumentParser(prog="balanceHDF")
+parser.add_argument('--read', type=str, default="./",help='files path')
 
-headLab = ["run","evt","detSeqIn","detSeqOut","bSX","bSY","bSZ","bSdZ"]
+args = parser.parse_args()
 
-hitCoord = ["X","Y","Z","Phi","R"]
+#remote_data = "/lustre/cms/store/user/adiflori/ConvPixels/TTBar_13TeV_35_PU/allHDFDatasets/"
+#remote_data = "/lustre/cms/store/user/adiflori/ConvPixels/TTBar_13TeV_35_PU/0512_724_runs/DataFiles/"
+#remote_data = "/lustre/cms/store/user/adiflori/ConvPixels/TTBar_13TeV_35_PU/"
+#remote_data = "/lustre/cms/store/user/adiflori/ConvPixels/TTBar_13TeV_35_PU/sept17_runs/"
+remote_data = args.read + "/"
+#remote_data = "data/inference/unzip/"
+new_dir = remote_data + "/bal_data/"
 
-hitDet = ["DetSeq","IsBarrel","Layer","Ladder","Side","Disk","Panel","Module","IsFlipped","Ax1","Ax2"]
+print("Balancing dataset in : " + remote_data)
+print("Saving balanced in   : " + new_dir)
 
-hitClust = ["ClustX","ClustY","ClustSize","ClustSizeX","ClustSizeY","PixelZero",
-            "AvgCharge","OverFlowX","OverFlowY","IsBig","IsBad","IsEdge"]
+if not os.path.exists(new_dir):
+    os.makedirs(new_dir)
 
-hitPixel = ["Pix" + str(el) for el in range(1, 257)]
-
-hitCharge = ["SumADC"]
-
-hitLabs = hitCoord + hitDet + hitClust + hitPixel + hitCharge
-
-inHitLabs = [ "in" + str(i) for i in hitLabs]
-outHitLabs = [ "out" + str(i) for i in hitLabs]
-
-particleLabs = ["label","tpKey","px","py","pz","pt","mT","eT","mSqr","pdgId",
-                "charge","nTrackerHits","nTrackerLayers","phi","eta","rapidity"
-                "vX","vY","vZ","dXY","dZ","bunchCrossing"]
-
-dataLab = headLab + inHitLabs + particleLabs + particleLabs + ["dummyFlag"]
-
-
-import pandas as pd
-import numpy as np
-
-
-def npDoubletsLoad(path,fileslimit,cols):
-    print ("======================================================================")
-
-    start = time.time()
-
-    datafiles = np.array([f for f in listdir(path) if (isfile(join(path, f)) and  f.lower().endswith(("txt","gz")) and "_dataset." in f)])
-
-    print("Loading " + str(len(datafiles)) + " dataset file(s) . . .")
-
-    idName = ""
-
-    for p in path.split("/"):
-        if "runs" in p:
-            idName = p
-
-    singlePath = path + "/singleEvts/"
-    if not os.path.exists(singlePath):
-        os.makedirs(singlePath)
-
-    listdata = []
-    for no,d in enumerate(datafiles):
-        if os.stat(path + d).st_size == 0:
-                print("File no." + str(no+1) + " " + d + " empty.Skipping.")
-                continue
-        with open(path + d, 'rb') as df:
-            print("Reading file no." + str(no+1) + ": " + d)
-            if d.lower().endswith(("txt")):
-                dfDoublets = pd.read_table(df, sep="\t", header = None)
-            if d.lower().endswith(("gz")):
-                dfDoublets = pd.read_table(df, sep="\t", header = None,compression="gzip")
-            if cols:
-                dfDoublets.columns = dataLab
-            #print(dfDoublets.head())
-            dfDoublets.to_hdf(singlePath + idName + "_" + d.replace(".txt",".h5"),'data',append=True)
-            listdata.append(dfDoublets)
-
-    alldata = pd.concat(listdata)
-
-    dfDoublets.to_hdf(path + idName + "_" + "doublets.h5",'data',append=True)
-
-    end = time.time()
-    print ("======================================================================")
-    print ("\n - Timing : " + str(end-start))
-
-    return alldata
-
-
-
-
-
-if __name__ == '__main__':
-
-    parser = argparse.ArgumentParser(prog="dataToHDF")
-    parser.add_argument('--read', type=str, default="./",help='files path')
-    parser.add_argument('--flimit', type=int, default=-1,help='max no. of files')
-    parser.add_argument('--columns', type=bool, default=False,help='columns?')
-    #parser.add_argument('--debug', type=bool, default=False,help='debug printouts')
-    args = parser.parse_args()
-
-    npDoubletsLoad(args.read,args.flimit,args.colums)
+for f in os.listdir(remote_data):
+    if os.path.isfile(new_dir + f):  # balancing already done
+        print("Skipping (already done): " + f)
+        continue
+    try:
+        ext = f.split('.')[-1]
+        print(ext)
+        if ext == 'h5':
+            print("Loading: " + f)
+            train_data = Dataset([remote_data + f]).balance_data()
+            train_data.save(new_dir + f)
+        elif ext == 'gz':
+            print("Loading: " + f)
+            with open(remote_data + f, 'rb') as f_zip:
+                fc = f_zip.read()
+                with open(remote_data + 'tmp/tmp.h5', 'wb') as f_new:
+                    f_new.write(fc)
+            train_data = Dataset([remote_data + 'tmp/tmp.h5']).balance_data()
+            train_data.save(new_dir + f[:-3])  # skip .gz from name
+        else:  # balancing already done
+            print("Skipping (unrecognized extension): " + f)
+    except:
+        print("Error loading: " + f)
