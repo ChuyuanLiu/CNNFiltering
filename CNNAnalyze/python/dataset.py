@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 import os
-from dataset import Dataset
 import argparse
 
 def to_categorical(y, num_classes=None):
@@ -47,7 +46,7 @@ particleLabs = ["label","tpKey","px","py","pz","pt","mT","eT","mSqr","pdgId",
                 "charge","nTrackerHits","nTrackerLayers","phi","eta","rapidity"
                 "vX","vY","vZ","dXY","dZ","bunchCrossing"]
 
-dataLab = headLab + inHitLabs + outHitLabs + particleLabs + particleLabs + ["dummyFlag"]
+dataLab = headLab + inHitLabs + outHitLabs + particleLabs + ["dummyFlag"]
 
 
 class Dataset:

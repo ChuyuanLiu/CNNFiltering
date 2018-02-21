@@ -566,7 +566,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
           }
 
         outCNNFile << runNumber << "\t" << eveNumber << "\t" << lumNumber << "\t";
-        outCNNFile <<innerLayer->seqNum() << "\t" << outerLayer->seqNum();
+        outCNNFile <<innerLayer->seqNum() << "\t" << outerLayer->seqNum() << "\t";
         outCNNFile << bs.x0() << "\t" << bs.y0() << "\t" << bs.z0() << "\t" << bs.sigmaZ() << "\t";
         for (int j = 0; j < 2; j++)
           for (size_t i = 0; i < hitPars[j].size(); i++)
