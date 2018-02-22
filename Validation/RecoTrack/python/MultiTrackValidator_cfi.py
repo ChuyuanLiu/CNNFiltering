@@ -86,7 +86,7 @@ multiTrackValidator = cms.EDAnalyzer(
 
     simPVMaxZ = cms.untracked.double(-1),
 
-    doublets = = cms.InputTag( "detachedQuadStepHitDoublets" ),
+    doublets = cms.InputTag( "detachedQuadStepHitDoublets" ),
 
     ### Allow switching off particular histograms
     doSummaryPlots = cms.untracked.bool(True),
