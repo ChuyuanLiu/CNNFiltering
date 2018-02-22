@@ -965,7 +965,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
       for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
       {
         trakHitsGP.push_back((*recHit)->globalPosition());
-        trakHits.push_back(*recHit);
+        trakHits.push_back(dynamic_cast<const BaseTrackerRecHit*>(*recHit));
       }
 	} else {
 	  LogTrace("TrackValidator") << "reco::Track #" << rT << " with pt=" << track->pt()
