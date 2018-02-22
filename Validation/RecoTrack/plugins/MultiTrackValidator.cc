@@ -497,7 +497,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
   event.getByToken(intHitDoublets_,iHd);
 
   std::vector <GlobalPoint> inHitsGP,trakHitsGP;
-  std::vector <const BaseTrackerRecHit*> inHits,trakHits;
+  std::vector <const TrackingRecHit*> inHits,trakHits;
 
   for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
     {
@@ -505,7 +505,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
       for (size_t i = 0; i < lIt->doublets().size(); i++)
       {
         inHitsGP.push_back(lIt->doublets().hit(i, HitDoublets::inner)->globalPosition());
-        inHits.push_back(lIt->doublets().hit(i, HitDoublets::inner));
+        inHits.push_back(dynamic_cast<const TrackingRecHit*>lIt->doublets().hit(i, HitDoublets::inner));
       }
     }
 
@@ -965,7 +965,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
       for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
       {
         trakHitsGP.push_back((*recHit)->globalPosition());
-        trakHits.push_back(dynamic_cast<const BaseTrackerRecHit*>(*recHit));
+        trakHits.push_back((*recHit));
       }
 	} else {
 	  LogTrace("TrackValidator") << "reco::Track #" << rT << " with pt=" << track->pt()
