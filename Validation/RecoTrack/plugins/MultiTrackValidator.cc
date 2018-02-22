@@ -945,6 +945,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
         isSimMatched = tpFound != recSimColl.end();
         if (isSimMatched) {
             //loop
+
             const auto& tp = tpFound->val;
 	    nSimHits = tp[0].first->numberOfTrackerHits();
             sharedFraction = tp[0].second;
@@ -964,8 +965,11 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
       for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
       {
-        trakHitsGP.push_back((*recHit)->globalPosition());
-        trakHits.push_back((*recHit));
+          std::cout << "Called" << std::endl;
+          for (size_t i = 0; i < inHits.size(); i++) {
+            if((*recHit)->sharesInput(inHits[i],TrackingRecHit::SharedInputType::all))
+            std::cout <<"some sharing!"<<std::endl;
+          }
       }
 	} else {
 	  LogTrace("TrackValidator") << "reco::Track #" << rT << " with pt=" << track->pt()
@@ -1073,10 +1077,5 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
   //     std::cout << "One Match" << std::endl;
   //   }
   // }
-    for (size_t j = 0; j < trakHits.size(); j++) {
-      for (size_t i = 0; i < inHits.size(); i++) {
-        if(trakHits[j]->sharesInput(inHits[i],TrackingRecHit::SharedInputType::all))
-        std::cout <<"some sharing!"<<std::endl;
-      }
-    }
+
 }
