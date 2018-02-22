@@ -33,7 +33,7 @@ class MultiTrackValidator : public DQMEDAnalyzer {
  public:
   /// Constructor
   MultiTrackValidator(const edm::ParameterSet& pset);
-  
+
   /// Destructor
   ~MultiTrackValidator() override;
 
@@ -118,17 +118,18 @@ class MultiTrackValidator : public DQMEDAnalyzer {
 
   bool useGsf;
   const double simPVMaxZ_;
-  // select tracking particles 
+  // select tracking particles
   //(i.e. "denominator" of the efficiency ratio)
-  TrackingParticleSelector tpSelector;				      
+  TrackingParticleSelector tpSelector;
   CosmicTrackingParticleSelector cosmictpSelector;
-  TrackingParticleSelector dRtpSelector;				      
+  TrackingParticleSelector dRtpSelector;
   std::unique_ptr<RecoTrackSelectorBase> dRTrackSelector;
 
   edm::EDGetTokenT<SimHitTPAssociationProducer::SimHitTPAssociationList> _simHitTpMapTag;
   edm::EDGetTokenT<edm::View<reco::Track> > labelTokenForDrCalculation;
   edm::EDGetTokenT<edm::View<reco::Vertex> > recoVertexToken_;
   edm::EDGetTokenT<reco::VertexToTrackingVertexAssociator> vertexAssociatorToken_;
+  edm::EDGetTokenT<IntermediateHitDoublets> intHitDoublets_;
 
   std::vector<MonitorElement *> h_reco_coll, h_assoc_coll, h_assoc2_coll, h_simul_coll, h_looper_coll, h_pileup_coll;
 };

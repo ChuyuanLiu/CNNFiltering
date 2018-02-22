@@ -66,7 +66,8 @@ MultiTrackValidator::MultiTrackValidator(const edm::ParameterSet& pset):
   doPVAssociationPlots_(pset.getUntrackedParameter<bool>("doPVAssociationPlots")),
   doSeedPlots_(pset.getUntrackedParameter<bool>("doSeedPlots")),
   doMVAPlots_(pset.getUntrackedParameter<bool>("doMVAPlots")),
-  simPVMaxZ_(pset.getUntrackedParameter<double>("simPVMaxZ"))
+  simPVMaxZ_(pset.getUntrackedParameter<double>("simPVMaxZ")).
+  intHitDoublets_(consumes<IntermediateHitDoublets>(iConfig.getParameter<edm::InputTag>("doublets"))),
 {
   const edm::InputTag& label_tp_effic_tag = pset.getParameter< edm::InputTag >("label_tp_effic");
   const edm::InputTag& label_tp_fake_tag = pset.getParameter< edm::InputTag >("label_tp_fake");
@@ -198,7 +199,7 @@ MultiTrackValidator::MultiTrackValidator(const edm::ParameterSet& pset):
     for (auto const& src: associators) {
       associatorTokens.push_back(consumes<reco::TrackToTrackingParticleAssociator>(src));
     }
-  } else {   
+  } else {
     for (auto const& src: associators) {
       associatormapStRs.push_back(consumes<reco::SimToRecoCollection>(src));
       associatormapRtSs.push_back(consumes<reco::RecoToSimCollection>(src));
@@ -492,6 +493,13 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
   //Since we modify the object, we must clone it
   auto parametersDefinerTP = parametersDefinerTPHandle->clone();
 
+  edm::Handle<IntermediateHitDoublets> iHd;
+  iEvent.getByToken(intHitDoublets_,iHd);
+
+  for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
+    std::cout << "Size: " << lIt->doublets().size() << std::endl;
+  
+
   edm::ESHandle<TrackerTopology> httopo;
   setup.get<TrackerTopologyRcd>().get(httopo);
   const TrackerTopology& ttopo = *httopo;
@@ -718,7 +726,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
       reco::RecoToSimCollection const & recSimColl = *recSimCollP;
       reco::SimToRecoCollection const & simRecColl = *simRecCollP;
- 
+
       // read MVA collections
       if(doMVAPlots_ && !mvaQualityCollectionTokens_[www].empty()) {
         edm::Handle<MVACollection> hmva;
@@ -915,7 +923,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 	rT++;
         if(trackFromSeedFitFailed(*track)) ++seed_fit_failed;
         if((*dRTrackSelector)(*track)) ++n_selTrack_dr;
- 
+
 	bool isSigSimMatched(false);
 	bool isSimMatched(false);
         bool isChargeMatched(true);
