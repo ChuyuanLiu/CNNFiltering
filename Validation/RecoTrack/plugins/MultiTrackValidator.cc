@@ -962,14 +962,14 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
             bool inTrue = false, outTrue = false;
             for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
             {
-              if((*recHit)->sharesInput(,TrackingRecHit::SharedInputType::some))
+              if((*recHit)->sharesInput(inRecHit,TrackingRecHit::SharedInputType::some))
               {
                 std::cout<< ((*recHit)->globalPosition().x()) << "\t" << ((*recHit)->globalPosition()).y() << "\t" << ((*recHit)->globalPosition()).z() << std::endl;
                 std::cout<< (inRecHit->globalPosition().x()) << "\t" << (inRecHit->globalPosition()).y() << "\t" << (inRecHit->globalPosition()).z() << std::endl;
                 inTrue = true;
               }
 
-              if((*recHit)->sharesInput(dynamic_cast<const TrackingRecHit*> (lIt->doublets().hit(i, HitDoublets::outer)),TrackingRecHit::SharedInputType::some))
+              if((*recHit)->sharesInput(outRecHit,TrackingRecHit::SharedInputType::some))
               {
                 std::cout<< ((*recHit)->globalPosition().x()) << "\t" << ((*recHit)->globalPosition()).y() << "\t" << ((*recHit)->globalPosition()).z() << std::endl;
                 std::cout<< (outRecHit->globalPosition().x()) << "\t" << (outRecHit->globalPosition()).y() << "\t" << (outRecHit->globalPosition()).z() << std::endl;
