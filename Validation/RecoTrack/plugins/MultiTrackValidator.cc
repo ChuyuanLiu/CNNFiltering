@@ -505,7 +505,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
       for (size_t i = 0; i < lIt->doublets().size(); i++)
       {
         inHitsGP.push_back(lIt->doublets().hit(i, HitDoublets::inner)->globalPosition());
-        inHits.push_back(dynamic_cast<const TrackingRecHit*>lIt->doublets().hit(i, HitDoublets::inner));
+        inHits.push_back(dynamic_cast<const TrackingRecHit*> (lIt->doublets().hit(i, HitDoublets::inner)));
       }
     }
 
