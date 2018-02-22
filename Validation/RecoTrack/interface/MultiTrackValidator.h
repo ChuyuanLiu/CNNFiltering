@@ -26,6 +26,10 @@
 
 #include "RecoTracker/TkHitPairs/interface/HitPairGeneratorFromLayerPair.h"
 #include "RecoTracker/TkHitPairs/interface/IntermediateHitDoublets.h"
+#include "RecoTracker/TkHitPairs/interface/RecHitsSortedInPhi.h"
+
+#include "DataFormats/GeometryVector/interface/GlobalPoint.h"
+#include "DataFormats/GeometryCommonDetAlgo/interface/GlobalError.h"
 
 class PileupSummaryInfo;
 namespace reco {

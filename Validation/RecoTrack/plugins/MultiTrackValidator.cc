@@ -496,8 +496,16 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
   edm::Handle<IntermediateHitDoublets> iHd;
   event.getByToken(intHitDoublets_,iHd);
 
+  std::vector <GlobalPoint> inHitsGP,trakHitsGP;
+
   for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
-    std::cout << "Size: " << lIt->doublets().size() << std::endl;
+    {
+      std::cout << "Size: " << lIt->doublets().size() << std::endl;
+      for (size_t i = 0; i < lIt->doublets().size(); i++)
+      {
+        inHitsGP.push_back(lIt->doublets().hit(i, HitDoublets::inner)->globalPosition());
+      }
+    }
 
 
   edm::ESHandle<TrackerTopology> httopo;
@@ -934,6 +942,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
         auto tpFound = recSimColl.find(track);
         isSimMatched = tpFound != recSimColl.end();
         if (isSimMatched) {
+            //loop
             const auto& tp = tpFound->val;
 	    nSimHits = tp[0].first->numberOfTrackerHits();
             sharedFraction = tp[0].second;
@@ -950,6 +959,11 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
             }
 	    LogTrace("TrackValidator") << "reco::Track #" << rT << " with pt=" << track->pt()
                                        << " associated with quality:" << tp.begin()->second <<"\n";
+
+      for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
+      {
+        trakHitsGP.push_back(recHit->globalPosition());
+      }
 	} else {
 	  LogTrace("TrackValidator") << "reco::Track #" << rT << " with pt=" << track->pt()
                                      << " NOT associated to any TrackingParticle" << "\n";
@@ -1050,4 +1064,10 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
     } // End of  for (unsigned int www=0;www<label.size();www++){
   } //END of for (unsigned int ww=0;ww<associators.size();ww++){
 
+  for (size_t j = 0; j < inHitsGP.size(); j++) {
+    for (size_t i = 0; i < trakHitsGP.size(); i++) {
+      if(inHitsGP[j]==trakHitsGP[i])
+      std::cout << "One Match" << std::endl;
+    }
+  }
 }
