@@ -497,7 +497,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
   event.getByToken(intHitDoublets_,iHd);
 
   std::vector <GlobalPoint> inHitsGP,trakHitsGP;
-  std::vector <BaseTrackerRecHit*> inHits,trakHits;
+  std::vector <const BaseTrackerRecHit*> inHits,trakHits;
 
   for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
     {
@@ -964,8 +964,8 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
       for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
       {
-        trakHitsGP.push_back(*recHit->globalPosition());
-        trakHits.push_back(*track);
+        trakHitsGP.push_back((*recHit)->globalPosition());
+        trakHits.push_back(*recHit);
       }
 	} else {
 	  LogTrace("TrackValidator") << "reco::Track #" << rT << " with pt=" << track->pt()
@@ -1075,8 +1075,8 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
   // }
     for (size_t j = 0; j < trakHits.size(); j++) {
       for (size_t i = 0; i < inHits.size(); i++) {
-        if(trakHits[j]->sharesInput(inHits[i],SharedInputType::all))
-        std::cout <<"some sharing!"<<std:endl;
+        if(trakHits[j]->sharesInput(inHits[i],TrackingRecHit::SharedInputType::all))
+        std::cout <<"some sharing!"<<std::endl;
       }
     }
 }
