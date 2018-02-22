@@ -66,8 +66,8 @@ MultiTrackValidator::MultiTrackValidator(const edm::ParameterSet& pset):
   doPVAssociationPlots_(pset.getUntrackedParameter<bool>("doPVAssociationPlots")),
   doSeedPlots_(pset.getUntrackedParameter<bool>("doSeedPlots")),
   doMVAPlots_(pset.getUntrackedParameter<bool>("doMVAPlots")),
-  simPVMaxZ_(pset.getUntrackedParameter<double>("simPVMaxZ")).
-  intHitDoublets_(consumes<IntermediateHitDoublets>(iConfig.getParameter<edm::InputTag>("doublets"))),
+  simPVMaxZ_(pset.getUntrackedParameter<double>("simPVMaxZ")),
+  intHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("doublets"))),
 {
   const edm::InputTag& label_tp_effic_tag = pset.getParameter< edm::InputTag >("label_tp_effic");
   const edm::InputTag& label_tp_fake_tag = pset.getParameter< edm::InputTag >("label_tp_fake");
@@ -494,11 +494,11 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
   auto parametersDefinerTP = parametersDefinerTPHandle->clone();
 
   edm::Handle<IntermediateHitDoublets> iHd;
-  iEvent.getByToken(intHitDoublets_,iHd);
+  event.getByToken(intHitDoublets_,iHd);
 
   for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
     std::cout << "Size: " << lIt->doublets().size() << std::endl;
-  
+
 
   edm::ESHandle<TrackerTopology> httopo;
   setup.get<TrackerTopologyRcd>().get(httopo);
