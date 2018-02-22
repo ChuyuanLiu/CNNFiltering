@@ -497,6 +497,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
   event.getByToken(intHitDoublets_,iHd);
 
   std::vector <GlobalPoint> inHitsGP,trakHitsGP;
+  std::vector <BaseTrackerRecHit*> inHits,trakHits;
 
   for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
     {
@@ -504,6 +505,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
       for (size_t i = 0; i < lIt->doublets().size(); i++)
       {
         inHitsGP.push_back(lIt->doublets().hit(i, HitDoublets::inner)->globalPosition());
+        inHits.push_back(lIt->doublets().hit(i, HitDoublets::inner));
       }
     }
 
@@ -962,7 +964,8 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
       for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
       {
-        trakHitsGP.push_back(recHit->globalPosition());
+        trakHitsGP.push_back(*recHit->globalPosition());
+        trakHits.push_back(*track);
       }
 	} else {
 	  LogTrace("TrackValidator") << "reco::Track #" << rT << " with pt=" << track->pt()
@@ -1064,10 +1067,16 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
     } // End of  for (unsigned int www=0;www<label.size();www++){
   } //END of for (unsigned int ww=0;ww<associators.size();ww++){
 
-  for (size_t j = 0; j < inHitsGP.size(); j++) {
-    for (size_t i = 0; i < trakHitsGP.size(); i++) {
-      if(inHitsGP[j]==trakHitsGP[i])
-      std::cout << "One Match" << std::endl;
+  // for (size_t j = 0; j < inHitsGP.size(); j++) {
+  //   for (size_t i = 0; i < trakHitsGP.size(); i++) {
+  //     if(inHitsGP[j]==trakHitsGP[i])
+  //     std::cout << "One Match" << std::endl;
+  //   }
+  // }
+    for (size_t j = 0; j < trakHits.size(); j++) {
+      for (size_t i = 0; i < inHits.size(); i++) {
+        if(trakHits[j]->sharesInput(inHits[i],SharedInputType::all))
+        std::cout <<"some sharing!"<<std:endl;
+      }
     }
-  }
 }

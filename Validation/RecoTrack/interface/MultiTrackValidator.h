@@ -28,6 +28,7 @@
 #include "RecoTracker/TkHitPairs/interface/IntermediateHitDoublets.h"
 #include "RecoTracker/TkHitPairs/interface/RecHitsSortedInPhi.h"
 
+#include "DataFormats/TrackingRecHit/interface/TrackingRecHit.h"
 #include "DataFormats/GeometryVector/interface/GlobalPoint.h"
 #include "DataFormats/GeometryCommonDetAlgo/interface/GlobalError.h"
 
