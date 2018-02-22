@@ -496,20 +496,6 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
   edm::Handle<IntermediateHitDoublets> iHd;
   event.getByToken(intHitDoublets_,iHd);
 
-  std::vector <GlobalPoint> inHitsGP,trakHitsGP;
-  std::vector <const TrackingRecHit*> inHits,trakHits;
-
-  for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
-    {
-      std::cout << "Size: " << lIt->doublets().size() << std::endl;
-      for (size_t i = 0; i < lIt->doublets().size(); i++)
-      {
-        inHitsGP.push_back(lIt->doublets().hit(i, HitDoublets::inner)->globalPosition());
-        inHits.push_back(dynamic_cast<const TrackingRecHit*> (lIt->doublets().hit(i, HitDoublets::inner)));
-      }
-    }
-
-
   edm::ESHandle<TrackerTopology> httopo;
   setup.get<TrackerTopologyRcd>().get(httopo);
   const TrackerTopology& ttopo = *httopo;
@@ -963,15 +949,38 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 	    LogTrace("TrackValidator") << "reco::Track #" << rT << " with pt=" << track->pt()
                                        << " associated with quality:" << tp.begin()->second <<"\n";
 
-      for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
-      {
-          for (size_t i = 0; i < inHits.size(); i++) {
-            if((*recHit)->sharesInput(inHits[i],TrackingRecHit::SharedInputType::all))
-            std::cout <<"All sharing!"<<std::endl;
-            std::cout<< ((*recHit)->globalPosition().x()) << "\t" << ((*recHit)->globalPosition()).y() << "\t" << ((*recHit)->globalPosition()).z() << std::endl;
-            std::cout<< (inHits[i]->globalPosition().x()) << "\t" << (inHits[i]->globalPosition()).y() << "\t" << (inHits[i]->globalPosition()).z() << std::endl;
+      for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
+        {
+          std::cout << "Size: " << lIt->doublets().size() << std::endl;
+          int counter = 0;
+          for (size_t i = 0; i < lIt->doublets().size(); i++)
+          {
+
+            const TrackingRecHit* inRecHit = dynamic_cast<const TrackingRecHit*> (lIt->doublets().hit(i, HitDoublets::inner));
+            const TrackingRecHit* outRecHit = dynamic_cast<const TrackingRecHit*> (lIt->doublets().hit(i, HitDoublets::outer));
+
+            bool inTrue = false, outTrue = false;
+            for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
+            {
+              if((*recHit)->sharesInput(,TrackingRecHit::SharedInputType::some))
+              {
+                std::cout<< ((*recHit)->globalPosition().x()) << "\t" << ((*recHit)->globalPosition()).y() << "\t" << ((*recHit)->globalPosition()).z() << std::endl;
+                std::cout<< (inRecHit->globalPosition().x()) << "\t" << (inRecHit->globalPosition()).y() << "\t" << (inRecHit->globalPosition()).z() << std::endl;
+                inTrue = true;
+              }
+
+              if((*recHit)->sharesInput(dynamic_cast<const TrackingRecHit*> (lIt->doublets().hit(i, HitDoublets::outer)),TrackingRecHit::SharedInputType::some))
+              {
+                std::cout<< ((*recHit)->globalPosition().x()) << "\t" << ((*recHit)->globalPosition()).y() << "\t" << ((*recHit)->globalPosition()).z() << std::endl;
+                std::cout<< (outRecHit->globalPosition().x()) << "\t" << (outRecHit->globalPosition()).y() << "\t" << (outRecHit->globalPosition()).z() << std::endl;
+                outTrue = true;
+              }
+              if(outTrue && inTrue)
+                ++counter;
+            }
           }
-      }
+          std::cout << "True doublets " << counter << " on "<< lIt->doublets().size() << std::endl;
+        }
 	} else {
 	  LogTrace("TrackValidator") << "reco::Track #" << rT << " with pt=" << track->pt()
                                      << " NOT associated to any TrackingParticle" << "\n";
