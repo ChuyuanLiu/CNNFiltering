@@ -24,6 +24,9 @@
 #include "CommonTools/Utils/interface/DynArray.h"
 #include "DataFormats/Common/interface/ValueMap.h"
 
+#include "RecoTracker/TkHitPairs/interface/HitPairGeneratorFromLayerPair.h"
+#include "RecoTracker/TkHitPairs/interface/IntermediateHitDoublets.h"
+
 class PileupSummaryInfo;
 namespace reco {
 class DeDxData;
