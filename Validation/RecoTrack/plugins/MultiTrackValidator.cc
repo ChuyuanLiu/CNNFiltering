@@ -965,10 +965,11 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
       for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
       {
-          std::cout << "Called" << std::endl;
           for (size_t i = 0; i < inHits.size(); i++) {
             if((*recHit)->sharesInput(inHits[i],TrackingRecHit::SharedInputType::all))
-            std::cout <<"some sharing!"<<std::endl;
+            std::cout <<"All sharing!"<<std::endl;
+            std::cout<< ((*recHit)->globalPosition().x()) << "\t" << ((*recHit)->globalPosition()).y() << "\t" << ((*recHit)->globalPosition()).z() << std::endl;
+            std::cout<< (inHits[i]->globalPosition().x()) << "\t" << (inHits[i]->globalPosition()).y() << "\t" << (inHits[i]->globalPosition()).z() << std::endl;
           }
       }
 	} else {
