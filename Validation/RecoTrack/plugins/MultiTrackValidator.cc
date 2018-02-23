@@ -934,6 +934,20 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
         if (isSimMatched) {
             //loop
 
+            for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
+            {
+
+              if(!(*recHit))
+              continue;
+
+              if (!((*recHit)->isValid()))
+              continue;
+
+              if(!((*recHit)->hasPositionAndError()))
+              continue;
+              ++nRecHits;
+            }
+
             const auto& tp = tpFound->val;
 	    nSimHits = tp[0].first->numberOfTrackerHits();
             sharedFraction = tp[0].second;
@@ -1017,8 +1031,6 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
               if(!((*recHit)->hasPositionAndError()))
               continue;
-
-              nRecHits++;
 
               if((*recHit)->sharesInput(inRecHit,TrackingRecHit::SharedInputType::some))
               {
