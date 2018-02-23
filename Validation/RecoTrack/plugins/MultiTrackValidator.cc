@@ -951,8 +951,11 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
       std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31};
 
+      int sumSize = 0, sumCounter = 0;
+
       for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
         {
+
           std::vector< RecHitsSortedInPhi::Hit> hits;
           std::vector< const SiPixelRecHit*> siHits;
 
@@ -976,6 +979,9 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
           std::cout << "Size: " << lIt->doublets().size() << std::endl;
           int counter = 0;
+
+          sumSize += lIt->doublets().size() ;
+
           for (size_t i = 0; i < lIt->doublets().size(); i++)
           {
 
@@ -1027,7 +1033,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
             }
 
             if(outTrue && inTrue)
-              ++counter;
+              {++counter; ++sumCounter;}
 
           }
           std::cout << "True doublets " << counter << " on "<< lIt->doublets().size() << std::endl;
