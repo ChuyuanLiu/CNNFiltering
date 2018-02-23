@@ -1002,7 +1002,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
             const TrackingRecHit* inRecHit = dynamic_cast<const TrackingRecHit*> (lIt->doublets().hit(i, HitDoublets::inner));
             const TrackingRecHit* outRecHit = dynamic_cast<const TrackingRecHit*> (lIt->doublets().hit(i, HitDoublets::outer));
-            std::cout << "Recast" << std::endl;
+            // std::cout << "Recast" << std::endl;
             bool inTrue = false, outTrue = false;
             for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
             {
@@ -1012,12 +1012,13 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
               continue;
               std::cout << "RecHit" << std::endl;
               }
-              
+
               if (!((*recHit)->isValid()))
               continue;
 
               if((*recHit)->sharesInput(inRecHit,TrackingRecHit::SharedInputType::all))
               {
+                std::cout << "In true" << std::endl;
                 std::cout<< ((*recHit)->globalPosition().x()) << "\t" << ((*recHit)->globalPosition()).y() << "\t" << ((*recHit)->globalPosition()).z() << std::endl;
                 std::cout<< (inRecHit->globalPosition().x()) << "\t" << (inRecHit->globalPosition()).y() << "\t" << (inRecHit->globalPosition()).z() << std::endl;
                 inTrue = true;
@@ -1026,6 +1027,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
               if((*recHit)->sharesInput(outRecHit,TrackingRecHit::SharedInputType::all))
               {
+                std::cout << "Out true" << std::endl;
                 std::cout<< ((*recHit)->globalPosition().x()) << "\t" << ((*recHit)->globalPosition()).y() << "\t" << ((*recHit)->globalPosition()).z() << std::endl;
                 std::cout<< (outRecHit->globalPosition().x()) << "\t" << (outRecHit->globalPosition()).y() << "\t" << (outRecHit->globalPosition()).z() << std::endl;
                 outTrue = true;
