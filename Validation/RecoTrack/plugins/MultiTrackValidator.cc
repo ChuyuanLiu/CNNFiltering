@@ -959,6 +959,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
           std::vector< SiPixelRecHit::ClusterRef> clusters;
           std::vector< DetId> detIds;
           std::vector< const GeomDet*> geomDets;
+          std::vector <unsigned int> hitIds, subDetIds, detSeqs;
 
           DetLayer const * innerLayer = lIt->doublets().detLayer(HitDoublets::inner);
           if(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum())==pixelDets.end()) continue;   //TODO change to std::map ?

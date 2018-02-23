@@ -253,6 +253,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        hits.clear(); siHits.clear(); clusters.clear();
        detIds.clear(); geomDets.clear(); hitIds.clear();
        subDetIds.clear(); detSeqs.clear(); hitPars.clear(); theTP.clear();
+       inHitPars.clear(); outHitPars.clear();
 
        hits.push_back(lIt->doublets().hit(i, HitDoublets::inner)); //TODO CHECK EMPLACEBACK
        hits.push_back(lIt->doublets().hit(i, HitDoublets::outer));
