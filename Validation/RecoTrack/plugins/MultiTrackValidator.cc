@@ -985,24 +985,13 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
           for (size_t i = 0; i < lIt->doublets().size(); i++)
           {
 
-            hits.clear(); siHits.clear(); clusters.clear();
-            detIds.clear(); geomDets.clear(); hitIds.clear();
-            subDetIds.clear(); detSeqs.clear(); hitPars.clear(); theTP.clear();
+            if( !( ((lIt->doublets().hit(i, HitDoublets::outer))->hit()->geographicalId()).subdetId() == 1 ||
+                ((lIt->doublets().hit(i, HitDoublets::outer))->hit()->geographicalId()).subdetId() == 2 )
+            continue;
 
-            hits.push_back(lIt->doublets().hit(i, HitDoublets::inner)); //TODO CHECK EMPLACEBACK
-            hits.push_back(lIt->doublets().hit(i, HitDoublets::outer));
-
-            for (auto h : hits)
-            {
-              detIds.push_back(h->hit()->geographicalId());
-              subDetIds.push_back((h->hit()->geographicalId()).subdetId());
-            }
-            // innerDetId = innerHit->hit()->geographicalId();
-
-            if (! (((subDetIds[0]==1) || (subDetIds[0]==2)) && ((subDetIds[1]==1) || (subDetIds[1]==2)))) continue;
-
-            hitIds.push_back(lIt->doublets().innerHitId(i));
-            hitIds.push_back(lIt->doublets().outerHitId(i));
+            if( !( ((lIt->doublets().hit(i, HitDoublets::inner))->hit()->geographicalId()).subdetId() == 1 ||
+                ((lIt->doublets().hit(i, HitDoublets::inner))->hit()->geographicalId()).subdetId() == 2 )
+            continue;
 
             DetLayer const * innerLayer = lIt->doublets().detLayer(HitDoublets::inner);
             if(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum())==pixelDets.end()) continue;   //TODO change to std::map ?
@@ -1018,15 +1007,15 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
             {
               if((*recHit)->sharesInput(inRecHit,TrackingRecHit::SharedInputType::some))
               {
-                // std::cout<< ((*recHit)->globalPosition().x()) << "\t" << ((*recHit)->globalPosition()).y() << "\t" << ((*recHit)->globalPosition()).z() << std::endl;
-                // std::cout<< (inRecHit->globalPosition().x()) << "\t" << (inRecHit->globalPosition()).y() << "\t" << (inRecHit->globalPosition()).z() << std::endl;
+                std::cout<< ((*recHit)->globalPosition().x()) << "\t" << ((*recHit)->globalPosition()).y() << "\t" << ((*recHit)->globalPosition()).z() << std::endl;
+                std::cout<< (inRecHit->globalPosition().x()) << "\t" << (inRecHit->globalPosition()).y() << "\t" << (inRecHit->globalPosition()).z() << std::endl;
                 inTrue = true;
               }
 
               if((*recHit)->sharesInput(outRecHit,TrackingRecHit::SharedInputType::some))
               {
-                // std::cout<< ((*recHit)->globalPosition().x()) << "\t" << ((*recHit)->globalPosition()).y() << "\t" << ((*recHit)->globalPosition()).z() << std::endl;
-                // std::cout<< (outRecHit->globalPosition().x()) << "\t" << (outRecHit->globalPosition()).y() << "\t" << (outRecHit->globalPosition()).z() << std::endl;
+                std::cout<< ((*recHit)->globalPosition().x()) << "\t" << ((*recHit)->globalPosition()).y() << "\t" << ((*recHit)->globalPosition()).z() << std::endl;
+                std::cout<< (outRecHit->globalPosition().x()) << "\t" << (outRecHit->globalPosition()).y() << "\t" << (outRecHit->globalPosition()).z() << std::endl;
                 outTrue = true;
               }
 
@@ -1038,6 +1027,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
           }
           std::cout << "True doublets " << counter << " on "<< lIt->doublets().size() << std::endl;
         }
+        std::cout << "OVERALL True doublets " << sumCounter << " on "<< sumSize << std::endl;
 	} else {
 	  LogTrace("TrackValidator") << "reco::Track #" << rT << " with pt=" << track->pt()
                                      << " NOT associated to any TrackingParticle" << "\n";
