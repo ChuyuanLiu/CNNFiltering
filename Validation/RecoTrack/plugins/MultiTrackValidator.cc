@@ -974,9 +974,8 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
           DetLayer const * outerLayer = lIt->doublets().detLayer(HitDoublets::outer);
           if(find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum())==pixelDets.end()) continue;
-
-          siHits.push_back(dynamic_cast<const SiPixelRecHit*>((hits[0])));
-          siHits.push_back(dynamic_cast<const SiPixelRecHit*>((hits[1])));
+          // siHits.push_back(dynamic_cast<const SiPixelRecHit*>((hits[0])));
+          // siHits.push_back(dynamic_cast<const SiPixelRecHit*>((hits[1])));
 
           std::cout << "Size: " << lIt->doublets().size() << std::endl;
           int counter = 0;
