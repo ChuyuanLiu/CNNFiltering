@@ -981,10 +981,10 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
           int counter = 0;
 
           sumSize += lIt->doublets().size() ;
-          std::cout << "Here is good" << debug++<<std::endl;
+
           for (size_t i = 0; i < lIt->doublets().size(); i++)
           {
-            std::cout << "Here is good 1." << debug++<<std::endl;
+
             if( !( ((lIt->doublets().hit(i, HitDoublets::outer))->hit()->geographicalId()).subdetId() == 1 ||
                 ((lIt->doublets().hit(i, HitDoublets::outer))->hit()->geographicalId()).subdetId() == 2 ))
             continue;
@@ -1001,11 +1001,11 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
             const TrackingRecHit* inRecHit = dynamic_cast<const TrackingRecHit*> (lIt->doublets().hit(i, HitDoublets::inner));
             const TrackingRecHit* outRecHit = dynamic_cast<const TrackingRecHit*> (lIt->doublets().hit(i, HitDoublets::outer));
-            std::cout << "Here is good 2." << debug++<<std::endl;
+
             bool inTrue = false, outTrue = false;
             for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
             {
-              std::cout << "Here is good 3." << debug++<<std::endl;
+
               if((*recHit)->sharesInput(inRecHit,TrackingRecHit::SharedInputType::some))
               {
                 std::cout<< ((*recHit)->globalPosition().x()) << "\t" << ((*recHit)->globalPosition()).y() << "\t" << ((*recHit)->globalPosition()).z() << std::endl;
