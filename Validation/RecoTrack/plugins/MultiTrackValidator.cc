@@ -957,6 +957,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
       int counter = 0;
       int partialsize = 0;
 
+
       for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
         {
 
@@ -982,7 +983,6 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
           // std::cout << "Size: " << lIt->doublets().size() << std::endl;
 
-          sumSize += lIt->doublets().size() ;
           partialsize += lIt->doublets().size() ;
           for (size_t i = 0; i < lIt->doublets().size(); i++)
           {
@@ -1044,7 +1044,8 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
           }
 
         }
-        std::cout << "True doublets " << counter << " on "<< partialsize << std::endl;
+        // std::cout << "True doublets " << counter << " on "<< partialsize << std::endl;
+        sumSize = partialsize;
 	} else {
 	  LogTrace("TrackValidator") << "reco::Track #" << rT << " with pt=" << track->pt()
                                      << " NOT associated to any TrackingParticle" << "\n";
