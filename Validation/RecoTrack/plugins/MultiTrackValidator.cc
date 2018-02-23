@@ -945,7 +945,16 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
               if(!((*recHit)->hasPositionAndError()))
               continue;
+
+              if(!(dynamic_cast<const BaseTrackerRecHit*>((*recHit))))
+              continue;
+
+              // if(!(dynamic_cast<const SiPixelRecHit*>((*recHit))))
+              // continue;
+
+              if((dynamic_cast<const BaseTrackerRecHit*>((*recHit)))->isPixel())
               ++nRecHits;
+
             }
 
             const auto& tp = tpFound->val;
