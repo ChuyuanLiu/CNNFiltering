@@ -914,6 +914,8 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
       declareDynArray(float, trackCollection.size(), dR_trk);
       trackDR(trackCollection, *trackCollectionDr, dR_trk);
 
+      int sumSize = 0, sumCounter = 0;
+
       for(View<Track>::size_type i=0; i<trackCollection.size(); ++i){
         auto track = trackCollection.refAt(i);
 	rT++;
@@ -951,8 +953,9 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
       std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31};
 
-      int sumSize = 0, sumCounter = 0;
       int debug= 0;
+      int counter = 0;
+      int partialsize = 0;
 
       for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
         {
@@ -977,11 +980,10 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
           // siHits.push_back(dynamic_cast<const SiPixelRecHit*>((hits[0])));
           // siHits.push_back(dynamic_cast<const SiPixelRecHit*>((hits[1])));
 
-          std::cout << "Size: " << lIt->doublets().size() << std::endl;
-          int counter = 0;
+          // std::cout << "Size: " << lIt->doublets().size() << std::endl;
 
           sumSize += lIt->doublets().size() ;
-
+          partialsize += lIt->doublets().size() ;
           for (size_t i = 0; i < lIt->doublets().size(); i++)
           {
 
@@ -1008,10 +1010,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
             {
 
               if(!(*recHit))
-              {
               continue;
-              std::cout << "RecHit" << std::endl;
-              }
 
               if (!((*recHit)->isValid()))
               continue;
@@ -1019,22 +1018,22 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
               if(!((*recHit)->hasPositionAndError()))
               continue;
 
-              if((*recHit)->sharesInput(inRecHit,TrackingRecHit::SharedInputType::all))
+              if((*recHit)->sharesInput(inRecHit,TrackingRecHit::SharedInputType::some))
               {
-                std::cout << "In true" << std::endl;
-                std::cout<< ((*recHit)->globalPosition().x()) << "\t" << ((*recHit)->globalPosition()).y() << "\t" << ((*recHit)->globalPosition()).z() << std::endl;
-                std::cout<< (inRecHit->globalPosition().x()) << "\t" << (inRecHit->globalPosition()).y() << "\t" << (inRecHit->globalPosition()).z() << std::endl;
+                // std::cout << "In true" << std::endl;
+                // std::cout<< ((*recHit)->globalPosition().x()) << "\t" << ((*recHit)->globalPosition()).y() << "\t" << ((*recHit)->globalPosition()).z() << std::endl;
+                // std::cout<< (inRecHit->globalPosition().x()) << "\t" << (inRecHit->globalPosition()).y() << "\t" << (inRecHit->globalPosition()).z() << std::endl;
                 inTrue = true;
                 continue;
               }
 
-              if((*recHit)->sharesInput(outRecHit,TrackingRecHit::SharedInputType::all))
+              if((*recHit)->sharesInput(outRecHit,TrackingRecHit::SharedInputType::some))
               {
-                std::cout << "Out true" << std::endl;
-                std::cout<< ((*recHit)->globalPosition().x()) << "\t" << ((*recHit)->globalPosition()).y() << "\t" << ((*recHit)->globalPosition()).z() << std::endl;
-                std::cout<< (outRecHit->globalPosition().x()) << "\t" << (outRecHit->globalPosition()).y() << "\t" << (outRecHit->globalPosition()).z() << std::endl;
+                // std::cout << "Out true" << std::endl;
+                // std::cout<< ((*recHit)->globalPosition().x()) << "\t" << ((*recHit)->globalPosition()).y() << "\t" << ((*recHit)->globalPosition()).z() << std::endl;
+                // std::cout<< (outRecHit->globalPosition().x()) << "\t" << (outRecHit->globalPosition()).y() << "\t" << (outRecHit->globalPosition()).z() << std::endl;
                 outTrue = true;
-                continue;
+                // continue;
               }
 
             }
@@ -1043,9 +1042,9 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
               {++counter; ++sumCounter;}
 
           }
-          std::cout << "True doublets " << counter << " on "<< lIt->doublets().size() << std::endl;
+
         }
-        std::cout << "OVERALL True doublets " << sumCounter << " on "<< sumSize << std::endl;
+        std::cout << "True doublets " << counter << " on "<< partialsize << std::endl;
 	} else {
 	  LogTrace("TrackValidator") << "reco::Track #" << rT << " with pt=" << track->pt()
                                      << " NOT associated to any TrackingParticle" << "\n";
@@ -1132,6 +1131,9 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
       histoProducerAlgo_->fill_trackBased_histos(w,at,rT, n_selTrack_dr, n_selTP_dr);
       // Fill seed-specific histograms
+
+      std::cout << "OVERALL True doublets " << sumCounter << " on "<< sumSize << std::endl;
+
       if(doSeedPlots_) {
         histoProducerAlgo_->fill_seed_histos(www, seed_fit_failed, trackCollection.size());
       }
