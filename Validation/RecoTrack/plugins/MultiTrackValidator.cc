@@ -1016,6 +1016,9 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
               if (!((*recHit)->isValid()))
               continue;
 
+              if(!((*recHit)->hasPositionAndError()))
+              continue;
+
               if((*recHit)->sharesInput(inRecHit,TrackingRecHit::SharedInputType::all))
               {
                 std::cout << "In true" << std::endl;
