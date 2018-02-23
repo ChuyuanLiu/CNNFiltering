@@ -987,11 +987,11 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
           {
             std::cout << "Here is good 1." << debug++<<std::endl;
             if( !( ((lIt->doublets().hit(i, HitDoublets::outer))->hit()->geographicalId()).subdetId() == 1 ||
-                ((lIt->doublets().hit(i, HitDoublets::outer))->hit()->geographicalId()).subdetId() == 2 )
+                ((lIt->doublets().hit(i, HitDoublets::outer))->hit()->geographicalId()).subdetId() == 2 ))
             continue;
 
             if( !( ((lIt->doublets().hit(i, HitDoublets::inner))->hit()->geographicalId()).subdetId() == 1 ||
-                ((lIt->doublets().hit(i, HitDoublets::inner))->hit()->geographicalId()).subdetId() == 2 )
+                ((lIt->doublets().hit(i, HitDoublets::inner))->hit()->geographicalId()).subdetId() == 2 ))
             continue;
 
             DetLayer const * innerLayer = lIt->doublets().detLayer(HitDoublets::inner);
