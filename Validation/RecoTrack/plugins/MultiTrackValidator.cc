@@ -914,7 +914,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
       declareDynArray(float, trackCollection.size(), dR_trk);
       trackDR(trackCollection, *trackCollectionDr, dR_trk);
 
-      int sumSize = 0, sumCounter = 0;
+      int sumSize = 0, sumCounter = 0, nRecHits = 0;
 
       for(View<Track>::size_type i=0; i<trackCollection.size(); ++i){
         auto track = trackCollection.refAt(i);
@@ -1017,6 +1017,8 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
               if(!((*recHit)->hasPositionAndError()))
               continue;
+
+              nRecHits++;
 
               if((*recHit)->sharesInput(inRecHit,TrackingRecHit::SharedInputType::some))
               {
@@ -1133,7 +1135,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
       histoProducerAlgo_->fill_trackBased_histos(w,at,rT, n_selTrack_dr, n_selTP_dr);
       // Fill seed-specific histograms
 
-      std::cout << "OVERALL True doublets " << sumCounter << " on "<< sumSize << std::endl;
+      std::cout << "OVERALL True doublets " << sumCounter << " on "<< sumSize << " with " << nRecHits - 1 << "track doublets" << std::endl;
 
       if(doSeedPlots_) {
         histoProducerAlgo_->fill_seed_histos(www, seed_fit_failed, trackCollection.size());
