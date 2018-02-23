@@ -985,6 +985,12 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
           for (size_t i = 0; i < lIt->doublets().size(); i++)
           {
 
+            DetLayer const * innerLayer = lIt->doublets().detLayer(HitDoublets::inner);
+            if(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum())==pixelDets.end()) continue;   //TODO change to std::map ?
+
+            DetLayer const * outerLayer = lIt->doublets().detLayer(HitDoublets::outer);
+            if(find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum())==pixelDets.end()) continue;
+
             if( !( ((lIt->doublets().hit(i, HitDoublets::outer))->hit()->geographicalId()).subdetId() == 1 ||
                 ((lIt->doublets().hit(i, HitDoublets::outer))->hit()->geographicalId()).subdetId() == 2 ))
             continue;
@@ -993,18 +999,20 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
                 ((lIt->doublets().hit(i, HitDoublets::inner))->hit()->geographicalId()).subdetId() == 2 ))
             continue;
 
-            DetLayer const * innerLayer = lIt->doublets().detLayer(HitDoublets::inner);
-            if(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum())==pixelDets.end()) continue;   //TODO change to std::map ?
-
-            DetLayer const * outerLayer = lIt->doublets().detLayer(HitDoublets::outer);
-            if(find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum())==pixelDets.end()) continue;
 
             const TrackingRecHit* inRecHit = dynamic_cast<const TrackingRecHit*> (lIt->doublets().hit(i, HitDoublets::inner));
             const TrackingRecHit* outRecHit = dynamic_cast<const TrackingRecHit*> (lIt->doublets().hit(i, HitDoublets::outer));
-
+            std::cout << "Recast" << std::endl;
             bool inTrue = false, outTrue = false;
             for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
             {
+
+              if(!(*recHit))
+              {
+              continue;
+              std::cout << "RecHit" << std::endl;
+              }
+              
               if (!((*recHit)->isValid()))
               continue;
 
