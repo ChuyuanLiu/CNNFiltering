@@ -138,7 +138,8 @@ class MultiTrackValidator : public DQMEDAnalyzer {
   edm::EDGetTokenT<edm::View<reco::Vertex> > recoVertexToken_;
   edm::EDGetTokenT<reco::VertexToTrackingVertexAssociator> vertexAssociatorToken_;
   edm::EDGetTokenT<IntermediateHitDoublets> intHitDoublets_;
-
+  edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
+  
   std::vector<MonitorElement *> h_reco_coll, h_assoc_coll, h_assoc2_coll, h_simul_coll, h_looper_coll, h_pileup_coll;
 };
 

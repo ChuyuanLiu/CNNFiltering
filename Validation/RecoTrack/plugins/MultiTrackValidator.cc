@@ -67,7 +67,8 @@ MultiTrackValidator::MultiTrackValidator(const edm::ParameterSet& pset):
   doSeedPlots_(pset.getUntrackedParameter<bool>("doSeedPlots")),
   doMVAPlots_(pset.getUntrackedParameter<bool>("doMVAPlots")),
   simPVMaxZ_(pset.getUntrackedParameter<double>("simPVMaxZ")),
-  intHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("doublets")))
+  intHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("doublets"))),
+  tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap")))
 {
   const edm::InputTag& label_tp_effic_tag = pset.getParameter< edm::InputTag >("label_tp_effic");
   const edm::InputTag& label_tp_fake_tag = pset.getParameter< edm::InputTag >("label_tp_fake");
@@ -499,6 +500,9 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
   edm::ESHandle<TrackerTopology> httopo;
   setup.get<TrackerTopologyRcd>().get(httopo);
   const TrackerTopology& ttopo = *httopo;
+
+  edm::Handle<ClusterTPAssociation> tpClust;
+  iEvent.getByToken(tpMap_,tpClust);
 
   // FIXME: we really need to move to edm::View for reading the
   // TrackingParticles... Unfortunately it has non-trivial
@@ -1077,15 +1081,13 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
                   {
                     std::cout << "Wat?" << std::endl;
                     std::cout<< ((*recHit)->globalPosition().x()) << "\t" << ((*recHit)->globalPosition()).y() << "\t" << ((*recHit)->globalPosition()).z() << std::endl;
-                    std::cout<< (outRecHit->globalPosition().x()) << "\t" << (outRecHit->globalPosition()).y() << "\t" << (outRecHitoutRecHit->globalPosition()).z() << std::endl;
+                    std::cout<< (outRecHit->globalPosition().x()) << "\t" << (outRecHit->globalPosition()).y() << "\t" << (outRecHit->globalPosition()).z() << std::endl;
 
                   }
 
                 }
 
               }
-
-              if()
 
             }
 
