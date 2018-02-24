@@ -1049,6 +1049,19 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
                 inTrue = true;
                 continue;
               }
+              else
+              {
+                if(((*recHit)->globalPosition().x())==(inRecHit->globalPosition().x()))
+                if(((*recHit)->globalPosition().y())==(inRecHit->globalPosition().y()))
+                if(((*recHit)->globalPosition().z())==(inRecHit->globalPosition().z()))
+                {
+                  std::cout << "Wat?" << std::endl;
+                  std::cout<< ((*recHit)->globalPosition().x()) << "\t" << ((*recHit)->globalPosition()).y() << "\t" << ((*recHit)->globalPosition()).z() << std::endl;
+                  std::cout<< (inRecHit->globalPosition().x()) << "\t" << (inRecHit->globalPosition()).y() << "\t" << (inRecHit->globalPosition()).z() << std::endl;
+
+                }
+
+              }
 
               if((*recHit)->sharesInput(outRecHit,TrackingRecHit::SharedInputType::some))
               {
@@ -1057,7 +1070,22 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
                 // std::cout<< (outRecHit->globalPosition().x()) << "\t" << (outRecHit->globalPosition()).y() << "\t" << (outRecHit->globalPosition()).z() << std::endl;
                 outTrue = true;
                 // continue;
+                {
+                  if(((*recHit)->globalPosition().x())==(outRecHit->globalPosition().x()))
+                  if(((*recHit)->globalPosition().y())==(outRecHit->globalPosition().y()))
+                  if(((*recHit)->globalPosition().z())==(outRecHit->globalPosition().z()))
+                  {
+                    std::cout << "Wat?" << std::endl;
+                    std::cout<< ((*recHit)->globalPosition().x()) << "\t" << ((*recHit)->globalPosition()).y() << "\t" << ((*recHit)->globalPosition()).z() << std::endl;
+                    std::cout<< (outRecHit->globalPosition().x()) << "\t" << (outRecHit->globalPosition()).y() << "\t" << (outRecHitoutRecHit->globalPosition()).z() << std::endl;
+
+                  }
+
+                }
+
               }
+
+              if()
 
             }
 
