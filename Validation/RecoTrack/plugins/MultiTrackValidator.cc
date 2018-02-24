@@ -502,7 +502,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
   const TrackerTopology& ttopo = *httopo;
 
   edm::Handle<ClusterTPAssociation> tpClust;
-  iEvent.getByToken(tpMap_,tpClust);
+  event.getByToken(tpMap_,tpClust);
 
   // FIXME: we really need to move to edm::View for reading the
   // TrackingParticles... Unfortunately it has non-trivial
