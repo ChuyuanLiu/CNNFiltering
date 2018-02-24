@@ -27,6 +27,7 @@
 #include "RecoTracker/TkHitPairs/interface/HitPairGeneratorFromLayerPair.h"
 #include "RecoTracker/TkHitPairs/interface/IntermediateHitDoublets.h"
 #include "RecoTracker/TkHitPairs/interface/RecHitsSortedInPhi.h"
+#include "SimTracker/TrackerHitAssociation/interface/ClusterTPAssociation.h"
 
 #include "DataFormats/TrackingRecHit/interface/TrackingRecHit.h"
 #include "DataFormats/GeometryVector/interface/GlobalPoint.h"
@@ -139,7 +140,7 @@ class MultiTrackValidator : public DQMEDAnalyzer {
   edm::EDGetTokenT<reco::VertexToTrackingVertexAssociator> vertexAssociatorToken_;
   edm::EDGetTokenT<IntermediateHitDoublets> intHitDoublets_;
   edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
-  
+
   std::vector<MonitorElement *> h_reco_coll, h_assoc_coll, h_assoc2_coll, h_simul_coll, h_looper_coll, h_pileup_coll;
 };
 
