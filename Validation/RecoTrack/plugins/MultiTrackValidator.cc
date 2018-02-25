@@ -75,7 +75,14 @@ MultiTrackValidator::MultiTrackValidator(const edm::ParameterSet& pset):
   doSeedPlots_(pset.getUntrackedParameter<bool>("doSeedPlots")),
   doMVAPlots_(pset.getUntrackedParameter<bool>("doMVAPlots")),
   simPVMaxZ_(pset.getUntrackedParameter<double>("simPVMaxZ")),
-  intHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("doublets"))),
+  detachedQuadStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("detachedQuadStepHitDoublets"))),
+  detachedTripletStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("detachedTripletStepHitDoublets"))),
+  initialStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("initialStepHitDoublets"))),
+  lowPtQuadStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("lowPtQuadStepHitDoublets"))),
+  mixedTripletStepHitDoubletsA_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("mixedTripletStepHitDoubletsA"))),
+  mixedTripletStepHitDoubletsB_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("mixedTripletStepHitDoubletsB"))),
+  pixelLessStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("pixelLessStepHitDoublets"))),
+  tripletElectronHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("tripletElectronHitDoublets"))),
   tpMap_(consumes<ClusterTPAssociation>(pset.getParameter<edm::InputTag>("tpMap")))
 {
 
@@ -1138,7 +1145,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
               detIds.clear(); geomDets.clear(); hitIds.clear();
               subDetIds.clear(); detSeqs.clear(); hitPars.clear(); theTP.clear();
               inHitPars.clear(); outHitPars.clear();
-              
+
               hits.push_back(lIt->doublets().hit(i, HitDoublets::inner)); //TODO CHECK EMPLACEBACK
               hits.push_back(lIt->doublets().hit(i, HitDoublets::outer));
 
@@ -1362,7 +1369,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
                 TrackingParticle::Point  verTp  = particle.vertex();
 
                 theTP.push_back(1.0); // 1
-                theTP.push_back(kPar->second.key()); // 2
+                theTP.push_back((float)(i)); // 2
                 theTP.push_back(momTp.x()); // 3
                 theTP.push_back(momTp.y()); // 4
                 theTP.push_back(momTp.z()); // 5
