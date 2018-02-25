@@ -36,7 +36,15 @@
 #include <TF1.h>
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/PtEtaPhiMass.h"
-//#include <iostream>
+
+#include <iostream>
+#include <string>
+#include <fstream>
+
+#include "DataFormats/DetId/interface/DetId.h"
+#include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
+#include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
+#include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHit.h"
 
 using namespace std;
 using namespace edm;
@@ -1087,10 +1095,10 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
       int runNumber = event.id().run();
       int lumNumber = event.id().luminosityBlock();
 
-      for (int i = 0; i < allDoublets.size(); ++i)
+      for (size_t i = 0; i < allDoublets.size(); ++i)
       {
-        iHd = allDoublets[i];
-        std::string dName = allDoublets[i];
+        auto iHd = allDoublets[i];
+        std::string dName = allDoubletsNames[i];
 
         std::string fileName = std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
         fileName += "_" + dName[i] + "_dnn_doublets.txt";
@@ -1351,6 +1359,9 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
                   }
                 }
 
+                TrackingParticle::Vector momTp = particle.momentum();
+                TrackingParticle::Point  verTp  = particle.vertex();
+
                 theTP.push_back(1.0); // 1
                 theTP.push_back(kPar->second.key()); // 2
                 theTP.push_back(momTp.x()); // 3
@@ -1416,6 +1427,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
       } // doublets loop
 
     } //loop on doublets sets
+
       mvaCollections.clear();
       qualityMaskCollections.clear();
 
