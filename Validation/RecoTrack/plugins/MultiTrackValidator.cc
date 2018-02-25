@@ -1102,18 +1102,18 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
       int runNumber = event.id().run();
       int lumNumber = event.id().luminosityBlock();
 
-      for (size_t i = 0; i < allDoublets.size(); ++i)
-      {
-      // for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
-      // for (std::vector < edm::Handle<IntermediateHitDoublets> >::const_iterator iHd= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
-        auto iHd = allDoublets[i];
-        std::string dName = allDoubletsNames[i];
-
-        std::string fileName = "doublets/" + std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber) + "_" + dName + "_dnn_doublets.txt";;
-
-        std::ofstream outCNNFile(fileName, std::ofstream::app);
-
-        std::cout << "Intermediate hit doublets loop start :"<< std::endl;
+      // for (size_t i = 0; i < allDoublets.size(); ++i)
+      // {
+      // // for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
+      // // for (std::vector < edm::Handle<IntermediateHitDoublets> >::const_iterator iHd= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
+      //   auto iHd = allDoublets[i];
+      //   std::string dName = allDoubletsNames[i];
+      //
+      //   std::string fileName = "doublets/" + std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber) + "_" + dName + "_dnn_doublets.txt";;
+      //
+      //   std::ofstream outCNNFile(fileName, std::ofstream::app);
+      //
+      //   std::cout << "Intermediate hit doublets loop start :"<< std::endl;
       //   for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd.layerSetsBegin(); lIt != iHd.layerSetsEnd(); ++lIt)
       //     {
       //       int loopone = 0;
@@ -1450,7 +1450,8 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
       //
       // } // doublets loop
 
-    } //loop on doublets sets
+    // }
+    //loop on doublets sets
 
       mvaCollections.clear();
       qualityMaskCollections.clear();
