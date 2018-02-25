@@ -1114,7 +1114,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
         std::ofstream outCNNFile(fileName, std::ofstream::app);
 
         std::cout << "Intermediate hit doublets loop start :"<< std::endl;
-        for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
+        for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd.layerSetsBegin(); lIt != iHd.layerSetsEnd(); ++lIt)
           {
             int loopone = 0;
             std::cout << ++loopone << " ";
