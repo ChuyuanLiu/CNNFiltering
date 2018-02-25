@@ -507,7 +507,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
   //Since we modify the object, we must clone it
   auto parametersDefinerTP = parametersDefinerTPHandle->clone();
 
-  std::vector < IntermediateHitDoublets> allDoublets;
+  std::vector < edm::Handle<IntermediateHitDoublets> > allDoublets;
   std::vector < std::string > allDoubletsNames;
   std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31};
 
@@ -1100,8 +1100,8 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
         auto iHd = allDoublets[i];
         std::string dName = allDoubletsNames[i];
 
-        std::string fileName = std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
-        fileName += "_" + dName[i] + "_dnn_doublets.txt";
+        std::string fileName = std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber) + "_" + dName[i] + "_dnn_doublets.txt";;
+
         std::ofstream outCNNFile(fileName, std::ofstream::app);
 
         for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
@@ -1138,8 +1138,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
               detIds.clear(); geomDets.clear(); hitIds.clear();
               subDetIds.clear(); detSeqs.clear(); hitPars.clear(); theTP.clear();
               inHitPars.clear(); outHitPars.clear();
-
-              for (auto )
+              
               hits.push_back(lIt->doublets().hit(i, HitDoublets::inner)); //TODO CHECK EMPLACEBACK
               hits.push_back(lIt->doublets().hit(i, HitDoublets::outer));
 
