@@ -962,7 +962,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
             }
 
             const auto& tp = tpFound->val;
-	    nSimHits = tp[0].first->numberOfTrackerHits();
+	          nSimHits = tp[0].first->numberOfTrackerHits();
             sharedFraction = tp[0].second;
             if (tp[0].first->charge() != track->charge()) isChargeMatched = false;
             if(simRecColl.find(tp[0].first) != simRecColl.end()) numAssocRecoTracks = simRecColl[tp[0].first].size();
@@ -985,6 +985,9 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
       int partialsize = 0;
 
 
+      const TrackingParticle& tpar = *tp[0].first;
+      int pdgId = tpar.pdgId();
+      int tKey = tpar.key()
       for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
         {
 
@@ -1033,6 +1036,22 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
             const TrackingRecHit* outRecHit = dynamic_cast<const TrackingRecHit*> (lIt->doublets().hit(i, HitDoublets::outer));
             // std::cout << "Recast" << std::endl;
             bool inTrue = false, outTrue = false;
+
+            auto rangeIn = tpClust->equal_range(lIt->doublets().hit(i, HitDoublets::inner)->firstClusterRef());
+            auto rangeOut = tpClust->equal_range(lIt->doublets().hit(i, HitDoublets::outer)->firstClusterRef());
+
+            // std::cout << "Doublet no. "  << i << " hit no. " << lIt->doublets().innerHitId(i) << std::endl;
+
+            std::vector< std::pair<int,int> > kPdgIn, kPdgOut, kIntersection;
+                  // if(range.first == tpClust->end())
+                  //   std::cout << "No TP Matched "<<std::endl;
+            for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
+              kPdgIn.push_back({ip->second.key(),(*ip->second).pdgId()});
+
+            for(auto ip=rangeOut.first; ip != rangeOut.second; ++ip)
+              kPdgOut.push_back({ip->second.key(),(*ip->second).pdgId()});
+
+
             for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
             {
 
@@ -1053,19 +1072,6 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
                 inTrue = true;
                 continue;
               }
-              else
-              {
-                if(((*recHit)->globalPosition().x())==(inRecHit->globalPosition().x()))
-                if(((*recHit)->globalPosition().y())==(inRecHit->globalPosition().y()))
-                if(((*recHit)->globalPosition().z())==(inRecHit->globalPosition().z()))
-                {
-                  std::cout << "Wat?" << std::endl;
-                  std::cout<< ((*recHit)->globalPosition().x()) << "\t" << ((*recHit)->globalPosition()).y() << "\t" << ((*recHit)->globalPosition()).z() << std::endl;
-                  std::cout<< (inRecHit->globalPosition().x()) << "\t" << (inRecHit->globalPosition()).y() << "\t" << (inRecHit->globalPosition()).z() << std::endl;
-
-                }
-
-              }
 
               if((*recHit)->sharesInput(outRecHit,TrackingRecHit::SharedInputType::some))
               {
@@ -1074,25 +1080,48 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
                 // std::cout<< (outRecHit->globalPosition().x()) << "\t" << (outRecHit->globalPosition()).y() << "\t" << (outRecHit->globalPosition()).z() << std::endl;
                 outTrue = true;
                 // continue;
-                {
-                  if(((*recHit)->globalPosition().x())==(outRecHit->globalPosition().x()))
-                  if(((*recHit)->globalPosition().y())==(outRecHit->globalPosition().y()))
-                  if(((*recHit)->globalPosition().z())==(outRecHit->globalPosition().z()))
-                  {
-                    std::cout << "Wat?" << std::endl;
-                    std::cout<< ((*recHit)->globalPosition().x()) << "\t" << ((*recHit)->globalPosition()).y() << "\t" << ((*recHit)->globalPosition()).z() << std::endl;
-                    std::cout<< (outRecHit->globalPosition().x()) << "\t" << (outRecHit->globalPosition()).y() << "\t" << (outRecHit->globalPosition()).z() << std::endl;
-
-                  }
-
-                }
 
               }
 
             }
 
             if(outTrue && inTrue)
-              {++counter; ++sumCounter;}
+              {
+                ++counter; ++sumCounter;
+                std::set_intersection(kPdgIn.begin(), kPdgIn.end(),kPdgOut.begin(), kPdgOut.end(), std::back_inserter(kIntersection));
+                if(kIntersection.size()>0)
+                {
+                  auto kPar = ((std::find(kPdgIn.begin(), kPdgIn.end(), kIntersection[0]) - kPdgIn.begin()) + rangeIn.first);
+                  auto particle = *kPar->second;
+                  std::cout << "======================================================"<< std::endl;
+                  std::cout << "Intersections : " << kIntersection.size() << std::endl;
+                  std::cout << "intPar : "<< kPar->second.key() << " - " <<particle.pdgId()<<std::endl;
+                  std::cout << "trackPar : "<<pdgId<<std::endl;
+                  std::cout << "======================================================"<< std::endl;
+                  std::cout << "In : ";
+                  for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
+                    std::cout << ip->second.key() << " ; " << (*ip->second).pdgId() << " - ";
+                  std::cout << "Out : ";
+                  for(auto ip=rangeOut.first; ip != rangeOut.second; ++ip)
+                    std::cout << ip->second.key() << " ; " << (*ip->second).pdgId() << " - ";
+                }
+                else
+                {
+
+                  std::cout << "======================================================"<< std::endl;
+                  std::cout << "No Intersections : " << kIntersection.size() << std::endl;
+                  std::cout << "trackPar : "<<pdgId<<std::endl;
+                  std::cout << "======================================================"<< std::endl;
+                  std::cout << "In : ";
+                  for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
+                    std::cout << ip->second.key() << " ; " << (*ip->second).pdgId() << " - ";
+                  std::cout << "Out : ";
+                  for(auto ip=rangeOut.first; ip != rangeOut.second; ++ip)
+                    std::cout << ip->second.key() << " ; " << (*ip->second).pdgId() << " - ";
+                  
+                }
+
+              }
 
           }
 
