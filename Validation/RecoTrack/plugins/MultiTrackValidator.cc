@@ -1411,116 +1411,19 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
             outCNNFile << hitPars[0].size() << " - " <<hitPars[1].size()<< " - " <<theTP.size() << " - " << std::endl;
 
-          }// doublets loop
+          } //hits loop
 
-      } //loop on doublets sets
+      } // doublets loop
 
-        std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31};
-
-        int debug= 0;
-        int counter = 0;
-        int partialsize = 0;
-
-
-        for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
-          {
-            nloops++;
-            std::vector< RecHitsSortedInPhi::Hit> hits;
-            std::vector< const SiPixelRecHit*> siHits;
-
-            std::vector< SiPixelRecHit::ClusterRef> clusters;
-            std::vector< DetId> detIds;
-            std::vector< const GeomDet*> geomDets;
-            std::vector <unsigned int> hitIds, subDetIds, detSeqs;
-
-            std::vector< std::vector< float>> hitPars;
-            std::vector< float > inHitPars, outHitPars;
-            std::vector< float > inTP, outTP, theTP;
-
-            DetLayer const * innerLayer = lIt->doublets().detLayer(HitDoublets::inner);
-            if(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum())==pixelDets.end()) continue;   //TODO change to std::map ?
-
-            DetLayer const * outerLayer = lIt->doublets().detLayer(HitDoublets::outer);
-            if(find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum())==pixelDets.end()) continue;
-            // siHits.push_back(dynamic_cast<const SiPixelRecHit*>((hits[0])));
-            // siHits.push_back(dynamic_cast<const SiPixelRecHit*>((hits[1])));
-
-            // std::cout << "Size: " << lIt->doublets().size() << std::endl;
-
-            partialsize += lIt->doublets().size() ;
-            for (size_t i = 0; i < lIt->doublets().size(); i++)
-            {
-
-              DetLayer const * innerLayer = lIt->doublets().detLayer(HitDoublets::inner);
-              if(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum())==pixelDets.end()) continue;   //TODO change to std::map ?
-
-              DetLayer const * outerLayer = lIt->doublets().detLayer(HitDoublets::outer);
-              if(find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum())==pixelDets.end()) continue;
-
-              if( !( ((lIt->doublets().hit(i, HitDoublets::outer))->hit()->geographicalId()).subdetId() == 1 ||
-                  ((lIt->doublets().hit(i, HitDoublets::outer))->hit()->geographicalId()).subdetId() == 2 ))
-              continue;
-
-              if( !( ((lIt->doublets().hit(i, HitDoublets::inner))->hit()->geographicalId()).subdetId() == 1 ||
-                  ((lIt->doublets().hit(i, HitDoublets::inner))->hit()->geographicalId()).subdetId() == 2 ))
-              continue;
-
-
-              const TrackingRecHit* inRecHit = dynamic_cast<const TrackingRecHit*> (lIt->doublets().hit(i, HitDoublets::inner));
-              const TrackingRecHit* outRecHit = dynamic_cast<const TrackingRecHit*> (lIt->doublets().hit(i, HitDoublets::outer));
-              // std::cout << "Recast" << std::endl;
-              bool inTrue = false, outTrue = false;
-
-              auto rangeIn = tpClust->equal_range(lIt->doublets().hit(i, HitDoublets::inner)->firstClusterRef());
-              auto rangeOut = tpClust->equal_range(lIt->doublets().hit(i, HitDoublets::outer)->firstClusterRef());
-
-              // std::cout << "Doublet no. "  << i << " hit no. " << lIt->doublets().innerHitId(i) << std::endl;
-
-              std::vector< std::pair<int,int> > kPdgIn, kPdgOut, kIntersection;
-                    // if(range.first == tpClust->end())
-                    //   std::cout << "No TP Matched "<<std::endl;
-              for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
-                kPdgIn.push_back({ip->second.key(),(*ip->second).pdgId()});
-
-              for(auto ip=rangeOut.first; ip != rangeOut.second; ++ip)
-                kPdgOut.push_back({ip->second.key(),(*ip->second).pdgId()});
-
-              std::set_intersection(kPdgIn.begin(), kPdgIn.end(),kPdgOut.begin(), kPdgOut.end(), std::back_inserter(kIntersection));
-
-
-              if(outTrue && inTrue)
-                {
-                  ++sumCounter;
-                  if(kIntersection.size()>0)
-                  {
-                    trackAndTp++;
-                  }
-                  else
-                  {
-                    trackOnly++;
-                  }
-                }
-                else
-                  if(kIntersection.size()>0)
-                  {
-                    tpOnly++;
-                  }
-
-                }
-
-            }
-          // std::cout << "True doublets " << counter << " on "<< partialsize << std::endl;
-          sumSize = partialsize;
-
-
+    } //loop on doublets sets
       mvaCollections.clear();
       qualityMaskCollections.clear();
 
       histoProducerAlgo_->fill_trackBased_histos(w,at,rT, n_selTrack_dr, n_selTP_dr);
       // Fill seed-specific histograms
 
-      std::cout << "OVERALL True doublets " << sumCounter << " on "<< sumSize << " with " << nRecHits - 1 << "track doublets" << std::endl;
-      std::cout << "Both : " << trackAndTp << " TrackOnly : "<< trackOnly << " TpOnly"<< nloops > 0 ? tpOnly/nloops : 0  << std::endl;
+      // std::cout << "OVERALL True doublets " << sumCounter << " on "<< sumSize << " with " << nRecHits - 1 << "track doublets" << std::endl;
+      // std::cout << "Both : " << trackAndTp << " TrackOnly : "<< trackOnly << " TpOnly"<< nloops > 0 ? tpOnly/nloops : 0  << std::endl;
 
       if(doSeedPlots_) {
         histoProducerAlgo_->fill_seed_histos(www, seed_fit_failed, trackCollection.size());
