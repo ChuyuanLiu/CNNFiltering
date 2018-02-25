@@ -1305,12 +1305,8 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
                 if(trackFromSeedFitFailed(*track)) ++seed_fit_failed;
                 if((*dRTrackSelector)(*track)) ++n_selTrack_dr;
 
-        	      bool isSigSimMatched(false);
+
         	      bool isSimMatched(false);
-                bool isChargeMatched(true);
-                int numAssocRecoTracks = 0;
-        	      int nSimHits = 0;
-        	      double sharedFraction = 0.;
 
                 auto tpFound = recSimColl.find(track);
                 isSimMatched = tpFound != recSimColl.end();
@@ -1350,7 +1346,11 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
                 else
                   trueDoublet = true;
 
-                nSimHits = tp[0].first->numberOfTrackerHits();
+                bool isSigSimMatched(false);
+                bool isChargeMatched(true);
+                int numAssocRecoTracks = 0;
+          	    double sharedFraction = 0.;
+
                 sharedFraction = tp[0].second;
                 if (tp[0].first->charge() != track->charge()) isChargeMatched = false;
                 if(simRecColl.find(tp[0].first) != simRecColl.end()) numAssocRecoTracks = simRecColl[tp[0].first].size();
