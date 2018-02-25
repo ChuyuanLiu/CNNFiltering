@@ -89,7 +89,7 @@ multiTrackValidator = cms.EDAnalyzer(
     ##All the doublets
     detachedQuadStepHitDoublets         = cms.InputTag( "detachedQuadStepHitDoublets" ),
     detachedTripletStepHitDoublets      = cms.InputTag( "detachedTripletStepHitDoublets" ),
-    initialStepHitDoubletsPreSplitting  = cms.InputTag( "initialStepHitDoubletsPreSplitting" ),
+    initialStepHitDoublets              = cms.InputTag( "initialStepHitDoubletsPreSplitting" ),
     lowPtQuadStepHitDoublets            = cms.InputTag( "lowPtQuadStepHitDoublets" ),
     mixedTripletStepHitDoubletsA        = cms.InputTag( "mixedTripletStepHitDoubletsA" ),
     mixedTripletStepHitDoubletsB        = cms.InputTag( "mixedTripletStepHitDoubletsB" ),
