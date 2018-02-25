@@ -514,48 +514,48 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
   //Since we modify the object, we must clone it
   auto parametersDefinerTP = parametersDefinerTPHandle->clone();
 
-  std::vector < edm::Handle<IntermediateHitDoublets> > allDoublets;
+  std::vector < IntermediateHitDoublets > allDoublets;
   std::vector < std::string > allDoubletsNames;
   std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31};
 
   edm::Handle<IntermediateHitDoublets> detachedQuadStepHitDoublets;
   event.getByToken(detachedQuadStepHitDoublets_,detachedQuadStepHitDoublets);
-  allDoublets.push_back(detachedQuadStepHitDoublets);
+  allDoublets.push_back(*detachedQuadStepHitDoublets);
   allDoubletsNames.push_back("detachedQuadStepHitDoublets");
 
   edm::Handle<IntermediateHitDoublets> detachedTripletStepHitDoublets;
   event.getByToken(detachedTripletStepHitDoublets_,detachedTripletStepHitDoublets);
-  allDoublets.push_back(detachedTripletStepHitDoublets);
+  allDoublets.push_back(*detachedTripletStepHitDoublets);
   allDoubletsNames.push_back("detachedTripletStepHitDoublets");
 
   edm::Handle<IntermediateHitDoublets> initialStepHitDoublets;
   event.getByToken(initialStepHitDoublets_,initialStepHitDoublets);
-  allDoublets.push_back(initialStepHitDoublets);
+  allDoublets.push_back(*initialStepHitDoublets);
   allDoubletsNames.push_back("initialStepHitDoublets");
 
   edm::Handle<IntermediateHitDoublets> lowPtQuadStepHitDoublets;
   event.getByToken(lowPtQuadStepHitDoublets_,lowPtQuadStepHitDoublets);
-  allDoublets.push_back(lowPtQuadStepHitDoublets);
+  allDoublets.push_back(*lowPtQuadStepHitDoublets);
   allDoubletsNames.push_back("lowPtQuadStepHitDoublets");
 
   edm::Handle<IntermediateHitDoublets> mixedTripletStepHitDoubletsA;
   event.getByToken(mixedTripletStepHitDoubletsA_,mixedTripletStepHitDoubletsA);
-  allDoublets.push_back(mixedTripletStepHitDoubletsA);
+  allDoublets.push_back(*mixedTripletStepHitDoubletsA);
   allDoubletsNames.push_back("mixedTripletStepHitDoubletsA");
 
   edm::Handle<IntermediateHitDoublets> mixedTripletStepHitDoubletsB;
   event.getByToken(mixedTripletStepHitDoubletsB_,mixedTripletStepHitDoubletsB);
-  allDoublets.push_back(mixedTripletStepHitDoubletsB);
+  allDoublets.push_back(*mixedTripletStepHitDoubletsB);
   allDoubletsNames.push_back("mixedTripletStepHitDoubletsB");
 
   edm::Handle<IntermediateHitDoublets> pixelLessStepHitDoublets;
   event.getByToken(pixelLessStepHitDoublets_,pixelLessStepHitDoublets);
-  allDoublets.push_back(pixelLessStepHitDoublets);
+  allDoublets.push_back(*pixelLessStepHitDoublets);
   allDoubletsNames.push_back("pixelLessStepHitDoublets");
 
   edm::Handle<IntermediateHitDoublets> tripletElectronHitDoublets;
   event.getByToken(tripletElectronHitDoublets_,tripletElectronHitDoublets);
-  allDoublets.push_back(tripletElectronHitDoublets);
+  allDoublets.push_back(*tripletElectronHitDoublets);
   allDoubletsNames.push_back("tripletElectronHitDoublets");
 
 
@@ -1102,10 +1102,11 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
       int runNumber = event.id().run();
       int lumNumber = event.id().luminosityBlock();
 
-      // for (size_t i = 0; i < allDoublets.size(); ++i)
-      // {
-      for (std::vector < edm::Handle<IntermediateHitDoublets> >::const_iterator iHd= allDoublets.begin(); iHd != allDoublets.end(); ++iHd)
-        // auto iHd = allDoublets[i];
+      for (size_t i = 0; i < allDoublets.size(); ++i)
+      {
+      // for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
+      // for (std::vector < edm::Handle<IntermediateHitDoublets> >::const_iterator iHd= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
+        auto iHd = allDoublets[i];
         std::string dName = allDoubletsNames[i];
 
         std::string fileName = "doublets/" + std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber) + "_" + dName + "_dnn_doublets.txt";;
