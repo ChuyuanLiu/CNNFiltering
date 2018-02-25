@@ -919,7 +919,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
       trackDR(trackCollection, *trackCollectionDr, dR_trk);
 
       int sumSize = 0, sumCounter = 0, nRecHits = 0;
-      int trackAndTp = 0, trackOnly = 0, tpOnly = 0;
+      int trackAndTp = 0, trackOnly = 0, tpOnly = 0, nloops = 0;
 
       for(View<Track>::size_type i=0; i<trackCollection.size(); ++i){
         auto track = trackCollection.refAt(i);
@@ -991,7 +991,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
       for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
         {
-
+          nloops++;
           std::vector< RecHitsSortedInPhi::Hit> hits;
           std::vector< const SiPixelRecHit*> siHits;
 
@@ -1109,8 +1109,6 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
               }
 
           }
-
-        }
         // std::cout << "True doublets " << counter << " on "<< partialsize << std::endl;
         sumSize = partialsize;
 	} else {
@@ -1201,8 +1199,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
       // Fill seed-specific histograms
 
       std::cout << "OVERALL True doublets " << sumCounter << " on "<< sumSize << " with " << nRecHits - 1 << "track doublets" << std::endl;
-      std::cout << "Both : " << trackAndTp << "TrackOnly : "<< trackOnly << "TpOnly"<< tpOnly << std::endl;
-
+      std::cout << "Both : " << trackAndTp << " TrackOnly : "<< trackOnly << " TpOnly"<< tpOnly/nloops << std::endl;
 
       if(doSeedPlots_) {
         histoProducerAlgo_->fill_seed_histos(www, seed_fit_failed, trackCollection.size());
