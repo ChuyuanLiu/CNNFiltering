@@ -919,6 +919,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
       trackDR(trackCollection, *trackCollectionDr, dR_trk);
 
       int sumSize = 0, sumCounter = 0, nRecHits = 0;
+      int trackAndTp = 0, trackOnly = 0, tpOnly = 0;
 
       for(View<Track>::size_type i=0; i<trackCollection.size(); ++i){
         auto track = trackCollection.refAt(i);
@@ -987,7 +988,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
       const TrackingParticle& tpar = *tp[0].first;
       int pdgId = tpar.pdgId();
-      int tKey = tpar.key()
+
       for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
         {
 
@@ -1051,6 +1052,8 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
             for(auto ip=rangeOut.first; ip != rangeOut.second; ++ip)
               kPdgOut.push_back({ip->second.key(),(*ip->second).pdgId()});
 
+            std::set_intersection(kPdgIn.begin(), kPdgIn.end(),kPdgOut.begin(), kPdgOut.end(), std::back_inserter(kIntersection));
+
 
             for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
             {
@@ -1087,38 +1090,20 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
             if(outTrue && inTrue)
               {
-                ++counter; ++sumCounter;
-                std::set_intersection(kPdgIn.begin(), kPdgIn.end(),kPdgOut.begin(), kPdgOut.end(), std::back_inserter(kIntersection));
+                ++sumCounter;
                 if(kIntersection.size()>0)
                 {
-                  auto kPar = ((std::find(kPdgIn.begin(), kPdgIn.end(), kIntersection[0]) - kPdgIn.begin()) + rangeIn.first);
-                  auto particle = *kPar->second;
-                  std::cout << "======================================================"<< std::endl;
-                  std::cout << "Intersections : " << kIntersection.size() << std::endl;
-                  std::cout << "intPar : "<< kPar->second.key() << " - " <<particle.pdgId()<<std::endl;
-                  std::cout << "trackPar : "<<pdgId<<std::endl;
-                  std::cout << "======================================================"<< std::endl;
-                  std::cout << "In : ";
-                  for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
-                    std::cout << ip->second.key() << " ; " << (*ip->second).pdgId() << " - ";
-                  std::cout << "Out : ";
-                  for(auto ip=rangeOut.first; ip != rangeOut.second; ++ip)
-                    std::cout << ip->second.key() << " ; " << (*ip->second).pdgId() << " - ";
+                  trackAndTp++;
                 }
                 else
                 {
-
-                  std::cout << "======================================================"<< std::endl;
-                  std::cout << "No Intersections : " << kIntersection.size() << std::endl;
-                  std::cout << "trackPar : "<<pdgId<<std::endl;
-                  std::cout << "======================================================"<< std::endl;
-                  std::cout << "In : ";
-                  for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
-                    std::cout << ip->second.key() << " ; " << (*ip->second).pdgId() << " - ";
-                  std::cout << "Out : ";
-                  for(auto ip=rangeOut.first; ip != rangeOut.second; ++ip)
-                    std::cout << ip->second.key() << " ; " << (*ip->second).pdgId() << " - ";
-                  
+                  trackOnly++;
+                }
+              }
+              else
+                if(kIntersection.size()>0)
+                {
+                  tpOnly++;
                 }
 
               }
@@ -1216,6 +1201,8 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
       // Fill seed-specific histograms
 
       std::cout << "OVERALL True doublets " << sumCounter << " on "<< sumSize << " with " << nRecHits - 1 << "track doublets" << std::endl;
+      std::cout << "Both : " << trackAndTp << "TrackOnly : "<< trackOnly << "TpOnly"<< tpOnly << std::endl;
+
 
       if(doSeedPlots_) {
         histoProducerAlgo_->fill_seed_histos(www, seed_fit_failed, trackCollection.size());
