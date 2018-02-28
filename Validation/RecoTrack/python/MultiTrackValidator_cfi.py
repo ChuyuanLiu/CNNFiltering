@@ -11,17 +11,17 @@ multiTrackValidator = cms.EDAnalyzer(
     ### general settings ###
     # selection of TP for evaluation of efficiency #
     TrackingParticleSelectionForEfficiency,
-    
+
     # HistoProducerAlgo. Defines the set of plots to be booked and filled
     histoProducerAlgoBlock = MTVHistoProducerAlgoForTrackerBlock,
 
     # set true if you do not want that MTV launch an exception
     # if the track collectio is missing (e.g. HLT):
     ignoremissingtrackcollection=cms.untracked.bool(False),
-    
+
     useGsf=cms.bool(False),
 
-    
+
     ### matching configuration ###
     # Example of TP-Track map
     associators = cms.untracked.VInputTag("trackingParticleRecoTrackAsssociation"),
@@ -70,7 +70,7 @@ multiTrackValidator = cms.EDAnalyzer(
     ### dE/dx configuration ###
     dEdx1Tag = cms.InputTag("dedxHarmonic2"),
     dEdx2Tag = cms.InputTag("dedxTruncated40"),
-    
+
     ### output configuration
     dirName = cms.string('Tracking/Track/'),
 
@@ -85,6 +85,19 @@ multiTrackValidator = cms.EDAnalyzer(
     vertexAssociator = cms.untracked.InputTag("VertexAssociatorByPositionAndTracks"),
 
     simPVMaxZ = cms.untracked.double(-1),
+
+    ##All the doublets
+    detachedQuadStepHitDoublets         = cms.InputTag( "detachedQuadStepHitDoublets" ), #TODO CHECK cms.VImputtag
+    detachedTripletStepHitDoublets      = cms.InputTag( "detachedTripletStepHitDoublets" ),
+    initialStepHitDoublets              = cms.InputTag( "initialStepHitDoubletsPreSplitting" ),
+    lowPtQuadStepHitDoublets            = cms.InputTag( "lowPtQuadStepHitDoublets" ),
+    mixedTripletStepHitDoubletsA        = cms.InputTag( "mixedTripletStepHitDoubletsA" ),
+    mixedTripletStepHitDoubletsB        = cms.InputTag( "mixedTripletStepHitDoubletsB" ),
+    pixelLessStepHitDoublets            = cms.InputTag( "pixelLessStepHitDoublets" ),
+    tripletElectronHitDoublets          = cms.InputTag( "tripletElectronHitDoublets" ),
+
+    ##Hit cluster to Tp association map
+    tpMap    = cms.InputTag( "tpClusterProducer" ),
 
     ### Allow switching off particular histograms
     doSummaryPlots = cms.untracked.bool(True),
