@@ -29,7 +29,7 @@
 #include "DataFormats/Common/interface/Ref.h"
 #include "CommonTools/Utils/interface/associationMapFilterValues.h"
 #include "FWCore/Utilities/interface/IndexSet.h"
-#include<type_traits>
+#include <type_traits>
 
 
 #include "TMath.h"
@@ -37,6 +37,17 @@
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/PtEtaPhiMass.h"
 //#include <iostream>
+
+//CNN Doublets filtering headers
+
+#include <iostream>
+#include <string>
+#include <fstream>
+
+#include "DataFormats/DetId/interface/DetId.h"
+#include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
+#include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
+#include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHit.h"
 
 using namespace std;
 using namespace edm;
@@ -66,8 +77,22 @@ MultiTrackValidator::MultiTrackValidator(const edm::ParameterSet& pset):
   doPVAssociationPlots_(pset.getUntrackedParameter<bool>("doPVAssociationPlots")),
   doSeedPlots_(pset.getUntrackedParameter<bool>("doSeedPlots")),
   doMVAPlots_(pset.getUntrackedParameter<bool>("doMVAPlots")),
-  simPVMaxZ_(pset.getUntrackedParameter<double>("simPVMaxZ"))
+  simPVMaxZ_(pset.getUntrackedParameter<double>("simPVMaxZ")),
+  detachedQuadStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("detachedQuadStepHitDoublets"))),
+  detachedTripletStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("detachedTripletStepHitDoublets"))),
+  initialStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("initialStepHitDoublets"))),
+  lowPtQuadStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("lowPtQuadStepHitDoublets"))),
+  mixedTripletStepHitDoubletsA_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("mixedTripletStepHitDoubletsA"))),
+  mixedTripletStepHitDoubletsB_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("mixedTripletStepHitDoubletsB"))),
+  pixelLessStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("pixelLessStepHitDoublets"))),
+  tripletElectronHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("tripletElectronHitDoublets"))),
+  tpMap_(consumes<ClusterTPAssociation>(pset.getParameter<edm::InputTag>("tpMap")))
 {
+
+  padHalfSize = 8;
+  padSize = (int)(padHalfSize*2);
+  tParams = 22;
+
   const edm::InputTag& label_tp_effic_tag = pset.getParameter< edm::InputTag >("label_tp_effic");
   const edm::InputTag& label_tp_fake_tag = pset.getParameter< edm::InputTag >("label_tp_fake");
 
@@ -198,7 +223,7 @@ MultiTrackValidator::MultiTrackValidator(const edm::ParameterSet& pset):
     for (auto const& src: associators) {
       associatorTokens.push_back(consumes<reco::TrackToTrackingParticleAssociator>(src));
     }
-  } else {   
+  } else {
     for (auto const& src: associators) {
       associatormapStRs.push_back(consumes<reco::SimToRecoCollection>(src));
       associatormapRtSs.push_back(consumes<reco::RecoToSimCollection>(src));
@@ -492,6 +517,55 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
   //Since we modify the object, we must clone it
   auto parametersDefinerTP = parametersDefinerTPHandle->clone();
 
+  //all the doublets
+  std::vector < IntermediateHitDoublets > allDoublets;
+  std::vector < std::string > allDoubletsNames;
+  std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31};
+
+  edm::Handle<IntermediateHitDoublets> detachedQuadStepHitDoublets;
+  event.getByToken(detachedQuadStepHitDoublets_,detachedQuadStepHitDoublets);
+  allDoublets.push_back(*detachedQuadStepHitDoublets);
+  allDoubletsNames.push_back("detachedQuadStepHitDoublets");
+
+  edm::Handle<IntermediateHitDoublets> detachedTripletStepHitDoublets;
+  event.getByToken(detachedTripletStepHitDoublets_,detachedTripletStepHitDoublets);
+  allDoublets.push_back(*detachedTripletStepHitDoublets);
+  allDoubletsNames.push_back("detachedTripletStepHitDoublets");
+
+  edm::Handle<IntermediateHitDoublets> initialStepHitDoublets;
+  event.getByToken(initialStepHitDoublets_,initialStepHitDoublets);
+  allDoublets.push_back(*initialStepHitDoublets);
+  allDoubletsNames.push_back("initialStepHitDoublets");
+
+  edm::Handle<IntermediateHitDoublets> lowPtQuadStepHitDoublets;
+  event.getByToken(lowPtQuadStepHitDoublets_,lowPtQuadStepHitDoublets);
+  allDoublets.push_back(*lowPtQuadStepHitDoublets);
+  allDoubletsNames.push_back("lowPtQuadStepHitDoublets");
+
+  edm::Handle<IntermediateHitDoublets> mixedTripletStepHitDoubletsA;
+  event.getByToken(mixedTripletStepHitDoubletsA_,mixedTripletStepHitDoubletsA);
+  allDoublets.push_back(*mixedTripletStepHitDoubletsA);
+  allDoubletsNames.push_back("mixedTripletStepHitDoubletsA");
+
+  edm::Handle<IntermediateHitDoublets> mixedTripletStepHitDoubletsB;
+  event.getByToken(mixedTripletStepHitDoubletsB_,mixedTripletStepHitDoubletsB);
+  allDoublets.push_back(*mixedTripletStepHitDoubletsB);
+  allDoubletsNames.push_back("mixedTripletStepHitDoubletsB");
+
+  edm::Handle<IntermediateHitDoublets> pixelLessStepHitDoublets;
+  event.getByToken(pixelLessStepHitDoublets_,pixelLessStepHitDoublets);
+  allDoublets.push_back(*pixelLessStepHitDoublets);
+  allDoubletsNames.push_back("pixelLessStepHitDoublets");
+
+  edm::Handle<IntermediateHitDoublets> tripletElectronHitDoublets;
+  event.getByToken(tripletElectronHitDoublets_,tripletElectronHitDoublets);
+  allDoublets.push_back(*tripletElectronHitDoublets);
+  allDoubletsNames.push_back("tripletElectronHitDoublets");
+
+  //Cluster to tP association map
+  edm::Handle<ClusterTPAssociation> tpClust;
+  event.getByToken(tpMap_,tpClust);
+
   edm::ESHandle<TrackerTopology> httopo;
   setup.get<TrackerTopologyRcd>().get(httopo);
   const TrackerTopology& ttopo = *httopo;
@@ -718,7 +792,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
       reco::RecoToSimCollection const & recSimColl = *recSimCollP;
       reco::SimToRecoCollection const & simRecColl = *simRecCollP;
- 
+
       // read MVA collections
       if(doMVAPlots_ && !mvaQualityCollectionTokens_[www].empty()) {
         edm::Handle<MVACollection> hmva;
@@ -915,7 +989,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 	rT++;
         if(trackFromSeedFitFailed(*track)) ++seed_fit_failed;
         if((*dRTrackSelector)(*track)) ++n_selTrack_dr;
- 
+
 	bool isSigSimMatched(false);
 	bool isSimMatched(false);
         bool isChargeMatched(true);

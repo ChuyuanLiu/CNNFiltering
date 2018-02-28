@@ -24,6 +24,9 @@
 #include "CommonTools/Utils/interface/DynArray.h"
 #include "DataFormats/Common/interface/ValueMap.h"
 
+#include "SimTracker/TrackerHitAssociation/interface/ClusterTPAssociation.h"
+#include "RecoTracker/TkHitPairs/interface/IntermediateHitDoublets.h"
+
 class PileupSummaryInfo;
 namespace reco {
 class DeDxData;
@@ -33,7 +36,7 @@ class MultiTrackValidator : public DQMEDAnalyzer {
  public:
   /// Constructor
   MultiTrackValidator(const edm::ParameterSet& pset);
-  
+
   /// Destructor
   ~MultiTrackValidator() override;
 
@@ -118,11 +121,23 @@ class MultiTrackValidator : public DQMEDAnalyzer {
 
   bool useGsf;
   const double simPVMaxZ_;
-  // select tracking particles 
+
+  edm::EDGetTokenT<IntermediateHitDoublets> detachedQuadStepHitDoublets_;
+  edm::EDGetTokenT<IntermediateHitDoublets> detachedTripletStepHitDouble;ts_;
+  edm::EDGetTokenT<IntermediateHitDoublets> initialStepHitDoublets_;
+  edm::EDGetTokenT<IntermediateHitDoublets> lowPtQuadStepHitDoublets_;
+  edm::EDGetTokenT<IntermediateHitDoublets> mixedTripletStepHitDoubletsA_;
+  edm::EDGetTokenT<IntermediateHitDoublets> mixedTripletStepHitDoubletsB_;
+  edm::EDGetTokenT<IntermediateHitDoublets> pixelLessStepHitDoublets_;
+  edm::EDGetTokenT<IntermediateHitDoublets> tripletElectronHitDoublets_;
+
+  edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
+
+  // select tracking particles
   //(i.e. "denominator" of the efficiency ratio)
-  TrackingParticleSelector tpSelector;				      
+  TrackingParticleSelector tpSelector;
   CosmicTrackingParticleSelector cosmictpSelector;
-  TrackingParticleSelector dRtpSelector;				      
+  TrackingParticleSelector dRtpSelector;
   std::unique_ptr<RecoTrackSelectorBase> dRTrackSelector;
 
   edm::EDGetTokenT<SimHitTPAssociationProducer::SimHitTPAssociationList> _simHitTpMapTag;
@@ -131,6 +146,10 @@ class MultiTrackValidator : public DQMEDAnalyzer {
   edm::EDGetTokenT<reco::VertexToTrackingVertexAssociator> vertexAssociatorToken_;
 
   std::vector<MonitorElement *> h_reco_coll, h_assoc_coll, h_assoc2_coll, h_simul_coll, h_looper_coll, h_pileup_coll;
+
+  float padHalfSize;
+  int padSize, tParams;
+
 };
 
 
