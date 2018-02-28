@@ -79,13 +79,13 @@ MultiTrackValidator::MultiTrackValidator(const edm::ParameterSet& pset):
   doMVAPlots_(pset.getUntrackedParameter<bool>("doMVAPlots")),
   simPVMaxZ_(pset.getUntrackedParameter<double>("simPVMaxZ")),
   detachedQuadStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("detachedQuadStepHitDoublets"))),
-  detachedTripletStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("detachedTripletStepHitDoublets"))),
-  initialStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("initialStepHitDoublets"))),
-  lowPtQuadStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("lowPtQuadStepHitDoublets"))),
-  mixedTripletStepHitDoubletsA_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("mixedTripletStepHitDoubletsA"))),
-  mixedTripletStepHitDoubletsB_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("mixedTripletStepHitDoubletsB"))),
-  pixelLessStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("pixelLessStepHitDoublets"))),
-  tripletElectronHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("tripletElectronHitDoublets"))),
+  // detachedTripletStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("detachedTripletStepHitDoublets"))),
+  // initialStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("initialStepHitDoublets"))),
+  // lowPtQuadStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("lowPtQuadStepHitDoublets"))),
+  // mixedTripletStepHitDoubletsA_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("mixedTripletStepHitDoubletsA"))),
+  // mixedTripletStepHitDoubletsB_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("mixedTripletStepHitDoubletsB"))),
+  // pixelLessStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("pixelLessStepHitDoublets"))),
+  // tripletElectronHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("tripletElectronHitDoublets"))),
   tpMap_(consumes<ClusterTPAssociation>(pset.getParameter<edm::InputTag>("tpMap")))
 {
 
@@ -527,40 +527,40 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
   allDoublets.push_back(*detachedQuadStepHitDoublets);
   allDoubletsNames.push_back("detachedQuadStepHitDoublets");
 
-  edm::Handle<IntermediateHitDoublets> detachedTripletStepHitDoublets;
-  event.getByToken(detachedTripletStepHitDoublets_,detachedTripletStepHitDoublets);
-  allDoublets.push_back(*detachedTripletStepHitDoublets);
-  allDoubletsNames.push_back("detachedTripletStepHitDoublets");
-
-  edm::Handle<IntermediateHitDoublets> initialStepHitDoublets;
-  event.getByToken(initialStepHitDoublets_,initialStepHitDoublets);
-  allDoublets.push_back(*initialStepHitDoublets);
-  allDoubletsNames.push_back("initialStepHitDoublets");
-
-  edm::Handle<IntermediateHitDoublets> lowPtQuadStepHitDoublets;
-  event.getByToken(lowPtQuadStepHitDoublets_,lowPtQuadStepHitDoublets);
-  allDoublets.push_back(*lowPtQuadStepHitDoublets);
-  allDoubletsNames.push_back("lowPtQuadStepHitDoublets");
-
-  edm::Handle<IntermediateHitDoublets> mixedTripletStepHitDoubletsA;
-  event.getByToken(mixedTripletStepHitDoubletsA_,mixedTripletStepHitDoubletsA);
-  allDoublets.push_back(*mixedTripletStepHitDoubletsA);
-  allDoubletsNames.push_back("mixedTripletStepHitDoubletsA");
-
-  edm::Handle<IntermediateHitDoublets> mixedTripletStepHitDoubletsB;
-  event.getByToken(mixedTripletStepHitDoubletsB_,mixedTripletStepHitDoubletsB);
-  allDoublets.push_back(*mixedTripletStepHitDoubletsB);
-  allDoubletsNames.push_back("mixedTripletStepHitDoubletsB");
-
-  edm::Handle<IntermediateHitDoublets> pixelLessStepHitDoublets;
-  event.getByToken(pixelLessStepHitDoublets_,pixelLessStepHitDoublets);
-  allDoublets.push_back(*pixelLessStepHitDoublets);
-  allDoubletsNames.push_back("pixelLessStepHitDoublets");
-
-  edm::Handle<IntermediateHitDoublets> tripletElectronHitDoublets;
-  event.getByToken(tripletElectronHitDoublets_,tripletElectronHitDoublets);
-  allDoublets.push_back(*tripletElectronHitDoublets);
-  allDoubletsNames.push_back("tripletElectronHitDoublets");
+  // edm::Handle<IntermediateHitDoublets> detachedTripletStepHitDoublets;
+  // event.getByToken(detachedTripletStepHitDoublets_,detachedTripletStepHitDoublets);
+  // allDoublets.push_back(*detachedTripletStepHitDoublets);
+  // allDoubletsNames.push_back("detachedTripletStepHitDoublets");
+  //
+  // edm::Handle<IntermediateHitDoublets> initialStepHitDoublets;
+  // event.getByToken(initialStepHitDoublets_,initialStepHitDoublets);
+  // allDoublets.push_back(*initialStepHitDoublets);
+  // allDoubletsNames.push_back("initialStepHitDoublets");
+  //
+  // edm::Handle<IntermediateHitDoublets> lowPtQuadStepHitDoublets;
+  // event.getByToken(lowPtQuadStepHitDoublets_,lowPtQuadStepHitDoublets);
+  // allDoublets.push_back(*lowPtQuadStepHitDoublets);
+  // allDoubletsNames.push_back("lowPtQuadStepHitDoublets");
+  //
+  // edm::Handle<IntermediateHitDoublets> mixedTripletStepHitDoubletsA;
+  // event.getByToken(mixedTripletStepHitDoubletsA_,mixedTripletStepHitDoubletsA);
+  // allDoublets.push_back(*mixedTripletStepHitDoubletsA);
+  // allDoubletsNames.push_back("mixedTripletStepHitDoubletsA");
+  //
+  // edm::Handle<IntermediateHitDoublets> mixedTripletStepHitDoubletsB;
+  // event.getByToken(mixedTripletStepHitDoubletsB_,mixedTripletStepHitDoubletsB);
+  // allDoublets.push_back(*mixedTripletStepHitDoubletsB);
+  // allDoubletsNames.push_back("mixedTripletStepHitDoubletsB");
+  //
+  // edm::Handle<IntermediateHitDoublets> pixelLessStepHitDoublets;
+  // event.getByToken(pixelLessStepHitDoublets_,pixelLessStepHitDoublets);
+  // allDoublets.push_back(*pixelLessStepHitDoublets);
+  // allDoubletsNames.push_back("pixelLessStepHitDoublets");
+  //
+  // edm::Handle<IntermediateHitDoublets> tripletElectronHitDoublets;
+  // event.getByToken(tripletElectronHitDoublets_,tripletElectronHitDoublets);
+  // allDoublets.push_back(*tripletElectronHitDoublets);
+  // allDoubletsNames.push_back("tripletElectronHitDoublets");
 
   //Cluster to tP association map
   edm::Handle<ClusterTPAssociation> tpClust;

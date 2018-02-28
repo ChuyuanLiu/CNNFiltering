@@ -123,13 +123,13 @@ class MultiTrackValidator : public DQMEDAnalyzer {
   const double simPVMaxZ_;
 
   edm::EDGetTokenT<IntermediateHitDoublets> detachedQuadStepHitDoublets_;
-  edm::EDGetTokenT<IntermediateHitDoublets> detachedTripletStepHitDouble;ts_;
-  edm::EDGetTokenT<IntermediateHitDoublets> initialStepHitDoublets_;
-  edm::EDGetTokenT<IntermediateHitDoublets> lowPtQuadStepHitDoublets_;
-  edm::EDGetTokenT<IntermediateHitDoublets> mixedTripletStepHitDoubletsA_;
-  edm::EDGetTokenT<IntermediateHitDoublets> mixedTripletStepHitDoubletsB_;
-  edm::EDGetTokenT<IntermediateHitDoublets> pixelLessStepHitDoublets_;
-  edm::EDGetTokenT<IntermediateHitDoublets> tripletElectronHitDoublets_;
+  // edm::EDGetTokenT<IntermediateHitDoublets> detachedTripletStepHitDouble;ts_;
+  // edm::EDGetTokenT<IntermediateHitDoublets> initialStepHitDoublets_;
+  // edm::EDGetTokenT<IntermediateHitDoublets> lowPtQuadStepHitDoublets_;
+  // edm::EDGetTokenT<IntermediateHitDoublets> mixedTripletStepHitDoubletsA_;
+  // edm::EDGetTokenT<IntermediateHitDoublets> mixedTripletStepHitDoubletsB_;
+  // edm::EDGetTokenT<IntermediateHitDoublets> pixelLessStepHitDoublets_;
+  // edm::EDGetTokenT<IntermediateHitDoublets> tripletElectronHitDoublets_;
 
   edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
 
