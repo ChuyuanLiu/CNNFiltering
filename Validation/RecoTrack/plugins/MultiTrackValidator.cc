@@ -81,7 +81,6 @@ MultiTrackValidator::MultiTrackValidator(const edm::ParameterSet& pset):
   doSeedPlots_(pset.getUntrackedParameter<bool>("doSeedPlots")),
   doMVAPlots_(pset.getUntrackedParameter<bool>("doMVAPlots")),
   simPVMaxZ_(pset.getUntrackedParameter<double>("simPVMaxZ")),
-  detachedQuadStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("detachedQuadStepHitDoublets"))),
   tpMap_(consumes<ClusterTPAssociation>(pset.getParameter<edm::InputTag>("tpMap")))
 {
 
@@ -107,6 +106,10 @@ MultiTrackValidator::MultiTrackValidator(const edm::ParameterSet& pset):
   label_pileupinfo = consumes<std::vector<PileupSummaryInfo> >(pset.getParameter< edm::InputTag >("label_pileupinfo"));
   for(const auto& tag: pset.getParameter<std::vector<edm::InputTag>>("sim")) {
     simHitTokens_.push_back(consumes<std::vector<PSimHit>>(tag));
+  }
+
+  for(const auto& tag: pset.getParameter<std::vector<edm::InputTag>>("theDoublets")) {
+    theDoublets_.push_back(consumes<std::vector<IntermediateHitDoublets>>(tag));
   }
 
   std::vector<edm::InputTag> doResolutionPlotsForLabels = pset.getParameter<std::vector<edm::InputTag> >("doResolutionPlotsForLabels");
@@ -518,8 +521,8 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
   std::vector < std::string > allDoubletsNames;
   std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31};
 
-  edm::Handle<IntermediateHitDoublets> detachedQuadStepHitDoublets;
-  event.getByToken(detachedQuadStepHitDoublets_,detachedQuadStepHitDoublets);
+  // edm::Handle<IntermediateHitDoublets> detachedQuadStepHitDoublets;
+  // event.getByToken(detachedQuadStepHitDoublets_,detachedQuadStepHitDoublets);
   // allDoublets.push_back(*detachedQuadStepHitDoublets);
   // allDoubletsNames.push_back("detachedQuadStepHitDoublets");
 
@@ -1102,12 +1105,13 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
 
 
-      for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= detachedQuadStepHitDoublets->layerSetsBegin(); lIt != detachedQuadStepHitDoublets->layerSetsEnd(); ++lIt)
-            {
-              int loopone = 0;
-              std::cout << ++loopone << " " << runNumber << std::endl;;
-        }
-
+      for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator ds = theDoublets_->begin(); ds != theDoublets_->end(); ++ds)
+      {
+        for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= ds->layerSetsBegin(); lIt != ds->layerSetsEnd(); ++lIt)
+              {
+                std::cout << lIt.size() << std::endl;
+              }
+      }
 
       histoProducerAlgo_->fill_trackBased_histos(w,at,rT, n_selTrack_dr, n_selTP_dr);
       // Fill seed-specific histograms

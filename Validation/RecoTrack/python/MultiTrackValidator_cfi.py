@@ -87,7 +87,18 @@ multiTrackValidator = cms.EDAnalyzer(
     simPVMaxZ = cms.untracked.double(-1),
 
     ##All the doublets
-    detachedQuadStepHitDoublets         = cms.InputTag( "detachedQuadStepHitDoublets" ), #TODO CHECK cms.VImputtag
+    theDoublets = cms.VInputTag(
+      cms.InputTag( "detachedQuadStepHitDoublets" ),
+      cms.InputTag( "detachedTripletStepHitDoublets" ),
+      cms.InputTag( "initialStepHitDoubletsPreSplitting" ),
+      cms.InputTag( "lowPtQuadStepHitDoublets" ),
+      cms.InputTag( "mixedTripletStepHitDoubletsA" ),
+      cms.InputTag( "mixedTripletStepHitDoubletsB" ),
+      cms.InputTag( "pixelLessStepHitDoublets" ),
+      cms.InputTag( "tripletElectronHitDoublets" ),
+    ),
+
+    # detachedQuadStepHitDoublets         = cms.InputTag( "detachedQuadStepHitDoublets" ), #TODO CHECK cms.VImputtag
     # detachedTripletStepHitDoublets      = cms.InputTag( "detachedTripletStepHitDoublets" ),
     # initialStepHitDoublets              = cms.InputTag( "initialStepHitDoubletsPreSplitting" ),
     # lowPtQuadStepHitDoublets            = cms.InputTag( "lowPtQuadStepHitDoublets" ),
