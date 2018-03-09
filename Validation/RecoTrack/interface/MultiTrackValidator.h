@@ -129,8 +129,6 @@ class MultiTrackValidator : public DQMEDAnalyzer {
   TrackingParticleSelector dRtpSelector;
   std::unique_ptr<RecoTrackSelectorBase> dRTrackSelector;
 
-
-  edm::EDGetTokenT<IntermediateHitDoublets> detachedTripletStepHitDouble;
   // edm::EDGetTokenT<IntermediateHitDoublets> initialStepHitDoublets_;
   // edm::EDGetTokenT<IntermediateHitDoublets> lowPtQuadStepHitDoublets_;
   // edm::EDGetTokenT<IntermediateHitDoublets> mixedTripletStepHitDoubletsA_;
@@ -141,7 +139,7 @@ class MultiTrackValidator : public DQMEDAnalyzer {
   // std::vector<edm::EDGetTokenT<IntermediateHitDoublets> > theDoubletsToken_;
   // std::vector<IntermediateHitDoublets> theDoublets_;
   edm::EDGetTokenT<IntermediateHitDoublets> detachedQuadStepHitDoublets_;
-  edm::EDGetTokenT<IntermediateHitDoublets> detachedTripletStepHitDouble;
+  edm::EDGetTokenT<IntermediateHitDoublets> detachedTripletStepHitDoublets_;
 
   edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
 
