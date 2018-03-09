@@ -524,7 +524,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
   for (size_t i = 0; i < theDoubletsToken_.size(); i++) {
     edm::Handle<IntermediateHitDoublets> thisDoublets;
     event.getByToken(theDoubletsToken_[i],thisDoublets);
-    theDoublets.push_back(thisDoublets);
+    theDoublets.push_back(*thisDoublets);
   }
   // edm::Handle<IntermediateHitDoublets> detachedQuadStepHitDoublets;
   // event.getByToken(detachedQuadStepHitDoublets_,detachedQuadStepHitDoublets);
@@ -1114,7 +1114,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
       {
         for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= ds->layerSetsBegin(); lIt != ds->layerSetsEnd(); ++lIt)
               {
-                std::cout << lIt->size() << std::endl;
+                std::cout << lIt->doublets().size() << std::endl;
               }
       }
 
