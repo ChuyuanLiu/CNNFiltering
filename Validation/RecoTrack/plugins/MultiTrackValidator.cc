@@ -1110,7 +1110,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
       int lumNumber = event.id().luminosityBlock();
 
 
-      for(int i = 0; i< theDoublets.size();++i)
+      for(size_t i = 0; i< theDoublets.size();++i)
       {
         std::cout<<theDoubletsNames_[i]<<std::endl;
         auto ds = theDoublets[i];
