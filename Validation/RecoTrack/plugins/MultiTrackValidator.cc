@@ -110,7 +110,7 @@ MultiTrackValidator::MultiTrackValidator(const edm::ParameterSet& pset):
 
   for(const auto& tag: pset.getParameter<std::vector<edm::InputTag>>("theDoublets")) {
     theDoubletsToken_.push_back(consumes<IntermediateHitDoublets>(tag));
-    theDoubletsNames_.push_back(tag.label())
+    theDoubletsNames_.push_back(tag.label());
   }
 
   std::vector<edm::InputTag> doResolutionPlotsForLabels = pset.getParameter<std::vector<edm::InputTag> >("doResolutionPlotsForLabels");
@@ -518,15 +518,15 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
   auto parametersDefinerTP = parametersDefinerTPHandle->clone();
 
   //all the doublets
-  std::vector < IntermediateHitDoublets > theDoublets;
+  std::vector < edm::Handle<IntermediateHitDoublets> > theDoublets;
   std::vector < std::string > allDoubletsNames;
   std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31};
 
-  // for (size_t i = 0; i < theDoubletsToken_.size(); i++) {
-  //   edm::Handle<IntermediateHitDoublets> thisDoublets;
-  //   event.getByToken(theDoubletsToken_[i],thisDoublets);
-  //   theDoublets.push_back(*thisDoublets);
-  // }
+  for (size_t i = 0; i < theDoubletsToken_.size(); i++) {
+    edm::Handle<IntermediateHitDoublets> thisDoublets;
+    event.getByToken(theDoubletsToken_[i],thisDoublets);
+    theDoublets.push_back(thisDoublets);
+  }
   // edm::Handle<IntermediateHitDoublets> detachedQuadStepHitDoublets;
   // event.getByToken(detachedQuadStepHitDoublets_,detachedQuadStepHitDoublets);
   // allDoublets.push_back(*detachedQuadStepHitDoublets);
@@ -1111,7 +1111,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
 
 
-      for (std::vector<edm::Handle<IntermediateHitDoublets>>::const_iterator ds = theDoubletsToken_.begin(); ds != theDoubletsToken_.end(); ++ds)
+      for (std::vector<edm::Handle<IntermediateHitDoublets>>::const_iterator ds = theDoublets.begin(); ds != theDoublets.end(); ++ds)
       {
         for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= (*ds)->layerSetsBegin(); lIt != (*ds)->layerSetsEnd(); ++lIt)
               {
