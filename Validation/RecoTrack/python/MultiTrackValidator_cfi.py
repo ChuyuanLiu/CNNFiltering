@@ -88,13 +88,13 @@ multiTrackValidator = cms.EDAnalyzer(
 
     ##All the doublets
     detachedQuadStepHitDoublets         = cms.InputTag( "detachedQuadStepHitDoublets" ), #TODO CHECK cms.VImputtag
-    detachedTripletStepHitDoublets      = cms.InputTag( "detachedTripletStepHitDoublets" ),
-    initialStepHitDoublets              = cms.InputTag( "initialStepHitDoubletsPreSplitting" ),
-    lowPtQuadStepHitDoublets            = cms.InputTag( "lowPtQuadStepHitDoublets" ),
-    mixedTripletStepHitDoubletsA        = cms.InputTag( "mixedTripletStepHitDoubletsA" ),
-    mixedTripletStepHitDoubletsB        = cms.InputTag( "mixedTripletStepHitDoubletsB" ),
-    pixelLessStepHitDoublets            = cms.InputTag( "pixelLessStepHitDoublets" ),
-    tripletElectronHitDoublets          = cms.InputTag( "tripletElectronHitDoublets" ),
+    # detachedTripletStepHitDoublets      = cms.InputTag( "detachedTripletStepHitDoublets" ),
+    # initialStepHitDoublets              = cms.InputTag( "initialStepHitDoubletsPreSplitting" ),
+    # lowPtQuadStepHitDoublets            = cms.InputTag( "lowPtQuadStepHitDoublets" ),
+    # mixedTripletStepHitDoubletsA        = cms.InputTag( "mixedTripletStepHitDoubletsA" ),
+    # mixedTripletStepHitDoubletsB        = cms.InputTag( "mixedTripletStepHitDoubletsB" ),
+    # pixelLessStepHitDoublets            = cms.InputTag( "pixelLessStepHitDoublets" ),
+    # tripletElectronHitDoublets          = cms.InputTag( "tripletElectronHitDoublets" ),
 
     ##Hit cluster to Tp association map
     tpMap    = cms.InputTag( "tpClusterProducer" ),

@@ -49,6 +49,9 @@
 #include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHit.h"
 
+#include "SimTracker/TrackerHitAssociation/interface/ClusterTPAssociation.h"
+#include "RecoTracker/TkHitPairs/interface/IntermediateHitDoublets.h"
+
 using namespace std;
 using namespace edm;
 
@@ -78,15 +81,7 @@ MultiTrackValidator::MultiTrackValidator(const edm::ParameterSet& pset):
   doSeedPlots_(pset.getUntrackedParameter<bool>("doSeedPlots")),
   doMVAPlots_(pset.getUntrackedParameter<bool>("doMVAPlots")),
   simPVMaxZ_(pset.getUntrackedParameter<double>("simPVMaxZ")),
-  detachedQuadStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("detachedQuadStepHitDoublets"))),
-  // detachedTripletStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("detachedTripletStepHitDoublets"))),
-  // initialStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("initialStepHitDoublets"))),
-  // lowPtQuadStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("lowPtQuadStepHitDoublets"))),
-  // mixedTripletStepHitDoubletsA_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("mixedTripletStepHitDoubletsA"))),
-  // mixedTripletStepHitDoubletsB_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("mixedTripletStepHitDoubletsB"))),
-  // pixelLessStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("pixelLessStepHitDoublets"))),
-  // tripletElectronHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("tripletElectronHitDoublets"))),
-  tpMap_(consumes<ClusterTPAssociation>(pset.getParameter<edm::InputTag>("tpMap"))) selection
+  tpMap_(consumes<ClusterTPAssociation>(pset.getParameter<edm::InputTag>("tpMap")))
 {
 
   padHalfSize = 8;
@@ -522,10 +517,10 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
   std::vector < std::string > allDoubletsNames;
   std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31};
 
-  edm::Handle<IntermediateHitDoublets> detachedQuadStepHitDoublets;
-  event.getByToken(detachedQuadStepHitDoublets_,detachedQuadStepHitDoublets);
-  allDoublets.push_back(*detachedQuadStepHitDoublets);
-  allDoubletsNames.push_back("detachedQuadStepHitDoublets");
+  // edm::Handle<IntermediateHitDoublets> detachedQuadStepHitDoublets;
+  // event.getByToken(detachedQuadStepHitDoublets_,detachedQuadStepHitDoublets);
+  // allDoublets.push_back(*detachedQuadStepHitDoublets);
+  // allDoubletsNames.push_back("detachedQuadStepHitDoublets");
 
   // edm::Handle<IntermediateHitDoublets> detachedTripletStepHitDoublets;
   // event.getByToken(detachedTripletStepHitDoublets_,detachedTripletStepHitDoublets);
