@@ -1110,10 +1110,11 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
       int lumNumber = event.id().luminosityBlock();
 
 
-
-      for (std::vector<edm::Handle<IntermediateHitDoublets>>::const_iterator ds = theDoublets.begin(); ds != theDoublets.end(); ++ds)
+      for(int i = 0; i< theDoublets.size();++i)
       {
-        for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= (*ds)->layerSetsBegin(); lIt != (*ds)->layerSetsEnd(); ++lIt)
+        std::cout<<theDoubletsNames_[i]<<std::endl;
+        auto ds = theDoublets[i];
+        for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= (*ds).layerSetsBegin(); lIt != (*ds).layerSetsEnd(); ++lIt)
               {
                 std::cout << lIt->doublets().size() << std::endl;
               }
