@@ -81,6 +81,8 @@ MultiTrackValidator::MultiTrackValidator(const edm::ParameterSet& pset):
   doSeedPlots_(pset.getUntrackedParameter<bool>("doSeedPlots")),
   doMVAPlots_(pset.getUntrackedParameter<bool>("doMVAPlots")),
   simPVMaxZ_(pset.getUntrackedParameter<double>("simPVMaxZ")),
+  detachedQuadStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("detachedQuadStepHitDoublets"))),
+  detachedTripletStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("detachedTripletStepHitDoublets"))),
   tpMap_(consumes<ClusterTPAssociation>(pset.getParameter<edm::InputTag>("tpMap")))
 {
 
@@ -108,9 +110,9 @@ MultiTrackValidator::MultiTrackValidator(const edm::ParameterSet& pset):
     simHitTokens_.push_back(consumes<std::vector<PSimHit>>(tag));
   }
 
-  for(const auto& tag: pset.getParameter<std::vector<edm::InputTag>>("theDoublets")) {
-    theDoubletsToken_.push_back(consumes<IntermediateHitDoublets>(tag));
-  }
+  // for(const auto& tag: pset.getParameter<std::vector<edm::InputTag>>("theDoublets")) {
+  //   theDoubletsToken_.push_back(consumes<IntermediateHitDoublets>(tag));
+  // }
 
   std::vector<edm::InputTag> doResolutionPlotsForLabels = pset.getParameter<std::vector<edm::InputTag> >("doResolutionPlotsForLabels");
   doResolutionPlots_.reserve(label.size());
@@ -521,15 +523,20 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
   std::vector < std::string > allDoubletsNames;
   std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31};
 
-  for (size_t i = 0; i < theDoubletsToken_.size(); i++) {
-    edm::Handle<IntermediateHitDoublets> thisDoublets;
-    event.getByToken(theDoubletsToken_[i],thisDoublets);
-    theDoublets.push_back(*thisDoublets);
-  }
-  // edm::Handle<IntermediateHitDoublets> detachedQuadStepHitDoublets;
-  // event.getByToken(detachedQuadStepHitDoublets_,detachedQuadStepHitDoublets);
-  // allDoublets.push_back(*detachedQuadStepHitDoublets);
-  // allDoubletsNames.push_back("detachedQuadStepHitDoublets");
+  // for (size_t i = 0; i < theDoubletsToken_.size(); i++) {
+  //   edm::Handle<IntermediateHitDoublets> thisDoublets;
+  //   event.getByToken(theDoubletsToken_[i],thisDoublets);
+  //   theDoublets.push_back(*thisDoublets);
+  // }
+  edm::Handle<IntermediateHitDoublets> detachedQuadStepHitDoublets;
+  event.getByToken(detachedQuadStepHitDoublets_,detachedQuadStepHitDoublets);
+  allDoublets.push_back(*detachedQuadStepHitDoublets);
+  allDoubletsNames.push_back("detachedQuadStepHitDoublets");
+
+  edm::Handle<IntermediateHitDoublets> detachedTripletStepHitDoublets;
+  event.getByToken(detachedTripletStepHitDoublets_,detachedTripletStepHitDoublets);
+  allDoublets.push_back(*detachedTripletStepHitDoublets);
+  allDoubletsNames.push_back("detachedTripletStepHitDoublets");
 
   // edm::Handle<IntermediateHitDoublets> detachedTripletStepHitDoublets;
   // event.getByToken(detachedTripletStepHitDoublets_,detachedTripletStepHitDoublets);
