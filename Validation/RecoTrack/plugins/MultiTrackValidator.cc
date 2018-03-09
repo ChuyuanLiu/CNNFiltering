@@ -81,6 +81,7 @@ MultiTrackValidator::MultiTrackValidator(const edm::ParameterSet& pset):
   doSeedPlots_(pset.getUntrackedParameter<bool>("doSeedPlots")),
   doMVAPlots_(pset.getUntrackedParameter<bool>("doMVAPlots")),
   simPVMaxZ_(pset.getUntrackedParameter<double>("simPVMaxZ")),
+  detachedQuadStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("detachedQuadStepHitDoublets"))),
   tpMap_(consumes<ClusterTPAssociation>(pset.getParameter<edm::InputTag>("tpMap")))
 {
 
@@ -517,8 +518,8 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
   std::vector < std::string > allDoubletsNames;
   std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31};
 
-  // edm::Handle<IntermediateHitDoublets> detachedQuadStepHitDoublets;
-  // event.getByToken(detachedQuadStepHitDoublets_,detachedQuadStepHitDoublets);
+  edm::Handle<IntermediateHitDoublets> detachedQuadStepHitDoublets;
+  event.getByToken(detachedQuadStepHitDoublets_,detachedQuadStepHitDoublets);
   // allDoublets.push_back(*detachedQuadStepHitDoublets);
   // allDoubletsNames.push_back("detachedQuadStepHitDoublets");
 
