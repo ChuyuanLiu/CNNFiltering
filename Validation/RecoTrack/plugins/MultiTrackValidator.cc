@@ -530,12 +530,12 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
   // }
   edm::Handle<IntermediateHitDoublets> detachedQuadStepHitDoublets;
   event.getByToken(detachedQuadStepHitDoublets_,detachedQuadStepHitDoublets);
-  allDoublets.push_back(*detachedQuadStepHitDoublets);
+  theDoublets.push_back(*detachedQuadStepHitDoublets);
   allDoubletsNames.push_back("detachedQuadStepHitDoublets");
 
   edm::Handle<IntermediateHitDoublets> detachedTripletStepHitDoublets;
   event.getByToken(detachedTripletStepHitDoublets_,detachedTripletStepHitDoublets);
-  allDoublets.push_back(*detachedTripletStepHitDoublets);
+  theDoublets.push_back(*detachedTripletStepHitDoublets);
   allDoubletsNames.push_back("detachedTripletStepHitDoublets");
 
   // edm::Handle<IntermediateHitDoublets> detachedTripletStepHitDoublets;
