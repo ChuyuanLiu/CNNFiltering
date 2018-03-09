@@ -109,7 +109,7 @@ MultiTrackValidator::MultiTrackValidator(const edm::ParameterSet& pset):
   }
 
   for(const auto& tag: pset.getParameter<std::vector<edm::InputTag>>("theDoublets")) {
-    theDoublets_.push_back(consumes<std::vector<IntermediateHitDoublets>>(tag));
+    theDoublets_.push_back(consumes<IntermediateHitDoublets>(tag));
   }
 
   std::vector<edm::InputTag> doResolutionPlotsForLabels = pset.getParameter<std::vector<edm::InputTag> >("doResolutionPlotsForLabels");
