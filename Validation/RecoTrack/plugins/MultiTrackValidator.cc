@@ -1073,7 +1073,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
       {
       // for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= (*iHd)->layerSetsBegin(); lIt != (*iHd)->layerSetsEnd(); ++lIt)
       // for (std::vector < edm::Handle<IntermediateHitDoublets> >::const_iterator (*iHd)= (*iHd)->layerSetsBegin(); lIt != (*iHd)->layerSetsEnd(); ++lIt)
-        auto (*iHd) = theDoublets[i];
+        auto iHd = theDoublets[i];
         std::string dName = theDoubletsNames_[i];
 
         std::string fileName = "doublets/" + std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber) + "_" + dName + "_dnn_doublets.txt";;
