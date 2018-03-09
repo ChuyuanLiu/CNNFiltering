@@ -122,8 +122,15 @@ class MultiTrackValidator : public DQMEDAnalyzer {
   bool useGsf;
   const double simPVMaxZ_;
 
+  // select tracking particles
+  //(i.e. "denominator" of the efficiency ratio)
+  TrackingParticleSelector tpSelector;
+  CosmicTrackingParticleSelector cosmictpSelector;
+  TrackingParticleSelector dRtpSelector;
+  std::unique_ptr<RecoTrackSelectorBase> dRTrackSelector;
+
   edm::EDGetTokenT<IntermediateHitDoublets> detachedQuadStepHitDoublets_;
-  // edm::EDGetTokenT<IntermediateHitDoublets> detachedTripletStepHitDouble;ts_;
+  // edm::EDGetTokenT<IntermediateHitDoublets> detachedTripletStepHitDouble;
   // edm::EDGetTokenT<IntermediateHitDoublets> initialStepHitDoublets_;
   // edm::EDGetTokenT<IntermediateHitDoublets> lowPtQuadStepHitDoublets_;
   // edm::EDGetTokenT<IntermediateHitDoublets> mixedTripletStepHitDoubletsA_;
@@ -133,12 +140,6 @@ class MultiTrackValidator : public DQMEDAnalyzer {
 
   edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
 
-  // select tracking particles
-  //(i.e. "denominator" of the efficiency ratio)
-  TrackingParticleSelector tpSelector;
-  CosmicTrackingParticleSelector cosmictpSelector;
-  TrackingParticleSelector dRtpSelector;
-  std::unique_ptr<RecoTrackSelectorBase> dRTrackSelector;
 
   edm::EDGetTokenT<SimHitTPAssociationProducer::SimHitTPAssociationList> _simHitTpMapTag;
   edm::EDGetTokenT<edm::View<reco::Track> > labelTokenForDrCalculation;

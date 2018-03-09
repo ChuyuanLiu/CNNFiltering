@@ -86,7 +86,7 @@ MultiTrackValidator::MultiTrackValidator(const edm::ParameterSet& pset):
   // mixedTripletStepHitDoubletsB_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("mixedTripletStepHitDoubletsB"))),
   // pixelLessStepHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("pixelLessStepHitDoublets"))),
   // tripletElectronHitDoublets_(consumes<IntermediateHitDoublets>(pset.getParameter<edm::InputTag>("tripletElectronHitDoublets"))),
-  tpMap_(consumes<ClusterTPAssociation>(pset.getParameter<edm::InputTag>("tpMap")))
+  tpMap_(consumes<ClusterTPAssociation>(pset.getParameter<edm::InputTag>("tpMap"))) selection
 {
 
   padHalfSize = 8;
