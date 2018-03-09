@@ -1110,7 +1110,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
 
 
-      for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator ds = theDoublets.begin(); ds != theDoublets.end(); ++ds)
+      for (std::vector<IntermediateHitDoublets>::const_iterator ds = theDoublets.begin(); ds != theDoublets.end(); ++ds)
       {
         for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= ds->layerSetsBegin(); lIt != ds->layerSetsEnd(); ++lIt)
               {
