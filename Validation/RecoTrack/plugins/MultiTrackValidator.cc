@@ -1069,18 +1069,18 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
       int runNumber = event.id().run();
       int lumNumber = event.id().luminosityBlock();
 
-      for (size_t i = 0; i < theDoublets.size(); ++i)
+      for (size_t k = 0; k < theDoublets.size(); ++k)
       {
         // for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= (*iHd)->layerSetsBegin(); lIt != (*iHd)->layerSetsEnd(); ++lIt)
         // for (std::vector < edm::Handle<IntermediateHitDoublets> >::const_iterator (*iHd)= (*iHd)->layerSetsBegin(); lIt != (*iHd)->layerSetsEnd(); ++lIt)
-        auto iHd = theDoublets[i];
-        std::string dName = theDoubletsNames_[i];
+        auto iHd = theDoublets[k];
+        std::string dName = theDoubletsNames_[k];
 
         std::string fileName = "doublets/" + std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber) + "_" + dName + "_dnn_doublets.txt";;
 
         std::ofstream outCNNFile(fileName, std::ofstream::app);
 
-        std::cout << "Intermediate hit doublets loop start :"<< std::endl;
+        // std::cout << "Intermediate hit doublets loop start :"<< std::endl;
         for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= (*iHd).layerSetsBegin(); lIt != (*iHd).layerSetsEnd(); ++lIt)
         {
           int loopone = 0;
@@ -1386,6 +1386,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
             theTP.push_back(-1.0);
 
             outCNNFile << runNumber << "\t" << eveNumber << "\t" << lumNumber << "\t";
+            outCNNFile << k << "\t" << i << "\t";
             outCNNFile <<innerLayer->seqNum() << "\t" << outerLayer->seqNum() << "\t";
             outCNNFile << bs.x0() << "\t" << bs.y0() << "\t" << bs.z0() << "\t" << bs.sigmaZ() << "\t";
             for (int j = 0; j < 2; j++)
