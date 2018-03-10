@@ -1104,16 +1104,12 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
           DetLayer const * outerLayer = lIt->doublets().detLayer(HitDoublets::outer);
           if(find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum())==pixelDets.end()) continue;
 
-          std::cout << lIt->doublets().size() << std::endl;
-
-          //         std::cout << ++loopone << " ";
-          //         std::cout << " hits loop ";
+          // std::cout << lIt->doublets().size() << std::endl;
 
           for (size_t i = 0; i < lIt->doublets().size(); i++)
           {
 
             int looptwo = 0;
-            std::cout << ++looptwo << " ";
             diffADC = 0.0;
 
             hits.clear(); siHits.clear(); clusters.clear();
@@ -1123,7 +1119,6 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
             hits.push_back(lIt->doublets().hit(i, HitDoublets::inner)); //TODO CHECK EMPLACEBACK
             hits.push_back(lIt->doublets().hit(i, HitDoublets::outer));
-            std::cout << ++looptwo << " ";
 
             for (auto h : hits)
             {
@@ -1139,7 +1134,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
             clusters.push_back(siHits[0]->cluster());
             clusters.push_back(siHits[1]->cluster());
-            std::cout << ++looptwo << " ";
+
             detSeqs.push_back(innerLayer->seqNum());
             detSeqs.push_back(outerLayer->seqNum());
 
@@ -1150,7 +1145,6 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
             hitPars.push_back(outHitPars);
 
             HitDoublets::layer layers[2] = {HitDoublets::inner, HitDoublets::outer};
-            std::cout << ++looptwo << " ";
 
             for(int j = 0; j < 2; ++j)
             {
@@ -1250,8 +1244,6 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
             }
 
-            std::cout << "out hit loop " << ++loopone << " ";
-
             auto rangeIn = tpClust->equal_range(lIt->doublets().hit(i, HitDoublets::inner)->firstClusterRef());
             auto rangeOut = tpClust->equal_range(lIt->doublets().hit(i, HitDoublets::outer)->firstClusterRef());
 
@@ -1275,14 +1267,11 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
               kIntPdgs.push_back(kIntersection[i].second);
             }
 
-            std::cout << ++loopone << " ";
-            std::cout << "Tracks loop ";
             if(kIntersection.size()>0)
             for(View<Track>::size_type i=0; i<trackCollection.size(); ++i){
               int loopthree = 0;
 
               bool inTrue = false, outTrue = false;
-              std::cout << ++loopthree << " ";
               auto track = trackCollection.refAt(i);
               rT++;
               if(trackFromSeedFitFailed(*track)) ++seed_fit_failed;
@@ -1295,7 +1284,6 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
               isSimMatched = tpFound != recSimColl.end();
               if (!isSimMatched)
               continue;
-              std::cout << ++loopthree << " ";
               for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
               {
 
@@ -1317,13 +1305,13 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
                 if((*recHit)->sharesInput(outRecHit,TrackingRecHit::SharedInputType::some))
                 outTrue = true;
               }
-              std::cout << ++loopthree << " ";
+
               if(!(outTrue && inTrue))
               continue;
 
               const auto& tp = tpFound->val;
               const TrackingParticle& particle = *tp[0].first;
-              std::cout << ++loopthree << " ";
+
               if(std::find(kIntPdgs.begin(),kIntPdgs.end(),(int)(particle.pdgId())) == kIntPdgs.end())
               continue;
               else
@@ -1347,7 +1335,6 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
                   break;
                 }
               }
-              std::cout << ++loopthree << " ";
               TrackingParticle::Vector momTp = particle.momentum();
               TrackingParticle::Point  verTp  = particle.vertex();
 
@@ -1386,7 +1373,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
               theTP.push_back(isSigSimMatched);
               theTP.push_back(sharedFraction);
               theTP.push_back(numAssocRecoTracks); //26
-              std::cout << ++loopthree << " ";
+
               if(trueDoublet)
               break;
             }
@@ -1397,7 +1384,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
             if(!trueDoublet)
             for (int i = 0; i < tParams; i++)
             theTP.push_back(-1.0);
-            std::cout <<  " writing file ";
+
             outCNNFile << runNumber << "\t" << eveNumber << "\t" << lumNumber << "\t";
             outCNNFile <<innerLayer->seqNum() << "\t" << outerLayer->seqNum() << "\t";
             outCNNFile << bs.x0() << "\t" << bs.y0() << "\t" << bs.z0() << "\t" << bs.sigmaZ() << "\t";
@@ -1414,7 +1401,7 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
             outCNNFile << std::endl;
 
             outCNNFile << hitPars[0].size() << " - " <<hitPars[1].size()<< " - " <<theTP.size() << " - " << std::endl;
-            std::cout <<  " done file " <<std::endl;
+
           } //hits loop
         }
       }
