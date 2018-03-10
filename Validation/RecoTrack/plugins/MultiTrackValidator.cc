@@ -1106,8 +1106,6 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
           std::cout << lIt->doublets().size() << std::endl;
 
-          siHits.push_back(dynamic_cast<const SiPixelRecHit*>((hits[0])));
-          siHits.push_back(dynamic_cast<const SiPixelRecHit*>((hits[1])));
           //         std::cout << ++loopone << " ";
           //         std::cout << " hits loop ";
 
