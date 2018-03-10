@@ -1082,10 +1082,30 @@ void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup
 
         std::cout << "Intermediate hit doublets loop start :"<< std::endl;
         for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= (*iHd).layerSetsBegin(); lIt != (*iHd).layerSetsEnd(); ++lIt)
-          {
-            std::cout << lIt->doublets().size() << std::endl;
-          }
+        {
+          std::vector< RecHitsSortedInPhi::Hit> hits;
+          std::vector< const SiPixelRecHit*> siHits;
+
+          std::vector< SiPixelRecHit::ClusterRef> clusters;
+          std::vector< DetId> detIds;
+          std::vector< const GeomDet*> geomDets;
+          std::vector <unsigned int> hitIds, subDetIds, detSeqs;
+
+          std::vector< std::vector< float>> hitPars;
+          std::vector< float > inHitPars, outHitPars;
+          std::vector< float > inTP, outTP, theTP;
+
+          float ax1, ax2, diffADC = 0.0;
+
+          DetLayer const * innerLayer = lIt->doublets().detLayer(HitDoublets::inner);
+          if(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum())==pixelDets.end()) continue;   //TODO change to std::map ?
+
+          DetLayer const * outerLayer = lIt->doublets().detLayer(HitDoublets::outer);
+          if(find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum())==pixelDets.end()) continue;
+
+          std::cout << lIt->doublets().size() << std::endl;
         }
+      }
     //         int loopone = 0;
     //         std::cout << ++loopone << " ";
     //         std::vector< RecHitsSortedInPhi::Hit> hits;
