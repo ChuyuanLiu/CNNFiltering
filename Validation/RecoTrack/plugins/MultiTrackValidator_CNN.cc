@@ -1,4 +1,4 @@
-#include "Validation/RecoTrack/interface/MultiTrackValidator.h"
+#include "Validation/RecoTrack/interface/MultiTrackValidator_CNN.h"
 #include "Validation/RecoTrack/interface/trackFromSeedFitFailed.h"
 
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -63,7 +63,7 @@ namespace {
 
 }
 
-MultiTrackValidator::MultiTrackValidator(const edm::ParameterSet& pset):
+MultiTrackValidatorCNN::MultiTrackValidatorCNN(const edm::ParameterSet& pset):
   associators(pset.getUntrackedParameter< std::vector<edm::InputTag> >("associators")),
   label(pset.getParameter< std::vector<edm::InputTag> >("label")),
   parametersDefiner(pset.getParameter<std::string>("parametersDefiner")),
@@ -232,10 +232,10 @@ MultiTrackValidator::MultiTrackValidator(const edm::ParameterSet& pset):
 }
 
 
-MultiTrackValidator::~MultiTrackValidator() {}
+MultiTrackValidatorCNN::~MultiTrackValidatorCNN() {}
 
 
-void MultiTrackValidator::bookHistograms(DQMStore::IBooker& ibook, edm::Run const&, edm::EventSetup const& setup) {
+void MultiTrackValidatorCNN::bookHistograms(DQMStore::IBooker& ibook, edm::Run const&, edm::EventSetup const& setup) {
 
   const auto minColl = -0.5;
   const auto maxColl = label.size()-0.5;
@@ -351,7 +351,7 @@ namespace {
   }
 }
 
-const TrackingVertex::LorentzVector *MultiTrackValidator::getSimPVPosition(const edm::Handle<TrackingVertexCollection>& htv) const {
+const TrackingVertex::LorentzVector *MultiTrackValidatorCNN::getSimPVPosition(const edm::Handle<TrackingVertexCollection>& htv) const {
   for(const auto& simV: *htv) {
     if(simV.eventId().bunchCrossing() != 0) continue; // remove OOTPU
     if(simV.eventId().event() != 0) continue; // pick the PV of hard scatter
@@ -360,7 +360,7 @@ const TrackingVertex::LorentzVector *MultiTrackValidator::getSimPVPosition(const
   return nullptr;
 }
 
-const reco::Vertex::Point *MultiTrackValidator::getRecoPVPosition(const edm::Event& event, const edm::Handle<TrackingVertexCollection>& htv) const {
+const reco::Vertex::Point *MultiTrackValidatorCNN::getRecoPVPosition(const edm::Event& event, const edm::Handle<TrackingVertexCollection>& htv) const {
   edm::Handle<edm::View<reco::Vertex> > hvertex;
   event.getByToken(recoVertexToken_, hvertex);
 
@@ -386,7 +386,7 @@ const reco::Vertex::Point *MultiTrackValidator::getRecoPVPosition(const edm::Eve
   return nullptr;
 }
 
-void MultiTrackValidator::tpParametersAndSelection(const TrackingParticleRefVector& tPCeff,
+void MultiTrackValidatorCNN::tpParametersAndSelection(const TrackingParticleRefVector& tPCeff,
                                                    const ParametersDefinerForTP& parametersDefinerTP,
                                                    const edm::Event& event, const edm::EventSetup& setup,
                                                    const reco::BeamSpot& bs,
@@ -443,7 +443,7 @@ void MultiTrackValidator::tpParametersAndSelection(const TrackingParticleRefVect
 }
 
 
-size_t MultiTrackValidator::tpDR(const TrackingParticleRefVector& tPCeff,
+size_t MultiTrackValidatorCNN::tpDR(const TrackingParticleRefVector& tPCeff,
                                  const std::vector<size_t>& selected_tPCeff,
                                  DynArray<float>& dR_tPCeff) const {
   float etaL[tPCeff.size()], phiL[tPCeff.size()];
@@ -474,7 +474,7 @@ size_t MultiTrackValidator::tpDR(const TrackingParticleRefVector& tPCeff,
   return n_selTP_dr;
 }
 
-void MultiTrackValidator::trackDR(const edm::View<reco::Track>& trackCollection, const edm::View<reco::Track>& trackCollectionDr, DynArray<float>& dR_trk) const {
+void MultiTrackValidatorCNN::trackDR(const edm::View<reco::Track>& trackCollection, const edm::View<reco::Track>& trackCollectionDr, DynArray<float>& dR_trk) const {
   int i=0;
   float etaL[trackCollectionDr.size()];
   float phiL[trackCollectionDr.size()];
@@ -504,7 +504,7 @@ void MultiTrackValidator::trackDR(const edm::View<reco::Track>& trackCollection,
 }
 
 
-void MultiTrackValidator::analyze(const edm::Event& event, const edm::EventSetup& setup){
+void MultiTrackValidatorCNN::analyze(const edm::Event& event, const edm::EventSetup& setup){
   using namespace reco;
 
   LogDebug("TrackValidator") << "\n====================================================" << "\n"
