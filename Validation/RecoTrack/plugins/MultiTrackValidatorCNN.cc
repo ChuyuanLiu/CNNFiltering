@@ -267,14 +267,14 @@ void MultiTrackValidatorCNN::bookHistograms(DQMStore::IBooker& ibook, edm::Run c
 
     if(doSummaryPlots_) {
       if(doSimTrackPlots_) {
-        h_assoc_coll.push_back(binLabels( ibook.book1D("num_assoc(simToReco)_coll", "N of associated (simToReco) tracks vs track collection", nintColl, minColl, maxColl) ));
-        h_simul_coll.push_back(binLabels( ibook.book1D("num_simul_coll", "N of simulated tracks vs track collection", nintColl, minColl, maxColl) ));
+        h_assoc_coll.push_back(binLabels( ibook.book1D("cnn_num_assoc(simToReco)_coll", "N of associated (simToReco) tracks vs track collection", nintColl, minColl, maxColl) ));
+        h_simul_coll.push_back(binLabels( ibook.book1D("cnn_num_simul_coll", "N of simulated tracks vs track collection", nintColl, minColl, maxColl) ));
       }
       if(doRecoTrackPlots_) {
-        h_reco_coll.push_back(binLabels( ibook.book1D("num_reco_coll", "N of reco track vs track collection", nintColl, minColl, maxColl) ));
-        h_assoc2_coll.push_back(binLabels( ibook.book1D("num_assoc(recoToSim)_coll", "N of associated (recoToSim) tracks vs track collection", nintColl, minColl, maxColl) ));
-        h_looper_coll.push_back(binLabels( ibook.book1D("num_duplicate_coll", "N of associated (recoToSim) looper tracks vs track collection", nintColl, minColl, maxColl) ));
-        h_pileup_coll.push_back(binLabels( ibook.book1D("num_pileup_coll", "N of associated (recoToSim) pileup tracks vs track collection", nintColl, minColl, maxColl) ));
+        h_reco_coll.push_back(binLabels( ibook.book1D("cnn_num_reco_coll", "N of reco track vs track collection", nintColl, minColl, maxColl) ));
+        h_assoc2_coll.push_back(binLabels( ibook.book1D("cnn_num_assoc(recoToSim)_coll", "N of associated (recoToSim) tracks vs track collection", nintColl, minColl, maxColl) ));
+        h_looper_coll.push_back(binLabels( ibook.book1D("cnn_num_duplicate_coll", "N of associated (recoToSim) looper tracks vs track collection", nintColl, minColl, maxColl) ));
+        h_pileup_coll.push_back(binLabels( ibook.book1D("cnn_num_pileup_coll", "N of associated (recoToSim) pileup tracks vs track collection", nintColl, minColl, maxColl) ));
       }
     }
 
@@ -927,8 +927,7 @@ void MultiTrackValidatorCNN::analyze(const edm::Event& event, const edm::EventSe
       // ##############################################
       // fill recoTracks histograms (LOOP OVER TRACKS)
       // ##############################################
-      if(!doRecoTrackPlots_)
-        continue;
+
       LogTrace("TrackValidator") << "\n# of reco::Tracks with "
                                  << label[www].process()<<":"
                                  << label[www].label()<<":"

@@ -6,7 +6,7 @@ import argparse
 
 from math import floor
 
-headLab = ["run","evt","lumi","detSeqIn","detSeqOut","bSX","bSY","bSZ","bSdZ"]
+headLab = ["run","evt","lumi","k","i","detSeqIn","detSeqOut","bSX","bSY","bSZ","bSdZ"]
 
 hitCoord = ["X","Y","Z","Phi","R"]
 
@@ -28,7 +28,7 @@ particleLabs = ["label","tId","px","py","pz","pt","mT","eT","mSqr","pdgId",
                 "charge","nTrackerHits","nTrackerLayers","phi","eta","rapidity",
                 "vX","vY","vZ","dXY","dZ","bunchCrossing"]
 
-dataLab = headLab + inHitLabs + outHitLabs + particleLabs + ["dummyFlag"]
+dataLab = headLab + inHitLabs + outHitLabs + ["diffADC"] + particleLabs + ["dummyFlag"]
 
 
 import pandas as pd
