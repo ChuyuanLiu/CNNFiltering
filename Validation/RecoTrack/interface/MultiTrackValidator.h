@@ -12,7 +12,7 @@
 #include "FWCore/Utilities/interface/EDGetToken.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 
-#include "DQMServices/Core/interface/DQMGlobalEDAnalyzer.h"
+#include "DQMServices/Core/interface/DQMEDAnalyzer.h"
 
 #include "Validation/RecoTrack/interface/MTVHistoProducerAlgoForTracker.h"
 #include "SimDataFormats/Associations/interface/TrackToTrackingParticleAssociator.h"
@@ -29,26 +29,19 @@ namespace reco {
 class DeDxData;
 }
 
-struct MultiTrackValidatorHistograms {
-  MTVHistoProducerAlgoForTrackerHistograms histoProducerAlgo;
-  std::vector<ConcurrentMonitorElement> h_reco_coll, h_assoc_coll, h_assoc2_coll, h_simul_coll, h_looper_coll, h_pileup_coll;
-};
-
-class MultiTrackValidator : public DQMGlobalEDAnalyzer<MultiTrackValidatorHistograms> {
+class MultiTrackValidator : public DQMEDAnalyzer {
  public:
-  using Histograms = MultiTrackValidatorHistograms;
-
   /// Constructor
   MultiTrackValidator(const edm::ParameterSet& pset);
-
+  
   /// Destructor
   ~MultiTrackValidator() override;
 
 
   /// Method called once per event
-  void dqmAnalyze(const edm::Event&, const edm::EventSetup&, const Histograms& ) const override;
+  void analyze(const edm::Event&, const edm::EventSetup& ) override;
   /// Method called to book the DQM histograms
-  void bookHistograms(DQMStore::ConcurrentBooker&, edm::Run const&, edm::EventSetup const&, Histograms&) const override;
+  void bookHistograms(DQMStore::IBooker&, edm::Run const&, edm::EventSetup const&) override;
 
 
  protected:
@@ -95,8 +88,7 @@ class MultiTrackValidator : public DQMGlobalEDAnalyzer<MultiTrackValidatorHistog
  private:
   const TrackingVertex::LorentzVector *getSimPVPosition(const edm::Handle<TrackingVertexCollection>& htv) const;
   const reco::Vertex::Point *getRecoPVPosition(const edm::Event& event, const edm::Handle<TrackingVertexCollection>& htv) const;
-  void tpParametersAndSelection(const Histograms& histograms,
-                                const TrackingParticleRefVector& tPCeff,
+  void tpParametersAndSelection(const TrackingParticleRefVector& tPCeff,
                                 const ParametersDefinerForTP& parametersDefinerTP,
                                 const edm::Event& event, const edm::EventSetup& setup,
                                 const reco::BeamSpot& bs,
@@ -126,17 +118,19 @@ class MultiTrackValidator : public DQMGlobalEDAnalyzer<MultiTrackValidatorHistog
 
   bool useGsf;
   const double simPVMaxZ_;
-  // select tracking particles
+  // select tracking particles 
   //(i.e. "denominator" of the efficiency ratio)
-  TrackingParticleSelector tpSelector;
+  TrackingParticleSelector tpSelector;				      
   CosmicTrackingParticleSelector cosmictpSelector;
-  TrackingParticleSelector dRtpSelector;
+  TrackingParticleSelector dRtpSelector;				      
   std::unique_ptr<RecoTrackSelectorBase> dRTrackSelector;
 
   edm::EDGetTokenT<SimHitTPAssociationProducer::SimHitTPAssociationList> _simHitTpMapTag;
   edm::EDGetTokenT<edm::View<reco::Track> > labelTokenForDrCalculation;
   edm::EDGetTokenT<edm::View<reco::Vertex> > recoVertexToken_;
   edm::EDGetTokenT<reco::VertexToTrackingVertexAssociator> vertexAssociatorToken_;
+
+  std::vector<MonitorElement *> h_reco_coll, h_assoc_coll, h_assoc2_coll, h_simul_coll, h_looper_coll, h_pileup_coll;
 };
 
 
