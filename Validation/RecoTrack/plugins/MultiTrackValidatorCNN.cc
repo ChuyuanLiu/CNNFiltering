@@ -1,4 +1,4 @@
-#include "Validation/RecoTrack/interface/MultiTrackValidator_CNN.h"
+#include "Validation/RecoTrack/interface/MultiTrackValidatorCNN.h"
 #include "Validation/RecoTrack/interface/trackFromSeedFitFailed.h"
 
 #include "FWCore/Framework/interface/MakerMacros.h"
