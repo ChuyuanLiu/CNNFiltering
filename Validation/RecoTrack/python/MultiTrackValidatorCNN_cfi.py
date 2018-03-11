@@ -111,10 +111,10 @@ multiTrackValidatorCNN = cms.EDAnalyzer(
     tpMap    = cms.InputTag( "tpClusterProducer" ),
 
     ### Allow switching off particular histograms
-    doSummaryPlots = cms.untracked.bool(True),
-    doSimPlots = cms.untracked.bool(True),
-    doSimTrackPlots = cms.untracked.bool(True),
-    doRecoTrackPlots = cms.untracked.bool(True),
+    doSummaryPlots = cms.untracked.bool(False),
+    doSimPlots = cms.untracked.bool(False),
+    doSimTrackPlots = cms.untracked.bool(False),
+    doRecoTrackPlots = cms.untracked.bool(False),
     dodEdxPlots = cms.untracked.bool(False),
     doPVAssociationPlots = cms.untracked.bool(False), # do plots that require true PV, if True, label_vertex and vertexAssociator are read
     doSeedPlots = cms.untracked.bool(False), # input comes from TrackFromSeedProducer
