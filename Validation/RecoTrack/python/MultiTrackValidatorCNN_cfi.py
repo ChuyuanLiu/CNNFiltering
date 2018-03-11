@@ -5,8 +5,8 @@ from SimTracker.TrackAssociation.LhcParametersDefinerForTP_cfi import *
 from SimTracker.TrackAssociation.CosmicParametersDefinerForTP_cfi import *
 from Validation.RecoTrack.MTVHistoProducerAlgoForTrackerBlock_cfi import *
 
-multiTrackValidator = cms.EDAnalyzer(
-    "MultiTrackValidator",
+multiTrackValidatorCNN = cms.EDAnalyzer(
+    "MultiTrackValidatorCNN",
 
     ### general settings ###
     # selection of TP for evaluation of efficiency #
@@ -114,4 +114,4 @@ multiTrackValidator = cms.EDAnalyzer(
 )
 
 from Configuration.Eras.Modifier_fastSim_cff import fastSim
-fastSim.toModify(multiTrackValidator, sim = ['fastSimProducer:TrackerHits'])
+fastSim.toModify(multiTrackValidatorCNN, sim = ['fastSimProducer:TrackerHits'])
