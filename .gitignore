@@ -1,8 +1,2 @@
 
 *.pyc
-
-Validation/RecoTrack/python/MultiTrackValidatorCNN_cff.py
-
-Validation/RecoTrack/python/MultiTrackValidatorCNN_cfi.py
-
-Validation/RecoTrack/plugins/MultiTrackValidator_CNN.cc

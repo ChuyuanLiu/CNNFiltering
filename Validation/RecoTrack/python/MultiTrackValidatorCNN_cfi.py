@@ -86,6 +86,19 @@ multiTrackValidator = cms.EDAnalyzer(
 
     simPVMaxZ = cms.untracked.double(-1),
 
+    ##All the doublets
+    detachedQuadStepHitDoublets         = cms.InputTag( "detachedQuadStepHitDoublets" ),
+    detachedTripletStepHitDoublets      = cms.InputTag( "detachedTripletStepHitDoublets" ),
+    initialStepHitDoublets              = cms.InputTag( "initialStepHitDoubletsPreSplitting" ),
+    lowPtQuadStepHitDoublets            = cms.InputTag( "lowPtQuadStepHitDoublets" ),
+    mixedTripletStepHitDoubletsA        = cms.InputTag( "mixedTripletStepHitDoubletsA" ),
+    mixedTripletStepHitDoubletsB        = cms.InputTag( "mixedTripletStepHitDoubletsB" ),
+    pixelLessStepHitDoublets            = cms.InputTag( "pixelLessStepHitDoublets" ),
+    tripletElectronHitDoublets          = cms.InputTag( "tripletElectronHitDoublets" ),
+
+    ##Hit cluster to Tp association map
+    tpMap    = cms.InputTag( "tpClusterProducer" ),
+
     ### Allow switching off particular histograms
     doSummaryPlots = cms.untracked.bool(True),
     doSimPlots = cms.untracked.bool(True),
