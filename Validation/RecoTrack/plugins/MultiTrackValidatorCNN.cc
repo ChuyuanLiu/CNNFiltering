@@ -1376,9 +1376,9 @@ void MultiTrackValidatorCNN::analyze(const edm::Event& event, const edm::EventSe
               if(trueDoublet)
               break;
             }
-            else
-            for (int i = 0; i < tParams; i++)
-            theTP.push_back(-1.0);
+            // else
+            // for (int i = 0; i < tParams; i++)
+            // theTP.push_back(-1.0);
 
             if(!trueDoublet)
             for (int i = 0; i < tParams; i++)
@@ -1400,7 +1400,12 @@ void MultiTrackValidatorCNN::analyze(const edm::Event& event, const edm::EventSe
             outCNNFile << 542.1369;
             outCNNFile << std::endl;
 
-            std::cout<< (1 + 3 + 2 + 2 + 4 + hitPars[0].size() + hitPars[0].size() + theTP.size() + 1) << std::endl;
+            theTP.clear();
+            hitPars[0].clear();
+            hitPars[1].clear();
+            hitPars.clear();
+
+            std::cout<< (1 + 3 + 2 + 2 + 4 + hitPars[0].size() + hitPars[1].size() + theTP.size() + 1) << std::endl;
 
           } //hits loop
         }
