@@ -1094,6 +1094,7 @@ void MultiTrackValidatorCNN::analyze(const edm::Event& event, const edm::EventSe
           std::vector< std::vector< float>> hitPars;
           std::vector< float > inHitPars, outHitPars;
           std::vector< float > inTP, outTP, theTP;
+          std::vector<float> theDoublet;
 
           float ax1, ax2, diffADC = 0.0;
 
@@ -1114,7 +1115,7 @@ void MultiTrackValidatorCNN::analyze(const edm::Event& event, const edm::EventSe
             hits.clear(); siHits.clear(); clusters.clear();
             detIds.clear(); geomDets.clear(); hitIds.clear();
             subDetIds.clear(); detSeqs.clear(); hitPars.clear(); theTP.clear();
-            inHitPars.clear(); outHitPars.clear();
+            inHitPars.clear(); outHitPars.clear();theDoublet.clear();
 
             hits.push_back(lIt->doublets().hit(i, HitDoublets::inner)); //TODO CHECK EMPLACEBACK
             hits.push_back(lIt->doublets().hit(i, HitDoublets::outer));
@@ -1384,7 +1385,7 @@ void MultiTrackValidatorCNN::analyze(const edm::Event& event, const edm::EventSe
             for (int i = 0; i < tParams; i++)
             theTP.push_back(-1.0);
 
-            std::vector<float> theDoublet;
+            std::cout<< "Out "<< std::endl;
 
             theDoublet.push_back(runNumber);
             theDoublet.push_back(eveNumber);
