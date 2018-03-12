@@ -26,7 +26,8 @@ outHitLabs = [ "out" + str(i) for i in hitLabs]
 
 particleLabs = ["label","tId","px","py","pz","pt","mT","eT","mSqr","pdgId",
                 "charge","nTrackerHits","nTrackerLayers","phi","eta","rapidity",
-                "vX","vY","vZ","dXY","dZ","bunchCrossing"]
+                "vX","vY","vZ","dXY","dZ","bunchCrossing","isChargeMatched",
+                "isSigSimMatched","sharedFraction","numAssocRecoTracks"]
 
 dataLab = headLab + inHitLabs + outHitLabs + ["diffADC"] + particleLabs + ["dummyFlag"]
 
