@@ -86,7 +86,7 @@ MultiTrackValidatorCNN::MultiTrackValidatorCNN(const edm::ParameterSet& pset):
 
   padHalfSize = 8;
   padSize = (int)(padHalfSize*2);
-  tParams = 22;
+  tParams = 26;
 
   const edm::InputTag& label_tp_effic_tag = pset.getParameter< edm::InputTag >("label_tp_effic");
   const edm::InputTag& label_tp_fake_tag = pset.getParameter< edm::InputTag >("label_tp_fake");
