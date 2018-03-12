@@ -1094,7 +1094,6 @@ void MultiTrackValidatorCNN::analyze(const edm::Event& event, const edm::EventSe
           std::vector< std::vector< float>> hitPars;
           std::vector< float > inHitPars, outHitPars;
           std::vector< float > inTP, outTP, theTP;
-          std::vector<float> theDoublet;
 
           float ax1, ax2, diffADC = 0.0;
 
@@ -1115,7 +1114,7 @@ void MultiTrackValidatorCNN::analyze(const edm::Event& event, const edm::EventSe
             hits.clear(); siHits.clear(); clusters.clear();
             detIds.clear(); geomDets.clear(); hitIds.clear();
             subDetIds.clear(); detSeqs.clear(); hitPars.clear(); theTP.clear();
-            inHitPars.clear(); outHitPars.clear();theDoublet.clear();
+            inHitPars.clear(); outHitPars.clear();
 
             hits.push_back(lIt->doublets().hit(i, HitDoublets::inner)); //TODO CHECK EMPLACEBACK
             hits.push_back(lIt->doublets().hit(i, HitDoublets::outer));
@@ -1385,38 +1384,23 @@ void MultiTrackValidatorCNN::analyze(const edm::Event& event, const edm::EventSe
             for (int i = 0; i < tParams; i++)
             theTP.push_back(-1.0);
 
-            std::cout<< "Out "<< std::endl;
-
-            theDoublet.push_back(runNumber);
-            theDoublet.push_back(eveNumber);
-            theDoublet.push_back(lumNumber);
-            theDoublet.push_back(float(k));
-            theDoublet.push_back(float(i));
-
-            theDoublet.push_back(innerLayer->seqNum());
-            theDoublet.push_back(outerLayer->seqNum());
-
-            theDoublet.push_back(bs.x0());
-            theDoublet.push_back(bs.y0());
-            theDoublet.push_back(bs.z0());
-            theDoublet.push_back(bs.sigmaZ());
-
+            outCNNFile << runNumber << "\t" << eveNumber << "\t" << lumNumber << "\t";
+            outCNNFile << k << "\t" << i << "\t";
+            outCNNFile <<innerLayer->seqNum() << "\t" << outerLayer->seqNum() << "\t";
+            outCNNFile << bs.x0() << "\t" << bs.y0() << "\t" << bs.z0() << "\t" << bs.sigmaZ() << "\t";
             for (int j = 0; j < 2; j++)
             for (size_t i = 0; i < hitPars[j].size(); i++)
-              theDoublet.push_back(hitPars[j][i]);
+            outCNNFile << hitPars[j][i] << "\t";
 
-            theDoublet.push_back(diffADC);
+            outCNNFile << diffADC << "\t";
 
             for (size_t i = 0; i < theTP.size(); i++)
-              theDoublet.push_back(theTP[i]);
-
-            for (size_t i = 0; i < theDoublet.size(); i++)
-              outCNNFile << theDoublet[i] << "\t";
+            outCNNFile << theTP[i] << "\t";
 
             outCNNFile << 542.1369;
             outCNNFile << std::endl;
 
-            std::cout << theDoublet.size() << std::endl;
+            std::cout<< (1 + 3 + 2 + 2 + 4 + hitPars[0].size() + hitPars[0].size() + theTP.size() + 1) << std::endl;
 
           } //hits loop
         }
