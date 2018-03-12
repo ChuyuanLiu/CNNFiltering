@@ -1400,8 +1400,6 @@ void MultiTrackValidatorCNN::analyze(const edm::Event& event, const edm::EventSe
             outCNNFile << 542.1369;
             outCNNFile << std::endl;
 
-            outCNNFile << hitPars[0].size() << " - " <<hitPars[1].size()<< " - " <<theTP.size() << " - " << std::endl;
-
           } //hits loop
         }
       }
