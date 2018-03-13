@@ -25,6 +25,10 @@ def to_categorical(y, num_classes=None):
     categorical = np.zeros((n, num_classes))
     categorical[np.arange(n), y] = 1
     return categorical,num_classes
+
+
+padshape = 16
+
 target_lab = "label"
 
 headLab = ["run","evt","lumi","k","i","detSeqIn","detSeqOut","bSX","bSY","bSZ","bSdZ"]
@@ -36,7 +40,7 @@ hitDet = ["DetSeq","IsBarrel","Layer","Ladder","Side","Disk","Panel","Module","I
 hitClust = ["ClustX","ClustY","ClustSize","ClustSizeX","ClustSizeY","PixelZero",
             "AvgCharge","OverFlowX","OverFlowY","IsBig","IsBad","IsEdge"]
 
-hitPixel = ["Pix" + str(el) for el in range(1, 257)]
+hitPixel = ["Pix" + str(el) for el in range(1, padshape*padshape + 1)]
 
 hitCharge = ["SumADC"]
 
@@ -63,6 +67,7 @@ featureLabs = inHitFeature + outHitFeature + ["diffADC"]
 dataLab = headLab + inHitLabs + outHitLabs + ["diffADC"] + particleLabs + ["dummyFlag"]
 
 layer_ids = [0, 1, 2, 3, 14, 15, 16, 29, 30, 31]
+
 
 class Dataset:
     """ Load the dataset from txt files. """
@@ -99,28 +104,35 @@ class Dataset:
         cosThetaOuts = np.cos(np.arctan2(self.data["outY"],self.data["outZ"]))
         sinThetaIns = np.sin(np.arctan2(self.data["inY"], self.data["inZ"]))
         sinThetaOuts = np.sin(np.arctan2(self.data["outY"],self.data["outZ"]))
-        
+
         inThetaModC = np.multiply(hits_in, cosThetaIns[:, np.newaxis])
         outThetaModC = np.multiply(hits_out, cosThetaOuts[:, np.newaxis])
 
         inThetaModS = np.multiply(hits_in, sinThetaIns[:, np.newaxis])
         outThetaModS = np.multiply(hits_out, sinThetaOuts[:, np.newaxis])
         return inThetaModC, outThetaModC, inThetaModS, outThetaModS
-    
+
     def phi_correction(self, hits_in, hits_out):
 
         cosPhiIns = np.cos(np.arctan2(self.data["inY"],self.data["inX"]))
         cosPhiOuts = np.cos(np.arctan2(self.data["outY"],self.data["outX"]))
         sinPhiIns = np.sin(np.arctan2(self.data["inY"], self.data["inX"]))
         sinPhiOuts = np.sin(np.arctan2(self.data["outY"],self.data["outX"]))
-        
+
         inPhiModC = np.multiply(hits_in, cosPhiIns[:, np.newaxis])
         outPhiModC = np.multiply(hits_out, cosPhiOuts[:, np.newaxis])
 
         inPhiModS = np.multiply(hits_in, sinPhiIns[:, np.newaxis])
         outPhiModS = np.multiply(hits_out, sinPhiOuts[:, np.newaxis])
         return inPhiModC, outPhiModC, inPhiModS, outPhiModS
-    
+
+    def b_w_correction(self, hits_in, hits_out,smoothing=1.0):
+
+        turned_in  = ((hits_in > 0.).astype(float)) * smoothing
+        turned_out = ((hits_out > 0.).astype(float)) * smoothing
+
+        return turned_in,turned_out
+
     def separate_flipped_hits(self, hit_shapes, flipped):
         flipped = flipped.astype('bool')
         flipped_hits = np.zeros(hit_shapes.shape)
@@ -129,7 +141,7 @@ class Dataset:
         not_flipped_hits[~flipped, :] = hit_shapes[~flipped, :]
         return flipped_hits, not_flipped_hits
 
-    def get_hit_shapes(self, normalize=True, angular_correction=True, flipped_channels=True):
+    def get_hit_shapes(self, normalize=True, angular_correction=True, flipped_channels=True, bw_cluster = True):
         """ Return hit shape features
         Args:
         -----
@@ -141,12 +153,14 @@ class Dataset:
 
         # Normalize data
         if normalize:
-            # mean, std precomputed for data NOPU
-            #mean, std = (668.25684, 3919.5576)
-            #mean, std precomputerd for PU35 data
-	    mean, std = (13382.0011321,10525.1252954) #on 2.5M hits
- 	    a_in = a_in / std
+	        mean, std = (13382.0011321,10525.1252954) #on 2.5M hits PU35
+ 	        a_in = a_in / std
             a_out = a_out / std
+
+        if bw_cluster:
+            (bw_a_in,bw_a_out) = self.b_w_correction(a_in,a_out)
+            a_in  = bw_a_in
+            a_out = bw_a_out
 
         if flipped_channels:
             flip_in, not_flip_in = self.separate_flipped_hits(
@@ -156,6 +170,7 @@ class Dataset:
             l = [flip_in, not_flip_in, flip_out, not_flip_out]
         else:
             l = [a_in, a_out]
+
         if angular_correction:
             thetac_in, thetac_out, thetas_in, thetas_out = self.theta_correction(
                 a_in, a_out)
@@ -172,7 +187,7 @@ class Dataset:
         return self  # to allow method chaining
     def Filter(self, feature_name, value):
         """ filter data keeping only those samples where s[feature_name] = value """
-        d = Dataset(self.data[self.data[feature_name] == value]) 
+        d = Dataset(self.data[self.data[feature_name] == value])
 	d.data =  self.data[self.data[feature_name] == value]
         return d  # to allow method chaining
 
@@ -206,13 +221,13 @@ class Dataset:
         data = np.array(l)  # (channels, batch_size, hit_size)
         data = data.reshape((len(data), -1, 16, 16))
         X_hit = np.transpose(data, (1, 2, 3, 0))
-        
+
         #print(X_hit[0,:,:,0])
 
         X_info = self.get_info_features()
         y,_= to_categorical(self.get_labels())
         return X_hit, X_info, y
-    
+
     def get_layer_map_data_multiclass(self):
         a_in = self.data[inPixels].as_matrix().astype(np.float16)
         a_out = self.data[outPixels].as_matrix().astype(np.float16)
@@ -239,13 +254,13 @@ class Dataset:
         data = np.array(l)  # (channels, batch_size, hit_size)
         data = data.reshape((len(data), -1, 16, 16))
         X_hit = np.transpose(data, (1, 2, 3, 0))
-        
+
         #print(X_hit[0,:,:,0])
 
         X_info = self.get_info_features()
         y,self.numclasses= to_categorical(self.get_labels_multiclass())
         return X_hit, X_info, y
-    
+
     def get_layer_map_data_withphi(self):
         a_in = self.data[inPixels].as_matrix().astype(np.float16)
         a_out = self.data[outPixels].as_matrix().astype(np.float16)
@@ -285,19 +300,19 @@ class Dataset:
 
     def get_labels(self):
         return self.data[target_lab].as_matrix() != -1.0
-    
+
     def get_labels_multiclass(self):
         labels = np.full(len(self.data[target_lab].as_matrix()),1.0)
         labels[self.data[target_lab].as_matrix()==-1.0] = 0.0
         for p in pdg:
             labels[self.data[target_lab].as_matrix()==p] = pdg.index(p) + 2
-        
+
         print set(labels)
         return labels
 
-    def get_data(self, normalize=True, angular_correction=True, flipped_channels=True):
+    def get_data(self, normalize=True, angular_correction=True, flipped_channels=True,b_w_correction=False):
         X_hit = self.get_hit_shapes(
-            normalize, angular_correction, flipped_channels)
+            normalize, angular_correction, flipped_channels,b_w_correction)
         X_info = self.get_info_features()
         y = to_categorical(self.get_labels(), num_classes=2)
         return X_hit, X_info, y
@@ -314,7 +329,7 @@ class Dataset:
 
         n_pos = data_pos.shape[0]
         n_neg = data_neg.shape[0]
-	
+
 	if n_pos==0:
 		print("Number of negatives: " + str(n_neg))
                 print("Number of positive: " + str(n_pos))
@@ -327,7 +342,7 @@ class Dataset:
 
         if n_pos > n_neg:
             return self
-	
+
         data_neg = data_neg.sample(n_pos)
         balanced_data = pd.concat([data_neg, data_pos])
         balanced_data = balanced_data.sample(frac=1)  # Shuffle the dataset

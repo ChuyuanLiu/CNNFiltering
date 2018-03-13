@@ -6,7 +6,8 @@ from keras import optimizers
 from keras.constraints import max_norm
 from keras.utils import plot_model
 
-IMAGE_SIZE = 16
+
+IMAGE_SIZE = dataset.padshape
 
 
 def adam_small_doublet_model(args, n_channels,n_labels=2):

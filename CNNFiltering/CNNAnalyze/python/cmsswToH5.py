@@ -69,7 +69,6 @@ def npDoubletsLoad(path,fileslimit,cols):
             if cols:
                 dfDoublets.columns = dataLab
             #print(dfDoublets.head())
-            dfDoublets.drop(columns=["bSX","bSY","bSZ","bSdZ","inAx1","inAx2","outAx1","outAx2"])
             dfDoublets.to_hdf(singlePath + idName + "_" + d.replace(".txt",".h5"),'data',append=True)
             listdata.append(dfDoublets)
 
