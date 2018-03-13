@@ -48,7 +48,7 @@ def npDoubletsLoad(path,fileslimit,cols):
     idName = ""
 
     for p in path.split("/"):
-        if "runs" in p:
+        if "dnn" in p:
             idName = p
 
     singlePath = path + "/singleEvts/"

@@ -201,7 +201,7 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     #print()
 
     if not args.multiclass:
-        model = small_doublet_model(args,train_input_list[0].shape[-1])
+        model = adam_small_doublet_model(args,train_input_list[0].shape[-1])
     else:
         model = small_doublet_model(args,train_input_list[0].shape[-1],len(pdg)+2)
 

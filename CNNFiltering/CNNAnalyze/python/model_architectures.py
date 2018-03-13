@@ -6,15 +6,15 @@ from keras import optimizers
 from keras.constraints import max_norm
 from keras.utils import plot_model
 
-IMAGE_SIZE = 15
+IMAGE_SIZE = 16
 
 
 def adam_small_doublet_model(args, n_channels,n_labels=2):
     hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='hit_shape_input')
-    infos = Input(shape=(len(dataset.featurelabs),), name='info_input')
+    infos = Input(shape=(len(dataset.featureLabs),), name='info_input')
 
-    drop = Dropout(args.dropout)(hit_shapes)
-    conv = Conv2D(32, (5, 5), activation='relu', padding='same', data_format="channels_last", name='conv1')(drop)
+    #drop = Dropout(args.dropout)(hit_shapes)
+    conv = Conv2D(32, (5, 5), activation='relu', padding='same', data_format="channels_last", name='conv1')(hit_shapes)
     conv = Conv2D(32, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv2')(conv)
     pool = MaxPooling2D(pool_size=(2, 2), padding='same', data_format="channels_last", name='pool1')(conv)
 
@@ -39,7 +39,7 @@ def adam_small_doublet_model(args, n_channels,n_labels=2):
 
 def big_filters_model(args, n_channels):
     hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='hit_shape_input')
-    infos = Input(shape=(len(dataset.featurelabs),), name='info_input')
+    infos = Input(shape=(len(dataset.featureLabs),), name='info_input')
 
     conv = Conv2D(128, (5, 5), activation='relu', padding='valid', data_format="channels_last", name='conv1')(hit_shapes)
 
@@ -61,7 +61,7 @@ def big_filters_model(args, n_channels):
 
 def dense_model(args, n_channels):
     hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='hit_shape_input')
-    infos = Input(shape=(len(dataset.featurelabs),), name='info_input')
+    infos = Input(shape=(len(dataset.featureLabs),), name='info_input')
     flat = Flatten()(hit_shapes)
     concat = concatenate([flat, infos])
 
@@ -82,10 +82,10 @@ def dense_model(args, n_channels):
 
 def small_doublet_model(args, n_channels,n_labels=2):
     hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='hit_shape_input')
-    infos = Input(shape=(len(dataset.featurelabs),), name='info_input')
+    infos = Input(shape=(len(dataset.featureLabs),), name='info_input')
 
-    drop = Dropout(args.dropout)(hit_shapes)
-    conv = Conv2D(32, (5, 5), activation='relu', padding='same', data_format="channels_last", name='conv1')(drop)
+#    drop = Dropout(args.dropout)(hit_shapes)
+    conv = Conv2D(32, (5, 5), activation='relu', padding='same', data_format="channels_last", name='conv1')(hit_shapes)
     conv = Conv2D(32, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv2')(conv)
     pool = MaxPooling2D(pool_size=(2, 2), padding='same', data_format="channels_last", name='pool1')(conv)
 
@@ -111,7 +111,7 @@ def small_doublet_model(args, n_channels,n_labels=2):
 
 def big_doublet_model(args, n_channels):
     hit_shapes = Input(shape=(8, 8, n_channels), name='hit_shape_input')
-    infos = Input(shape=(len(dataset.featurelabs),), name='info_input')
+    infos = Input(shape=(len(dataset.featureLabs),), name='info_input')
 
     drop = Dropout(args.dropout)(hit_shapes)
     conv = Conv2D(128, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv1')(drop)
@@ -141,7 +141,7 @@ def big_doublet_model(args, n_channels):
 def separate_conv_doublet_model(args, n_channels):
     in_hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='in_hit_shape_input')
     out_hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='out_hit_shape_input')
-    infos = Input(shape=(len(dataset.featurelabs),), name='info_input')
+    infos = Input(shape=(len(dataset.featureLabs),), name='info_input')
 
     # input shape convolution
     drop = Dropout(args.dropout)(in_hit_shapes)
