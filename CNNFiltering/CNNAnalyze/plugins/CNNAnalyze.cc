@@ -451,7 +451,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         std::vector <int> commonPdg;
 
         for (size_t iInt = 0; iInt < kIntersection.size(); iInt++)
-          commonPdg.push_back(kIntersection[iInt]->second);
+          commonPdg.push_back(kIntersection[iInt].second);
 
         for (unsigned int iTr = 0; iTr<partiList.size(); iTr++ ) {
           if(std::find(commonPdg.begin(),commonPdg.end(),partiList[iTr])!=(commonPdg.end()))
@@ -530,7 +530,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
           TrackingParticle::Point  verTp  = particle.vertex();
 
           theTP.push_back(1.0); // 1
-          theTP.push_back(kPar->second.key()); // 2
+          theTP.push_back(inPar->second.key()); // 2
           theTP.push_back(momTp.x()); // 3
           theTP.push_back(momTp.y()); // 4
           theTP.push_back(momTp.z()); // 5
@@ -594,7 +594,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
           TrackingParticle::Point  verTp  = particle.vertex();
 
           theTP.push_back(1.0); // 1
-          theTP.push_back(kPar->second.key()); // 2
+          theTP.push_back(outPar->second.key()); // 2
           theTP.push_back(momTp.x()); // 3
           theTP.push_back(momTp.y()); // 4
           theTP.push_back(momTp.z()); // 5
