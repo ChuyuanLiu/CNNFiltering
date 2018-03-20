@@ -146,7 +146,7 @@ tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap
 
   padHalfSize = 8;
   padSize = (int)(padHalfSize*2);
-  tParams = 22;
+  tParams = 26;
 
 }
 
@@ -509,6 +509,10 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
           */
 
           theTP.push_back(particle.eventId().bunchCrossing()); //22
+          theTP.push_back(1.0); //For compatibility with tracks infos, nothing special.
+          theTP.push_back(1.0);
+          theTP.push_back(1.0);
+          theTP.push_back(1.0);
         }
 
         //TODO Check for other parameters
@@ -652,7 +656,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       }
 
-      outCNNFile << runNumber << "\t" << eveNumber << "\t" << lumNumber << "\t";
+      outCNNFile << runNumber << "\t" << eveNumber << "\t" << lumNumber << "\t" << puNumInt << "\t";
       outCNNFile <<innerLayer->seqNum() << "\t" << outerLayer->seqNum() << "\t";
       outCNNFile << bs.x0() << "\t" << bs.y0() << "\t" << bs.z0() << "\t" << bs.sigmaZ() << "\t";
       for (int j = 0; j < 2; j++)
