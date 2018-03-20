@@ -163,7 +163,7 @@ class Dataset:
         if normalize:
 	        mean, std = (13382.0011321,10525.1252954) #on 2.5M hits PU35
  	        a_in = a_in / std
-            a_out = a_out / std
+                a_out = a_out / std
 
         if bw_cluster:
             (bw_a_in,bw_a_out) = self.b_w_correction(a_in,a_out)
