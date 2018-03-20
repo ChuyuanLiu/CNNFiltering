@@ -225,7 +225,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   //   std::cout << handle.provenance()->moduleLabel()<< std::endl;
   // }
 
-  std::string fileName = std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
+  std::string fileName = "doublets/" + std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
   fileName += "_" + processName_ + "_dnn_doublets.txt";
   std::ofstream outCNNFile(fileName, std::ofstream::app);
 
@@ -678,7 +678,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       outCNNFile << 542.1369;
       outCNNFile << std::endl;
       // outCNNFile << hitPars[0].size() << " -- " <<  hitPars[1].size() << " -- " << theTP.size() << std::endl << std::endl;
-
+      // std::cout << hitPars[0].size() << " " << hitPars[1].size() << " " << theTP.size() << std::endl;
 
 
     }

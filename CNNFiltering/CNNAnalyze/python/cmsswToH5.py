@@ -5,12 +5,13 @@ import sys, time
 import argparse
 
 from math import floor
+from dataset import *
 
 padshape = 16
 
 target_lab = "label"
 
-headLab = ["run","evt","lumi","k","i","detSeqIn","detSeqOut","bSX","bSY","bSZ","bSdZ"]
+headLab = ["run","evt","lumi","k","i","detSeqIn","detSeqOut","bSX","bSY","bSZ","bSdZ","PU"]
 
 hitCoord = ["X","Y","Z","Phi","R"]
 
@@ -45,16 +46,15 @@ outParticle = [ "out" + str(i) for i in particleLabs]
 inHitFeature  = [ "in" + str(i) for i in hitFeatures]
 outHitFeature = [ "out" + str(i) for i in hitFeatures]
 
-particleLabs = ["label","tId","intersect"] + inHitFeature +  outHitFeature
-
-featureLabs = inHitFeature + outHitFeature + ["diffADC"]
+particleLabs = ["label","tId","intersect"] + inParticle +  outParticle
 
 differences = ["deltaA", "deltaADC", "deltaS", "deltaR", "deltaPhi"]
+
+featureLabs = inHitFeature + outHitFeature + differences
 
 dataLab = headLab + inHitLabs + outHitLabs + differences + particleLabs + ["dummyFlag"]
 
 layer_ids = [0, 1, 2, 3, 14, 15, 16, 29, 30, 31]
-
 
 import pandas as pd
 import numpy as np
@@ -64,10 +64,21 @@ def npDoubletsLoad(path,fileslimit,cols):
     print ("======================================================================")
 
     start = time.time()
+    bal_dir = path + "/bal_data/"
+    new_dir = path + "/unbal_data/"
 
     datafiles = np.array([f for f in listdir(path) if (isfile(join(path, f)) and  f.lower().endswith(("txt","gz")) and "dnn_doublets" in f)])
 
     print("Loading " + str(len(datafiles)) + " dataset file(s) . . .")
+
+    print("Balancing dataset in   : " + path)
+    print("Saving unbalanced in   : " + new_dir)
+    print("Saving balanced in     : " + bal_dir)
+
+    if not os.path.exists(bal_dir):
+        os.makedirs(bal_dir)
+    if not os.path.exists(new_dir):
+        os.makedirs(new_dir)
 
     idName = ""
 
@@ -75,9 +86,7 @@ def npDoubletsLoad(path,fileslimit,cols):
         if "dnn" in p:
             idName = p
 
-    singlePath = path + "/singleEvts/"
-    if not os.path.exists(singlePath):
-        os.makedirs(singlePath)
+
 
     listdata = []
     for no,d in enumerate(datafiles):
@@ -90,15 +99,15 @@ def npDoubletsLoad(path,fileslimit,cols):
                 dfDoublets = pd.read_table(df, sep="\t", header = None)
             if d.lower().endswith(("gz")):
                 dfDoublets = pd.read_table(df, sep="\t", header = None,compression="gzip")
-            if cols:
-                dfDoublets.columns = dataLab
-            #print(dfDoublets.head())
-            dfDoublets.to_hdf(singlePath + idName + "_" + d.replace(".txt",".h5"),'data',append=True)
-            listdata.append(dfDoublets)
 
-    alldata = pd.concat(listdata)
+            dfDoublets.columns = dataLab
+            dfDoublets.to_hdf(new_dir + idName + "_" + d.replace(".txt",".h5"),'data',append=True)
 
-    dfDoublets.to_hdf(path + idName + "_" + "doublets.h5",'data',append=True)
+            ##balanceddata
+            theData = Dataset(dfDoublets).balance_data()
+            train_data.save(bal_dir + idName + "_bal_" + d.replace(".txt",".h5"),'data',append=True)
+
+
 
     end = time.time()
     print ("======================================================================")
@@ -116,6 +125,7 @@ if __name__ == '__main__':
     parser.add_argument('--read', type=str, default="./",help='files path')
     parser.add_argument('--flimit', type=int, default=-1,help='max no. of files')
     parser.add_argument('--columns', type=bool, default=False,help='columns?')
+    
     #parser.add_argument('--debug', type=bool, default=False,help='debug printouts')
     args = parser.parse_args()
 
