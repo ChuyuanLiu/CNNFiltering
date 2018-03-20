@@ -31,7 +31,7 @@ padshape = 16
 
 target_lab = "label"
 
-headLab = ["run","evt","lumi","k","i","detSeqIn","detSeqOut","bSX","bSY","bSZ","bSdZ"]
+headLab = ["run","evt","lumi","k","i","detSeqIn","detSeqOut","bSX","bSY","bSZ","bSdZ","PU"]
 
 hitCoord = ["X","Y","Z","Phi","R"]
 
@@ -66,11 +66,11 @@ outParticle = [ "out" + str(i) for i in particleLabs]
 inHitFeature  = [ "in" + str(i) for i in hitFeatures]
 outHitFeature = [ "out" + str(i) for i in hitFeatures]
 
-particleLabs = ["label","tId","intersect"] + inHitFeature +  outHitFeature
-
-featureLabs = inHitFeature + outHitFeature + ["diffADC"]
+particleLabs = ["label","tId","intersect"] + inParticle +  outParticle
 
 differences = ["deltaA", "deltaADC", "deltaS", "deltaR", "deltaPhi"]
+
+featureLabs = inHitFeature + outHitFeature + differences
 
 dataLab = headLab + inHitLabs + outHitLabs + differences + particleLabs + ["dummyFlag"]
 
