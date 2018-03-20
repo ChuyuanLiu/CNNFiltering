@@ -105,7 +105,7 @@ def npDoubletsLoad(path,fileslimit,cols):
 
             ##balanceddata
             theData = Dataset(dfDoublets).balance_data()
-            train_data.save(bal_dir + idName + "_bal_" + d.replace(".txt",".h5"),'data',append=True)
+            theData.save(bal_dir + idName + "_bal_" + d.replace(".txt",".h5"))
 
 
 
@@ -125,7 +125,7 @@ if __name__ == '__main__':
     parser.add_argument('--read', type=str, default="./",help='files path')
     parser.add_argument('--flimit', type=int, default=-1,help='max no. of files')
     parser.add_argument('--columns', type=bool, default=False,help='columns?')
-    
+
     #parser.add_argument('--debug', type=bool, default=False,help='debug printouts')
     args = parser.parse_args()
 
