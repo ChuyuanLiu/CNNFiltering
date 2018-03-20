@@ -422,7 +422,6 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       // std::cout << "Doublet no. "  << i << " hit no. " << lIt->doublets().innerHitId(i) << std::endl;
 
       std::vector< std::pair<int,int> > kPdgIn, kPdgOut, kIntersection;
-      std::vector< int > kIntPdgs
 
       for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
       kPdgIn.push_back({ip->second.key(),(*ip->second).pdgId()});
@@ -455,7 +454,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
           commonPdg.push_back(kIntersection[iInt]->second);
 
         for (unsigned int iTr = 0; iTr<partiList.size(); iTr++ ) {
-          if(std::find(commonPdg.begin(),commonPdg.end(),partiList[iTr])!=(commonPdg.end())
+          if(std::find(commonPdg.begin(),commonPdg.end(),partiList[iTr])!=(commonPdg.end()))
               iParticle += (1<<iTr);
         }
 
@@ -527,6 +526,9 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
           auto particle = *inPar->second;
 
+          TrackingParticle::Vector momTp = particle.momentum();
+          TrackingParticle::Point  verTp  = particle.vertex();
+
           theTP.push_back(1.0); // 1
           theTP.push_back(kPar->second.key()); // 2
           theTP.push_back(momTp.x()); // 3
@@ -557,8 +559,6 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
           momTp.y())/sqrt(momTp.perp2()) *
           momTp.z()/sqrt(momTp.perp2()))); //21 //dz //TODO Check MomVert //search parametersDefiner
 
-          theTP.push_back(kIntersection.size());
-
           /*
           //W.R.T. PCA
           edm::ESHandle<ParametersDefinerForTP> parametersDefinerTPHandle;
@@ -573,7 +573,10 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
           */
 
           theTP.push_back(particle.eventId().bunchCrossing());
-
+          theTP.push_back(1.0);
+          theTP.push_back(1.0);
+          theTP.push_back(1.0);
+          theTP.push_back(1.0);
         }
         else
         for (int i = 0; i < tParams; i++) {
@@ -587,6 +590,9 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
           auto particle = *outPar->second;
 
+          TrackingParticle::Vector momTp = particle.momentum();
+          TrackingParticle::Point  verTp  = particle.vertex();
+
           theTP.push_back(1.0); // 1
           theTP.push_back(kPar->second.key()); // 2
           theTP.push_back(momTp.x()); // 3
@@ -617,11 +623,6 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
           momTp.y())/sqrt(momTp.perp2()) *
           momTp.z()/sqrt(momTp.perp2()))); //21 //dz //TODO Check MomVert //search parametersDefiner
 
-          theTP.push_back(kIntersection.size());
-          theTP.push_back(1.0);
-          theTP.push_back(1.0);
-          theTP.push_back(1.0);
-          theTP.push_back(1.0); //26
 
           /*
           //W.R.T. PCA
@@ -637,6 +638,10 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
           */
 
           theTP.push_back(particle.eventId().bunchCrossing());
+          theTP.push_back(1.0);
+          theTP.push_back(1.0);
+          theTP.push_back(1.0);
+          theTP.push_back(1.0);
 
         }
         else
