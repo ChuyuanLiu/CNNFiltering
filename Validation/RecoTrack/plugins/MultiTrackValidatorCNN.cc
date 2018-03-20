@@ -1095,7 +1095,7 @@ void MultiTrackValidatorCNN::analyze(const edm::Event& event, const edm::EventSe
           std::vector< float > inHitPars, outHitPars;
           std::vector< float > inTP, outTP, theTP;
 
-          float ax1, ax2, diffADC = 0.0;
+          float ax1, ax2, deltaADC = 0.0, deltaPhi = 0.0, deltaR = 0.0, deltaA = 0.0, deltaS = 0.0;
 
           DetLayer const * innerLayer = lIt->doublets().detLayer(HitDoublets::inner);
           if(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum())==pixelDets.end()) continue;   //TODO change to std::map ?
@@ -1109,7 +1109,12 @@ void MultiTrackValidatorCNN::analyze(const edm::Event& event, const edm::EventSe
           {
 
             int looptwo = 0;
-            diffADC = 0.0;
+
+            deltaPhi = 0.0;
+            deltaR = 0.0;
+            deltaA = 0.0;
+            deltaADC = 0.0;
+            deltaS = 0.0;
 
             hits.clear(); siHits.clear(); clusters.clear();
             detIds.clear(); geomDets.clear(); hitIds.clear();
@@ -1153,7 +1158,9 @@ void MultiTrackValidatorCNN::analyze(const edm::Event& event, const edm::EventSe
               hitPars[j].push_back((hits[j]->hit()->globalState()).position.y());
               hitPars[j].push_back((hits[j]->hit()->globalState()).position.z()); //3
 
-              hitPars[j].push_back(lIt->doublets().phi(i,layers[j])); //Phi //FIXME
+              float phi = lIt->doublets().phi(i,layers[j]) >=0.0 ? lIt->doublets().phi(i,layers[j]) : 2*M_PI + lIt->doublets().phi(i,layers[j]);
+
+              hitPars[j].push_back(phi); //Phi //FIXME
               hitPars[j].push_back(lIt->doublets().r(i,layers[j])); //R //TODO add theta and DR
 
               hitPars[j].push_back(detSeqs[j]); //det number //6
@@ -1200,10 +1207,11 @@ void MultiTrackValidatorCNN::analyze(const edm::Event& event, const edm::EventSe
               hitPars[j].push_back((float)clusters[j]->pixel(0).adc); //25
               hitPars[j].push_back(float(clusters[j]->charge())/float(clusters[j]->size())); //avg pixel charge
 
-              diffADC -= clusters[j]->charge(); diffADC *= -1.0; //At the end == Outer Hit ADC - Inner Hit ADC
 
               hitPars[j].push_back((float)(clusters[j]->sizeX() > padSize));//27
               hitPars[j].push_back((float)(clusters[j]->sizeY() > padSize));
+              hitPars[j].push_back((float)(clusters[j]->sizeY()) / (float)(clusters[j]->sizeX()));
+
 
               hitPars[j].push_back((float)siHits[j]->spansTwoROCs());
               hitPars[j].push_back((float)siHits[j]->hasBadPixels());
@@ -1240,8 +1248,15 @@ void MultiTrackValidatorCNN::analyze(const edm::Event& event, const edm::EventSe
               //ADC sum
               hitPars[j].push_back(float(clusters[j]->charge()));
 
-
+              //Deltas
+              deltaA   -= ((float)clusters[j]->size()); deltaA *= -1.0;
+              deltaADC -= clusters[j]->charge(); deltaADC *= -1.0; //At the end == Outer Hit ADC - Inner Hit ADC
+              deltaS   -= ((float)(clusters[j]->sizeY()) / (float)(clusters[j]->sizeX())); deltaS *= -1.0;
+              deltaR   -= lIt->doublets().r(i,layers[j]); deltaR *= -1.0;
+              deltaPhi -= phi; deltaPhi *= -1.0;
             }
+
+            deltaPhi *= deltaPhi > M_PI ? 2*M_PI - fabs(deltaPhi) : 1.0;
 
             auto rangeIn = tpClust->equal_range(lIt->doublets().hit(i, HitDoublets::inner)->firstClusterRef());
             auto rangeOut = tpClust->equal_range(lIt->doublets().hit(i, HitDoublets::outer)->firstClusterRef());
@@ -1295,13 +1310,13 @@ void MultiTrackValidatorCNN::analyze(const edm::Event& event, const edm::EventSe
                 if(!((*recHit)->hasPositionAndError()))
                 continue;
 
-                if((*recHit)->sharesInput(inRecHit,TrackingRecHit::SharedInputType::some))
+                if((*recHit)->sharesInput(inRecHit,TrackingRecHit::SharedInputType::all))
                 {
                   inTrue = true;
                   continue;
                 }
 
-                if((*recHit)->sharesInput(outRecHit,TrackingRecHit::SharedInputType::some))
+                if((*recHit)->sharesInput(outRecHit,TrackingRecHit::SharedInputType::all))
                 outTrue = true;
               }
 
@@ -1337,6 +1352,7 @@ void MultiTrackValidatorCNN::analyze(const edm::Event& event, const edm::EventSe
               TrackingParticle::Vector momTp = particle.momentum();
               TrackingParticle::Point  verTp  = particle.vertex();
 
+              theTP.push_back(1.0);
               theTP.push_back(1.0); // 1
               theTP.push_back((float)(i)); // 2
               theTP.push_back(momTp.x()); // 3
@@ -1392,7 +1408,11 @@ void MultiTrackValidatorCNN::analyze(const edm::Event& event, const edm::EventSe
             for (size_t i = 0; i < hitPars[j].size(); i++)
             outCNNFile << hitPars[j][i] << "\t";
 
-            outCNNFile << diffADC << "\t";
+            outCNNFile << deltaA   << "\t";
+            outCNNFile << deltaADC << "\t";
+            outCNNFile << deltaS   << "\t";
+            outCNNFile << deltaR   << "\t";
+            outCNNFile << deltaPhi << "\t";
 
             for (size_t i = 0; i < theTP.size(); i++)
             outCNNFile << theTP[i] << "\t";

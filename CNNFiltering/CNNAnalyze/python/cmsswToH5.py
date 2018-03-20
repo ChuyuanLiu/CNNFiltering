@@ -104,6 +104,7 @@ def npDoubletsLoad(path,fileslimit,cols):
             dfDoublets.to_hdf(new_dir + idName + "_" + d.replace(".txt",".h5"),'data',append=True)
 
             ##balanceddata
+            theData = Dataset([])
             theData = Dataset.from_dataframe(dfDoublets).balance_data()
             theData.save(bal_dir + idName + "_bal_" + d.replace(".txt",".h5"))
 
