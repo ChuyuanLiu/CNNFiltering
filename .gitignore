@@ -1,2 +1,12 @@
 
 *.pyc
+
+RecoPixelVertexing/PixelTriplets/plugins/CAHitQuadrupletGenerator.cc
+
+RecoPixelVertexing/PixelTriplets/plugins/CAHitQuadrupletGenerator.h
+
+RecoPixelVertexing/PixelTriplets/plugins/CAHitTripletGenerator.cc
+
+RecoPixelVertexing/PixelTriplets/plugins/CAHitTripletGenerator.h
+
+RecoTracker/TkHitPairs/src/HitPairGeneratorFromLayerPair.cc
