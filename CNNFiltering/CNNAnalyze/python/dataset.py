@@ -52,19 +52,27 @@ outHitLabs = [ "out" + str(i) for i in hitLabs]
 inPixels = [ "in" + str(i) for i in hitPixel]
 outPixels = [ "out" + str(i) for i in hitPixel]
 
-particleLabs = ["label","tId","px","py","pz","pt","mT","eT","mSqr","pdgId",
+
+particleLabs = ["pId","tId","px","py","pz","pt","mT","eT","mSqr","pdgId",
                 "charge","nTrackerHits","nTrackerLayers","phi","eta","rapidity",
                 "vX","vY","vZ","dXY","dZ","bunchCrossing","isChargeMatched",
                 "isSigSimMatched","sharedFraction","numAssocRecoTracks"]
 
 hitFeatures = hitCoord + hitClust + hitCharge
 
+inParticle = [ "in" + str(i) for i in particleLabs]
+outParticle = [ "out" + str(i) for i in particleLabs]
+
 inHitFeature  = [ "in" + str(i) for i in hitFeatures]
 outHitFeature = [ "out" + str(i) for i in hitFeatures]
 
+particleLabs = ["label","tId","intersect"] + inHitFeature +  outHitFeature
+
 featureLabs = inHitFeature + outHitFeature + ["diffADC"]
 
-dataLab = headLab + inHitLabs + outHitLabs + ["diffADC"] + particleLabs + ["dummyFlag"]
+differences = ["deltaA", "deltaADC", "deltaS", "deltaR", "deltaPhi"]
+
+dataLab = headLab + inHitLabs + outHitLabs + differences + particleLabs + ["dummyFlag"]
 
 layer_ids = [0, 1, 2, 3, 14, 15, 16, 29, 30, 31]
 
@@ -175,6 +183,9 @@ class Dataset:
             thetac_in, thetac_out, thetas_in, thetas_out = self.theta_correction(
                 a_in, a_out)
             l = l + [thetac_in, thetac_out, thetas_in, thetas_out]
+            phic_in, phic_out, phis_in, phis_out = self.phi_correction(
+                a_in, a_out)
+            l = l + [phic_in, phic_out, phis_in, phis_out]
 
         data = np.array(l)  # (channels, batch_size, hit_size)
         data = data.reshape((len(data), -1, 16, 16))
@@ -204,6 +215,10 @@ class Dataset:
         mean, std = (13382.0011321,10525.1252954) #on 2.5M doublets
         a_in = (a_in - mean) / std
         a_out = (a_out - mean) / std
+
+        (bw_a_in,bw_a_out) = self.b_w_correction(a_in,a_out)
+        a_in  = bw_a_in
+        a_out = bw_a_out
 
         l = []
         thetac_in, thetac_out, thetas_in, thetas_out = self.theta_correction(

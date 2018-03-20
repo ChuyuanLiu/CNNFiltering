@@ -659,9 +659,18 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       outCNNFile << runNumber << "\t" << eveNumber << "\t" << lumNumber << "\t" << puNumInt << "\t";
       outCNNFile <<innerLayer->seqNum() << "\t" << outerLayer->seqNum() << "\t";
       outCNNFile << bs.x0() << "\t" << bs.y0() << "\t" << bs.z0() << "\t" << bs.sigmaZ() << "\t";
+
+
       for (int j = 0; j < 2; j++)
       for (size_t i = 0; i < hitPars[j].size(); i++)
       outCNNFile << hitPars[j][i] << "\t";
+
+      outCNNFile << deltaA   << "\t";
+      outCNNFile << deltaADC << "\t";
+      outCNNFile << deltaS   << "\t";
+      outCNNFile << deltaR   << "\t";
+      outCNNFile << deltaPhi << "\t";
+
 
       for (size_t i = 0; i < theTP.size(); i++)
       outCNNFile << theTP[i] << "\t";

@@ -6,6 +6,10 @@ import argparse
 
 from math import floor
 
+padshape = 16
+
+target_lab = "label"
+
 headLab = ["run","evt","lumi","k","i","detSeqIn","detSeqOut","bSX","bSY","bSZ","bSdZ"]
 
 hitCoord = ["X","Y","Z","Phi","R"]
@@ -15,7 +19,7 @@ hitDet = ["DetSeq","IsBarrel","Layer","Ladder","Side","Disk","Panel","Module","I
 hitClust = ["ClustX","ClustY","ClustSize","ClustSizeX","ClustSizeY","PixelZero",
             "AvgCharge","OverFlowX","OverFlowY","IsBig","IsBad","IsEdge"]
 
-hitPixel = ["Pix" + str(el) for el in range(1, 257)]
+hitPixel = ["Pix" + str(el) for el in range(1, padshape*padshape + 1)]
 
 hitCharge = ["SumADC"]
 
@@ -24,12 +28,32 @@ hitLabs = hitCoord + hitDet + hitClust + hitPixel + hitCharge
 inHitLabs = [ "in" + str(i) for i in hitLabs]
 outHitLabs = [ "out" + str(i) for i in hitLabs]
 
-particleLabs = ["label","tId","px","py","pz","pt","mT","eT","mSqr","pdgId",
+inPixels = [ "in" + str(i) for i in hitPixel]
+outPixels = [ "out" + str(i) for i in hitPixel]
+
+
+particleLabs = ["pId","tId","px","py","pz","pt","mT","eT","mSqr","pdgId",
                 "charge","nTrackerHits","nTrackerLayers","phi","eta","rapidity",
                 "vX","vY","vZ","dXY","dZ","bunchCrossing","isChargeMatched",
                 "isSigSimMatched","sharedFraction","numAssocRecoTracks"]
 
-dataLab = headLab + inHitLabs + outHitLabs + ["diffADC"] + particleLabs + ["dummyFlag"]
+hitFeatures = hitCoord + hitClust + hitCharge
+
+inParticle = [ "in" + str(i) for i in particleLabs]
+outParticle = [ "out" + str(i) for i in particleLabs]
+
+inHitFeature  = [ "in" + str(i) for i in hitFeatures]
+outHitFeature = [ "out" + str(i) for i in hitFeatures]
+
+particleLabs = ["label","tId","intersect"] + inHitFeature +  outHitFeature
+
+featureLabs = inHitFeature + outHitFeature + ["diffADC"]
+
+differences = ["deltaA", "deltaADC", "deltaS", "deltaR", "deltaPhi"]
+
+dataLab = headLab + inHitLabs + outHitLabs + differences + particleLabs + ["dummyFlag"]
+
+layer_ids = [0, 1, 2, 3, 14, 15, 16, 29, 30, 31]
 
 
 import pandas as pd
