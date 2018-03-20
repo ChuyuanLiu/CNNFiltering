@@ -83,7 +83,7 @@ def npDoubletsLoad(path,fileslimit,cols):
     idName = ""
 
     for p in path.split("/"):
-        if "dnn" in p:
+        if "runs" in p:
             idName = p
 
 
@@ -105,7 +105,8 @@ def npDoubletsLoad(path,fileslimit,cols):
 
             ##balanceddata
             theData = Dataset([])
-            theData = Dataset.from_dataframe(dfDoublets).balance_data()
+            theData.from_dataframe(dfDoublets)
+            theData.balance_data()
             theData.save(bal_dir + idName + "_bal_" + d.replace(".txt",".h5"))
 
 

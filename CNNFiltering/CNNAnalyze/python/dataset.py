@@ -92,11 +92,9 @@ class Dataset:
             df.columns = dataLab  # change wrong columns names
             self.data = self.data.append(df)
 
-    def from_dataframe(data):
-        """ Constructor method to initialize the classe from a DataFrame """
-        d = Dataset([])
-        d.data = data
-        return d
+    def from_dataframe(self,data):
+        """ Constructor method to initialize the classe from a DataFrame """ 
+        self.data = data 
 
     def theta_correction(self, hits_in, hits_out):
         # theta correction
