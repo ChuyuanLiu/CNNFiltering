@@ -242,7 +242,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::vector< float > inHitPars, outHitPars;
   std::vector< float > inTP, outTP, theTP;
 
-  float ax1, ax2, deltaADC = 0.0, deltaPhi = 0.0, deltaR = 0.0, deltaA = 0.0, deltaS = 0.0;
+  float ax1, ax2, deltaADC = 0.0, deltaPhi = 0.0, deltaR = 0.0, deltaA = 0.0, deltaS = 0.0, deltaZ = 0.0, zZero = 0.0;
 
   for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt = iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
   {
@@ -264,6 +264,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       deltaA = 0.0;
       deltaADC = 0.0;
       deltaS = 0.0;
+      zZero = 0.0;
 
       hits.clear(); siHits.clear(); clusters.clear();
       detIds.clear(); geomDets.clear(); hitIds.clear();
@@ -301,8 +302,6 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       hitPars.push_back(outHitPars);
 
       HitDoublets::layer layers[2] = {HitDoublets::inner, HitDoublets::outer};
-
-      std::vector<float> phis,rs,areas,skews;
 
       for(int j = 0; j < 2; ++j)
       {
@@ -656,6 +655,9 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       }
 
+      zZero = (hits[0]->hit()->globalState()).position.z();
+      zZero -= lIt->doublets().r(i,layers[0]) * (deltaZ/deltaR);
+
       outCNNFile << runNumber << "\t" << eveNumber << "\t" << lumNumber << "\t" << puNumInt << "\t";
       outCNNFile <<innerLayer->seqNum() << "\t" << outerLayer->seqNum() << "\t";
       outCNNFile << bs.x0() << "\t" << bs.y0() << "\t" << bs.z0() << "\t" << bs.sigmaZ() << "\t";
@@ -670,7 +672,8 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       outCNNFile << deltaS   << "\t";
       outCNNFile << deltaR   << "\t";
       outCNNFile << deltaPhi << "\t";
-
+      outCNNFile << deltaZ   << "\t";
+      outCNNFile << zZero    << "\t";
 
       for (size_t i = 0; i < theTP.size(); i++)
       outCNNFile << theTP[i] << "\t";
