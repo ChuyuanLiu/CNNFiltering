@@ -93,8 +93,8 @@ class Dataset:
             self.data = self.data.append(df)
 
     def from_dataframe(self,data):
-        """ Constructor method to initialize the classe from a DataFrame """ 
-        self.data = data 
+        """ Constructor method to initialize the classe from a DataFrame """
+        self.data = data
 
     def theta_correction(self, hits_in, hits_out):
         # theta correction
@@ -186,7 +186,7 @@ class Dataset:
             l = l + [phic_in, phic_out, phis_in, phis_out]
 
         data = np.array(l)  # (channels, batch_size, hit_size)
-        data = data.reshape((len(data), -1, 16, 16))
+        data = data.reshape((len(data), -1, padshape, padshape))
         # TODO: not optimal for CPU execution
         return np.transpose(data, (1, 2, 3, 0))
 
@@ -232,7 +232,7 @@ class Dataset:
                 l.append(layer_hits)
 
         data = np.array(l)  # (channels, batch_size, hit_size)
-        data = data.reshape((len(data), -1, 16, 16))
+        data = data.reshape((len(data), -1, padshape, padshape))
         X_hit = np.transpose(data, (1, 2, 3, 0))
 
         #print(X_hit[0,:,:,0])
@@ -265,7 +265,7 @@ class Dataset:
                 l.append(layer_hits)
 
         data = np.array(l)  # (channels, batch_size, hit_size)
-        data = data.reshape((len(data), -1, 16, 16))
+        data = data.reshape((len(data), -1, padshape, padshape))
         X_hit = np.transpose(data, (1, 2, 3, 0))
 
         #print(X_hit[0,:,:,0])
@@ -302,7 +302,7 @@ class Dataset:
                 l.append(layer_hits)
 
         data = np.array(l)  # (channels, batch_size, hit_size)
-        data = data.reshape((len(data), -1, 16, 16))
+        data = data.reshape((len(data), -1, padshape, padshape))
         X_hit = np.transpose(data, (1, 2, 3, 0))
 
         #print(X_hit[0,:,:,0])
@@ -362,18 +362,29 @@ class Dataset:
         self.data = balanced_data
         return self  # allow method chaining
 
+    def separate_by_pdg(self, pdgId,bkg=10000,verbose=True):
+        """ Separate single particle datasets. """
+        data_pdg  = self.data[self.data["pdgId"] == pdgId]
+
+        if pdgId == -1.0:
+            data_pdg = data_pdg.sample(bkg)
+        #Shuffle
+        data_pdg = data_pdg.sample(frac=1)
+
+        self.data = data_pdg
+        return self # allow method chaining
 
 if __name__ == '__main__':
     d = Dataset('data/debug.npy')
     batch_size = d.data.as_matrix().shape[0]
 
     x = d.get_data()
-    assert x[0].shape == (batch_size, 16, 16, 8)
+    assert x[0].shape == (batch_size, padshape, padshape, 8)
 
     x = d.get_data(normalize=False, angular_correction=False,
                    flipped_channels=False)[0]
-    assert x.shape == (batch_size, 16, 16, 2)
+    assert x.shape == (batch_size, padshape, padshape, 2)
     np.testing.assert_allclose(
-        x[:, :, :, 0], d.data[inPixels].as_matrix().reshape((-1, 16, 16)))
+        x[:, :, :, 0], d.data[inPixels].as_matrix().reshape((-1, padshape, padshape)))
 
     print("All test successfully completed.")

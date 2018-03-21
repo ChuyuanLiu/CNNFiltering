@@ -56,6 +56,8 @@ dataLab = headLab + inHitLabs + outHitLabs + differences + particleLabs + ["dumm
 
 layer_ids = [0, 1, 2, 3, 14, 15, 16, 29, 30, 31]
 
+particle_ids = [-1.,11.,13.,15.,22.,111.,211.,311.,321.,2212.,2112.,3122.,223.]
+
 import pandas as pd
 import numpy as np
 
@@ -100,16 +102,28 @@ def npDoubletsLoad(path,fileslimit,cols):
             if d.lower().endswith(("gz")):
                 dfDoublets = pd.read_table(df, sep="\t", header = None,compression="gzip")
 
+            print("--Dumping unbalanced data")
             dfDoublets.columns = dataLab
             dfDoublets.to_hdf(new_dir + idName + "_" + d.replace(".txt",".h5"),'data',append=True)
 
             ##balanceddata
+            print("--Dumping balanced data")
             theData = Dataset([])
             theData.from_dataframe(dfDoublets)
             theData.balance_data()
             theData.save(bal_dir + idName + "_bal_" + d.replace(".txt",".h5"))
 
+            print("--Dumping particles data")
+            for p in particle_ids:
+                pdg_dir = path
+                if p==-1.0:
+                    pdg_dir = pdg_dir + "/fakes/"
+                else:
+                    pdg_dir = pdg_dir + str(p)
 
+                pdgData = Dataset([])
+                pdgData.from_dataframe(dfDoublets).separate_by_pdg(p)
+                pdgData.to_hdf(pdg_dir + idName + "_" + d.replace(".txt",".h5"),'data',append=True)
 
     end = time.time()
     print ("======================================================================")
