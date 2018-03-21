@@ -53,7 +53,7 @@ def npDoubletsLoad(path,fileslimit,cols):
 
             print("--Dumping unbalanced data")
             dfDoublets.columns = dataLab
-            dfDoublets.to_hdf(new_dir + idName + "_" + d.replace(".txt",".h5"),'data',append=True)
+            dfDoublets.to_hdf(new_dir + idName + "_" + d.replace(".txt",".h5"),'data',append=False)
 
             ##balanceddata
             print("--Dumping balanced data")
