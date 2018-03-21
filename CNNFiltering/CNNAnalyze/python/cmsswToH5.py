@@ -81,7 +81,7 @@ def npDoubletsLoad(path,fileslimit,cols):
                 size = pdgData.data.shape[0]
 
                 print(" -" + name + "\t : " + str(size) + " doublets")
-                pdgData.to_hdf(pdg_dir + idName + "_" + str(size) + "_"+ d.replace(".txt",".h5"),'data',append=True)
+                pdgData.save(pdg_dir + idName + "_" + str(size) + "_"+ d.replace(".txt",".h5"))
 
     end = time.time()
     print ("======================================================================")
