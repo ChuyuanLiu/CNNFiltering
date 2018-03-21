@@ -315,7 +315,6 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
         hitPars[j].push_back(phi); //Phi //FIXME
         hitPars[j].push_back(lIt->doublets().r(i,layers[j])); //R //TODO add theta and DR
-        rs.push_back(lIt->doublets().r(i,layers[j]));
 
         hitPars[j].push_back(detSeqs[j]); //det number //6
 
@@ -355,19 +354,15 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         //ClusterInformations
         hitPars[j].push_back((float)clusters[j]->x()); //20
         hitPars[j].push_back((float)clusters[j]->y());
-        hitPars[j].push_back((float)clusters[j]->size()); areas.push_back((float)clusters[j]->size());
+        hitPars[j].push_back((float)clusters[j]->size());
         hitPars[j].push_back((float)clusters[j]->sizeX());
         hitPars[j].push_back((float)clusters[j]->sizeY());
         hitPars[j].push_back((float)clusters[j]->pixel(0).adc); //25
         hitPars[j].push_back(float(clusters[j]->charge())/float(clusters[j]->size())); //avg pixel charge
 
-        deltaADC -= clusters[j]->charge(); deltaADC *= -1.0; //At the end == Outer Hit ADC - Inner Hit ADC
-
         hitPars[j].push_back((float)(clusters[j]->sizeX() > padSize));//27
         hitPars[j].push_back((float)(clusters[j]->sizeY() > padSize));
         hitPars[j].push_back((float)(clusters[j]->sizeY()) / (float)(clusters[j]->sizeX()));
-
-        skews.push_back((float)(clusters[j]->sizeY()) / (float)(clusters[j]->sizeX()));
 
         hitPars[j].push_back((float)siHits[j]->spansTwoROCs());
         hitPars[j].push_back((float)siHits[j]->hasBadPixels());
