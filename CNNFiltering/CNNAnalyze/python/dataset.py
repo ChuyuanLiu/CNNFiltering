@@ -53,10 +53,10 @@ inPixels = [ "in" + str(i) for i in hitPixel]
 outPixels = [ "out" + str(i) for i in hitPixel]
 
 
-particleLabs = ["PId","TId","Px","Py","Pz","Pt","MT","ET","MSqr","pdgId",
-                "Charge","NTrackerHits","NTrackerLayers","Phi","Eta","Rapidity",
-                "VX","VY","VZ","DXY","DZ","BunchCrossing","IsChargeMatched",
-                "IsSigSimMatched","SharedFraction","NumAssocRecoTracks"]
+particleLabs = ["pId","tId","px","py","pz","pt","mT","eT","mSqr","pdgId",
+                "charge","nTrackerHits","nTrackerLayers","phi","eta","rapidity",
+                "vX","vY","vZ","dXY","dZ","bunchCrossing","isChargeMatched",
+                "isSigSimMatched","sharedFraction","numAssocRecoTracks"]
 
 hitFeatures = hitCoord + hitClust + hitCharge
 
@@ -75,6 +75,8 @@ featureLabs = inHitFeature + outHitFeature + differences
 dataLab = headLab + inHitLabs + outHitLabs + differences + particleLabs + ["dummyFlag"]
 
 layer_ids = [0, 1, 2, 3, 14, 15, 16, 29, 30, 31]
+
+particle_ids = [-1.,11.,13.,15.,22.,111.,211.,311.,321.,2212.,2112.,3122.,223.]
 
 
 class Dataset:
