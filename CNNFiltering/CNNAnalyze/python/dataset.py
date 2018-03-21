@@ -53,10 +53,10 @@ inPixels = [ "in" + str(i) for i in hitPixel]
 outPixels = [ "out" + str(i) for i in hitPixel]
 
 
-particleLabs = ["pId","tId","px","py","pz","pt","mT","eT","mSqr","pdgId",
-                "charge","nTrackerHits","nTrackerLayers","phi","eta","rapidity",
-                "vX","vY","vZ","dXY","dZ","bunchCrossing","isChargeMatched",
-                "isSigSimMatched","sharedFraction","numAssocRecoTracks"]
+particleLabs = ["PId","TId","Px","Py","Pz","Pt","MT","ET","MSqr","pdgId",
+                "Charge","NTrackerHits","NTrackerLayers","Phi","Eta","Rapidity",
+                "VX","VY","VZ","DXY","DZ","BunchCrossing","IsChargeMatched",
+                "IsSigSimMatched","SharedFraction","NumAssocRecoTracks"]
 
 hitFeatures = hitCoord + hitClust + hitCharge
 
