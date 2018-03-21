@@ -122,7 +122,8 @@ def npDoubletsLoad(path,fileslimit,cols):
                     pdg_dir = pdg_dir + str(p)
 
                 pdgData = Dataset([])
-                pdgData.from_dataframe(dfDoublets).separate_by_pdg(p)
+                pdgData.from_dataframe(dfDoublets)
+                pdgData.separate_by_pdg(p)
                 pdgData.to_hdf(pdg_dir + idName + "_" + d.replace(".txt",".h5"),'data',append=True)
 
     end = time.time()
