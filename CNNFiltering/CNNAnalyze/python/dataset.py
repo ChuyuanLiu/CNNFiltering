@@ -72,7 +72,7 @@ differences = ["deltaA", "deltaADC", "deltaS", "deltaR", "deltaPhi"]
 
 featureLabs = inHitFeature + outHitFeature + differences
 
-dataLab = headLab + inHitLabs + outHitLabs + differences + particles + ["dummyFlag"]
+dataLab = headLab + inHitLabs + outHitLabs + differences + particleLabs + ["dummyFlag"]
 
 layer_ids = [0, 1, 2, 3, 14, 15, 16, 29, 30, 31]
 
