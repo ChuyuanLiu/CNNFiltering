@@ -364,10 +364,17 @@ class Dataset:
 
     def separate_by_pdg(self, pdgId,bkg=10000,verbose=True):
         """ Separate single particle datasets. """
-        data_pdg  = self.data[self.data["pdgId"] == pdgId]
-
         if pdgId == -1.0:
+
+            data_pdg  = self.data[self.data[target_lab] == 1.0]
             data_pdg = data_pdg.sample(bkg)
+
+        else:
+
+            data_pdg  = self.data[self.data[target_lab] == 1.0]
+            data_pdg  = data_pdg[data_pdg["InPdgId"] == pdgId]
+
+
         #Shuffle
         data_pdg = data_pdg.sample(frac=1)
 
