@@ -60,8 +60,8 @@ particle = ["PId","TId","Px","Py","Pz","Pt","MT","ET","MSqr","PdgId",
 
 hitFeatures = hitCoord + hitClust + hitCharge
 
-inParticle = [ "in" + str(i) for i in particle]
-outParticle = [ "out" + str(i) for i in particle]
+inParticle = [ "inTp" + str(i) for i in particle]
+outParticle = [ "outTp" + str(i) for i in particle]
 
 inHitFeature  = [ "in" + str(i) for i in hitFeatures]
 outHitFeature = [ "out" + str(i) for i in hitFeatures]
