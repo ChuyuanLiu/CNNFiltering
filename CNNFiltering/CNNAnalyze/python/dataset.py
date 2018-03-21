@@ -53,20 +53,20 @@ inPixels = [ "in" + str(i) for i in hitPixel]
 outPixels = [ "out" + str(i) for i in hitPixel]
 
 
-particleLabs = ["PId","TId","Px","Py","Pz","Pt","MT","ET","MSqr","PdgId",
+particle = ["PId","TId","Px","Py","Pz","Pt","MT","ET","MSqr","PdgId",
                 "Charge","NTrackerHits","NTrackerLayers","Phi","Eta","Rapidity",
                 "VX","VY","VZ","DXY","DZ","BunchCrossing","IsChargeMatched",
                 "IsSigSimMatched","SharedFraction","NumAssocRecoTracks"]
 
 hitFeatures = hitCoord + hitClust + hitCharge
 
-inParticle = [ "in" + str(i) for i in particleLabs]
-outParticle = [ "out" + str(i) for i in particleLabs]
+inParticle = [ "in" + str(i) for i in particle]
+outParticle = [ "out" + str(i) for i in particle]
 
 inHitFeature  = [ "in" + str(i) for i in hitFeatures]
 outHitFeature = [ "out" + str(i) for i in hitFeatures]
 
-particles = ["label","intersect","particles"] + inParticle +  outParticle
+particleLabs = ["label","intersect","particles"] + inParticle +  outParticle
 
 differences = ["deltaA", "deltaADC", "deltaS", "deltaR", "deltaPhi"]
 
