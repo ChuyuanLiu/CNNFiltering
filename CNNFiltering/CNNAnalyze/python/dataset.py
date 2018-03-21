@@ -379,7 +379,8 @@ class Dataset:
 
 
         #Shuffle
-        data_pdg = data_pdg.sample(frac=1)
+        if data_pdg.shape[0] > 0:
+            data_pdg = data_pdg.sample(frac=1.0)
 
         self.data = data_pdg
         return self # allow method chaining
