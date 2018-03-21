@@ -375,7 +375,7 @@ class Dataset:
         else:
 
             data_pdg  = self.data[self.data[target_lab] == 1.0]
-            data_pdg  = data_pdg[data_pdg["InPdgId"] == pdgId]
+            data_pdg  = data_pdg[data_pdg["inTpPdgId"] == pdgId]
 
 
         #Shuffle
