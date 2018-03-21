@@ -68,7 +68,7 @@ outHitFeature = [ "out" + str(i) for i in hitFeatures]
 
 particleLabs = ["label","intersect","particles"] + inParticle +  outParticle
 
-differences = ["deltaA", "deltaADC", "deltaS", "deltaR", "deltaPhi"]
+differences = ["deltaA", "deltaADC", "deltaS", "deltaR", "deltaPhi", "deltaZ", "ZZero"]
 
 featureLabs = inHitFeature + outHitFeature + differences
 
