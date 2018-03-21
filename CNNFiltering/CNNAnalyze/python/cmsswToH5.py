@@ -7,57 +7,6 @@ import argparse
 from math import floor
 from dataset import *
 
-padshape = 16
-
-target_lab = "label"
-
-headLab = ["run","evt","lumi","k","i","detSeqIn","detSeqOut","bSX","bSY","bSZ","bSdZ","PU"]
-
-hitCoord = ["X","Y","Z","Phi","R"]
-
-hitDet = ["DetSeq","IsBarrel","Layer","Ladder","Side","Disk","Panel","Module","IsFlipped","Ax1","Ax2"]
-
-hitClust = ["ClustX","ClustY","ClustSize","ClustSizeX","ClustSizeY","PixelZero",
-            "AvgCharge","OverFlowX","OverFlowY","IsBig","IsBad","IsEdge"]
-
-hitPixel = ["Pix" + str(el) for el in range(1, padshape*padshape + 1)]
-
-hitCharge = ["SumADC"]
-
-hitLabs = hitCoord + hitDet + hitClust + hitPixel + hitCharge
-
-inHitLabs = [ "in" + str(i) for i in hitLabs]
-outHitLabs = [ "out" + str(i) for i in hitLabs]
-
-inPixels = [ "in" + str(i) for i in hitPixel]
-outPixels = [ "out" + str(i) for i in hitPixel]
-
-
-particleLabs = ["pId","tId","px","py","pz","pt","mT","eT","mSqr","pdgId",
-                "charge","nTrackerHits","nTrackerLayers","phi","eta","rapidity",
-                "vX","vY","vZ","dXY","dZ","bunchCrossing","isChargeMatched",
-                "isSigSimMatched","sharedFraction","numAssocRecoTracks"]
-
-hitFeatures = hitCoord + hitClust + hitCharge
-
-inParticle = [ "in" + str(i) for i in particleLabs]
-outParticle = [ "out" + str(i) for i in particleLabs]
-
-inHitFeature  = [ "in" + str(i) for i in hitFeatures]
-outHitFeature = [ "out" + str(i) for i in hitFeatures]
-
-particleLabs = ["label","tId","intersect"] + inParticle +  outParticle
-
-differences = ["deltaA", "deltaADC", "deltaS", "deltaR", "deltaPhi"]
-
-featureLabs = inHitFeature + outHitFeature + differences
-
-dataLab = headLab + inHitLabs + outHitLabs + differences + particleLabs + ["dummyFlag"]
-
-layer_ids = [0, 1, 2, 3, 14, 15, 16, 29, 30, 31]
-
-particle_ids = [-1.,11.,13.,15.,22.,111.,211.,311.,321.,2212.,2112.,3122.,223.]
-
 import pandas as pd
 import numpy as np
 
@@ -117,14 +66,22 @@ def npDoubletsLoad(path,fileslimit,cols):
             for p in particle_ids:
                 pdg_dir = path
                 if p==-1.0:
-                    pdg_dir = pdg_dir + "/fakes/"
+                    name = "fakes"
                 else:
-                    pdg_dir = pdg_dir + str(p)
+                    name = str(p)
+                pdg_dir = pdg_dir + "/" + name + "/"
+
+                if not os.path.exists(pdg_dir):
+                    os.makedirs(pdg_dir)
 
                 pdgData = Dataset([])
                 pdgData.from_dataframe(dfDoublets)
                 pdgData.separate_by_pdg(p)
-                pdgData.to_hdf(pdg_dir + idName + "_" + d.replace(".txt",".h5"),'data',append=True)
+
+                size = pdgData.data.shape[0]
+
+                print(" -" + name + "\t : " + str(size) + " doublets")
+                pdgData.to_hdf(pdg_dir + idName + "_" + str(size) + "_"+ d.replace(".txt",".h5"),'data',append=True)
 
     end = time.time()
     print ("======================================================================")

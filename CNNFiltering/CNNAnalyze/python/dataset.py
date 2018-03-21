@@ -369,7 +369,8 @@ class Dataset:
         if pdgId == -1.0:
 
             data_pdg  = self.data[self.data[target_lab] == 1.0]
-            data_pdg = data_pdg.sample(bkg)
+            if data_pdg.shape[0] > bkg:
+                data_pdg = data_pdg.sample(bkg)
 
         else:
 
