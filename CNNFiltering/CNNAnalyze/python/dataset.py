@@ -53,7 +53,7 @@ inPixels = [ "in" + str(i) for i in hitPixel]
 outPixels = [ "out" + str(i) for i in hitPixel]
 
 
-particleLabs = ["PId","TId","Px","Py","Pz","Pt","MT","ET","MSqr","pdgId",
+particleLabs = ["PId","TId","Px","Py","Pz","Pt","MT","ET","MSqr","PdgId",
                 "Charge","NTrackerHits","NTrackerLayers","Phi","Eta","Rapidity",
                 "VX","VY","VZ","DXY","DZ","BunchCrossing","IsChargeMatched",
                 "IsSigSimMatched","SharedFraction","NumAssocRecoTracks"]
@@ -66,13 +66,13 @@ outParticle = [ "out" + str(i) for i in particleLabs]
 inHitFeature  = [ "in" + str(i) for i in hitFeatures]
 outHitFeature = [ "out" + str(i) for i in hitFeatures]
 
-particleLabs = ["label","tId","intersect"] + inParticle +  outParticle
+particles = ["label","intersect","particles"] + inParticle +  outParticle
 
 differences = ["deltaA", "deltaADC", "deltaS", "deltaR", "deltaPhi"]
 
 featureLabs = inHitFeature + outHitFeature + differences
 
-dataLab = headLab + inHitLabs + outHitLabs + differences + particleLabs + ["dummyFlag"]
+dataLab = headLab + inHitLabs + outHitLabs + differences + particles + ["dummyFlag"]
 
 layer_ids = [0, 1, 2, 3, 14, 15, 16, 29, 30, 31]
 
