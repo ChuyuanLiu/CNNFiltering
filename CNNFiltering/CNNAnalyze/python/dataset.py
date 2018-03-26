@@ -31,6 +31,8 @@ padshape = 16
 
 target_lab = "label"
 
+pdg_lab = "inTpPdgId"
+
 headLab = ["run","evt","lumi","k","i","detSeqIn","detSeqOut","bSX","bSY","bSZ","bSdZ","PU"]
 
 hitCoord = ["X","Y","Z","Phi","R"]
@@ -90,8 +92,8 @@ def balance_data_by_pdg(dataSet, pdgIds):
     totpdg  = 0
 
     for p in pdgIds:
-        data_excl  = data_pos[data_pos["inTpPdgId"] != p]
-        data_pdg = data_pos[data_pos["inTpPdgId"] == p]
+        data_excl  = data_pos[data_pos[pdg_lab].abs() != p]
+        data_pdg = data_pos[data_pos[pdg_lab].abs() == p]
         data_pdgs.append(data_pdg)
         minimum=min(data_pdg.shape[0]*2,minimum)
         totpdg = totpdg + data_pdg.shape[0]
@@ -418,7 +420,7 @@ class Dataset:
         else:
 
             data_pdg  = self.data[self.data[target_lab] == 1.0]
-            data_pdg  = data_pdg[data_pdg["inTpPdgId"] == pdgId]
+            data_pdg  = data_pdg[data_pdg[pdg_lab].abs() == pdgId]
 
         #Shuffle
         if data_pdg.shape[0] > 0:
@@ -433,7 +435,7 @@ class Dataset:
         data_excl  = self.data[self.data[target_lab] == 1.0]
 
         for p in pdgIds:
-            data_excl  = data_pos[data_pos["inTpPdgId"] != p]
+            data_excl  = data_pos[data_pos[pdg_lab].abs() != p]
 
         #Shuffle
         if data_excl.shape[0] > 0:
@@ -452,8 +454,8 @@ class Dataset:
         totpdg  = 0
 
         for p in pdgIds:
-            data_excl  = data_pos[data_pos["inTpPdgId"] != p]
-            data_pdg = data_pos[data_pos["inTpPdgId"] == p]
+            data_excl  = data_pos[data_pos[pdg_lab].abs() != p]
+            data_pdg = data_pos[data_pos[pdg_lab].abs() == p]
             data_pdgs.append(data_pdg)
             minimum=min(data_pdg.shape[0]*2,minimum)
 
