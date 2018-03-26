@@ -114,7 +114,7 @@ main_pdgs = [11.,13.,211.,321.,2212.]
 class Dataset:
     """ Load the dataset from txt files. """
 
-    def __init__(self, fnames,balance=False,pgdIds=main_pdgs):
+    def __init__(self, fnames,balance=False,pdgIds=main_pdgs):
         self.data = pd.DataFrame(data=[], columns=dataLab)
         for i,f in enumerate(fnames):
             print("Loading file " + str(i+1) + "/" + str(len(fnames)) + " : " + f)
