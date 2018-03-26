@@ -53,7 +53,7 @@ def balance_data_by_pdg(dataSet, pdgIds):
     for d in data_pdgs:
         d = d.sample(minimum)
 
-    data_tot = pd.concat(data_pdgs + [data_pdgs,data_neg])
+    data_tot = pd.concat(data_pdgs + [data_excl,data_neg])
     data_tot = data_tot.sample(frac=1.0)
 
     return data_tot # allow method chaining
