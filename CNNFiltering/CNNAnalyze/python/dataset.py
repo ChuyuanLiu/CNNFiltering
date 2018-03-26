@@ -377,12 +377,26 @@ class Dataset:
             data_pdg  = self.data[self.data[target_lab] == 1.0]
             data_pdg  = data_pdg[data_pdg["inTpPdgId"] == pdgId]
 
-
         #Shuffle
         if data_pdg.shape[0] > 0:
             data_pdg = data_pdg.sample(frac=1.0)
 
         self.data = data_pdg
+        return self # allow method chaining
+
+    def exclusive_by_pdg(self, pdgIds,bkg=10000,verbose=True):
+        """ Exclude single particle datasets. """
+
+        data_excl  = self.data[self.data[target_lab] == 1.0]
+
+        for p in pdgIds:
+            data_excl  = data_pdg[data_pdg["inTpPdgId"] != pdgId]
+
+        #Shuffle
+        if data_excl.shape[0] > 0:
+            data_excl = data_excl.sample(frac=1.0)
+
+        self.data = data_excl
         return self # allow method chaining
 
 if __name__ == '__main__':

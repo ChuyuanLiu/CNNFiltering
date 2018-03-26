@@ -82,7 +82,14 @@ def npDoubletsLoad(path,fileslimit,cols):
                 size = pdgData.data.shape[0]
 
                 print(" - " + name + "\t\t : " + str(size) + " doublets")
-                pdgData.save(pdg_dir + idName + "_" + str(size) + "_"+ d.replace(".txt",".h5"))
+                pdgData.save(pdg_dir + idName + "_" + str(p) + "_" + str(size) + "_"+ d.replace(".txt",".h5"))
+
+            pdg_dir = path + "/others/"
+            exclData = Dataset([])
+            exclData.from_dataframe(dfDoublets)
+            exclData.exclusive_by_pdg(particle_ids)
+            size = exclData.data.shape[0]
+            exclData.save(pdg_dir + idName + "_others_" + str(size) + "_"+ d.replace(".txt",".h5"))
 
     end = time.time()
     print ("======================================================================")
