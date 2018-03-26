@@ -6,6 +6,7 @@
 
 import numpy as np
 import pandas as pd
+import gzip
 #from keras.utils.np_utils import to_categorical
 
 def to_categorical(y, num_classes=None):
