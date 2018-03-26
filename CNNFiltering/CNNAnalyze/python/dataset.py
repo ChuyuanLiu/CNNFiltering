@@ -450,7 +450,7 @@ class Dataset:
         totpdg  = 0
 
         for p in pdgIds:
-            data_excl  = data_pos[data_pdg["inTpPdgId"] != p]
+            data_excl  = data_pos[data_pos["inTpPdgId"] != p]
             data_pdgs.append(data_pos[data_pos["inTpPdgId"] == p])
             minimum=min(data_pdgs.shape[0]*2,minimum)
             totpdg = totpdg + data_pdgs.shape[0]
