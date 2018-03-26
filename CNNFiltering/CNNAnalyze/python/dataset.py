@@ -124,13 +124,13 @@ class Dataset:
             if not f.lower().endswith("h5"):
                 continue
 
-            df = pd.read_hdf(f, mode='r')
-        
-            if balance:
-                df = balance_data_by_pdg(df,pdgIds)
+            with pd.read_hdf(f, mode='r') as df:
+            #df = pd.read_hdf(f, mode='r')    
+                if balance:
+                    df = balance_data_by_pdg(df,pdgIds)
 
-            df.columns = dataLab  # change wrong columns names
-            self.data = self.data.append(df)
+                df.columns = dataLab  # change wrong columns names
+                self.data = self.data.append(df)
 
     def from_dataframe(self,data):
         """ Constructor method to initialize the classe from a DataFrame """
