@@ -427,6 +427,9 @@ class Dataset:
             data_pdg = data_pdg.sample(frac=1.0)
 
         self.data = data_pdg
+
+        print self.data.inTpPdgId.unique()
+
         return self # allow method chaining
 
     def exclusive_by_pdg(self, pdgIds,bkg=10000,verbose=True):
