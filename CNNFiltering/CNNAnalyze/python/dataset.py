@@ -390,7 +390,7 @@ class Dataset:
         data_excl  = self.data[self.data[target_lab] == 1.0]
 
         for p in pdgIds:
-            data_excl  = data_pdg[data_pdg["inTpPdgId"] != pdgId]
+            data_excl  = data_pdg[data_pdg["inTpPdgId"] != p]
 
         #Shuffle
         if data_excl.shape[0] > 0:
@@ -398,6 +398,23 @@ class Dataset:
 
         self.data = data_excl
         return self # allow method chaining
+
+    # def balance_by_pdg(self, pdgIds,bkg=10000,verbose=True):
+    #     """ Exclude single particle datasets. """
+    #
+    #     data_pos  = self.data[self.data[target_lab] == 1.0]
+    #     data_neg  = self.data[self.data[target_lab] == -1.0]
+    #     data_pdgs = []
+    #
+    #     for p in pdgIds:
+    #         data_pdgs.append(data_pdg[data_pdg["inTpPdgId"] != p])
+    #
+    #     #Shuffle
+    #     if data_excl.shape[0] > 0:
+    #         data_excl = data_excl.sample(frac=1.0)
+    #
+    #     self.data = data_excl
+    #     return self # allow method chaining
 
 if __name__ == '__main__':
     d = Dataset('data/debug.npy')
