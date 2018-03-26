@@ -117,13 +117,14 @@ class Dataset:
         for i,f in enumerate(fnames):
             print("Loading file " + str(i+1) + "/" + str(len(fnames)) + " : " + f)
             df = 0
-            if not f.lower().endswith("h5") and not f.lower().endswith("h5"):
+            if not f.lower().endswith("gz") and not f.lower().endswith("h5"):
                 continue
 
             if f.lower().endswith("h5"):
                 df = pd.read_hdf(f, mode='r')
             if f.lower().endswith(("gz")):
-                df = pd.read_hdf(f,mode='r',compression="gzip")
+                with gzip.open(f, 'wb') as f_in
+                    df = pd.read_hdf(f_in,mode='r')
 
             if balance:
                 df = balance_data_by_pdg(df,pdgIds)
