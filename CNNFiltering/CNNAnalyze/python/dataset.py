@@ -125,7 +125,7 @@ class Dataset:
                 continue
 
             with pd.read_hdf(f, mode='r') as df:
-            #df = pd.read_hdf(f, mode='r')    
+            #df = pd.read_hdf(f, mode='r')
                 if balance:
                     df = balance_data_by_pdg(df,pdgIds)
 
@@ -135,6 +135,12 @@ class Dataset:
     def from_dataframe(self,data):
         """ Constructor method to initialize the classe from a DataFrame """
         self.data = data
+
+    def data_augmentation(self,hits_in,hits_out, magnitude=2.0, phi=True, zr=True, xy=True):
+        """ Data augmentation with geometrical simmetries"""
+        """ - phi angle"""
+        if phi:
+            phistep = pi / magnitude
 
     def theta_correction(self, hits_in, hits_out):
         # theta correction
@@ -451,20 +457,23 @@ class Dataset:
             data_pdg = data_pos[data_pos["inTpPdgId"] == p]
             data_pdgs.append(data_pdg)
             minimum=min(data_pdg.shape[0]*2,minimum)
-            totpdg = totpdg + data_pdg.shape[0]
+
             assert minimum > 0, "%.1f pdg id has zero entries. Returning." % p
 
-        totpdg = minimum * len(pdgIds)
-
-        data_excl = data_excl.sample(frac=1.0)
-        data_excl = data_excl.sample(totpdg/2)
-
-        data_neg = data_neg.sample(frac=1.0)
-        data_neg = data_neg.sample(totpdg)
+        #totpdg = minimum * len(pdgIds)
 
         for d in data_pdgs:
             if d.shape[0] > minimum:
                 d = d.sample(minimum)
+                totpdg = totpdg + d.shape[0]
+
+        data_excl = data_excl.sample(frac=1.0)
+        data_excl = data_excl.sample(totpdg/3)
+
+        totpdg = totpdg + totpdg/3
+
+        data_neg = data_neg.sample(frac=1.0)
+        data_neg = data_neg.sample(totpdg)
 
         data_tot = pd.concat(data_pdgs + [data_excl,data_neg])
         data_tot = data_tot.sample(frac=1.0)
