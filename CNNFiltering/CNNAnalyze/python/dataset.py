@@ -91,7 +91,8 @@ def balance_data_by_pdg(dataSet, pdgIds):
 
     for p in pdgIds:
         data_excl  = data_pos[data_pos["inTpPdgId"] != p]
-        data_pdg = data_pdgs.append(data_pos[data_pos["inTpPdgId"] == p])
+        data_pdg = data_pos[data_pos["inTpPdgId"] == p]
+        data_pdgs.append(data_pdg)
         minimum=min(data_pdg.shape[0]*2,minimum)
         totpdg = totpdg + data_pdg.shape[0]
         totpdg = totpdg + data_pdg.shape[0]
@@ -451,7 +452,8 @@ class Dataset:
 
         for p in pdgIds:
             data_excl  = data_pos[data_pos["inTpPdgId"] != p]
-            data_pdg = data_pdgs.append(data_pos[data_pos["inTpPdgId"] == p])
+            data_pdg = data_pos[data_pos["inTpPdgId"] == p]
+            data_pdgs.append(data_pdg)
             minimum=min(data_pdg.shape[0]*2,minimum)
             totpdg = totpdg + data_pdg.shape[0]
             assert minimum > 0, "%.1f pdg id has zero entries. Returning." % p
