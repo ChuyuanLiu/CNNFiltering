@@ -454,7 +454,7 @@ class Dataset:
         data_pdgs = []
         minimum = 1E8
         totpdg  = 0
-        print("Ok?")
+
         for p in pdgIds:
             data_excl  = data_pos[data_pos[pdg_lab].abs() != p]
             data_pdg = data_pos[data_pos[pdg_lab].abs() == p]
@@ -483,7 +483,7 @@ class Dataset:
 
         self.data = data_tot
 
-        print (self.data.inTpPdgId.unique())
+        print (self.data["inTpPdgId"].value_counts())
 
         return self # allow method chainingp
 
