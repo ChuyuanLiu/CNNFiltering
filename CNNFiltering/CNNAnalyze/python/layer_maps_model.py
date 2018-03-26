@@ -70,6 +70,7 @@ parser.add_argument('--maxnorm', type=float, default=10.)
 parser.add_argument('--verbose', type=int, default=1)
 parser.add_argument('--flip', type=float, default=1.0)
 parser.add_argument('-d','--debug',action='store_true')
+parser.add_argument('--balance','--balance',action='store_true')
 parser.add_argument('--fsamp',type=int,default=10)
 parser.add_argument('--gepochs',type=float,default=1)
 parser.add_argument('--loadw',type=str,default=None)
@@ -123,8 +124,8 @@ test_files = [remote_data + 'test/' +
 
 #train_data = Dataset(train_files)
 
-val_data = Dataset(val_files)
-test_data = Dataset(test_files)
+val_data = Dataset(val_files,balance=args.balance)
+test_data = Dataset(test_files,balance=args.balance)
 
 nochunks = int((len(train_files) + args.fsamp - 1)/(args.fsamp))
 indices = np.arange(len(train_files))
