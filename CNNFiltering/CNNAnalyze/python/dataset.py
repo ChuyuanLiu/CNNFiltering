@@ -27,37 +27,6 @@ def to_categorical(y, num_classes=None):
     categorical[np.arange(n), y] = 1
     return categorical,num_classes
 
-def balance_data_by_pdg(dataSet, pdgIds):
-    """ Balancing datasets by particles. """
-
-    data_pos  = dataSet[dataSet[target_lab] == 1.0]
-    data_neg  = dataSet[dataSet[target_lab] == -1.0]
-    data_pdgs = []
-    minimum = 1E8
-
-    for p in pdgIds:
-        data_excl  = data_pos[data_pos["inTpPdgId"] != p]
-        data_pdg = data_pos[data_pos["inTpPdgId"] == p]
-        data_pdgs.append(data_pdg)
-        minimum=min(data_pdg.shape[0],minimum)
-        assert minimum > 0, "%.1f pdg id has zero entries. Returning." % p
-
-    totpdg = minimum * len(pdgIds)
-
-    data_excl = data_excl.sample(frac=1.0)
-    data_excl = data_excl.sample(totpdg/2)
-
-    data_neg = data_neg.sample(frac=1.0)
-    data_neg = data_neg.sample(totpdg)
-
-    for d in data_pdgs:
-        d = d.sample(minimum)
-
-    data_tot = pd.concat(data_pdgs + [data_excl,data_neg])
-    data_tot = data_tot.sample(frac=1.0)
-
-    return data_tot # allow method chaining
-
 padshape = 16
 
 target_lab = "label"
@@ -110,6 +79,38 @@ layer_ids = [0, 1, 2, 3, 14, 15, 16, 29, 30, 31]
 particle_ids = [-1.,11.,13.,15.,22.,111.,211.,311.,321.,2212.,2112.,3122.,223.]
 
 main_pdgs = [11.,13.,211.,321.,2212.]
+
+def balance_data_by_pdg(dataSet, pdgIds):
+    """ Balancing datasets by particles. """
+
+    data_pos  = dataSet[dataSet[target_lab] == 1.0]
+    data_neg  = dataSet[dataSet[target_lab] == -1.0]
+    data_pdgs = []
+    minimum = 1E8
+    totpdg  = 0
+
+    for p in pdgIds:
+        data_excl  = data_pos[data_pos["inTpPdgId"] != p]
+        data_pdg = data_pos[data_pos["inTpPdgId"] == p]
+        data_pdgs.append(data_pdg)
+        minimum=min(data_pdg.shape[0]*2,minimum)
+        totpdg = totpdg + data_pdg.shape[0]
+        assert minimum > 0, "%.1f pdg id has zero entries. Returning." % p
+
+    data_excl = data_excl.sample(frac=1.0)
+    data_excl = data_excl.sample(totpdg/2)
+
+    data_neg = data_neg.sample(frac=1.0)
+    data_neg = data_neg.sample(totpdg)
+
+    for d in data_pdgs:
+        if d.shape[0] > minimum:
+            d = d.sample(minimum)
+
+    data_tot = pd.concat(data_pdgs + [data_excl,data_neg])
+    data_tot = data_tot.sample(frac=1.0)
+
+    return data_tot # allow method chaining
 
 class Dataset:
     """ Load the dataset from txt files. """
@@ -446,11 +447,13 @@ class Dataset:
         data_neg  = self.data[self.data[target_lab] == -1.0]
         data_pdgs = []
         minimum = 1E8
+        totpdg  = 0
 
         for p in pdgIds:
             data_excl  = data_pos[data_pdg["inTpPdgId"] != p]
             data_pdgs.append(data_pos[data_pos["inTpPdgId"] == p])
-            minimum=min(data_pdgs.shape[0],minimum)
+            minimum=min(data_pdgs.shape[0]*2,minimum)
+            totpdg = totpdg + data_pdgs.shape[0]
             assert minimum > 0, "%.1f pdg id has zero entries. Returning." % p
 
         totpdg = minimum * len(pdgIds)
@@ -462,13 +465,20 @@ class Dataset:
         data_neg = data_neg.sample(totpdg)
 
         for d in data_pdgs:
-            d = d.sample(minimum)
+            if d.shape[0] > minimum:
+                d = d.sample(minimum)
 
-        data_tot = pd.concat(data_pdgs + [data_pdgs,data_neg])
+        data_tot = pd.concat(data_pdgs + [data_excl,data_neg])
         data_tot = data_tot.sample(frac=1.0)
 
         self.data = data_tot
         return self # allow method chaining
+
+        data_pos  = dataSet[dataSet[target_lab] == 1.0]
+        data_neg  = dataSet[dataSet[target_lab] == -1.0]
+        data_pdgs = []
+        minimum = 1E8
+
 
 if __name__ == '__main__':
     d = Dataset('data/debug.npy')
