@@ -472,12 +472,7 @@ class Dataset:
         data_tot = data_tot.sample(frac=1.0)
 
         self.data = data_tot
-        return self # allow method chaining
-
-        data_pos  = dataSet[dataSet[target_lab] == 1.0]
-        data_neg  = dataSet[dataSet[target_lab] == -1.0]
-        data_pdgs = []
-        minimum = 1E8
+        return self # allow method chainingp
 
 
 if __name__ == '__main__':
