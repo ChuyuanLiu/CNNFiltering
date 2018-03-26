@@ -460,8 +460,8 @@ class Dataset:
             data_pdg = data_pos[data_pos[pdg_lab].abs() == p]
             data_pdgs.append(data_pdg)
             minimum=min(data_pdg.shape[0]*2,minimum)
-
-            assert minimum > 0, "%.1f pdg id has zero entries. Returning." % p
+            print(" %f pdg : %f " %(p,data_pdg.shape[0]))
+            assert minimum > 0, "%f pdg id has zero entries. Returning." % p
 
         #totpdg = minimum * len(pdgIds)
 
@@ -484,7 +484,7 @@ class Dataset:
         self.data = data_tot
 
         print (self.data.inTpPdgId.unique())
-        
+
         return self # allow method chainingp
 
 
