@@ -32,4 +32,4 @@ for chunk in  range(offset,int(((len(files) + chunksize))/chunksize) + 1):
     print("loading & balancing data...")
     data = Dataset(p).balance_by_pdg()
     print("dumping data...")
-    data.to_hdf(remote_data + "/pdg_bal_dataset_" + str(chunk) + ".h5",'data', mode='w')
+    data.save(remote_data + "/pdg_bal_dataset_" + str(chunk) + ".h5")
