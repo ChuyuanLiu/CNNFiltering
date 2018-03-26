@@ -468,8 +468,9 @@ class Dataset:
         data_pdgs_sampled = []
         for d in data_pdgs:
             if d.shape[0] > minimum:
-                data_pdgs_sampled.append(d.sample(minimum))
-                totpdg = totpdg + d.shape[0]
+                d_samp = d.sample(minimum)
+                data_pdgs_sampled.append(d_samp)
+                totpdg = totpdg + d_samp.shape[0]
 
         data_excl = data_excl.sample(frac=1.0)
         data_excl = data_excl.sample(totpdg/3)
