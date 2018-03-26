@@ -38,7 +38,7 @@ def npDoubletsLoad(path,fileslimit,cols):
             idName = p
 
 
-    print(dataLab)
+    print(idName)
 
     listdata = []
     for no,d in enumerate(datafiles):
