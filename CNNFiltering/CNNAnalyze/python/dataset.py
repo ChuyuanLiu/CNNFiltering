@@ -464,7 +464,7 @@ class Dataset:
             assert minimum > 0, "%f pdg id has zero entries. Returning." % p
 
         #totpdg = minimum * len(pdgIds)
-
+        print(minimum)
         for d in data_pdgs:
             if d.shape[0] > minimum:
                 d = d.sample(minimum)
