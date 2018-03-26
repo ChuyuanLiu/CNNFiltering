@@ -123,7 +123,7 @@ class Dataset:
             if f.lower().endswith("h5"):
                 df = pd.read_hdf(f, mode='r')
             if f.lower().endswith(("gz")):
-                with gzip.open(f, 'wb') as f_in
+                with gzip.open(f, 'wb') as f_in:
                     df = pd.read_hdf(f_in,mode='r')
 
             if balance:
