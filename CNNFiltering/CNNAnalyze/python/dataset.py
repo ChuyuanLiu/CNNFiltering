@@ -116,11 +116,14 @@ class Dataset:
         self.data = pd.DataFrame(data=[], columns=dataLab)
         for i,f in enumerate(fnames):
             print("Loading file " + str(i+1) + "/" + str(len(fnames)) + " : " + f)
-            if not f.lower().endswith("h5"):
+            df = 0
+            if not f.lower().endswith("h5") and not f.lower().endswith("h5"):
                 continue
 
-            df = 0
-            df = pd.read_hdf(f, mode='r')
+            if f.lower().endswith("h5"):
+                df = pd.read_hdf(f, mode='r')
+            if f.lower().endswith(("gz")):
+                df = pd.read_hdf(f,mode='r',compression="gzip")
 
             if balance:
                 df = balance_data_by_pdg(df,pdgIds)
