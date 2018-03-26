@@ -428,7 +428,6 @@ class Dataset:
 
         self.data = data_pdg
 
-        print self.data.inTpPdgId.unique()
 
         return self # allow method chaining
 
@@ -483,6 +482,9 @@ class Dataset:
         data_tot = data_tot.sample(frac=1.0)
 
         self.data = data_tot
+
+        print (self.data.inTpPdgId.unique())
+        
         return self # allow method chainingp
 
 
