@@ -15,7 +15,7 @@ offset      = args.offset
 #remote_data = "data/inference/unzip/"
 new_dir = remote_data + "/det_data/"
 
-files = [el for el in os.listdir(remote_data)]
+files = [remote_data + el for el in os.listdir(remote_data)]
 
 if not os.path.exists(new_dir):
     os.makedirs(new_dir)
