@@ -440,7 +440,7 @@ class Dataset:
         self.data = data_excl
         return self # allow method chaining
 
-    def balance_by_pdg(self, pdgIds):
+    def balance_by_pdg(self, pdgIds=main_pdgs):
         """ Balancing datasets by particles. """
 
         data_pos  = self.data[self.data[target_lab] == 1.0]
