@@ -36,9 +36,10 @@ def balance_data_by_pdg(dataSet, pdgIds):
     minimum = 1E8
 
     for p in pdgIds:
-        data_excl  = data_pos[data_pdg["inTpPdgId"] != p]
-        data_pdgs.append(data_pos[data_pos["inTpPdgId"] == p])
-        minimum=min(data_pdgs.shape[0],minimum)
+        data_excl  = data_pos[data_pos["inTpPdgId"] != p]
+        data_pdg = data_pos[data_pos["inTpPdgId"] == p]
+        data_pdgs.append(data_pdg)
+        minimum=min(data_pdg.shape[0],minimum)
         assert minimum > 0, "%.1f pdg id has zero entries. Returning." % p
 
     totpdg = minimum * len(pdgIds)
@@ -429,7 +430,7 @@ class Dataset:
         data_excl  = self.data[self.data[target_lab] == 1.0]
 
         for p in pdgIds:
-            data_excl  = data_pdg[data_pdg["inTpPdgId"] != p]
+            data_excl  = data_pos[data_pos["inTpPdgId"] != p]
 
         #Shuffle
         if data_excl.shape[0] > 0:
