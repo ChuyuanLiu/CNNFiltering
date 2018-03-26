@@ -477,7 +477,10 @@ class Dataset:
         totpdg = totpdg + totpdg/3
 
         data_neg = data_neg.sample(frac=1.0)
-        data_neg = data_neg.sample(totpdg)
+
+        print(totpdg)
+        if data_neg.shape[0] > totpdg:
+            data_neg = data_neg.sample(totpdg)
 
         data_tot = pd.concat(data_pdgs + [data_excl,data_neg])
         data_tot = data_tot.sample(frac=1.0)
