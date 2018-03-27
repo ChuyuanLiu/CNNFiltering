@@ -504,12 +504,12 @@ class Dataset:
         data_endcap_edncap  = data_endcap_Out[data_endcap_Out["inIsBarrel"] == 0.0]
         minsize = min(minsize/maxratio,float(data_endcap_edncap.shape[0]))
 
-        if data_barrel_barrel.shape[0] < minszie:
-            data_barrel_barrel.sample(minszie)
-        if data_barrel_edncap.shape[0] < minszie:
-            data_barrel_edncap.sample(minszie)
-        if data_endcap_edncap.shape[0] < minszie:
-            data_endcap_edncap.sample(minszie)
+        if data_barrel_barrel.shape[0] < minsize:
+            data_barrel_barrel.sample(minsize)
+        if data_barrel_edncap.shape[0] < minsize:
+            data_barrel_edncap.sample(minsize)
+        if data_endcap_edncap.shape[0] < minsize:
+            data_endcap_edncap.sample(minsize)
 
         data_tot = pd.concat([data_barrel_barrel,data_barrel_edncap,data_endcap_edncap])
         data_tot.sample(frac=1.0)
