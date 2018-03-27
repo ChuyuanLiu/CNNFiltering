@@ -471,7 +471,7 @@ class Dataset:
                 totpdg = totpdg + d_samp.shape[0]
 
         data_excl = data_excl.sample(frac=1.0)
-        data_excl = data_excl.sample(totpdg/bkgratio)
+        data_excl = data_excl.sample(int(totpdg/bkgratio))
 
         totpdg = totpdg + totpdg/bkgratio
 
