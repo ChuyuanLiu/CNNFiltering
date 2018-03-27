@@ -28,7 +28,7 @@ for chunk in  range(offset,int(((len(files) + chunksize))/chunksize) + 1):
 
     if chunk > offset + limit:
         break
-        
+
     if args.debug:
         p = files[:2]
     else:
