@@ -85,6 +85,10 @@ def npDoubletsLoad(path,fileslimit,cols):
                 pdgData.save(pdg_dir + idName + "_" + str(p) + "_" + str(size) + "_"+ d.replace(".txt",".h5"))
 
             pdg_dir = path + "/others/"
+            
+            if not os.path.exists(pdg_dir):
+                os.makedirs(pdg_dir)
+
             exclData = Dataset([])
             exclData.from_dataframe(dfDoublets)
             exclData.exclusive_by_pdg(particle_ids)
