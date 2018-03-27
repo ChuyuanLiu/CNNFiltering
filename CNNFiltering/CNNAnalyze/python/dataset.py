@@ -446,7 +446,7 @@ class Dataset:
         self.data = data_excl
         return self # allow method chaining
 
-    def balance_by_pdg(self, pdgIds=main_pdgs):
+    def balance_by_pdg(self, pdgIds=main_pdgs,maxratio = 2.0,otheratio = 3.0, bkgratio = 1.0):
         """ Balancing datasets by particles. """
 
         data_pos  = self.data[self.data[target_lab] == 1.0]
@@ -459,12 +459,10 @@ class Dataset:
             data_excl  = data_pos[data_pos[pdg_lab].abs() != p]
             data_pdg = data_pos[data_pos[pdg_lab].abs() == p]
             data_pdgs.append(data_pdg)
-            minimum=min(data_pdg.shape[0]*2,minimum)
+            minimum=min(data_pdg.shape[0]*maxratio,minimum)
             print(" %f pdg : %f " %(p,data_pdg.shape[0]))
             assert minimum > 0, "%f pdg id has zero entries. Returning." % p
 
-        #totpdg = minimum * len(pdgIds)
-        print(minimum)
         data_pdgs_sampled = []
         for d in data_pdgs:
             if d.shape[0] > minimum:
@@ -473,15 +471,14 @@ class Dataset:
                 totpdg = totpdg + d_samp.shape[0]
 
         data_excl = data_excl.sample(frac=1.0)
-        data_excl = data_excl.sample(totpdg/3)
+        data_excl = data_excl.sample(totpdg/bkgratio)
 
-        totpdg = totpdg + totpdg/3
+        totpdg = totpdg + totpdg/bkgratio
 
         data_neg = data_neg.sample(frac=1.0)
 
-        print(totpdg)
-        if data_neg.shape[0] > totpdg:
-            data_neg = data_neg.sample(totpdg)
+        if data_neg.shape[0] > totpdg*bkgratio:
+            data_neg = data_neg.sample(totpdg*bkgratio)
 
         data_tot = pd.concat(data_pdgs_sampled + [data_excl,data_neg])
         data_tot = data_tot.sample(frac=1.0)
@@ -491,6 +488,34 @@ class Dataset:
         print (self.data["inTpPdgId"].value_counts())
 
         return self # allow method chainingp
+
+    def balance_by_det(self,maxratio = 0.2):
+        """ Balancing datasets by detector. """
+
+        data_barrel_In   = self.data[self.data["inIsBarrel"] == 1.0]
+        data_endcap_Out  = self.data[self.data["outIsBarrel"] == 0.0]
+
+        minsize = 1E12
+
+        data_barrel_barrel  = data_barrel_In[data_barrel_In["outIsBarrel"] == 1.0]
+        minsize = min(minsize/maxratio,float(data_barrel_barrel.shape[0]))
+        data_barrel_edncap  = data_barrel_In[data_barrel_)In["outIsBarrel"] == 0.0]
+        minsize = min(minsize/maxratio,float(data_barrel_edncap.shape[0]))
+        data_endcap_edncap  = data_endcap_Out[data_endcap_Out["inIsBarrel"] == 0.0]
+        minsize = min(minsize/maxratio,float(data_endcap_edncap.shape[0]))
+
+        if data_barrel_barrel.shape[0] < minszie:
+            data_barrel_barrel.sample(minszie)
+        if data_barrel_edncap.shape[0] < minszie:
+            data_barrel_edncap.sample(minszie)
+        if data_endcap_edncap.shape[0] < minszie:
+            data_endcap_edncap.sample(minszie)
+
+        data_tot = pd.concat([data_barrel_barrel,data_barrel_edncap,data_endcap_edncap])
+        data_tot.sample(frac=1.0)
+
+        self.data = data_tot
+        return self
 
 
 if __name__ == '__main__':
