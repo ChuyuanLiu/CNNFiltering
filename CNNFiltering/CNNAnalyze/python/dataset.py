@@ -437,7 +437,7 @@ class Dataset:
         data_excl  = self.data[self.data[target_lab] == 1.0]
 
         for p in pdgIds:
-            data_excl  = data_excl[data_pos[pdg_lab].abs() != p]
+            data_excl  = data_excl[data_excl[pdg_lab].abs() != p]
 
         #Shuffle
         if data_excl.shape[0] > 0:
