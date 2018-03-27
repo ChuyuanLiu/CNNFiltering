@@ -502,7 +502,7 @@ class Dataset:
         print(minsize)
         data_barrel_edncap  = data_barrel_In[data_barrel_In["outIsBarrel"] == 0.0]
         minsize = min(minsize/maxratio,float(data_barrel_edncap.shape[0]))
-        print(minsize)print(minsize)
+        print(minsize)
         data_endcap_edncap  = data_endcap_Out[data_endcap_Out["inIsBarrel"] == 0.0]
         minsize = min(minsize/maxratio,float(data_endcap_edncap.shape[0]))
         print(minsize)
