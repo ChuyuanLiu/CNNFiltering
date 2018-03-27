@@ -466,7 +466,7 @@ class Dataset:
         data_pdgs_sampled = []
         for d in data_pdgs:
             if d.shape[0] > minimum:
-                d_samp = d.sample(minimum)
+                d_samp = d.sample(int(minimum))
                 data_pdgs_sampled.append(d_samp)
                 totpdg = totpdg + d_samp.shape[0]
 
@@ -478,7 +478,7 @@ class Dataset:
         data_neg = data_neg.sample(frac=1.0)
 
         if data_neg.shape[0] > totpdg*bkgratio:
-            data_neg = data_neg.sample(totpdg*bkgratio)
+            data_neg = data_neg.sample(int(totpdg*bkgratio))
 
         data_tot = pd.concat(data_pdgs_sampled + [data_excl,data_neg])
         data_tot = data_tot.sample(frac=1.0)
