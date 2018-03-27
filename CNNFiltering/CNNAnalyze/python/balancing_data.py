@@ -13,6 +13,7 @@ args = parser.parse_args()
 remote_data = args.read + "/"
 chunksize   = args.chunk
 offset      = args.offset
+limit       = args.limit
 #remote_data = "data/inference/unzip/"
 new_dir = remote_data + "/det_data/"
 
@@ -24,7 +25,7 @@ if not os.path.exists(new_dir):
 for chunk in  range(offset,int(((len(files) + chunksize))/chunksize) + 1):
     if(min(len(files),chunk*chunksize)==min(len(files),chunksize*(chunk+1)) and chunk!=0):
         continue
-        
+
     if chunk > offset + limit:
         break
 
