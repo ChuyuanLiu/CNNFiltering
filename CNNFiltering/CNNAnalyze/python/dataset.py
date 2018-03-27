@@ -492,18 +492,18 @@ class Dataset:
     def balance_by_det(self,maxratio = 0.2):
         """ Balancing datasets by detector. """
 
-        data_barrel_In   = self.data[self.data["inIsBarrel"] == 1.0]
-        data_endcap_Out  = self.data[self.data["outIsBarrel"] == 0.0]
+        data_barrel_In   = self.data[self.data["inIsBarrel"] == 0.0]
+        data_endcap_Out  = self.data[self.data["outIsBarrel"] == 1.0]
 
         minsize = 1E12
 
-        data_barrel_barrel  = data_barrel_In[data_barrel_In["outIsBarrel"] == 1.0]
+        data_barrel_barrel  = data_barrel_In[data_barrel_In["outIsBarrel"] == 0.0]
         minsize = min(minsize/maxratio,float(data_barrel_barrel.shape[0]))
         print(minsize)
-        data_barrel_edncap  = data_barrel_In[data_barrel_In["outIsBarrel"] == 0.0]
+        data_barrel_edncap  = data_barrel_In[data_barrel_In["outIsBarrel"] == 1.0]
         minsize = min(minsize/maxratio,float(data_barrel_edncap.shape[0]))
         print(minsize)
-        data_endcap_edncap  = data_endcap_Out[data_endcap_Out["inIsBarrel"] == 0.0]
+        data_endcap_edncap  = data_endcap_Out[data_endcap_Out["inIsBarrel"] == 1.0]
         minsize = min(minsize/maxratio,float(data_endcap_edncap.shape[0]))
         print(minsize)
         if data_barrel_barrel.shape[0] < minsize:
