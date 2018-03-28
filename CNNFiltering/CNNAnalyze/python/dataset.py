@@ -465,12 +465,13 @@ class Dataset:
         minimum = 1E8
         totpdg  = 0
 
+        print ("Particle population"
         for p in pdgIds:
             data_excl  = data_pos[data_pos[pdg_lab].abs() != p]
             data_pdg = data_pos[data_pos[pdg_lab].abs() == p]
             data_pdgs.append(data_pdg)
             minimum=min(data_pdg.shape[0]*maxratio,minimum)
-            print(" %f pdg : %f " %(p,data_pdg.shape[0]))
+            print(" %d pdg : %d " %(p,data_pdg.shape[0]))
             assert minimum > 0, "%f pdg id has zero entries. Returning." % p
 
         data_pdgs_sampled = []
@@ -506,13 +507,17 @@ class Dataset:
         data_endcap_Out  = self.data[self.data["outIsBarrel"] == 0.0]
 
         minsize = 1E12
-
+        print ("Detector population")
         data_barrel_barrel  = data_barrel_In[data_barrel_In["outIsBarrel"] == 1.0]
         minsize = min(minsize*maxratio,float(data_barrel_barrel.shape[0]))
+        print(" - barrel/barrel : " + str(data_barrel_barrel.shape[0]))
         data_barrel_edncap  = data_barrel_In[data_barrel_In["outIsBarrel"] == 0.0]
         minsize = min(minsize*maxratio,float(data_barrel_edncap.shape[0]))
+        print(" - barrel/endcap : " + str(data_barrel_edncap.shape[0]))
         data_endcap_edncap  = data_endcap_Out[data_endcap_Out["inIsBarrel"] == 0.0]
         minsize = min(minsize*maxratio,float(data_endcap_edncap.shape[0]))
+        print(" - endcap/endcap : " + str(data_endcap_edncap.shape[0]))
+
         if data_barrel_barrel.shape[0] < minsize:
             data_barrel_barrel.sample(minsize)
         if data_barrel_edncap.shape[0] < minsize:
