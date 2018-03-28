@@ -497,6 +497,9 @@ class Dataset:
 
         minsize = 1E12
 
+        print (self.data["inIsBarrel"].value_counts())
+        print (self.data["outIsBarrel"].value_counts())
+                
         for i in range(0,2):
             print i
             data_buf = self.data[self.data["inIsBarrel"] == float(i)]
@@ -504,7 +507,7 @@ class Dataset:
                 print j
                 data_buf = data_buf[data_buf["outIsBarrel"] == float(j)]
                 print(data_buf.shape[0])
-                
+
         data_barrel_barrel  = data_barrel_In[data_barrel_In["outIsBarrel"] == 0.0]
         minsize = min(minsize*maxratio,float(data_barrel_barrel.shape[0]))
         print(data_barrel_barrel.shape[0])
