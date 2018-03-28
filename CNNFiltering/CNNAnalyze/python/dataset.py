@@ -499,13 +499,13 @@ class Dataset:
 
         data_barrel_barrel  = data_barrel_In[data_barrel_In["outIsBarrel"] == 0.0]
         minsize = min(minsize*maxratio,float(data_barrel_barrel.shape[0]))
-        print(minsize)
+        print(data_barrel_barrel.shape[0])
         data_barrel_edncap  = data_barrel_In[data_barrel_In["outIsBarrel"] == 1.0]
         minsize = min(minsize*maxratio,float(data_barrel_edncap.shape[0]))
-        print(minsize)
+        print(data_barrel_barrel.shape[0])
         data_endcap_edncap  = data_endcap_Out[data_endcap_Out["inIsBarrel"] == 1.0]
         minsize = min(minsize*maxratio,float(data_endcap_edncap.shape[0]))
-        print(minsize)
+        print(data_barrel_barrel.shape[0])
         if data_barrel_barrel.shape[0] < minsize:
             data_barrel_barrel.sample(minsize)
         if data_barrel_edncap.shape[0] < minsize:
