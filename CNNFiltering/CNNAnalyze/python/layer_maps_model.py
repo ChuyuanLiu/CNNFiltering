@@ -115,6 +115,7 @@ train_files = [remote_data + '/train/' +
                el for el in os.listdir(remote_data + 'train/')] if not args.debug else debug_files
 val_files = [remote_data + 'val/' +
              el for el in os.listdir(remote_data + 'val/')]
+print(len(val_files))
 val_files = shuffle(val_files)[:args.val] if not args.debug else debug_files
 
 test_files = [remote_data + 'test/' +
