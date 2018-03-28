@@ -15,7 +15,7 @@ import sys
 import numpy as np
 import itertools
 import pickle
-
+from random import shuffle
 #if socket.gethostname() == 'cmg-gpu1080':
 #    print('locking only one GPU.')
 #    import setGPU
@@ -72,6 +72,8 @@ parser.add_argument('--flip', type=float, default=1.0)
 parser.add_argument('-d','--debug',action='store_true')
 parser.add_argument('--balance','--balance',action='store_true')
 parser.add_argument('--fsamp',type=int,default=10)
+parser.add_argument('--test',type=int,default=35)
+parser.add_argument('--val',type=int,default=15)
 parser.add_argument('--gepochs',type=float,default=1)
 parser.add_argument('--loadw',type=str,default=None)
 parser.add_argument('--phi',type=str,default=None)
@@ -111,10 +113,10 @@ debug_files = [ debug_data + el for el in os.listdir(debug_data)]
 print("Loading data...")
 train_files = [remote_data + '/train/' +
                el for el in os.listdir(remote_data + 'train/')] if not args.debug else debug_files
-val_files = [remote_data + 'val/' +
-             el for el in os.listdir(remote_data + 'val/')] if not args.debug else debug_files
-test_files = [remote_data + 'test/' +
-             el for el in os.listdir(remote_data + 'test/')] if not args.debug else debug_files
+val_files = shuffle([remote_data + 'val/' +
+             el for el in os.listdir(remote_data + 'val/')])[:args.val] if not args.debug else debug_files
+test_files = shuffle([remote_data + 'test/' +
+             el for el in os.listdir(remote_data + 'test/')])[:args.val] if not args.debug else debug_files
 # don't test yet. Test on evaluation.ipynb... # [ remote_data + el for el in  ["203_doublets.h5",  "22_doublets.h5",   "53_doublets.h5",  "64_doublets.h5",  "92_doublets.h5", "132_doublets.h5",  "159_doublets.h5",  "180_doublets.h5",  "206_doublets.h5",  "33_doublets.h5"]]
 #test_files = val_files
 
