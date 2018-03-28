@@ -295,6 +295,8 @@ class Dataset:
         # a_in  = bw_a_in
         # a_out = bw_a_out
 
+        l = []
+        
         # l = []
         # thetac_in, thetac_out, thetas_in, thetas_out = self.theta_correction(
         #     a_in, a_out)
@@ -320,7 +322,7 @@ class Dataset:
 
         X_info = self.get_info_features()
         y,_= to_categorical(self.get_labels())
-        
+
         return X_hit, X_info, y
 
     def get_layer_map_data_multiclass(self):
