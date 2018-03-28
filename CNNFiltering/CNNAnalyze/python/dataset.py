@@ -502,31 +502,17 @@ class Dataset:
     def balance_by_det(self,maxratio = 2):
         """ Balancing datasets by detector. """
         self.recolumn()
-        data_barrel_In   = self.data[self.data["inIsBarrel"] == 0.0]
-        data_endcap_Out  = self.data[self.data["outIsBarrel"] == 1.0]
+        data_barrel_In   = self.data[self.data["inIsBarrel"] == 1.0]
+        data_endcap_Out  = self.data[self.data["outIsBarrel"] == 0.0]
 
         minsize = 1E12
 
-        print (self.data["inIsBarrel"].value_counts())
-        print (self.data["outIsBarrel"].value_counts())
-
-        for i in range(0,2):
-            print i
-            data_buf = self.data[self.data["inIsBarrel"] == float(i)]
-            for j in range(0,2):
-                print j
-                data_buf = data_buf[data_buf["outIsBarrel"] == float(j)]
-                print(data_buf.shape[0])
-
-        data_barrel_barrel  = data_barrel_In[data_barrel_In["outIsBarrel"] == 0.0]
+        data_barrel_barrel  = data_barrel_In[data_barrel_In["outIsBarrel"] == 1.0]
         minsize = min(minsize*maxratio,float(data_barrel_barrel.shape[0]))
-        print(data_barrel_barrel.shape[0])
-        data_barrel_edncap  = data_barrel_In[data_barrel_In["outIsBarrel"] == 1.0]
+        data_barrel_edncap  = data_barrel_In[data_barrel_In["outIsBarrel"] == 0.0]
         minsize = min(minsize*maxratio,float(data_barrel_edncap.shape[0]))
-        print(data_barrel_barrel.shape[0])
-        data_endcap_edncap  = data_endcap_Out[data_endcap_Out["inIsBarrel"] == 1.0]
+        data_endcap_edncap  = data_endcap_Out[data_endcap_Out["inIsBarrel"] == 0.0]
         minsize = min(minsize*maxratio,float(data_endcap_edncap.shape[0]))
-        print(data_barrel_barrel.shape[0])
         if data_barrel_barrel.shape[0] < minsize:
             data_barrel_barrel.sample(minsize)
         if data_barrel_edncap.shape[0] < minsize:
