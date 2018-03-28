@@ -113,10 +113,13 @@ debug_files = [ debug_data + el for el in os.listdir(debug_data)]
 print("Loading data...")
 train_files = [remote_data + '/train/' +
                el for el in os.listdir(remote_data + 'train/')] if not args.debug else debug_files
-val_files = shuffle([remote_data + 'val/' +
-             el for el in os.listdir(remote_data + 'val/')])[:args.val] if not args.debug else debug_files
-test_files = shuffle([remote_data + 'test/' +
-             el for el in os.listdir(remote_data + 'test/')])[:args.test] if not args.debug else debug_files
+val_files = [remote_data + 'val/' +
+             el for el in os.listdir(remote_data + 'val/')]
+val_files = shuffle(val_files)[:args.val] if not args.debug else debug_files
+
+test_files = [remote_data + 'test/' +
+             el for el in os.listdir(remote_data + 'test/')]
+test_files  = shuffle(test_files)[:args.test] if not args.debug else debug_files
 # don't test yet. Test on evaluation.ipynb... # [ remote_data + el for el in  ["203_doublets.h5",  "22_doublets.h5",   "53_doublets.h5",  "64_doublets.h5",  "92_doublets.h5", "132_doublets.h5",  "159_doublets.h5",  "180_doublets.h5",  "206_doublets.h5",  "33_doublets.h5"]]
 #test_files = val_files
 
