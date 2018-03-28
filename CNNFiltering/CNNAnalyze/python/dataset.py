@@ -149,7 +149,7 @@ class Dataset:
         theData = self.data
         dataList = [theData]
 
-        dataList.append(data)
+        dataList.append(theData)
 
         if phi:
             for i in range(1,magnitude):
@@ -308,7 +308,7 @@ class Dataset:
             l = l + [thetac_in, thetac_out, thetas_in, thetas_out]
 
         if phi:
-            
+
             phic_in, phic_out, phis_in, phis_out = self.phi_correction(a_in, a_out)
             l = l + [phic_in, phic_out, phis_in, phis_out]
 
