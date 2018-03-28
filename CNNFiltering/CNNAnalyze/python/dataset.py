@@ -143,11 +143,27 @@ class Dataset:
         """ Constructor method to initialize the classe from a DataFrame """
         self.data = data
 
-    def data_augmentation(self,hits_in,hits_out, magnitude=2.0, phi=True, zr=True, xy=True):
+    def data_augmentation(self, magnitude=2, phi=True, zr=True, xy=True):
         """ Data augmentation with geometrical simmetries"""
         """ - phi angle"""
+        theData = self.data
+        dataList = [theData]
+
+        dataList.append(data)
+
         if phi:
-            phistep = pi / magnitude
+            for i in range(magnitude):
+
+                thisData = theData
+                randomShift = np.random.rand(thisData.shape[0])
+                thisData["inPhi"]  = thisData["inPhi"] + randomShift
+                thisData["outPhi"] = thisData["outPhi"] + randomShift
+
+                dataList.append(thisData)
+
+        allData = pd.concat(dataList)
+
+        self.data = allData
 
     def recolumn(self):
         self.data.columns = dataLab
@@ -172,6 +188,7 @@ class Dataset:
 
         inThetaModS = np.multiply(hits_in, sinThetaIns[:, np.newaxis])
         outThetaModS = np.multiply(hits_out, sinThetaOuts[:, np.newaxis])
+
         return inThetaModC, outThetaModC, inThetaModS, outThetaModS
 
     def phi_correction(self, hits_in, hits_out):
@@ -186,6 +203,7 @@ class Dataset:
 
         inPhiModS = np.multiply(hits_in, sinPhiIns[:, np.newaxis])
         outPhiModS = np.multiply(hits_out, sinPhiOuts[:, np.newaxis])
+
         return inPhiModC, outPhiModC, inPhiModS, outPhiModS
 
     def b_w_correction(self, hits_in, hits_out,smoothing=1.0):
@@ -250,9 +268,11 @@ class Dataset:
         """ filter data keeping only those samples where s[feature_name] = value """
         self.data = self.data[self.data[feature_name] == value]
         return self  # to allow method chaining
+
     def Filter(self, feature_name, value):
         """ filter data keeping only those samples where s[feature_name] = value """
         d = Dataset(self.data[self.data[feature_name] == value])
+
 	d.data =  self.data[self.data[feature_name] == value]
         return d  # to allow method chaining
 
@@ -271,14 +291,18 @@ class Dataset:
         a_in = (a_in - mean) / std
         a_out = (a_out - mean) / std
 
-        (bw_a_in,bw_a_out) = self.b_w_correction(a_in,a_out)
-        a_in  = bw_a_in
-        a_out = bw_a_out
+        # (bw_a_in,bw_a_out) = self.b_w_correction(a_in,a_out)
+        # a_in  = bw_a_in
+        # a_out = bw_a_out
 
-        l = []
-        thetac_in, thetac_out, thetas_in, thetas_out = self.theta_correction(
-            a_in, a_out)
-        l = l + [thetac_in, thetac_out, thetas_in, thetas_out]
+        # l = []
+        # thetac_in, thetac_out, thetas_in, thetas_out = self.theta_correction(
+        #     a_in, a_out)
+        # l = l + [thetac_in, thetac_out, thetas_in, thetas_out]
+        #
+        # phic_in, phic_out, phis_in, phis_out = self.phi_correction(
+        #     a_in, a_out)
+        # l = l + [phic_in, phic_out, phis_in, phis_out]
 
         for hits, ids in [(a_in, self.data.detSeqIn), (a_out, self.data.detSeqOut)]:
 
@@ -296,6 +320,7 @@ class Dataset:
 
         X_info = self.get_info_features()
         y,_= to_categorical(self.get_labels())
+        
         return X_hit, X_info, y
 
     def get_layer_map_data_multiclass(self):
