@@ -33,14 +33,14 @@ target_lab = "label"
 
 pdg_lab = "inTpPdgId"
 
-headLab = ["run","evt","lumi","k","i","detSeqIn","detSeqOut","bSX","bSY","bSZ","bSdZ","PU"]
+headLab = ["run","evt","lumi","PU","detSeqIn","detSeqOut","bSX","bSY","bSZ","bSdZ"]
 
 hitCoord = ["X","Y","Z","Phi","R"]
 
 hitDet = ["DetSeq","IsBarrel","Layer","Ladder","Side","Disk","Panel","Module","IsFlipped","Ax1","Ax2"]
 
 hitClust = ["ClustX","ClustY","ClustSize","ClustSizeX","ClustSizeY","PixelZero",
-            "AvgCharge","OverFlowX","OverFlowY","IsBig","IsBad","IsEdge"]
+            "AvgCharge","OverFlowX","OverFlowY","Skew","IsBig","IsBad","IsEdge"]
 
 hitPixel = ["Pix" + str(el) for el in range(1, padshape*padshape + 1)]
 
@@ -75,6 +75,12 @@ differences = ["deltaA", "deltaADC", "deltaS", "deltaR", "deltaPhi", "deltaZ", "
 featureLabs = inHitFeature + outHitFeature + differences
 
 dataLab = headLab + inHitLabs + outHitLabs + differences + particleLabs + ["dummyFlag"]
+
+layer_ids = [0, 1, 2, 3, 14, 15, 16, 29, 30, 31]
+
+particle_ids = [-1.,11.,13.,15.,22.,111.,211.,311.,321.,2212.,2112.,3122.,223.]
+
+main_pdgs = [11.,13.,211.,321.,2212.]
 
 layer_ids = [0, 1, 2, 3, 14, 15, 16, 29, 30, 31]
 
@@ -143,6 +149,9 @@ class Dataset:
         if phi:
             phistep = pi / magnitude
 
+    def recolumn(self):
+        self.data.columns = dataLab
+
     def theta_correction(self, hits_in, hits_out):
         # theta correction
         #cosThetaIns = np.cos(np.arctan2(np.multiply(
@@ -180,7 +189,7 @@ class Dataset:
         return inPhiModC, outPhiModC, inPhiModS, outPhiModS
 
     def b_w_correction(self, hits_in, hits_out,smoothing=1.0):
-
+        self.recolumn()
         turned_in  = ((hits_in > 0.).astype(float)) * smoothing
         turned_out = ((hits_out > 0.).astype(float)) * smoothing
 
@@ -203,7 +212,7 @@ class Dataset:
         """
         a_in = self.data[inPixels].as_matrix()
         a_out = self.data[outPixels].as_matrix()
-
+        self.recolumn()
         # Normalize data
         if normalize:
 	        mean, std = (13382.0011321,10525.1252954) #on 2.5M hits PU35
@@ -252,6 +261,7 @@ class Dataset:
         return self.data[featureLabs].as_matrix()
 
     def get_layer_map_data(self):
+        self.recolumn()
         a_in = self.data[inPixels].as_matrix().astype(np.float16)
         a_out = self.data[outPixels].as_matrix().astype(np.float16)
 
@@ -433,7 +443,7 @@ class Dataset:
 
     def exclusive_by_pdg(self, pdgIds,bkg=10000,verbose=True):
         """ Exclude single particle datasets. """
-
+        self.recolumn()
         data_excl  = self.data[self.data[target_lab] == 1.0]
 
         for p in pdgIds:
@@ -448,7 +458,7 @@ class Dataset:
 
     def balance_by_pdg(self, pdgIds=main_pdgs,maxratio = 2.0,otheratio = 3.0, bkgratio = 1.0):
         """ Balancing datasets by particles. """
-
+        self.recolumn()
         data_pos  = self.data[self.data[target_lab] == 1.0]
         data_neg  = self.data[self.data[target_lab] == -1.0]
         data_pdgs = []
@@ -491,7 +501,7 @@ class Dataset:
 
     def balance_by_det(self,maxratio = 2):
         """ Balancing datasets by detector. """
-
+        self.recolumn()
         data_barrel_In   = self.data[self.data["inIsBarrel"] == 0.0]
         data_endcap_Out  = self.data[self.data["outIsBarrel"] == 1.0]
 
@@ -499,7 +509,7 @@ class Dataset:
 
         print (self.data["inIsBarrel"].value_counts())
         print (self.data["outIsBarrel"].value_counts())
-                
+
         for i in range(0,2):
             print i
             data_buf = self.data[self.data["inIsBarrel"] == float(i)]
