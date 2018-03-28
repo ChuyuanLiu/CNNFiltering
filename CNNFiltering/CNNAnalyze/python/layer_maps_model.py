@@ -115,10 +115,10 @@ train_files = [remote_data + '/train/' +
                el for el in os.listdir(remote_data + 'train/')] if not args.debug else debug_files
 vals = [remote_data + 'val/' +
              el for el in os.listdir(remote_data + 'val/')]
-print(len(val_files))
+
 val_files = shuffle(vals)
 val_files = val_files[:args.val] if not args.debug else debug_files
-
+print(len(val_files))
 tests = [remote_data + 'test/' +
              el for el in os.listdir(remote_data + 'test/')]
 test_files = shuffle(tests)
