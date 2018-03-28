@@ -281,9 +281,11 @@ class Dataset:
         """ Returns info features as numpy array. """
         return self.data[featureLabs].as_matrix()
 
-    def get_layer_map_data(self,augmentation=1,theta=False,phi=False):
+    def get_layer_map_data(self,augmentation=1,theta=False,phi=False,bw=False):
 
         self.recolumn()
+
+        self.data_augmentation(magnitude=augmentation)
 
         a_in = self.data[inPixels].as_matrix().astype(np.float16)
         a_out = self.data[outPixels].as_matrix().astype(np.float16)
@@ -294,11 +296,10 @@ class Dataset:
         a_in = (a_in - mean) / std
         a_out = (a_out - mean) / std
 
-        # (bw_a_in,bw_a_out) = self.b_w_correction(a_in,a_out)
-        # a_in  = bw_a_in
-        # a_out = bw_a_out
-
-        self.data_augmentation(magnitude=augmentation)
+        if bw:
+            (bw_a_in,bw_a_out) = self.b_w_correction(a_in,a_out)
+            a_in  = bw_a_in
+            a_out = bw_a_out
 
         l = []
 
