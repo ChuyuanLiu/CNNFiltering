@@ -152,7 +152,7 @@ class Dataset:
         dataList.append(data)
 
         if phi:
-            for i in range(magnitude):
+            for i in range(1,magnitude):
 
                 thisData = theData
                 randomShift = np.random.rand(thisData.shape[0])
@@ -207,6 +207,7 @@ class Dataset:
         return inPhiModC, outPhiModC, inPhiModS, outPhiModS
 
     def b_w_correction(self, hits_in, hits_out,smoothing=1.0):
+
         self.recolumn()
         turned_in  = ((hits_in > 0.).astype(float)) * smoothing
         turned_out = ((hits_out > 0.).astype(float)) * smoothing
@@ -280,8 +281,10 @@ class Dataset:
         """ Returns info features as numpy array. """
         return self.data[featureLabs].as_matrix()
 
-    def get_layer_map_data(self):
+    def get_layer_map_data(self,augmentation=1,theta=False,phi=False):
+
         self.recolumn()
+
         a_in = self.data[inPixels].as_matrix().astype(np.float16)
         a_out = self.data[outPixels].as_matrix().astype(np.float16)
 
@@ -295,16 +298,19 @@ class Dataset:
         # a_in  = bw_a_in
         # a_out = bw_a_out
 
+        self.data_augmentation(magnitude=augmentation)
+
         l = []
-        
-        # l = []
-        # thetac_in, thetac_out, thetas_in, thetas_out = self.theta_correction(
-        #     a_in, a_out)
-        # l = l + [thetac_in, thetac_out, thetas_in, thetas_out]
-        #
-        # phic_in, phic_out, phis_in, phis_out = self.phi_correction(
-        #     a_in, a_out)
-        # l = l + [phic_in, phic_out, phis_in, phis_out]
+
+        if theta:
+
+            thetac_in, thetac_out, thetas_in, thetas_out = self.theta_correction(a_in, a_out)
+            l = l + [thetac_in, thetac_out, thetas_in, thetas_out]
+
+        if phi:
+            
+            phic_in, phic_out, phis_in, phis_out = self.phi_correction(a_in, a_out)
+            l = l + [phic_in, phic_out, phis_in, phis_out]
 
         for hits, ids in [(a_in, self.data.detSeqIn), (a_out, self.data.detSeqOut)]:
 
