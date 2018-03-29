@@ -504,7 +504,7 @@ class Dataset:
             data_excl  = data_pos[data_pos[pdg_lab].abs() != p]
             data_pdg = data_pos[data_pos[pdg_lab].abs() == p]
             data_pdgs.append(data_pdg)
-            minimum=min(data_pdg.shape[0]*maxratio,minimum)
+            minimum=min(data_pdg.shape[0],minimum)
             print(" %d pdg : %d " %(p,data_pdg.shape[0]))
             assert minimum > 0, "%f pdg id has zero entries. Returning." % p
 
@@ -512,13 +512,13 @@ class Dataset:
 
         data_pdgs_sampled = []
         for d in data_pdgs:
-            if d.shape[0] > minimum:
-                d_samp = d.sample(int(minimum))
+            if d.shape[0] > minimum*maxratio:
+                d_samp = d.sample(int(minimum*maxratio))
                 data_pdgs_sampled.append(d_samp)
                 totpdg = totpdg + d_samp.shape[0]
 
         data_excl = data_excl.sample(frac=1.0)
-        data_excl = data_excl.sample(int(totpdg/bkgratio))
+        data_excl = data_excl.sample(int(totpdg/otheratio))
 
         totpdg = totpdg + totpdg/bkgratio
 
@@ -555,13 +555,13 @@ class Dataset:
         minsize = 1E12
         print ("Detector population")
         data_barrel_barrel  = data_barrel_In[data_barrel_In["outIsBarrel"] == 1.0]
-        minsize = min(minsize*maxratio,float(data_barrel_barrel.shape[0]))
+        minsize = min(minsize,float(data_barrel_barrel.shape[0])*maxratio)
         print(" - barrel/barrel : " + str(data_barrel_barrel.shape[0]))
         data_barrel_edncap  = data_barrel_In[data_barrel_In["outIsBarrel"] == 0.0]
-        minsize = min(minsize*maxratio,float(data_barrel_edncap.shape[0]))
+        minsize = min(minsize,float(data_barrel_edncap.shape[0])*maxratio)
         print(" - barrel/endcap : " + str(data_barrel_edncap.shape[0]))
         data_endcap_edncap  = data_endcap_Out[data_endcap_Out["inIsBarrel"] == 0.0]
-        minsize = min(minsize*maxratio,float(data_endcap_edncap.shape[0]))
+        minsize = min(minsize,float(data_endcap_edncap.shape[0])*maxratio)
         print(" - endcap/endcap : " + str(data_endcap_edncap.shape[0]))
 
         if data_barrel_barrel.shape[0] > minsize:
