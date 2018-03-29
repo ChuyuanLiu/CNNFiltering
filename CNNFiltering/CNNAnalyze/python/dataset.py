@@ -537,7 +537,7 @@ class Dataset:
         for p in pdgIds:
             data_new_excl  = data_tot[data_tot[pdg_lab].abs() != p]
             data_new_pdg = data_tot[data_tot[pdg_lab].abs() == p]
-            print(" %d pdg : %d " %(p,data_pdg.shape[0]))
+            print(" %d pdg : %d " %(p,data_new_pdg.shape[0]))
 
         print(" Others pdg : %d " %(data_new_excl.shape[0]))
         self.data = data_tot
