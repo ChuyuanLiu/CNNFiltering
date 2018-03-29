@@ -525,10 +525,12 @@ class Dataset:
         if data_excl.shape[0] > totpdg/otheratio:
             data_excl = data_excl.sample(int(totpdg/otheratio))
 
+        data_pdgs_sampled.append(data_excl)
         totpdg = totpdg + totpdg/otheratio
 
         data_neg = data_neg.sample(frac=1.0)
-
+        data_pdgs_sampled.append(data_neg)
+        
         if data_neg.shape[0] > totpdg*bkgratio:
             data_neg = data_neg.sample(int(totpdg*bkgratio))
 
