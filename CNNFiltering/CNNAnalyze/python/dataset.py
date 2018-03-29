@@ -490,7 +490,7 @@ class Dataset:
         self.data = data_excl
         return self # allow method chaining
 
-    def balance_by_pdg(self, pdgIds=main_pdgs,maxratio = 4.0,otheratio = 4.0, bkgratio = 1.0):
+    def balance_by_pdg(self, pdgIds=main_pdgs,maxratio = 2.0,otheratio = 4.0, bkgratio = 1.0):
         """ Balancing datasets by particles. """
         self.recolumn()
         data_pos  = self.data[self.data[target_lab] == 1.0]
@@ -531,9 +531,9 @@ class Dataset:
         if data_excl.shape[0] > totpdg/otheratio:
             data_excl = data_excl.sample(int(totpdg/otheratio))
 
-        for p in pdgIds:
-            data_excl_test  = data_excl[data_excl[pdg_lab].abs() == p]
-            print(" %d pdg : %d " %(p,data_excl_test.shape[0]))
+        # for p in pdgIds:
+        #     data_excl_test  = data_excl[data_excl[pdg_lab].abs() == p]
+        #     print(" %d pdg : %d " %(p,data_excl_test.shape[0]))
 
         data_pdgs_sampled.append(data_excl)
         totpdg = totpdg + totpdg/otheratio
@@ -541,9 +541,9 @@ class Dataset:
         data_neg = data_neg.sample(frac=1.0)
         data_pdgs_sampled.append(data_neg)
 
-        for p in pdgIds:
-            data_neg_test  = data_neg[data_neg[pdg_lab].abs() == p]
-            print(" %d pdg : %d " %(p,data_neg_test.shape[0]))
+        # for p in pdgIds:
+        #     data_neg_test  = data_neg[data_neg[pdg_lab].abs() == p]
+        #     print(" %d pdg : %d " %(p,data_neg_test.shape[0]))
 
         if data_neg.shape[0] > totpdg*bkgratio:
             data_neg = data_neg.sample(int(totpdg*bkgratio))
