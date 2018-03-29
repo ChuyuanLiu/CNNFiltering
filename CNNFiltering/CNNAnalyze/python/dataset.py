@@ -519,6 +519,7 @@ class Dataset:
                 d_samp = d.sample(int(minimum*maxratio))
                 data_pdgs_sampled.append(d_samp)
                 totpdg = totpdg + d_samp.shape[0]
+                print(" shape : %d " %(p,data_pdg.shape[0]))
 
         data_excl = data_excl.sample(frac=1.0)
         if data_excl.shape[0] > totpdg/otheratio:
