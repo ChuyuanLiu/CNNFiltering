@@ -533,9 +533,10 @@ class Dataset:
         print("Old size : " + str(self.data.shape[0]) + " - New size : " + str(data_tot.shape[0]))
 
         print ("New Particle population")
+
         for p in pdgIds:
-            data_new_excl  = data_tot[data_tot[data_tot].abs() != p]
-            data_new_pdg = data_tot[data_tot[data_tot].abs() == p]
+            data_new_excl  = data_tot[data_tot[pdg_lab].abs() != p]
+            data_new_pdg = data_tot[data_tot[pdg_lab].abs() == p]
             print(" %d pdg : %d " %(p,data_pdg.shape[0]))
 
         print(" Others pdg : %d " %(data_new_excl.shape[0]))
