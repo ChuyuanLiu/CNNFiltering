@@ -530,11 +530,11 @@ class Dataset:
 
         data_neg = data_neg.sample(frac=1.0)
         data_pdgs_sampled.append(data_neg)
-        
+
         if data_neg.shape[0] > totpdg*bkgratio:
             data_neg = data_neg.sample(int(totpdg*bkgratio))
 
-        data_tot = pd.concat(data_pdgs_sampled + [data_excl,data_neg])
+        data_tot = pd.concat(data_pdgs_sampled)
         data_tot = data_tot.sample(frac=1.0)
 
         print("Old size : " + str(self.data.shape[0]) + " - New size : " + str(data_tot.shape[0]))
