@@ -553,11 +553,11 @@ class Dataset:
         print(" - endcap/endcap : " + str(data_endcap_edncap.shape[0]))
 
         if data_barrel_barrel.shape[0] > minsize:
-            data_barrel_barrel.sample(minsize)
+            data_barrel_barrel.sample(int(minsize))
         if data_barrel_edncap.shape[0] > minsize:
-            data_barrel_edncap.sample(minsize)
+            data_barrel_edncap.sample(int(minsize))
         if data_endcap_edncap.shape[0] > minsize:
-            data_endcap_edncap.sample(minsize)
+            data_endcap_edncap.sample(int(minsize))
 
         data_tot = pd.concat([data_barrel_barrel,data_barrel_edncap,data_endcap_edncap])
         data_tot.sample(frac=1.0)
