@@ -539,14 +539,14 @@ class Dataset:
         totpdg = totpdg + totpdg/otheratio
 
         data_neg = data_neg.sample(frac=1.0)
+        if data_neg.shape[0] > totpdg*bkgratio:
+            data_neg = data_neg.sample(int(totpdg*bkgratio))
+
         data_pdgs_sampled.append(data_neg)
 
         # for p in pdgIds:
         #     data_neg_test  = data_neg[data_neg[pdg_lab].abs() == p]
         #     print(" %d pdg : %d " %(p,data_neg_test.shape[0]))
-
-        if data_neg.shape[0] > totpdg*bkgratio:
-            data_neg = data_neg.sample(int(totpdg*bkgratio))
 
         data_tot = pd.concat(data_pdgs_sampled)
         data_tot = data_tot.sample(frac=1.0)

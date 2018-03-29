@@ -35,7 +35,7 @@ for chunk in  range(offset,int(((len(files) + chunksize))/chunksize) + 1):
         p = files[min(len(files),chunk*chunksize):min(len(files),chunksize*(chunk+1))]
 
     print("loading & balancing data...")
-    data = Dataset(p).balance_by_det().balance_by_pdg().balance_data()
+    data = Dataset(p).balance_by_det().balance_by_pdg()
     print("dumping data...")
     print("data size %d" + str(data.data.shape[0]))
     data.save(remote_data + "/pdg_bal_dataset_" + str(chunk) + ".h5")
