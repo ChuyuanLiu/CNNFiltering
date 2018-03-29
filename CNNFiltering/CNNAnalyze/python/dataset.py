@@ -522,6 +522,7 @@ class Dataset:
                 print(" shape : %d " %(d_samp.shape[0]))
             else:
                 data_pdgs_sampled.append(d)
+                print(" shape : %d " %(d.shape[0]))
 
         data_excl = data_excl.sample(frac=1.0)
         if data_excl.shape[0] > totpdg/otheratio:
