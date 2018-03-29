@@ -490,7 +490,7 @@ class Dataset:
         self.data = data_excl
         return self # allow method chaining
 
-    def balance_by_pdg(self, pdgIds=main_pdgs,maxratio = 5.0,otheratio = 4.0, bkgratio = 1.0):
+    def balance_by_pdg(self, pdgIds=main_pdgs,maxratio = 10.0,otheratio = 4.0, bkgratio = 1.0):
         """ Balancing datasets by particles. """
         self.recolumn()
         data_pos  = self.data[self.data[target_lab] == 1.0]
@@ -520,6 +520,8 @@ class Dataset:
                 data_pdgs_sampled.append(d_samp)
                 totpdg = totpdg + d_samp.shape[0]
                 print(" shape : %d " %(d_samp.shape[0]))
+            else:
+                data_pdgs_sampled.append(d)
 
         data_excl = data_excl.sample(frac=1.0)
         if data_excl.shape[0] > totpdg/otheratio:
