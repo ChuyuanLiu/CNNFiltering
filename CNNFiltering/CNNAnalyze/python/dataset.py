@@ -495,13 +495,14 @@ class Dataset:
         self.recolumn()
         data_pos  = self.data[self.data[target_lab] == 1.0]
         data_neg  = self.data[self.data[target_lab] == -1.0]
+        data_excl = self.data[self.data[target_lab] == 1.0]
         data_pdgs = []
         minimum = 1E8
         totpdg  = 0
 
         print ("Particle population")
         for p in pdgIds:
-            data_excl  = data_pos[data_pos[pdg_lab].abs() != p]
+            data_excl  = data_excl[data_excl[pdg_lab].abs() != p]
             data_pdg = data_pos[data_pos[pdg_lab].abs() == p]
             data_pdgs.append(data_pdg)
             minimum=min(data_pdg.shape[0],minimum)
@@ -512,6 +513,7 @@ class Dataset:
         print("Minimum = " + str(minimum))
         print("Minsize = " + str(minimum*maxratio))
         data_pdgs_sampled = []
+
         for d in data_pdgs:
             if d.shape[0] > minimum*maxratio:
                 d_samp = d.sample(int(minimum*maxratio))
