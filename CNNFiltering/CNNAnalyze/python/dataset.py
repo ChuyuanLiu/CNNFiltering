@@ -490,7 +490,7 @@ class Dataset:
         self.data = data_excl
         return self # allow method chaining
 
-    def balance_by_pdg(self, pdgIds=main_pdgs,maxratio = 2.0,otheratio = 3.0, bkgratio = 1.0):
+    def balance_by_pdg(self, pdgIds=main_pdgs,maxratio = 5.0,otheratio = 4.0, bkgratio = 1.0):
         """ Balancing datasets by particles. """
         self.recolumn()
         data_pos  = self.data[self.data[target_lab] == 1.0]
@@ -552,15 +552,17 @@ class Dataset:
         minsize = min(minsize*maxratio,float(data_endcap_edncap.shape[0]))
         print(" - endcap/endcap : " + str(data_endcap_edncap.shape[0]))
 
-        if data_barrel_barrel.shape[0] < minsize:
+        if data_barrel_barrel.shape[0] > minsize:
             data_barrel_barrel.sample(minsize)
-        if data_barrel_edncap.shape[0] < minsize:
+        if data_barrel_edncap.shape[0] > minsize:
             data_barrel_edncap.sample(minsize)
-        if data_endcap_edncap.shape[0] < minsize:
+        if data_endcap_edncap.shape[0] > minsize:
             data_endcap_edncap.sample(minsize)
 
         data_tot = pd.concat([data_barrel_barrel,data_barrel_edncap,data_endcap_edncap])
         data_tot.sample(frac=1.0)
+
+        print("Old size : " + str(self.data.sahpe[0]) + " - New size : " + str(data_tot.shape[0]))
 
         self.data = data_tot
         return self
