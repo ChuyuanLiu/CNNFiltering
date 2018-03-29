@@ -508,6 +508,8 @@ class Dataset:
             print(" %d pdg : %d " %(p,data_pdg.shape[0]))
             assert minimum > 0, "%f pdg id has zero entries. Returning." % p
 
+        print(" Others pdg : %d " %(data_excl.shape[0]))
+
         data_pdgs_sampled = []
         for d in data_pdgs:
             if d.shape[0] > minimum:
@@ -528,6 +530,15 @@ class Dataset:
         data_tot = pd.concat(data_pdgs_sampled + [data_excl,data_neg])
         data_tot = data_tot.sample(frac=1.0)
 
+        print("Old size : " + str(self.data.shape[0]) + " - New size : " + str(data_tot.shape[0]))
+
+        print ("New Particle population")
+        for p in pdgIds:
+            data_new_excl  = data_tot[data_tot[data_tot].abs() != p]
+            data_new_pdg = data_tot[data_tot[data_tot].abs() == p]
+            print(" %d pdg : %d " %(p,data_pdg.shape[0]))
+
+        print(" Others pdg : %d " %(data_new_excl.shape[0]))
         self.data = data_tot
 
         #print (self.data["inTpPdgId"].value_counts())
