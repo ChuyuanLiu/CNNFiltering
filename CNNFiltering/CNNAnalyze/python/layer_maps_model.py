@@ -193,7 +193,7 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
         if args.phi is not None:
             X_hit, X_info, y = train_data.get_layer_map_data_withphi()
         else:
-            X_hit, X_info, y = train_data.get_layer_map_data()
+            X_hit, X_info, y = train_data.get_layer_map_data(augmentation=2)
     else:
         X_hit, X_info, y = train_data.get_layer_map_data_multiclass()
 
