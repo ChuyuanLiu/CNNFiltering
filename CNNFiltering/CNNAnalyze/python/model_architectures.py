@@ -24,8 +24,8 @@ def adam_small_doublet_model(args, n_channels,n_labels=2):
     conv = Conv2D(64, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv4')(conv)
     pool = MaxPooling2D(pool_size=(2, 2), padding='same', data_format="channels_last", name='pool2')(conv)
 
-    conv = Conv2D(64, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv3')(pool)
-    pool = AveragePooling2D(pool_size=(2, 2), padding='same', data_format="channels_last", name='pool2')(conv)
+    conv = Conv2D(64, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv5')(pool)
+    pool = AveragePooling2D(pool_size=(2, 2), padding='same', data_format="channels_last", name='avgpool')(conv)
 
     flat = Flatten()(pool)
     concat = concatenate([flat, infos])
