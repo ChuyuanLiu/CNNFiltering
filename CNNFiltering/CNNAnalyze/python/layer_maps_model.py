@@ -205,7 +205,7 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
 
     # [X_hit[:,:,:,:4], X_hit[:,:,:,4:], X_info]
     train_input_list = [X_hit, X_info]
-	if args.limit is not None:
+    if args.limit is not None:
 		train_input_list = train_input_list[:args.limit]
     # [X_val_hit[:,:,:,:4], X_val_hit[:,:,:,4:], X_val_info]
     val_input_list = [X_val_hit, X_val_info]
