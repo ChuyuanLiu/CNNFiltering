@@ -381,11 +381,8 @@ class Dataset:
         a_out = (a_out - mean) / std
 
         l = []
-        thetac_in, thetac_out, thetas_in, thetas_out = self.theta_correction(
-            a_in, a_out)
-
-	    phic_in, phic_out, phis_in, phis_out = self.phi_correction(
-            a_in, a_out)
+        thetac_in, thetac_out, thetas_in, thetas_out = self.theta_correction(a_in, a_out)
+	    phic_in, phic_out, phis_in, phis_out = self.phi_correction(a_in, a_out)
 
         l = l + [thetac_in, thetac_out, thetas_in, thetas_out, phic_in, phic_out, phis_in, phis_out]
 
