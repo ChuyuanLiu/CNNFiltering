@@ -401,7 +401,7 @@ class Dataset:
         #print(X_hit[0,:,:,0])
 
         X_info = self.get_info_features()
-        y = to_categorical(self.get_labels())
+        y,_ = to_categorical(self.get_labels())
         return X_hit, X_info, y
 
     def get_labels(self):
