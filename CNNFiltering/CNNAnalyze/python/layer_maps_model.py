@@ -152,11 +152,11 @@ histories = []
 print("loading test & val data . . .")
 if not args.multiclass:
     if args.phi:
-        X_val_hit, X_val_info, y_val = val_data.get_layer_map_data()
-        X_test_hit, X_test_info, y_test = test_data.get_layer_map_data()
-    else:
         X_val_hit, X_val_info, y_val = val_data.get_layer_map_data_withphi()
         X_test_hit, X_test_info, y_test = test_data.get_layer_map_data_withphi()
+    else:
+        X_val_hit, X_val_info, y_val = val_data.get_layer_map_data()
+        X_test_hit, X_test_info, y_test = test_data.get_layer_map_data()
 else:
     X_val_hit, X_val_info, y_val = val_data.get_layer_map_data_multiclass()
     X_test_hit, X_test_info, y_test = test_data.get_layer_map_data_multiclass()
@@ -209,8 +209,11 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     # [X_test_hit[:,:,:,:4], X_test_hit[:,:,:,4:], X_test_info]
     test_input_list = [X_test_hit, X_test_info]
 
-	print(train_input_list[0].shape[-1])
-    if not args.multiclass:
+    print(train_input_list[0].shape[-1])
+	print(val_input_list[0].shape[-1])
+	print(val_input_list[0].shape[-1])
+
+	if not args.multiclass:
         model = adam_small_doublet_model(args,train_input_list[0].shape[-1])
     else:
         model = small_doublet_model(args,train_input_list[0].shape[-1],len(pdg)+2)
