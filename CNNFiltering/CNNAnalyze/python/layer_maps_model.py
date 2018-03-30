@@ -166,7 +166,7 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     endindices = list(itertools.chain(endindices,thisindices))
     train_batch_file = np.take(train_files,thisindices)
 
-    train_data = Dataset(train_batch_file).balance_by_pdg()
+    train_data = Dataset(train_batch_file).balance_by_pdg().balance_data()
 
     if args.verbose:
         print("Iteration no. " + str(i) + " on " + str(nochunks))
