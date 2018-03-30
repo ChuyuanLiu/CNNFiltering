@@ -78,6 +78,7 @@ parser.add_argument('--gepochs',type=float,default=1)
 parser.add_argument('--loadw',type=str,default=None)
 parser.add_argument('--phi',action='store_true')
 parser.add_argument('--augm',type=int,default=1)
+parser.add_argument('--limit',type=int,default=None)
 parser.add_argument('--multiclass',action='store_true')
 args = parser.parse_args()
 
@@ -204,16 +205,14 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
 
     # [X_hit[:,:,:,:4], X_hit[:,:,:,4:], X_info]
     train_input_list = [X_hit, X_info]
+	if args.limit is not None:
+		train_input_list = train_input_list[:args.limit]
     # [X_val_hit[:,:,:,:4], X_val_hit[:,:,:,4:], X_val_info]
     val_input_list = [X_val_hit, X_val_info]
     # [X_test_hit[:,:,:,:4], X_test_hit[:,:,:,4:], X_test_info]
     test_input_list = [X_test_hit, X_test_info]
 
-    print(train_input_list[0].shape[-1])
-	print(val_input_list[0].shape[-1])
-	print(val_input_list[0].shape[-1])
-
-	if not args.multiclass:
+    if not args.multiclass:
         model = adam_small_doublet_model(args,train_input_list[0].shape[-1])
     else:
         model = small_doublet_model(args,train_input_list[0].shape[-1],len(pdg)+2)
