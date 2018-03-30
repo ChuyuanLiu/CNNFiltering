@@ -365,7 +365,7 @@ class Dataset:
         y,self.numclasses= to_categorical(self.get_labels_multiclass())
         return X_hit, X_info, y
 
-    def get_layer_map_data_withphi(self,augmentation=1.0):
+    def get_layer_map_data_withphi(self,augmentation=1):
 
         self.recolumn()
 
@@ -384,7 +384,7 @@ class Dataset:
         thetac_in, thetac_out, thetas_in, thetas_out = self.theta_correction(
             a_in, a_out)
 
-	phic_in, phic_out, phis_in, phis_out = self.phi_correction(
+	    phic_in, phic_out, phis_in, phis_out = self.phi_correction(
             a_in, a_out)
 
         l = l + [thetac_in, thetac_out, thetas_in, thetas_out, phic_in, phic_out, phis_in, phis_out]
