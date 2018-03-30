@@ -155,7 +155,7 @@ class Dataset:
             for i in range(1,magnitude):
 
                 thisData = theData
-                randomShift = np.random.uniform(-np.pi,np.pi,thisData.shape[0])
+                randomShift = np.random.uniform(-(np.pi),np.pi,thisData.shape[0])
                 thisData["inPhi"]  = thisData["inPhi"] + randomShift
                 thisData["outPhi"] = thisData["outPhi"] + randomShift
 
