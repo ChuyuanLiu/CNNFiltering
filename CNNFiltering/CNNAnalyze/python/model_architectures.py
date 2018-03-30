@@ -1,6 +1,6 @@
 import argparse
 import dataset
-from keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense,
+from keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense
 from keras.layers import concatenate, Dropout, BatchNormalization, AveragePooling2D
 from keras.models import Model
 from keras import optimizers
