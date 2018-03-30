@@ -76,7 +76,8 @@ parser.add_argument('--test',type=int,default=35)
 parser.add_argument('--val',type=int,default=15)
 parser.add_argument('--gepochs',type=float,default=1)
 parser.add_argument('--loadw',type=str,default=None)
-parser.add_argument('--phi',type=str,default=None)
+parser.add_argument('--phi',action='store_true')
+parser.add_argument('--augm',type=float,default=1.0)
 parser.add_argument('--multiclass',action='store_true')
 args = parser.parse_args()
 
@@ -98,7 +99,7 @@ if not os.path.exists(log_dir_tf):
 
 fname = args.log_dir + "/" + str(t_now) + "/" + args.name
 
-if args.phi is not None:
+if args.phi:
 	fname = fname + "_phi"
 
 # "/eos/cms/store/cmst3/group/dehep/convPixels/TTBar_13TeV_PU35/"
@@ -150,7 +151,7 @@ histories = []
 
 print("loading test & val data . . .")
 if not args.multiclass:
-    if args.phi is None:
+    if args.phi:
         X_val_hit, X_val_info, y_val = val_data.get_layer_map_data()
         X_test_hit, X_test_info, y_test = test_data.get_layer_map_data()
     else:
@@ -166,7 +167,7 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     endindices = list(itertools.chain(endindices,thisindices))
     train_batch_file = np.take(train_files,thisindices)
 
-    train_data = Dataset(train_batch_file).balance_by_pdg().balance_data()
+    train_data = Dataset(train_batch_file).balance_data()
 
     if args.verbose:
         print("Iteration no. " + str(i) + " on " + str(nochunks))
@@ -190,10 +191,10 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     print("loading train data . . .")
 
     if not args.multiclass:
-        if args.phi is not None:
-            X_hit, X_info, y = train_data.get_layer_map_data_withphi()
+        if args.phi:
+            X_hit, X_info, y = train_data.get_layer_map_data_withphi(augmentation=args.augm)
         else:
-            X_hit, X_info, y = train_data.get_layer_map_data(augmentation=2)
+            X_hit, X_info, y = train_data.get_layer_map_data(augmentation=args.augm)
     else:
         X_hit, X_info, y = train_data.get_layer_map_data_multiclass()
 

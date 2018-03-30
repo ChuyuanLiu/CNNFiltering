@@ -155,7 +155,7 @@ class Dataset:
             for i in range(1,magnitude):
 
                 thisData = theData
-                randomShift = np.random.rand(thisData.shape[0])
+                randomShift = np.random.uniform(-numpy.pi,numpy.pi,thisData.shape[0])
                 thisData["inPhi"]  = thisData["inPhi"] + randomShift
                 thisData["outPhi"] = thisData["outPhi"] + randomShift
 
@@ -365,7 +365,12 @@ class Dataset:
         y,self.numclasses= to_categorical(self.get_labels_multiclass())
         return X_hit, X_info, y
 
-    def get_layer_map_data_withphi(self):
+    def get_layer_map_data_withphi(self,augmentation=1.0):
+
+        self.recolumn()
+
+        self.data_augmentation(magnitude=augmentation)
+
         a_in = self.data[inPixels].as_matrix().astype(np.float16)
         a_out = self.data[outPixels].as_matrix().astype(np.float16)
 
