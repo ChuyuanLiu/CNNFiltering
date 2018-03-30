@@ -1,6 +1,7 @@
 import argparse
 import dataset
-from keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense, concatenate, Dropout, BatchNormalization
+from keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense,
+from keras.layers import concatenate, Dropout, BatchNormalization, AveragePooling2D
 from keras.models import Model
 from keras import optimizers
 from keras.constraints import max_norm
@@ -15,7 +16,7 @@ def adam_small_doublet_model(args, n_channels,n_labels=2):
     infos = Input(shape=(len(dataset.featureLabs),), name='info_input')
 
     #drop = Dropout(args.dropout)(hit_shapes)
-    conv = Conv2D(32, (5, 5), activation='relu', padding='same', data_format="channels_last", name='conv1')(hit_shapes)
+    conv = Conv2D(32, (4, 4), activation='relu', padding='same', data_format="channels_last", name='conv1')(hit_shapes)
     conv = Conv2D(32, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv2')(conv)
     pool = MaxPooling2D(pool_size=(2, 2), padding='same', data_format="channels_last", name='pool1')(conv)
 
@@ -23,13 +24,16 @@ def adam_small_doublet_model(args, n_channels,n_labels=2):
     conv = Conv2D(64, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv4')(conv)
     pool = MaxPooling2D(pool_size=(2, 2), padding='same', data_format="channels_last", name='pool2')(conv)
 
+    conv = Conv2D(64, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv3')(pool)
+    pool = AveragePooling2D(pool_size=(2, 2), padding='same', data_format="channels_last", name='pool2')(conv)
+
     flat = Flatten()(pool)
     concat = concatenate([flat, infos])
 
     b_norm = BatchNormalization()(concat)
-    dense = Dense(128, activation='relu', kernel_constraint=max_norm(args.maxnorm), name='dense1')(b_norm)
+    dense = Dense(64, activation='relu', kernel_constraint=max_norm(args.maxnorm), name='dense1')(b_norm)
     drop = Dropout(args.dropout)(dense)
-    dense = Dense(64, activation='relu', kernel_constraint=max_norm(args.maxnorm), name='dense2')(drop)
+    dense = Dense(32, activation='relu', kernel_constraint=max_norm(args.maxnorm), name='dense2')(drop)
     drop = Dropout(args.dropout)(dense)
     pred = Dense(n_labels, activation='softmax', kernel_constraint=max_norm(args.maxnorm), name='output')(drop)
 
