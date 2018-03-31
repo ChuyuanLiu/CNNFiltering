@@ -1,5 +1,5 @@
+from __future__ import print_function
 import argparse
-import __future__
 import dataset
 from keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense
 from keras.layers import concatenate, Dropout, BatchNormalization, AveragePooling2D
@@ -11,7 +11,6 @@ from sklearn.metrics import roc_auc_score
 from keras.callbacks import Callback
 from keras.regularizers import l1,l2
 from keras import backend as K
-from __future__ import print_function
 
 IMAGE_SIZE = dataset.padshape
 
