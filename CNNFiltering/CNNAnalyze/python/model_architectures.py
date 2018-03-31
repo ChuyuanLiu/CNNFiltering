@@ -14,7 +14,7 @@ from keras import backend as K
 
 IMAGE_SIZE = dataset.padshape
 
-def max_binary_accuracy(y_true, y_pred,n=100):
+def max_binary_accuracy(y_true, y_pred,n=20):
 
     thresholds = np.linspace(0.0,1.0,num=n)
     accmax = 0
