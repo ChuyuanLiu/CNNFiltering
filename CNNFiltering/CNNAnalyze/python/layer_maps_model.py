@@ -252,9 +252,9 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     #model.load_weights(fname + ".h5")
 
     loss, acc = model.evaluate(test_input_list, y_test, batch_size=args.batch_size)
-	test_pred = model.predict(test_input_list)
-	test_roc = roc_auc_score(y_test, test_pred)
-	test_acc = max_binary_accuracy(y_test,test_pred)
+    test_pred = model.predict(test_input_list)
+    test_roc = roc_auc_score(y_test, test_pred)
+    test_acc = max_binary_accuracy(y_test,test_pred)
     print('Test loss / test accuracy (max) = {:.4f} / {:.4f} ({:.4f})'.format(loss, acc,test_acc))
 	print('Test ACU                  = {:.4f} /'.format(test_roc))
 
