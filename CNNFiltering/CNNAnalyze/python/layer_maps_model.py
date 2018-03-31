@@ -265,9 +265,9 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     train_acc,t_train = max_binary_accuracy(y,train_pred,n=1000)
     train_y = (train_pred > t_train).astype(float)
     print(train_y)
-    prob_indeces = np.where(train_y==y)
-    print(prob_indeces)
-    problematics = train_input_list[prob_indeces]
+    prob_indeces = np.where(train_y!=y)
+    print(prob_indeces[0])
+    problematics = train_input_list[prob_indeces[0]]
     print(problematics)
     print(len(problematics))
     print(len(problematics)/len(train_input_list))
