@@ -2,43 +2,38 @@ import argparse
 import dataset
 from keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense
 from keras.layers import concatenate, Dropout, BatchNormalization, AveragePooling2D
-from keras.regularizers import l1,l2
 from keras.models import Model
 from keras import optimizers
 from keras.constraints import max_norm
 from keras.utils import plot_model
 from sklearn.metrics import roc_auc_score
-from keras.callbacks import Callback
 
 IMAGE_SIZE = dataset.padshape
 
-                activity_regularizer=regularizers.l1(0.01)))
 
 def adam_small_doublet_model(args, n_channels,n_labels=2):
     hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='hit_shape_input')
     infos = Input(shape=(len(dataset.featureLabs),), name='info_input')
 
     #drop = Dropout(args.dropout)(hit_shapes)
-    conv = Conv2D(32, (4, 4), activation='relu', padding='same', data_format="channels_last", name='conv1',kernel_regularizer=l2(0.01),activity_regularizer=l1(0.01))(hit_shapes)
-    conv = Conv2D(32, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv2',kernel_regularizer=l2(0.01),activity_regularizer=l1(0.01))(conv)
-    b_norm = BatchNormalization()(conv)
-    pool = MaxPooling2D(pool_size=(2, 2), padding='same', data_format="channels_last", name='pool1',kernel_regularizer=l2(0.01),activity_regularizer=l1(0.01))(b_norm)
+    conv = Conv2D(32, (4, 4), activation='relu', padding='same', data_format="channels_last", name='conv1')(hit_shapes)
+    conv = Conv2D(32, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv2')(conv)
+    pool = MaxPooling2D(pool_size=(2, 2), padding='same', data_format="channels_last", name='pool1')(conv)
 
-    conv = Conv2D(64, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv3',kernel_regularizer=l2(0.01),activity_regularizer=l1(0.01))(pool)
-    conv = Conv2D(64, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv4',kernel_regularizer=l2(0.01),activity_regularizer=l1(0.01))(conv)
-    b_norm = BatchNormalization()(conv)
-    pool = AveragePooling2D(pool_size=(2, 2), padding='same', data_format="channels_last", name='pool2')(b_norm)
+    conv = Conv2D(64, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv3')(pool)
+    conv = Conv2D(64, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv4')(conv)
+    pool = MaxPooling2D(pool_size=(2, 2), padding='same', data_format="channels_last", name='pool2')(conv)
 
-    # conv = Conv2D(64, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv5',kernel_regularizer=l2(0.01),activity_regularizer=l1(0.01))(pool)
-    # pool = AveragePooling2D(pool_size=(2, 2), padding='same', data_format="channels_last", name='avgpool')(conv)
+    conv = Conv2D(64, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv5')(pool)
+    pool = AveragePooling2D(pool_size=(2, 2), padding='same', data_format="channels_last", name='avgpool')(conv)
 
     flat = Flatten()(pool)
     concat = concatenate([flat, infos])
 
     b_norm = BatchNormalization()(concat)
-    dense = Dense(64, activation='relu', kernel_constraint=max_norm(args.maxnorm), name='dense1',kernel_regularizer=l2(0.01),activity_regularizer=l1(0.01))(b_norm)
+    dense = Dense(64, activation='relu', kernel_constraint=max_norm(args.maxnorm), name='dense1')(b_norm)
     drop = Dropout(args.dropout)(dense)
-    dense = Dense(32, activation='relu', kernel_constraint=max_norm(args.maxnorm), name='dense2',kernel_regularizer=l2(0.01),activity_regularizer=l1(0.01))(drop)
+    dense = Dense(32, activation='relu', kernel_constraint=max_norm(args.maxnorm), name='dense2')(drop)
     drop = Dropout(args.dropout)(dense)
     pred = Dense(n_labels, activation='softmax', kernel_constraint=max_norm(args.maxnorm), name='output')(drop)
 
@@ -219,7 +214,6 @@ class roc_callback(Callback):
 
     def on_batch_end(self, batch, logs={}):
         return
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--n_epochs', type=int, default=100)
