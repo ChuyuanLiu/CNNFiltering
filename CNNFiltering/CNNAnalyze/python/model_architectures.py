@@ -6,7 +6,7 @@ from keras.models import Model
 from keras import optimizers
 from keras.constraints import max_norm
 from keras.utils import plot_model
-
+from sklearn.metrics import roc_auc_score
 
 IMAGE_SIZE = dataset.padshape
 
@@ -184,45 +184,36 @@ def separate_conv_doublet_model(args, n_channels):
     model.compile(optimizer=my_sgd, loss='categorical_crossentropy', metrics=['accuracy'])
     return model
 
-class DoubletsDataGenerator:
+class roc_callback(Callback):
+    def __init__(self,training_data,validation_data):
+        self.x = training_data[0]
+        self.y = training_data[1]
+        self.x_val = validation_data[0]
+        self.y_val = validation_data[1]
 
-    def __init__(self, list_IDs, labels, batch_size=32, dim=(32,32,32), n_channels=20,
-             n_classes=2, shuffle=True):
-             """Generator Definition"""
-             self.dim = dim
-             self.batch_size = batch_size
-             self.labels = labels
-             self.list_IDs = list_IDs
-             self.n_channels = n_channels
-             self.n_classes = n_classes
-             self.shuffle = shuffle
-             self.on_epoch_end()
 
-    def on_epoch_end(self):
-        '''Updates indexes after each epoch'''
-        self.indexes = np.arange(len(self.list_IDs))
-        if self.shuffle == True:
-            np.random.shuffle(self.indexes)
+    def on_train_begin(self, logs={}):
+        return
 
-    def __data_generation(self, list_IDs_temp):
-  '''Generates data containing batch_size samples''' # X : (n_samples, *dim, n_channels)
-        # Initialization
-        X = np.empty((self.batch_size, *self.dim, self.n_channels))
-        y = np.empty((self.batch_size), dtype=int)
+    def on_train_end(self, logs={}):
+        return
 
-        # Generate data
-        for i, ID in enumerate(list_IDs_temp):
-            # Store sample
-            X[i,] = np.load('data/' + ID + '.npy')
+    def on_epoch_begin(self, epoch, logs={}):
+        return
 
-            # Store class
-            y[i] = self.labels[ID]
+    def on_epoch_end(self, epoch, logs={}):
+        y_pred = self.model.predict(self.x)
+        roc = roc_auc_score(self.y, y_pred)
+        y_pred_val = self.model.predict(self.x_val)
+        roc_val = roc_auc_score(self.y_val, y_pred_val)
+        print('\rroc-auc: %s - roc-auc_val: %s' % (str(round(roc,4)),str(round(roc_val,4))),end=100*' '+'\n')
+        return
 
-        return X, keras.utils.to_categorical(y, num_classes=self.n_classes)
+    def on_batch_begin(self, batch, logs={}):
+        return
 
-    def __len__(self):
-  '''Denotes the number of batches per epoch'''
-  return int(np.floor(len(self.list_IDs) / self.batch_size))
+    def on_batch_end(self, batch, logs={}):
+        return
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--n_epochs', type=int, default=100)

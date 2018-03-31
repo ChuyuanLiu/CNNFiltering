@@ -263,20 +263,22 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
         ModelCheckpoint(fname + "_last.h5", save_best_only=True,
                         save_weights_only=True),
         TensorBoard(log_dir=log_dir_tf, histogram_freq=0,
-                    write_graph=True, write_images=True)
+                    write_graph=True, write_images=True),
+		roc_callback(training_data=train_input_list,validation_data=val_input_list)
     ]
 
     #model.fit_generator(myGenerator(), samples_per_epoch = 60000, nb_epoch = 2, verbose=2, show_accuracy=True, callbacks=[], validation_data=None, class_weight=None, nb_worker=1)
     #model.fit_generator(batch_generator(train_data.data,args.bsamp),samples_per_epoch = args.bsamp , verbose=args.verbose,callbacks=callbacks,validation_data=(val_input_list, y_val),nb_epoch=args.n_epochs)
     print(np.array(train_input_list).shape)
-    history = model.fit(train_input_list, y, batch_size=args.batch_size, epochs=args.n_epochs, shuffle=True,validation_data=(val_input_list, y_val), callbacks=callbacks, verbose=args.verbose)
+    history = model.fit(train_input_list, y, batch_size=args.batch_size, epochs=args.n_epochs, shuffle=True,validation_data=val_input_list, callbacks=callbacks, verbose=args.verbose)
 
     # Restore the best found model during validation
     #model.load_weights(fname + ".h5")
 
     loss, acc = model.evaluate(test_input_list, y_test, batch_size=args.batch_size)
+	auc =
     print('Test loss / test accuracy = {:.4f} / {:.4f}'.format(loss, acc))
-
+	print('Test ACU                  = {:.4f} /'.format(loss, acc))
 
     print("saving model " + fname)
     model.save_weights(fname + ".h5", overwrite=True)
