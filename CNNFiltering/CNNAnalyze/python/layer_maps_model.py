@@ -219,7 +219,7 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
 		X_info = X_info[:args.limit]
 		y = y[:args.limit]
 
-    if i!=0 :
+    if numprobs>0:
 
 		X_hit = X_hit[:len(X_hit)-numprobs]
 		X_info = X_info[:len(X_info)-numprobs]
