@@ -10,62 +10,39 @@ import tempfile
 import os
 from dataset import Dataset
 from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
-#from sk
+from sk
 from model_architectures import *
 import sys
 import numpy as np
 import itertools
 import pickle
 from random import shuffle
+from sklearn.model_selection import StratifiedKFold
 #if socket.gethostname() == 'cmg-gpu1080':
 #    print('locking only one GPU.')
 #    import setGPU
 
-'''
-from sklearn.model_selection import StratifiedKFold
-# Instantiate the cross validator
-skf = StratifiedKFold(n_splits=kfold_splits, shuffle=True)
-# Loop through the indices the split() method returns
-for index, (train_indices, val_indices) in enumerate(skf.split(X, y)):
-    print "Training on fold " + str(index+1) + "/10..."
-    # Generate batches from indices
-    xtrain, xval = X[train_indices], X[val_indices]
-    ytrain, yval = y[train_indices], y[val_indices]
-    # Clear model, and create it
-    model = None
-    model = create_model()
 
-    # Debug message I guess
-    # print "Training new iteration on " + str(xtrain.shape[0]) + " training samples, " + str(xval.shape[0]) + " validation samples, this may be a while..."
-
-    history = train_model(model, xtrain, ytrain, xval, yval)
-    accuracy_history = history.history['acc']
-    val_accuracy_history = history.history['val_acc']
-    print "Last training accuracy: " + str(accuracy_history[-1]) + ", last validation accuracy: " + str(val_accuracy_history[-1])
-'''
-def batch_generator(data_df,s):
-	dsize = data_df.shape[0]
-	print("Whole data size : " + str(dsize))
-	print("Batch size      : " + str(s))
-	slast = int(dsize / s)
-	print("No. batches     : " + str(slast + 1))
- 	#x_hit = data_list[0]
-	#x_inf = data_list[1]
-    #len(data_df)
-	while True:
-#		for i in range(slast+1): # 1875 * 32 = 60000 -> # of traini
-            		#if i%10==0:
-            		#    print "i = " + str(i)
-
-		index= random.choice(len(s),1)
-		df_i = data_df[index, :]
-        	print(df_i.shape[0])
-		doublets = Dataset([])
-            	doublets = Dataset.from_dataframe(df_i)
-            	X_hit, X_info, y = doublets.get_layer_map_data()
-        	X_list = [X_hit,X_info]
-           	print(X_hit.shape[0])
-		yield (X_list,y)
+#
+# # Instantiate the cross validator
+# skf = StratifiedKFold(n_splits=kfold_splits, shuffle=True)
+# # Loop through the indices the split() method returns
+# for index, (train_indices, val_indices) in enumerate(skf.split(X, y)):
+#     print "Training on fold " + str(index+1) + "/10..."
+#     # Generate batches from indices
+#     xtrain, xval = X[train_indices], X[val_indices]
+#     ytrain, yval = y[train_indices], y[val_indices]
+#     # Clear model, and create it
+#     model = None
+#     model = create_model()
+#
+#     # Debug message I guess
+#     # print "Training new iteration on " + str(xtrain.shape[0]) + " training samples, " + str(xval.shape[0]) + " validation samples, this may be a while..."
+#
+#     history = train_model(model, xtrain, ytrain, xval, yval)
+#     accuracy_history = history.history['acc']
+#     val_accuracy_history = history.history['val_acc']
+#     print "Last training accuracy: " + str(accuracy_history[-1]) + ", last validation accuracy: " + str(val_accuracy_history[-1])
 
 DEBUG = os.name == 'nt'  # DEBUG on laptop
 
@@ -264,20 +241,23 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
                         save_weights_only=True),
         TensorBoard(log_dir=log_dir_tf, histogram_freq=0,
                     write_graph=True, write_images=True),
-		roc_callback(training_data=(train_input_list, y),validation_data=(val_input_list,y_val))
+		roc_callback(training_data=train_input_list,validation_data=val_input_list)
     ]
 
     #model.fit_generator(myGenerator(), samples_per_epoch = 60000, nb_epoch = 2, verbose=2, show_accuracy=True, callbacks=[], validation_data=None, class_weight=None, nb_worker=1)
     #model.fit_generator(batch_generator(train_data.data,args.bsamp),samples_per_epoch = args.bsamp , verbose=args.verbose,callbacks=callbacks,validation_data=(val_input_list, y_val),nb_epoch=args.n_epochs)
-    #print(np.array(train_input_list).shape)
-    history = model.fit(train_input_list, y, batch_size=args.batch_size, epochs=args.n_epochs, shuffle=True,validation_data=(val_input_list,y_val), callbacks=callbacks, verbose=args.verbose)
+
+    history = model.fit(train_input_list, y, batch_size=args.batch_size, epochs=args.n_epochs, shuffle=True,validation_data=val_input_list, callbacks=callbacks, verbose=args.verbose)
 
     # Restore the best found model during validation
     #model.load_weights(fname + ".h5")
 
-    loss, acc = model.evaluate(test_input_list, y_test, batch_size=args.batch_size)	
-    print('Test loss / test accuracy = {:.4f} / {:.4f}'.format(loss, acc))
-    #print('Test ACU                  = {:.4f} /'.format(loss, acc))
+    loss, acc = model.evaluate(test_input_list, y_test, batch_size=args.batch_size)
+	test_pred = model.predict(test_input_list)
+	test_roc = roc_auc_score(y_test, test_pred)
+	test_acc = max_binary_accuracy(y_test,test_pred)
+    print('Test loss / test accuracy (max) = {:.4f} / {:.4f} ({:.4f})'.format(loss, acc,test_acc))
+	print('Test ACU                  = {:.4f} /'.format(test_roc))
 
     print("saving model " + fname)
     model.save_weights(fname + ".h5", overwrite=True)
