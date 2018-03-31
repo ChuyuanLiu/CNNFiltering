@@ -10,6 +10,7 @@ import tempfile
 import os
 from dataset import Dataset
 from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
+from sk
 from model_architectures import *
 import sys
 import numpy as np
@@ -19,6 +20,28 @@ from random import shuffle
 #if socket.gethostname() == 'cmg-gpu1080':
 #    print('locking only one GPU.')
 #    import setGPU
+
+
+from sklearn.model_selection import StratifiedKFold
+# Instantiate the cross validator
+skf = StratifiedKFold(n_splits=kfold_splits, shuffle=True)
+# Loop through the indices the split() method returns
+for index, (train_indices, val_indices) in enumerate(skf.split(X, y)):
+    print "Training on fold " + str(index+1) + "/10..."
+    # Generate batches from indices
+    xtrain, xval = X[train_indices], X[val_indices]
+    ytrain, yval = y[train_indices], y[val_indices]
+    # Clear model, and create it
+    model = None
+    model = create_model()
+
+    # Debug message I guess
+    # print "Training new iteration on " + str(xtrain.shape[0]) + " training samples, " + str(xval.shape[0]) + " validation samples, this may be a while..."
+
+    history = train_model(model, xtrain, ytrain, xval, yval)
+    accuracy_history = history.history['acc']
+    val_accuracy_history = history.history['val_acc']
+    print "Last training accuracy: " + str(accuracy_history[-1]) + ", last validation accuracy: " + str(val_accuracy_history[-1])
 
 def batch_generator(data_df,s):
 	dsize = data_df.shape[0]
@@ -205,8 +228,10 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
 
     # [X_hit[:,:,:,:4], X_hit[:,:,:,4:], X_info]
     train_input_list = [X_hit, X_info]
+
     if args.limit is not None:
 		train_input_list = train_input_list[:args.limit]
+
     # [X_val_hit[:,:,:,:4], X_val_hit[:,:,:,4:], X_val_info]
     val_input_list = [X_val_hit, X_val_info]
     # [X_test_hit[:,:,:,:4], X_test_hit[:,:,:,4:], X_test_info]
@@ -243,7 +268,7 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
 
     #model.fit_generator(myGenerator(), samples_per_epoch = 60000, nb_epoch = 2, verbose=2, show_accuracy=True, callbacks=[], validation_data=None, class_weight=None, nb_worker=1)
     #model.fit_generator(batch_generator(train_data.data,args.bsamp),samples_per_epoch = args.bsamp , verbose=args.verbose,callbacks=callbacks,validation_data=(val_input_list, y_val),nb_epoch=args.n_epochs)
-
+    print(np.array(train_input_list).shape)
     history = model.fit(train_input_list, y, batch_size=args.batch_size, epochs=args.n_epochs, shuffle=True,validation_data=(val_input_list, y_val), callbacks=callbacks, verbose=args.verbose)
 
     # Restore the best found model during validation
