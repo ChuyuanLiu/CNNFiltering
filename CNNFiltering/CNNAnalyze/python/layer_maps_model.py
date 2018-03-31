@@ -261,12 +261,12 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     print('Test loss / test AUC (max) = {:.4f} / {:.4f} ({:.4f})'.format(loss,test_roc))
     print('Test acc /  acc max (@t)   = {:.4f} / {:.4f} ({:.3f})'.format(acc,test_acc,t_test))
 
-	train_pred = model.predict(train_input_list)
-	train_acc,t_train = max_binary_accuracy(y,train_pred,n=1000)
-	problematics = train_input_list[((train_pred > t_train).astype(float)==y)]
-	print(len(problematics))
-	print(len(problematics)/len(train_input_list))
-	
+    train_pred = model.predict(train_input_list)
+    train_acc,t_train = max_binary_accuracy(y,train_pred,n=1000)
+    problematics = train_input_list[((train_pred > t_train).astype(float)==y)]
+    print(len(problematics))
+    print(len(problematics)/len(train_input_list))
+
     print("saving model " + fname)
     model.save_weights(fname + ".h5", overwrite=True)
     model.save_weights(fname + "_partial_" + str(int(np.sum(donechunks))) + "_" + str(i) + ".h5", overwrite=True)
