@@ -161,6 +161,9 @@ else:
     X_val_hit, X_val_info, y_val = val_data.get_layer_map_data_multiclass()
     X_test_hit, X_test_info, y_test = test_data.get_layer_map_data_multiclass()
 
+
+problematics = []
+
 while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < args.gepochs).any():
     thisindices = indices[i*args.fsamp:(i+1)*args.fsamp]
 
@@ -254,10 +257,16 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     loss, acc = model.evaluate(test_input_list, y_test, batch_size=args.batch_size)
     test_pred = model.predict(test_input_list)
     test_roc = roc_auc_score(y_test, test_pred)
-    test_acc = max_binary_accuracy(y_test,test_pred)
-    print('Test loss / test accuracy (max) = {:.4f} / {:.4f} ({:.4f})'.format(loss, acc,test_acc))
-    print('Test AUC                  	   = {:.4f} /'.format(test_roc))
+    test_acc,t_test = max_binary_accuracy(y_test,test_pred,n=1000)
+    print('Test loss / test AUC (max) = {:.4f} / {:.4f} ({:.4f})'.format(loss,test_roc))
+    print('Test acc /  acc max (@t)   = {:.4f} / {:.4f} ({:.3f})'.format(acc,test_acc,t_test))
 
+	train_pred = model.predict(train_input_list)
+	train_acc,t_train = max_binary_accuracy(y,train_pred,n=1000)
+	problematics = train_input_list[((train_pred > t_train).astype(float)==y)]
+	print(len(problematics))
+	print(len(problematics)/len(train_input_list))
+	
     print("saving model " + fname)
     model.save_weights(fname + ".h5", overwrite=True)
     model.save_weights(fname + "_partial_" + str(int(np.sum(donechunks))) + "_" + str(i) + ".h5", overwrite=True)

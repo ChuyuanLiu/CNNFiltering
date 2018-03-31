@@ -22,8 +22,10 @@ def max_binary_accuracy(y_true, y_pred,n=50):
     accmax = 0
     for t in thresholds:
         acc = np.mean(((y_pred > t).astype(float)==y_true).astype(float))
-        accmax = max(accmax,acc)
-    return accmax
+        if acc > accmax:
+            tmax = t
+            accmax = acc
+    return accmax,t
 
 def adam_small_doublet_model(args, n_channels,n_labels=2):
     hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='hit_shape_input')
@@ -221,8 +223,8 @@ class roc_callback(Callback):
         roc = roc_auc_score(self.y, y_pred)
         y_pred_val = self.model.predict(self.x_val)
         roc_val = roc_auc_score(self.y_val, y_pred_val)
-        acc_val = max_binary_accuracy(np.array(self.y_val),np.array(y_pred_val),n=200)
-        print('\n ==> ROC: %s - ROC val: %s - MaxAcc val: %s \n' % (str(round(roc,4)),str(round(roc_val,4)),str(round(acc_val,4))))
+        acc_val,t = max_binary_accuracy(np.array(self.y_val),np.array(y_pred_val),n=200)
+        print('\n ==> ROC: %s - ROC val: %s - MaxAcc val: %s (t = %s)\n' % (str(round(roc,4)),str(round(roc_val,4)),str(round(acc_val,4)),str(round(t,3))))
         return
 
     def on_batch_begin(self, batch, logs={}):
