@@ -140,7 +140,7 @@ test_data = Dataset(test_files)#,balance=args.balance)
 nochunks = int((len(train_files) + args.fsamp - 1)/(args.fsamp))
 indices = np.arange(len(train_files))
 np.random.shuffle(indices)
-print(indices)
+# print(indices)
 donechunks = np.zeros(len(train_files))
 endindices = []
 
@@ -246,7 +246,7 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     #model.fit_generator(myGenerator(), samples_per_epoch = 60000, nb_epoch = 2, verbose=2, show_accuracy=True, callbacks=[], validation_data=None, class_weight=None, nb_worker=1)
     #model.fit_generator(batch_generator(train_data.data,args.bsamp),samples_per_epoch = args.bsamp , verbose=args.verbose,callbacks=callbacks,validation_data=(val_input_list, y_val),nb_epoch=args.n_epochs)
 
-    history = model.fit(train_input_list, y, batch_size=args.batch_size, epochs=args.n_epochs, shuffle=True,validation_data=val_input_list, callbacks=callbacks, verbose=args.verbose)
+    history = model.fit(train_input_list, y, batch_size=args.batch_size, epochs=args.n_epochs, shuffle=True,validation_data=(val_input_list,y_val), callbacks=callbacks, verbose=args.verbose)
 
     # Restore the best found model during validation
     #model.load_weights(fname + ".h5")
