@@ -10,7 +10,7 @@ import tempfile
 import os
 from dataset import Dataset
 from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
-from sk
+#from sk
 from model_architectures import *
 import sys
 import numpy as np
@@ -21,7 +21,7 @@ from random import shuffle
 #    print('locking only one GPU.')
 #    import setGPU
 
-
+'''
 from sklearn.model_selection import StratifiedKFold
 # Instantiate the cross validator
 skf = StratifiedKFold(n_splits=kfold_splits, shuffle=True)
@@ -42,7 +42,7 @@ for index, (train_indices, val_indices) in enumerate(skf.split(X, y)):
     accuracy_history = history.history['acc']
     val_accuracy_history = history.history['val_acc']
     print "Last training accuracy: " + str(accuracy_history[-1]) + ", last validation accuracy: " + str(val_accuracy_history[-1])
-
+'''
 def batch_generator(data_df,s):
 	dsize = data_df.shape[0]
 	print("Whole data size : " + str(dsize))
@@ -264,21 +264,20 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
                         save_weights_only=True),
         TensorBoard(log_dir=log_dir_tf, histogram_freq=0,
                     write_graph=True, write_images=True),
-		roc_callback(training_data=train_input_list,validation_data=val_input_list)
+		roc_callback(training_data=(train_input_list, y),validation_data=(val_input_list,y_val))
     ]
 
     #model.fit_generator(myGenerator(), samples_per_epoch = 60000, nb_epoch = 2, verbose=2, show_accuracy=True, callbacks=[], validation_data=None, class_weight=None, nb_worker=1)
     #model.fit_generator(batch_generator(train_data.data,args.bsamp),samples_per_epoch = args.bsamp , verbose=args.verbose,callbacks=callbacks,validation_data=(val_input_list, y_val),nb_epoch=args.n_epochs)
-    print(np.array(train_input_list).shape)
-    history = model.fit(train_input_list, y, batch_size=args.batch_size, epochs=args.n_epochs, shuffle=True,validation_data=val_input_list, callbacks=callbacks, verbose=args.verbose)
+    #print(np.array(train_input_list).shape)
+    history = model.fit(train_input_list, y, batch_size=args.batch_size, epochs=args.n_epochs, shuffle=True,validation_data=(val_input_list,y_val), callbacks=callbacks, verbose=args.verbose)
 
     # Restore the best found model during validation
     #model.load_weights(fname + ".h5")
 
-    loss, acc = model.evaluate(test_input_list, y_test, batch_size=args.batch_size)
-	auc =
+    loss, acc = model.evaluate(test_input_list, y_test, batch_size=args.batch_size)	
     print('Test loss / test accuracy = {:.4f} / {:.4f}'.format(loss, acc))
-	print('Test ACU                  = {:.4f} /'.format(loss, acc))
+    #print('Test ACU                  = {:.4f} /'.format(loss, acc))
 
     print("saving model " + fname)
     model.save_weights(fname + ".h5", overwrite=True)

@@ -1,4 +1,5 @@
 import argparse
+import __future__
 import dataset
 from keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense
 from keras.layers import concatenate, Dropout, BatchNormalization, AveragePooling2D
@@ -7,25 +8,28 @@ from keras import optimizers
 from keras.constraints import max_norm
 from keras.utils import plot_model
 from sklearn.metrics import roc_auc_score
+from keras.callbacks import Callback
+from keras.regularizers import l1,l2
 
 IMAGE_SIZE = dataset.padshape
-
 
 def adam_small_doublet_model(args, n_channels,n_labels=2):
     hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='hit_shape_input')
     infos = Input(shape=(len(dataset.featureLabs),), name='info_input')
 
-    #drop = Dropout(args.dropout)(hit_shapes)
+    drop = Dropout(args.dropout)(hit_shapes)
     conv = Conv2D(32, (4, 4), activation='relu', padding='same', data_format="channels_last", name='conv1')(hit_shapes)
     conv = Conv2D(32, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv2')(conv)
-    pool = MaxPooling2D(pool_size=(2, 2), padding='same', data_format="channels_last", name='pool1')(conv)
+    b_norm = BatchNormalization()(conv)
+    pool = MaxPooling2D(pool_size=(2, 2), padding='same', data_format="channels_last", name='pool1')(b_norm)
 
     conv = Conv2D(64, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv3')(pool)
     conv = Conv2D(64, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv4')(conv)
-    pool = MaxPooling2D(pool_size=(2, 2), padding='same', data_format="channels_last", name='pool2')(conv)
+    b_norm = BatchNormalization()(conv)
+    pool = MaxPooling2D(pool_size=(2, 2), padding='same', data_format="channels_last", name='pool2')(b_norm)
 
     conv = Conv2D(64, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv5')(pool)
-    pool = AveragePooling2D(pool_size=(2, 2), padding='same', data_format="channels_last", name='avgpool')(conv)
+    pool = MaxPooling2D(pool_size=(2, 2), padding='same', data_format="channels_last", name='avgpool')(conv)
 
     flat = Flatten()(pool)
     concat = concatenate([flat, infos])
@@ -40,7 +44,6 @@ def adam_small_doublet_model(args, n_channels,n_labels=2):
     model = Model(inputs=[hit_shapes, infos], outputs=pred)
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
     return model
-
 
 def big_filters_model(args, n_channels):
     hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='hit_shape_input')
@@ -206,7 +209,7 @@ class roc_callback(Callback):
         roc = roc_auc_score(self.y, y_pred)
         y_pred_val = self.model.predict(self.x_val)
         roc_val = roc_auc_score(self.y_val, y_pred_val)
-        print('\rroc-auc: %s - roc-auc_val: %s' % (str(round(roc,4)),str(round(roc_val,4))),end=100*' '+'\n')
+        print('\rroc-auc: %s - roc-auc_val: %s \n' % (str(round(roc,4)),str(round(roc_val,4))))#,end=100*' '+'\n')
         return
 
     def on_batch_begin(self, batch, logs={}):
