@@ -165,6 +165,9 @@ else:
 problematics = []
 
 while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < args.gepochs).any():
+
+	numprobs = len(problematics)
+
     thisindices = indices[i*args.fsamp:(i+1)*args.fsamp]
 
     endindices = list(itertools.chain(endindices,thisindices))
@@ -206,10 +209,14 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     print("Test size: " + str(X_test_hit.shape[0]))
 
     # [X_hit[:,:,:,:4], X_hit[:,:,:,4:], X_info]
-    train_input_list = [X_hit, X_info]
+    t_list = [X_hit, X_info]
+
+
 
     if args.limit is not None:
-		train_input_list = train_input_list[:args.limit]
+		train_input_list = t_list[:args.limit]
+	else:
+		train_input_list = t_list
 
     # [X_val_hit[:,:,:,:4], X_val_hit[:,:,:,4:], X_val_info]
     val_input_list = [X_val_hit, X_val_info]
@@ -267,7 +274,7 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     print(train_y)
     prob_indeces = np.where(train_y!=y)
     print(prob_indeces[0])
-    problematics = train_input_list[prob_indeces[0]]
+    problematics = train_input_list[np.array(prob_indeces[0])]
     print(problematics)
     print(len(problematics))
     print(len(problematics)/len(train_input_list))
