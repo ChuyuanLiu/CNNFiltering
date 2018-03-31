@@ -18,14 +18,9 @@ def max_binary_accuracy(y_true, y_pred,n=20):
 
     thresholds = np.linspace(0.0,1.0,num=n)
     accmax = 0
-    if K.backend() == 'tensorflow':
-        for t in thresholds:
-            accmax = max(accmax,K.mean(K.equal(y_true, K.tf.cast(K.greater(y_pred,t), y_true.dtype))))
-        return accmax
-    else:
-        for t in thresholds:
-            accmax = max(accmax,K.mean(K.equal(y_true, K.greater(y_pred,t))))
-        return accmax
+    for t in thresholds:
+        accmax = max(accmax,K.mean(K.equal(y_true, K.greater(y_pred,t))))
+    return accmax
 
 def adam_small_doublet_model(args, n_channels,n_labels=2):
     hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='hit_shape_input')
