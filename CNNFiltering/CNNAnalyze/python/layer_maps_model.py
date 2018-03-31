@@ -215,8 +215,8 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
 
     if args.limit is not None:
 		train_input_list = t_list[:args.limit]
-	else:
-		train_input_list = t_list
+    else:
+        train_input_list = t_list
 
 	train_input_list = train_input_list[:len(train_input_list)-len(numprobs)]
 
