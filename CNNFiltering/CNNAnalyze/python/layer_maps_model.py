@@ -218,7 +218,7 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     else:
 		train_input_list = t_list
 
-    if i!=0:
+    if i!=0 :
 		train_input_list = train_input_list[:len(train_input_list)-numprobs]
 		train_input_list = train_input_list + problematics
 		y = y[:len(train_input_list)-numprobs]
