@@ -225,7 +225,7 @@ class roc_callback(Callback):
         y_pred_val = self.model.predict(self.x_val)
         roc_val = roc_auc_score(self.y_val, y_pred_val)
         acc_val = max_binary_accuracy(self.y_val, y_pred_val)
-        print('\rROC: %s - ROC val: %s - MaxAcc: %s - MaxAcc Val: %s' % (str(round(roc,4)),str(round(roc_val,4)),str(round(acc,4)),str(round(acc_val,4))),end=100*' '+'\n')
+        print('\rROC: %s - ROC val: %s - MaxAcc: %s - MaxAcc Val: %s' % (str(round(roc,4)),str(round(roc_val,4)),str(round(acc,4)),str(round(acc_val,4))),end='  '+'\n')
         return
 
     def on_batch_begin(self, batch, logs={}):
