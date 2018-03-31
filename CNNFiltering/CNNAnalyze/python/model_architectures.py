@@ -11,6 +11,7 @@ from sklearn.metrics import roc_auc_score
 from keras.callbacks import Callback
 from keras.regularizers import l1,l2
 from keras import backend as K
+from __future__ import print_function
 
 IMAGE_SIZE = dataset.padshape
 
@@ -225,7 +226,7 @@ class roc_callback(Callback):
         y_pred_val = self.model.predict(self.x_val)
         roc_val = roc_auc_score(self.y_val, y_pred_val)
         acc_val = max_binary_accuracy(self.y_val, y_pred_val)
-        print('\rROC: %s - ROC val: %s - MaxAcc: %s - MaxAcc Val: %s' % (str(round(roc,4)),str(round(roc_val,4)),str(round(acc,4)),str(round(acc_val,4))),end='  '+'\n')
+        print('\rROC: %s - ROC val: %s - MaxAcc: %s - MaxAcc Val: %s' % (str(round(roc,4)),str(round(roc_val,4)),str(round(acc,4)),str(round(acc_val,4))),end=100*' '+'\n')
         return
 
     def on_batch_begin(self, batch, logs={}):
