@@ -290,11 +290,10 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     print(len(prob_indeces[0]))
     print(max(prob_indeces[0]))
     problematics_hit  = np.take(X_hit,prob_indeces[0])
-	problematics_info = np.take(X_info,prob_indeces[0])
-	problematics_y    = np.take(y,prob_indeces[0])
+    problematics_info = np.take(X_info,prob_indeces[0])
+    problematics_y    = np.take(y,prob_indeces[0])
 	# [train_input_list[j-1] for j in set(prob_indeces[0])]
-    print(problematics)
-    print(len(problematics))
+    print(len(problematics_info))
     print(len(problematics)/len(train_input_list))
 
     print("saving model " + fname)
