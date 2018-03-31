@@ -214,7 +214,7 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     print("Test size: " + str(X_test_hit.shape[0]))
 
     # [X_hit[:,:,:,:4], X_hit[:,:,:,4:], X_info]
-	if args.limit is not None:
+    if args.limit is not None:
 		X_hit = X_hit[:args.limit]
 		X_info = X_info[:args.limit]
 		y = y[:args.limit]
