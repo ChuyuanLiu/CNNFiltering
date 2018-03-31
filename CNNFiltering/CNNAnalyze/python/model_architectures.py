@@ -16,7 +16,7 @@ from tensorflow import float64 as f64
 from tensorflow import cond, greater,cast
 IMAGE_SIZE = dataset.padshape
 
-def max_binary_accuracy(y_true, y_pred,n=20):
+def max_binary_accuracy(y_true, y_pred,n=50):
 
     thresholds = np.linspace(0.0,1.0,num=n)
     accmax = 0
@@ -221,7 +221,7 @@ class roc_callback(Callback):
         roc = roc_auc_score(self.y, y_pred)
         y_pred_val = self.model.predict(self.x_val)
         roc_val = roc_auc_score(self.y_val, y_pred_val)
-        acc_val = max_binary_accuracy(np.array(self.y_val),np.array(y_pred_val))
+        acc_val = max_binary_accuracy(np.array(self.y_val),np.array(y_pred_val),num=200)
         print('\n ==> ROC: %s - ROC val: %s - MaxAcc val: %s \n' % (str(round(roc,4)),str(round(roc_val,4)),str(round(acc_val,4))))
         return
 
