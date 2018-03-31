@@ -25,7 +25,7 @@ def max_binary_accuracy(y_true, y_pred,n=50):
         if acc > accmax:
             tmax = t
             accmax = acc
-    return accmax,t
+    return accmax,tmax
 
 def adam_small_doublet_model(args, n_channels,n_labels=2):
     hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='hit_shape_input')
