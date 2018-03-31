@@ -11,7 +11,7 @@ from sklearn.metrics import roc_auc_score
 from keras.callbacks import Callback
 from keras.regularizers import l1,l2
 from keras import backend as K
-
+import numpy as np
 IMAGE_SIZE = dataset.padshape
 
 def max_binary_accuracy(y_true, y_pred,n=20):
