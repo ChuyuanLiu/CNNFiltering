@@ -263,7 +263,7 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
 
     train_pred = model.predict(train_input_list)
     train_acc,t_train = max_binary_accuracy(y,train_pred,n=1000)
-    problematics = train_input_list[((train_pred > t_train).astype(float)==y)]
+    problematics = train_input_list[np.where((train_pred > t_train).astype(float)==y)]
     print(len(problematics))
     print(len(problematics)/len(train_input_list))
 
