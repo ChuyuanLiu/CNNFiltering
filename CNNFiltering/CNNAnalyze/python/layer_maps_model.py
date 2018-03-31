@@ -229,7 +229,7 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
 		X_hit = np.concatenate((X_hit,problematics_hit),axis=0)
 		y = np.concatenate((y,problematics_y),axis=0)
 
-	train_input_list = [X_hit, X_info]
+    train_input_list = [X_hit, X_info]
 
     # [X_val_hit[:,:,:,:4], X_val_hit[:,:,:,4:], X_val_info]
     val_input_list = [X_val_hit, X_val_info]
