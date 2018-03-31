@@ -282,9 +282,13 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     print('Test loss / test AUC       = {:.4f} / {:.4f} '.format(loss,test_roc))
     print('Test acc /  acc max (@t)   = {:.4f} / {:.4f} ({:.3f})'.format(acc,test_acc,t_test))
 
+    loss, acc = model.evaluate(train_input_list, y, batch_size=args.batch_size)
     train_pred = model.predict(train_input_list)
+    train_roc = roc_auc_score(y, train_pred)
     train_acc,t_train = max_binary_accuracy(y,train_pred,n=1000)
     train_y = (train_pred > t_train).astype(float)
+    print('Train loss / train AUC       = {:.4f} / {:.4f} '.format(loss,train_roc))
+    print('Train acc /  acc max (@t)   = {:.4f} / {:.4f} ({:.3f})'.format(acc,train_acc,t_train))
     # print(train_y)
     # print(y)
     prob_indeces = np.where(train_y!=y)
