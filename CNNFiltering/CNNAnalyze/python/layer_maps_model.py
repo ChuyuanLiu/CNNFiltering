@@ -291,8 +291,7 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     print('Found {:d} problematics doublets on {:d} ({:.2f}%) '.format(len(prob_indeces[0]),X_hit.shape[0],float(len(prob_indeces[0])/X_hit.shape[0])))
     print("Will be re-parsed in input at next round.")
     problematics_hit  = X_hit[prob_indeces[0],:,:,:]
-    print(X_hit.shape)
-    print(problematics_hit.shape)
+    print(X_info.shape)
     problematics_info = np.take(X_info,prob_indeces[0])
     problematics_y    = np.take(y,prob_indeces[0])
 	# [train_input_list[j-1] for j in set(prob_indeces[0])]
