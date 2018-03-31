@@ -240,7 +240,7 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
                         save_weights_only=True),
         TensorBoard(log_dir=log_dir_tf, histogram_freq=0,
                     write_graph=True, write_images=True),
-		roc_callback(training_data=train_input_list,validation_data=val_input_list)
+		roc_callback(training_data=(train_input_list,y),validation_data=(val_input_list,y_val))
     ]
 
     #model.fit_generator(myGenerator(), samples_per_epoch = 60000, nb_epoch = 2, verbose=2, show_accuracy=True, callbacks=[], validation_data=None, class_weight=None, nb_worker=1)
