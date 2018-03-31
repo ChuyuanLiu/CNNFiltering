@@ -19,7 +19,7 @@ def max_binary_accuracy(y_true, y_pred,n=20):
     thresholds = np.linspace(0.0,1.0,num=n)
     accmax = 0
     for t in thresholds:
-        accmax = max(accmax,K.mean(K.equal(y_true, K.greater(y_pred,t).astype(float64))))
+        accmax = max(accmax,K.mean(K.equal(y_true, tf.cast(K.greater(y_pred,t),tf.float64))))
     return accmax
 
 def adam_small_doublet_model(args, n_channels,n_labels=2):
