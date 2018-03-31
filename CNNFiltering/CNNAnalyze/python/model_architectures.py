@@ -21,7 +21,7 @@ def max_binary_accuracy(y_true, y_pred,n=20):
     thresholds = np.linspace(0.0,1.0,num=n)
     accmax = 0
     for t in thresholds:
-        acc = np.mean((y_pred > t).astype(float)==y_true).astype(float))
+        acc = np.mean(((y_pred > t).astype(float)==y_true).astype(float))
         accmax = max(accmax,acc)
     return accmax
 
