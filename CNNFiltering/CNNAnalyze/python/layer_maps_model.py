@@ -222,13 +222,13 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     if numprobs>0:
 		print("Changing with " + str(numprobs) + "problematic doublets.")
 
-		X_hit = X_hit[:len(X_hit)-numprobs,:,:,:]
-		X_info = X_info[:len(X_info)-numprobs,:,]
-		y = y[:len(y)-numprobs,:,]
+		X_h = X_hit[:len(X_hit)-numprobs,:,:,:]
+		X_i = X_info[:len(X_info)-numprobs,:,]
+		yy = y[:len(y)-numprobs,:,]
 
-		X_info = np.concatenate((X_info,problematics_info),axis=0)
-		X_hit = np.concatenate((X_hit,problematics_hit),axis=0)
-		y = np.concatenate((y,problematics_y),axis=0)
+		X_info = np.concatenate((X_i,problematics_info),axis=0)
+		X_hit = np.concatenate((X_h,problematics_hit),axis=0)
+		y = np.concatenate((yy,problematics_y),axis=0)
 
     train_input_list = [X_hit, X_info]
 
