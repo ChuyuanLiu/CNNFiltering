@@ -277,7 +277,7 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     print(train_y)
     prob_indeces = np.where(train_y!=y)
     print(list(prob_indeces[0]))
-    problematics = train_input_list[list(prob_indeces[0])]
+	problematics = [train_input_list[i] for i in prob_indeces[0]]
     print(problematics)
     print(len(problematics))
     print(len(problematics)/len(train_input_list))
