@@ -13,7 +13,7 @@ from keras.regularizers import l1,l2
 from keras import backend as K
 import numpy as np
 from tensorflow import float64 as f64
-from tensorflow import cond
+from tensorflow import cond, greater,cast
 IMAGE_SIZE = dataset.padshape
 
 def max_binary_accuracy(y_true, y_pred,n=20):
@@ -21,7 +21,7 @@ def max_binary_accuracy(y_true, y_pred,n=20):
     thresholds = np.linspace(0.0,1.0,num=n)
     accmax = 0
     for t in thresholds:
-        accmax = max(accmax,K.mean(K.equal(y_true, cond( y_pred > t,1.0,0.0))))
+        accmax = max(accmax,K.mean(K.equal(y_true, cast(greater(y_pred,t)))))
     return accmax
 
 def adam_small_doublet_model(args, n_channels,n_labels=2):
