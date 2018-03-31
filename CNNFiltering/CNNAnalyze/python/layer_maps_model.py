@@ -292,8 +292,8 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     print("Will be re-parsed in input at next round.")
     problematics_hit  = X_hit[prob_indeces[0],:,:,:]
     print(X_info.shape)
-    problematics_info = X_info[prob_indeces[0],:]
-    problematics_y    = y[prob_indeces[0],:]
+    problematics_info = X_info[prob_indeces[0],:,]
+    problematics_y    = y[prob_indeces[0],:,]
 	# [train_input_list[j-1] for j in set(prob_indeces[0])]
     # print(len(problematics_info))
     # print(len(problematics)/len(train_input_list))
