@@ -10,8 +10,22 @@ from keras.utils import plot_model
 from sklearn.metrics import roc_auc_score
 from keras.callbacks import Callback
 from keras.regularizers import l1,l2
+from keras import backend as K
 
 IMAGE_SIZE = dataset.padshape
+
+def max_binary_accuracy(y_true, y_pred,n=100):
+
+    thresholds = np.linspace(0.0,1.0,num=n)
+    accmax = 0
+    if K.backend() == 'tensorflow':
+        for t in thresholds:
+            accmax = max(accmax,K.mean(K.equal(y_true, K.tf.cast(K.greater(y_pred,threshold), y_true.dtype))))
+        return accmax
+    else:
+        for t in thresholds:
+            accmax = max(accmax,K.mean(K.equal(y_true, K.greater(y_pred,threshold))))
+        return accmax
 
 def adam_small_doublet_model(args, n_channels,n_labels=2):
     hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='hit_shape_input')
@@ -207,9 +221,11 @@ class roc_callback(Callback):
     def on_epoch_end(self, epoch, logs={}):
         y_pred = self.model.predict(self.x)
         roc = roc_auc_score(self.y, y_pred)
+        acc = max_binary_accuracy(self.y, y_pred)
         y_pred_val = self.model.predict(self.x_val)
         roc_val = roc_auc_score(self.y_val, y_pred_val)
-        print('\rroc-auc: %s - roc-auc_val: %s \n' % (str(round(roc,4)),str(round(roc_val,4))))#,end=100*' '+'\n')
+        acc_val = max_binary_accuracy(self.y_val, y_pred_val)
+        print('\rROC: %s - ROC val: %s - MaxAcc: %s - MaxAcc Val: %s' % (str(round(roc,4)),str(round(roc_val,4)),str(round(acc,4)),str(round(acc_val,4))),end=100*' '+'\n')
         return
 
     def on_batch_begin(self, batch, logs={}):
