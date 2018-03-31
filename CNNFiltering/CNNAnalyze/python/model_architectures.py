@@ -12,7 +12,7 @@ from keras.callbacks import Callback
 from keras.regularizers import l1,l2
 from keras import backend as K
 import numpy as np
-import tf.float64 as f64
+from tensorflow import float64 as f64
 IMAGE_SIZE = dataset.padshape
 
 def max_binary_accuracy(y_true, y_pred,n=20):
