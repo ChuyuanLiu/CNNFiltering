@@ -221,7 +221,7 @@ class roc_callback(Callback):
         roc = roc_auc_score(self.y, y_pred)
         y_pred_val = self.model.predict(self.x_val)
         roc_val = roc_auc_score(self.y_val, y_pred_val)
-        acc_val = max_binary_accuracy(np.array(self.y_val),np.array(y_pred_val),num=200)
+        acc_val = max_binary_accuracy(np.array(self.y_val),np.array(y_pred_val),n=200)
         print('\n ==> ROC: %s - ROC val: %s - MaxAcc val: %s \n' % (str(round(roc,4)),str(round(roc_val,4)),str(round(acc_val,4))))
         return
 
