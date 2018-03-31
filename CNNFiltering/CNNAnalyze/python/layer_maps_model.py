@@ -218,6 +218,10 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
 	else:
 		train_input_list = t_list
 
+	train_input_list = train_input_list[:len(train_input_list)-len(numprobs)]
+
+	train_input_list = train_input_list + problematics
+
     # [X_val_hit[:,:,:,:4], X_val_hit[:,:,:,4:], X_val_info]
     val_input_list = [X_val_hit, X_val_info]
     # [X_test_hit[:,:,:,:4], X_test_hit[:,:,:,4:], X_test_info]
