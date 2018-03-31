@@ -10,7 +10,6 @@ import tempfile
 import os
 from dataset import Dataset
 from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
-from sk
 from model_architectures import *
 import sys
 import numpy as np
