@@ -162,11 +162,16 @@ else:
     X_test_hit, X_test_info, y_test = test_data.get_layer_map_data_multiclass()
 
 
-problematics = []
+problematics 		= []
+problematics_y 		= []
+problematics_info	= []
+problematics_hit 	= []
 
 while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < args.gepochs).any():
 
-    numprobs = len(problematics)
+    numprobs = len(problematics_y)
+
+	problematics = [problematics_hit,problematics_info]
 
     thisindices = indices[i*args.fsamp:(i+1)*args.fsamp]
 
@@ -209,19 +214,22 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     print("Test size: " + str(X_test_hit.shape[0]))
 
     # [X_hit[:,:,:,:4], X_hit[:,:,:,4:], X_info]
-    t_list = [X_hit, X_info]
-
-
-
-    if args.limit is not None:
-		train_input_list = t_list[:args.limit]
-    else:
-		train_input_list = t_list
+	if args.limit is not None:
+		X_hit = X_hit[:args.limit]
+		X_info = X_info[:args.limit]
+		y = y[:args.limit]
 
     if i!=0 :
-		train_input_list = train_input_list[:len(train_input_list)-numprobs]
-		train_input_list = train_input_list + problematics
-		y = y[:len(train_input_list)-numprobs]
+
+		X_hit = X_hit[:len(X_hit)-numprobs]
+		X_info = X_info[:len(X_info)-numprobs]
+		y = y[:len(y)-numprobs]
+
+		X_info = np.concatenate((X_info,problematics_info),axis=0)
+		X_hit = np.concatenate((X_hit,problematics_hit),axis=0)
+		y = np.concatenate((y,problematics_y),axis=0)
+
+	train_input_list = [X_hit, X_info]
 
     # [X_val_hit[:,:,:,:4], X_val_hit[:,:,:,4:], X_val_info]
     val_input_list = [X_val_hit, X_val_info]
@@ -281,7 +289,10 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     prob_indeces = np.where(train_y!=y)
     print(len(prob_indeces[0]))
     print(max(prob_indeces[0]))
-    problematics = [train_input_list[j-1] for j in set(prob_indeces[0])]
+    problematics_hit  = np.take(X_hit,prob_indeces[0])
+	problematics_info = np.take(X_info,prob_indeces[0])
+	problematics_y    = np.take(y,prob_indeces[0])
+	# [train_input_list[j-1] for j in set(prob_indeces[0])]
     print(problematics)
     print(len(problematics))
     print(len(problematics)/len(train_input_list))
