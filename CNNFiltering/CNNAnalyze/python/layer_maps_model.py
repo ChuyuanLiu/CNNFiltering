@@ -256,7 +256,7 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     test_roc = roc_auc_score(y_test, test_pred)
     test_acc = max_binary_accuracy(y_test,test_pred)
     print('Test loss / test accuracy (max) = {:.4f} / {:.4f} ({:.4f})'.format(loss, acc,test_acc))
-	print('Test ACU                  = {:.4f} /'.format(test_roc))
+    print('Test AUC                  	   = {:.4f} /'.format(test_roc))
 
     print("saving model " + fname)
     model.save_weights(fname + ".h5", overwrite=True)
