@@ -294,7 +294,7 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     print('Train acc /  acc max (@t)   = {:.4f} / {:.4f} ({:.3f})'.format(acc,train_acc,t_train))
     # print(train_y)
     # print(y)
-    prob_indeces = np.where(train_y!=y)
+    prob_indeces = np.where(train_y!=y[:,0])
     # print(len(prob_indeces[0]))
     print('Found {:d} problematics doublets on {:d} ({:.2f}%) '.format(len(prob_indeces[0]),X_hit.shape[0],100*float(len(prob_indeces[0]))/float(X_hit.shape[0])))
     print("Will be re-parsed in input at next round.")
