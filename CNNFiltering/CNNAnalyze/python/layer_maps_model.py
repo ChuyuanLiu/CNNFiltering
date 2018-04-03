@@ -352,7 +352,7 @@ if args.kfolding:
             kfoldindices_train = thisindices[0:i*sizesamp] + thisindices[(i+1)*sizesamp:-1]
 
             print(kfoldindices_val)
-	        print(kfoldindices_train)
+            print(kfoldindices_train)
 	#     train_data = Dataset(train_batch_file).balance_data()
 	#
 	#
