@@ -345,14 +345,14 @@ if args.kfolding:
         problematics = [problematics_hit,problematics_info]
         thisindices = indices[i*args.fsamp:(i+1)*args.fsamp]
         train_batch_file = np.take(train_files,thisindices)
-        sizesamp = train_batch_file.shape[0]/args.k
+        sizesamp = args.k
 
         for i in range(0,args.k):
             kfoldindices_val   = thisindices[i*sizesamp:(i+1)*sizesamp]
             kfoldindices_train = thisindices[0:i*sizesamp] + thisindices[(i+1)*sizesamp:-1]
 
             print(kfoldindices_val)
-	# 		print(kfoldindices_train)
+	        print(kfoldindices_train)
 	#     train_data = Dataset(train_batch_file).balance_data()
 	#
 	#
