@@ -80,6 +80,7 @@ parser.add_argument('--augm',type=int,default=1)
 parser.add_argument('--limit',type=int,default=None)
 parser.add_argument('--multiclass',action='store_true')
 parser.add_argument('--kfolding',action='store_true')
+parser.add_argument('--k',type=int,default=1)
 args = parser.parse_args()
 
 if args.name is None:
@@ -339,4 +340,30 @@ if not args.kfolding:
 
 
 if args.kfolding:
+
+	while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < args.gepochs).any():
+
+        numprobs = len(problematics_y)
+        problematics = [problematics_hit,problematics_info]
+        thisindices = indices[i*args.fsamp:(i+1)*args.fsamp]
+        train_batch_file = np.take(train_files,thisindices)
+        sizesamp = train_batch_file.shape[0]/args.k
+
+        for i in range(0,args.k):
+            kfoldindices_val   = thisindices[i*sizesamp:(i+1)*sizesamp]
+            kfoldindices_train = thisindices[0:i*sizesamp] + thisindices[(i+1)*sizesamp:-1]
+
+            print(kfoldindices_val)
+	# 		print(kfoldindices_train)
+	#     train_data = Dataset(train_batch_file).balance_data()
+	#
+	#
+	# sizesamp = len(train_files)/args.k
+	# for i in range(0,args.k):
+	# 	thisindices = indices[i*sizesamp:(i+1)*sizesamp]
+	#
+    # 	train_batch_file = np.take(train_files,thisindices)
+	#
+    # 	train_data = Dataset(train_batch_file).balance_data()
+
     print("kFolding")
