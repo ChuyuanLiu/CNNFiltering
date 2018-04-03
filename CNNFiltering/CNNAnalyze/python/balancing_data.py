@@ -41,6 +41,7 @@ if __name__ == '__main__':
 
         data = Dataset(p)
         print("loading & balancing data...")
+
         if args.all:
             data = data.balance_by_det().balance_by_pdg().balance_data()
         else:
