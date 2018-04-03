@@ -61,5 +61,5 @@ if __name__ == '__main__':
         print("dumping data...")
         print("data size %d" + str(data.data.shape[0]))
 
-        name = name + "dataset_" + str(chunk) + ".h5""
-        data.save(remote_data + "/pdg_bal_dataset_" + str(chunk) + ".h5")
+        name = name + "dataset_" + str(chunk) + ".h5"
+        data.save(remote_data + name)
