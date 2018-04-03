@@ -136,7 +136,9 @@ test_files  = test_files[:args.test] if not args.debug else debug_files
 
 #train_data = Dataset(train_files)
 
-val_data = Dataset(val_files)#,balance=args.balance)
+if not args.kfolding:
+    val_data = Dataset(val_files)#,balance=args.balance)
+
 test_data = Dataset(test_files)#,balance=args.balance)
 
 nochunks = int((len(train_files) + args.fsamp - 1)/(args.fsamp))
@@ -347,9 +349,10 @@ if args.kfolding:
         train_batch_file = np.take(train_files,thisindices)
         sizesamp = args.k
 
-        for i in range(0,args.k):
+        for i in range(0,len(thisindices)/args.k):
+
             kfoldindices_val   = thisindices[i*sizesamp:(i+1)*sizesamp]
-            kfoldindices_train = thisindices[0:i*sizesamp] + thisindices[(i+1)*sizesamp:-1]
+            kfoldindices_train = [el for el in thisindices if el not in kfoldindices_val]
 
             print(kfoldindices_val)
             print(kfoldindices_train)
