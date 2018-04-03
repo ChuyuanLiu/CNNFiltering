@@ -339,3 +339,4 @@ if not args.kfolding:
 
 
 if args.kfolding:
+    print("kFolding")
