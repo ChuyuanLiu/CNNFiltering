@@ -340,9 +340,7 @@ if not args.kfolding:
 
 
 if args.kfolding:
-
-	while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < args.gepochs).any():
-
+    while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < args.gepochs).any():
         numprobs = len(problematics_y)
         problematics = [problematics_hit,problematics_info]
         thisindices = indices[i*args.fsamp:(i+1)*args.fsamp]
