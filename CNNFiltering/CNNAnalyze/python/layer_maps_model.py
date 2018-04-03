@@ -220,8 +220,8 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     # [X_hit[:,:,:,:4], X_hit[:,:,:,4:], X_info]
     # if args.limit is not None:
     X_hit = X_hit[:args.limit]
-	X_info = X_info[:args.limit]
-	y = y[:args.limit]
+    X_info = X_info[:args.limit]
+    y = y[:args.limit]
 
     if numprobs>0:
 		print("Changing with " + str(numprobs) + " problematic doublets.")
