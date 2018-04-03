@@ -42,16 +42,24 @@ if __name__ == '__main__':
         data = Dataset(p)
         print("loading & balancing data...")
 
+        name = "/"
+
         if args.all:
             data = data.balance_by_det().balance_by_pdg().balance_data()
+            name = name + "det_pdg_bal_"
         else:
             if args.det:
                 data = data.balance_by_det()
+                name = name + "det_"
             if args.pdg:
                 data = data.balance_by_pdg()
+                name = name + "pdg_"
             if args.lab:
                 data = data.balance_data()
+                name = name + "det_pdg_bal_"
 
         print("dumping data...")
         print("data size %d" + str(data.data.shape[0]))
+
+        name = name + "dataset_" + str(chunk) + ".h5""
         data.save(remote_data + "/pdg_bal_dataset_" + str(chunk) + ".h5")

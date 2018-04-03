@@ -153,13 +153,16 @@ histories = []
 print("loading test & val data . . .")
 if not args.multiclass:
     if args.phi:
-        X_val_hit, X_val_info, y_val = val_data.get_layer_map_data_withphi()
+        if not args.kfolding:
+            X_val_hit, X_val_info, y_val = val_data.get_layer_map_data_withphi()
         X_test_hit, X_test_info, y_test = test_data.get_layer_map_data_withphi()
     else:
-        X_val_hit, X_val_info, y_val = val_data.get_layer_map_data()
+        if not args.kfolding:
+            X_val_hit, X_val_info, y_val = val_data.get_layer_map_data()
         X_test_hit, X_test_info, y_test = test_data.get_layer_map_data()
 else:
-    X_val_hit, X_val_info, y_val = val_data.get_layer_map_data_multiclass()
+    if not args.kfolding:
+        X_val_hit, X_val_info, y_val = val_data.get_layer_map_data_multiclass()
     X_test_hit, X_test_info, y_test = test_data.get_layer_map_data_multiclass()
 
 
@@ -168,7 +171,7 @@ problematics_y 		= []
 problematics_info	= []
 problematics_hit 	= []
 
-while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < args.gepochs).any():
+while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < args.gepochs).any() and not args.kfolding:
 
     numprobs = len(problematics_y)
 
@@ -216,7 +219,7 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
 
     # [X_hit[:,:,:,:4], X_hit[:,:,:,4:], X_info]
     # if args.limit is not None:
-	X_hit = X_hit[:args.limit]
+    X_hit = X_hit[:args.limit]
 	X_info = X_info[:args.limit]
 	y = y[:args.limit]
 
@@ -328,7 +331,11 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     with open( fname + "_" + str(int(np.sum(donechunks))) + "_hist.pkl", 'wb') as file_hist:
     	pickle.dump(histories, file_hist)
 
-print("Global epochs    : " + str(np.sum(donechunks)/len(train_files)))
-#print(endindices)
-print("saving final model " + fname)
-model.save_weights(fname + "_final.h5", overwrite=True)
+if not args.kfolding:
+    print("Global epochs    : " + str(np.sum(donechunks)/len(train_files)))
+    #print(endindices)
+    print("saving final model " + fname)
+    model.save_weights(fname + "_final.h5", overwrite=True)
+
+
+if args.kfolding:
