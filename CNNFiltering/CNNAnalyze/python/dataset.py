@@ -137,6 +137,7 @@ class Dataset:
                 df = balance_data_by_pdg(df,pdgIds)
 
             df.columns = dataLab  # change wrong columns names
+            df.sample(frac=1.0)
             self.data = self.data.append(df)
 
     def from_dataframe(self,data):

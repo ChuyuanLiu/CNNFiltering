@@ -79,6 +79,7 @@ parser.add_argument('--phi',action='store_true')
 parser.add_argument('--augm',type=int,default=1)
 parser.add_argument('--limit',type=int,default=None)
 parser.add_argument('--multiclass',action='store_true')
+parser.add_argument('--kfolding',action='store_true')
 args = parser.parse_args()
 
 if args.name is None:
@@ -214,13 +215,13 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     print("Test size: " + str(X_test_hit.shape[0]))
 
     # [X_hit[:,:,:,:4], X_hit[:,:,:,4:], X_info]
-    if args.limit is not None:
-		X_hit = X_hit[:args.limit]
-		X_info = X_info[:args.limit]
-		y = y[:args.limit]
+    # if args.limit is not None:
+	X_hit = X_hit[:args.limit]
+	X_info = X_info[:args.limit]
+	y = y[:args.limit]
 
     if numprobs>0:
-		print("Changing with " + str(numprobs) + "problematic doublets.")
+		print("Changing with " + str(numprobs) + " problematic doublets.")
 
 		X_h = X_hit[:len(X_hit)-numprobs,:,:,:]
 		X_i = X_info[:len(X_info)-numprobs,:,]
@@ -287,9 +288,9 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     train_roc = roc_auc_score(y, train_pred)
     train_acc,t_train = max_binary_accuracy(y,train_pred,n=1000)
     train_y = (train_pred[:,0] > t_train).astype(float)
-    print(train_pred[1])
-    print(y[1])
-    print(train_y[1])
+    # print(train_pred[1])
+    # print(y[1])
+    # print(train_y[1])
     print('Train loss / train AUC       = {:.4f} / {:.4f} '.format(loss,train_roc))
     print('Train acc /  acc max (@t)   = {:.4f} / {:.4f} ({:.3f})'.format(acc,train_acc,t_train))
     # print(train_y)
@@ -302,6 +303,7 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
     print(X_info.shape)
     problematics_info = X_info[prob_indeces[0],:,]
     problematics_y    = y[prob_indeces[0],:,]
+
     print(len(problematics_y))
 	# [train_input_list[j-1] for j in set(prob_indeces[0])]
     # print(len(problematics_info))
