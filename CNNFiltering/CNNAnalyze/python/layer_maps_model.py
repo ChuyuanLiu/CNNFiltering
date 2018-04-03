@@ -347,7 +347,7 @@ if args.kfolding:
         train_batch_file = np.take(train_files,thisindices)
         sizesamp = train_batch_file.shape[0]/args.k
 
-        for i in range(0,args.k):
+		for i in range(0,args.k):
             kfoldindices_val   = thisindices[i*sizesamp:(i+1)*sizesamp]
             kfoldindices_train = thisindices[0:i*sizesamp] + thisindices[(i+1)*sizesamp:-1]
 
