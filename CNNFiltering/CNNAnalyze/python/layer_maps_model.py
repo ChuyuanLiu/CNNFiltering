@@ -161,8 +161,8 @@ if not args.multiclass:
         X_test_hit, X_test_info, y_test = test_data.get_layer_map_data_withphi()
     else:
         if not args.kfolding:
-            X_val_hit, X_val_info, y_val = val_data.get_layer_map_data()
-        X_test_hit, X_test_info, y_test = test_data.get_layer_map_data()
+            X_val_hit, X_val_info, y_val = val_data.get_layer_map_data(theta=True)
+        X_test_hit, X_test_info, y_test = test_data.get_layer_map_data(theta=True)
 else:
     if not args.kfolding:
         X_val_hit, X_val_info, y_val = val_data.get_layer_map_data_multiclass()
@@ -212,7 +212,7 @@ while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < arg
         if args.phi:
             X_hit, X_info, y = train_data.get_layer_map_data_withphi(augmentation=args.augm)
         else:
-            X_hit, X_info, y = train_data.get_layer_map_data(augmentation=args.augm)
+            X_hit, X_info, y = train_data.get_layer_map_data(augmentation=args.augm,theta=True)
     else:
         X_hit, X_info, y = train_data.get_layer_map_data_multiclass()
 
@@ -356,6 +356,130 @@ if args.kfolding:
 
             print(kfoldindices_val)
             print(kfoldindices_train)
+
+            train_batch_k = np.take(train_batch_file,kfoldindices_train)
+            val_batch_k = np.take(train_batch_file,kfoldindices_val)
+
+            train_data = Dataset(train_batch_k)
+            val_data = Dataset(val_batch_k)#,balance=args.balance)
+
+            X_hit, X_info, y = train_data.get_layer_map_data(theta=True)
+            X_val_hit, X_val_info, y_val = val_data.get_layer_map_data(theta=True)
+
+
+            X_hit = X_hit[:args.limit]
+            X_info = X_info[:args.limit]
+            y = y[:args.limit]
+
+            if numprobs>0:
+        		print("Changing with " + str(numprobs) + " problematic doublets.")
+
+        		X_h = X_hit[:len(X_hit)-numprobs,:,:,:]
+        		X_i = X_info[:len(X_info)-numprobs,:,]
+        		yy = y[:len(y)-numprobs,:,]
+
+        		X_info = np.concatenate((X_i,problematics_info),axis=0)
+        		X_hit = np.concatenate((X_h,problematics_hit),axis=0)
+        		y = np.concatenate((yy,problematics_y),axis=0)
+
+            train_input_list = [X_hit, X_info]
+
+            # [X_val_hit[:,:,:,:4], X_val_hit[:,:,:,4:], X_val_info]
+            val_input_list = [X_val_hit, X_val_info]
+            # [X_test_hit[:,:,:,:4], X_test_hit[:,:,:,4:], X_test_info]
+            test_input_list = [X_test_hit, X_test_info]
+
+            if not args.multiclass:
+                model = adam_small_doublet_model(args,train_input_list[0].shape[-1])
+            else:
+                model = small_doublet_model(args,train_input_list[0].shape[-1],len(pdg)+2)
+
+            if args.verbose and i==0:
+                model.summary()
+
+            print('Training')
+
+            if np.sum(donechunks)/len(train_files) >0.0:
+                print("loading weights from iteration " + str(i-1) + " from " + fname)
+                model.load_weights(fname + ".h5")
+            else:
+                if args.loadw is not None and os.path.isfile(args.loadw):
+                    print("loading weights from previous run from" + args.loadw)
+                    model.load_weights(args.loadw)
+
+            with open(fname + ".json", "w") as outfile:
+                json.dump(model.to_json(), outfile)
+
+            callbacks = [
+                EarlyStopping(monitor='val_loss', patience=args.patience),
+                ModelCheckpoint(fname + "_last.h5", save_best_only=True,
+                                save_weights_only=True),
+                TensorBoard(log_dir=log_dir_tf, histogram_freq=0,
+                            write_graph=True, write_images=True),
+        		roc_callback(training_data=(train_input_list,y),validation_data=(val_input_list,y_val))
+            ]
+
+            #model.fit_generator(myGenerator(), samples_per_epoch = 60000, nb_epoch = 2, verbose=2, show_accuracy=True, callbacks=[], validation_data=None, class_weight=None, nb_worker=1)
+            #model.fit_generator(batch_generator(train_data.data,args.bsamp),samples_per_epoch = args.bsamp , verbose=args.verbose,callbacks=callbacks,validation_data=(val_input_list, y_val),nb_epoch=args.n_epochs)
+
+            history = model.fit(train_input_list, y, batch_size=args.batch_size, epochs=args.n_epochs, shuffle=True,validation_data=(val_input_list,y_val), callbacks=callbacks, verbose=args.verbose)
+
+            # Restore the best found model during validation
+            #model.load_weights(fname + ".h5")
+
+            loss, acc = model.evaluate(test_input_list, y_test, batch_size=args.batch_size)
+            test_pred = model.predict(test_input_list)
+            test_roc = roc_auc_score(y_test, test_pred)
+            test_acc,t_test = max_binary_accuracy(y_test,test_pred,n=1000)
+            print('Test loss / test AUC       = {:.4f} / {:.4f} '.format(loss,test_roc))
+            print('Test acc /  acc max (@t)   = {:.4f} / {:.4f} ({:.3f})'.format(acc,test_acc,t_test))
+
+            loss, acc = model.evaluate(train_input_list, y, batch_size=args.batch_size)
+            train_pred = model.predict(train_input_list)
+            train_roc = roc_auc_score(y, train_pred)
+            train_acc,t_train = max_binary_accuracy(y,train_pred,n=1000)
+            train_y = (train_pred[:,0] > t_train).astype(float)
+            # print(train_pred[1])
+            # print(y[1])
+            # print(train_y[1])
+            print('Train loss / train AUC       = {:.4f} / {:.4f} '.format(loss,train_roc))
+            print('Train acc /  acc max (@t)   = {:.4f} / {:.4f} ({:.3f})'.format(acc,train_acc,t_train))
+            # print(train_y)
+            # print(y)
+            prob_indeces = np.where(train_y!=y[:,0])
+            # print(len(prob_indeces[0]))
+            print('Found {:d} problematics doublets on {:d} ({:.2f}%) '.format(len(prob_indeces[0]),X_hit.shape[0],100*float(len(prob_indeces[0]))/float(X_hit.shape[0])))
+            print("Will be re-parsed in input at next round.")
+            problematics_hit  = X_hit[prob_indeces[0],:,:,:]
+            print(X_info.shape)
+            problematics_info = X_info[prob_indeces[0],:,]
+            problematics_y    = y[prob_indeces[0],:,]
+
+            print(len(problematics_y))
+        	# [train_input_list[j-1] for j in set(prob_indeces[0])]
+            # print(len(problematics_info))
+            # print(len(problematics)/len(train_input_list))
+
+            print("saving model " + fname)
+            model.save_weights(fname + ".h5", overwrite=True)
+            model.save_weights(fname + "_partial_" + str(int(np.sum(donechunks))) + "_" + str(i) + ".h5", overwrite=True)
+
+            i = i + 1
+            donechunks[thisindices] += 1.0
+
+            histories.append([history.history,np.sum(donechunks)])
+
+            if np.sum(donechunks) % len(train_files) == 0:
+
+                model.save_weights(fname + "_" + str(int(np.sum(donechunks))) + ".h5", overwrite=True)
+                np.random.shuffle(indices)
+                #print(indices)
+                i = 0
+
+            with open( fname + "_" + str(int(np.sum(donechunks))) + "_hist.pkl", 'wb') as file_hist:
+            	pickle.dump(histories, file_hist)
+
+
 	#     train_data = Dataset(train_batch_file).balance_data()
 	#
 	#
