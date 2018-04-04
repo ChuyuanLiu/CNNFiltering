@@ -357,8 +357,8 @@ if args.kfolding:
             print(kfoldindices_val)
             print(kfoldindices_train)
 
-            train_batch_k = np.take(train_batch_file,kfoldindices_train)
-            val_batch_k = np.take(train_batch_file,kfoldindices_val)
+            train_batch_k = np.take(train_files,kfoldindices_train)
+            val_batch_k = np.take(train_files,kfoldindices_val)
 
             train_data = Dataset(train_batch_k)
             val_data = Dataset(val_batch_k)#,balance=args.balance)
