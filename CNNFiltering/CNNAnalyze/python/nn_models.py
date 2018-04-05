@@ -82,9 +82,9 @@ np.random.shuffle(indices)
 
 sizesamp = args.k if not args.debug else 1
 
-kfoldindices_val   = thisindices[:sizesamp]
-kfoldindices_test  = [el for el in thisindices if el not in kfoldindices_val]
-kfoldindices_train = [el for el in thisindices if el not in kfoldindices_val and el not in kfoldindices_test]
+kfoldindices_val   = indices[:sizesamp]
+kfoldindices_test  = [el for el in indices if el not in kfoldindices_val]
+kfoldindices_train = [el for el in indices if el not in kfoldindices_val and el not in kfoldindices_test]
 
 train_files = np.take(train_files,kfoldindices_train)
 test_files = np.take(train_files,kfoldindices_test)
