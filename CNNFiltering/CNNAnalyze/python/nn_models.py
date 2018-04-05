@@ -86,9 +86,9 @@ kfoldindices_test  = [el for el in indices if el not in kfoldindices_val] if not
 kfoldindices_train = [el for el in indices if el not in kfoldindices_val and el not in kfoldindices_test] if not args.debug else  [indices[2]]
 
 print(kfoldindices_train)
-train_files = np.take(train_files,kfoldindices_train,axis=1) #train_files[kfoldindices_train,:] #np.take(train_files,kfoldindices_train)
-test_files = np.take(train_files,kfoldindices_test,axis=1) #train_files[kfoldindices_test,:]
-val_files = np.take(train_files,kfoldindices_val,axis=1) #train_files[kfoldindices_val,:]
+train_files = np.take(train_files,kfoldindices_train) #train_files[kfoldindices_train,:] #np.take(train_files,kfoldindices_train)
+test_files = np.take(train_files,kfoldindices_test) #train_files[kfoldindices_test,:]
+val_files = np.take(train_files,kfoldindices_val) #train_files[kfoldindices_val,:]
 
 print(val_files)
 val_data = Dataset(val_files)#,balance=args.balance)
