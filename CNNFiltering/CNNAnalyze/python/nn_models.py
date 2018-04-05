@@ -73,10 +73,10 @@ debug_files = [ debug_data + el for el in os.listdir(debug_data)]
 
 
 print("Loading data...")
-train_files = [remote_data + '/train/' + el for el in os.listdir(remote_data + 'train/')]
-print(train_files)
-indices = np.arange(len(train_files))
-print(indices)
+the_files = [remote_data + '/train/' + el for el in os.listdir(remote_data + 'train/')]
+
+indices = np.arange(len(the_files))
+
 np.random.shuffle(indices)
 
 sizesamp = args.k if not args.debug else 1
