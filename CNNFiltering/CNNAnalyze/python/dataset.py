@@ -412,7 +412,7 @@ class Dataset:
         labels = np.full(len(self.data[target_lab].as_matrix()),1.0)
         labels[self.data[target_lab].as_matrix()==-1.0] = 0.0
         for p in main_pdgs:
-            labels[(self.data[pdg_lab].abs().as_matrix==p) & (self.data[target_lab].as_matrix()!=-1.0)] = pdg.index(p) + 2
+            labels[(self.data[pdg_lab].abs().as_matrix==p) & (self.data[target_lab].as_matrix()!=-1.0)] = main_pdgs.index(p) + 2
 
         print set(labels)
         return labels
