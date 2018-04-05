@@ -74,7 +74,7 @@ debug_files = [ debug_data + el for el in os.listdir(debug_data)]
 
 print("Loading data...")
 train_files = [remote_data + '/train/' + el for el in os.listdir(remote_data + 'train/')]
-
+print(train_files)
 indices = np.arange(len(train_files))
 print(indices)
 np.random.shuffle(indices)
@@ -87,7 +87,7 @@ kfoldindices_train = [el for el in indices if el not in kfoldindices_val and el 
 
 train_files = train_files[kfoldindices_train] #np.take(train_files,kfoldindices_train)
 test_files = train_files[kfoldindices_test]
-val_files = train_files[kfoldindices_val] 
+val_files = train_files[kfoldindices_val]
 
 val_data = Dataset(val_files)#,balance=args.balance)
 test_data = Dataset(test_files)#,balance=args.balance)
