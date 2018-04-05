@@ -17,40 +17,6 @@ import itertools
 import pickle
 from random import shuffle
 from sklearn.model_selection import StratifiedKFold
-#if socket.gethostname() == 'cmg-gpu1080':
-#    print('locking only one GPU.')
-#    import setGPU
-
-
-#
-# # Instantiate the cross validator
-# skf = StratifiedKFold(n_splits=kfold_splits, shuffle=True)
-# # Loop through the indices the split() method returns
-# for index, (train_indices, val_indices) in enumerate(skf.split(X, y)):
-#     print "Training on fold " + str(index+1) + "/10..."
-#     # Generate batches from indices
-#     xtrain, xval = X[train_indices], X[val_indices]
-#     ytrain, yval = y[train_indices], y[val_indices]
-#     # Clear model, and create it
-#     model = None
-#     model = create_model()
-#
-#     # Debug message I guess
-#     # print "Training new iteration on " + str(xtrain.shape[0]) + " training samples, " + str(xval.shape[0]) + " validation samples, this may be a while..."
-#
-#     history = train_model(model, xtrain, ytrain, xval, yval)
-#     accuracy_history = history.history['acc']
-#     val_accuracy_history = history.history['val_acc']
-#     print "Last training accuracy: " + str(accuracy_history[-1]) + ", last validation accuracy: " + str(val_accuracy_history[-1])
-
-DEBUG = os.name == 'nt'  # DEBUG on laptop
-
-pdg = [-211., 211., 321., -321., 2212., -2212., 11., -11., 13., -13.]
-
-#DEBUG = True
-
-if DEBUG:
-    print("DEBUG mode")
 
 t_now = '{0:%Y-%m-%d_%H-%M-%S}'.format(datetime.datetime.now())
 # Model configuration
@@ -83,8 +49,6 @@ parser.add_argument('--kfolding',action='store_true')
 parser.add_argument('--k',type=int,default=1)
 args = parser.parse_args()
 
-if args.name is None:
-    args.name = input('model name: ')
 
 if args.debug==True:
 	print("Debugging mode")
@@ -98,8 +62,6 @@ if not os.path.exists(args.log_dir + "/" + str(t_now)):
     os.makedirs(args.log_dir + "/" + str(t_now))
 if not os.path.exists(log_dir_tf):
     os.makedirs(log_dir_tf)
-
-
 
 
 # "/eos/cms/store/cmst3/group/dehep/convPixels/TTBar_13TeV_PU35/"
