@@ -73,9 +73,7 @@ debug_files = [ debug_data + el for el in os.listdir(debug_data)]
 
 
 print("Loading data...")
-train_files = [remote_data + '/train/' +
-               el for el in os.listdir(remote_data + 'train/')] if not args.debug else [remote_data + '/train/' +
-                              el for el in os.listdir(remote_data + 'train/')][:3]
+train_files = [remote_data + '/train/' + el for el in os.listdir(remote_data + 'train/')]
 
 indices = np.arange(len(train_files))
 print(indices)
@@ -87,7 +85,7 @@ kfoldindices_val   = indices[:sizesamp] if not args.debug else  indices[0]
 kfoldindices_test  = [el for el in indices if el not in kfoldindices_val] if not args.debug else  indices[1]
 kfoldindices_train = [el for el in indices if el not in kfoldindices_val and el not in kfoldindices_test] if not args.debug else  indices[2]
 
-train_files = np.take(train_files,kfoldindices_train)
+train_files = train_files[kfoldindices_train] #np.take(train_files,kfoldindices_train)
 test_files = np.take(train_files,kfoldindices_test)
 val_files = np.take(train_files,kfoldindices_val)
 
