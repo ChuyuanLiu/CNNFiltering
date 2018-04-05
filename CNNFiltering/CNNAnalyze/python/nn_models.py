@@ -103,9 +103,9 @@ histories = []
 #separate_conv_doublet_model
 
 models = ["dense_model","conv_model","separate_conv_model","layer_map_model"]
+
 for m in models:
 
-    train_input_list = [X_hit, X_info]
 
     if m == "dense_model":
         X_val_hit, X_val_info, y_val = val_data.get_data()
