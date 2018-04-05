@@ -89,6 +89,7 @@ train_files = train_files[kfoldindices_train] #np.take(train_files,kfoldindices_
 test_files = train_files[kfoldindices_test]
 val_files = train_files[kfoldindices_val]
 
+print(val_files)
 val_data = Dataset(val_files)#,balance=args.balance)
 test_data = Dataset(test_files)#,balance=args.balance)
 train_data = Dataset(test_files)
@@ -101,6 +102,7 @@ histories = []
 #conv_model
 #separate_conv_doublet_model
 
+models = ["dense_model","conv_model","separate_conv_model","layer_map_model"]
 for m in models:
 
     train_input_list = [X_hit, X_info]
