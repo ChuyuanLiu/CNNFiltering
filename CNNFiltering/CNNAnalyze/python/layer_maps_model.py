@@ -8,7 +8,7 @@ import datetime
 import json
 import tempfile
 import os
-from dataset import Dataset
+from dataset import *
 from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
 from model_architectures import *
 import sys
