@@ -101,6 +101,25 @@ def dense_model(args, n_channels):
     model.compile(optimizer=my_sgd, loss='categorical_crossentropy', metrics=['accuracy'])
     return model
 
+def pure_dense_model(args, n_channels):
+    hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='hit_shape_input')
+    infos = Input(shape=(len(dataset.featureLabs),), name='info_input')
+    flat = Flatten()(hit_shapes)
+    concat = concatenate([flat, infos])
+
+    b_norm = BatchNormalization()(concat)
+    dense = Dense(256, activation='relu', kernel_constraint=max_norm(args.maxnorm), name='dense1')(b_norm)
+    drop = Dropout(args.dropout)(dense)
+    dense = Dense(128, activation='relu', kernel_constraint=max_norm(args.maxnorm), name='dense2')(drop)
+    drop = Dropout(args.dropout)(dense)
+    dense = Dense(64, activation='relu', kernel_constraint=max_norm(args.maxnorm), name='dense3')(drop)
+    drop = Dropout(args.dropout)(dense)
+    pred = Dense(2, activation='softmax', kernel_constraint=max_norm(args.maxnorm), name='output')(drop)
+
+    model = Model(inputs=[hit_shapes, infos], outputs=pred)
+    my_sgd = optimizers.SGD(lr=args.lr, decay=1e-4, momentum=args.momentum, nesterov=True)
+    model.compile(optimizer=my_sgd, loss='categorical_crossentropy', metrics=['accuracy'])
+    return model
 
 def small_doublet_model(args, n_channels,n_labels=2):
     hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='hit_shape_input')
@@ -132,7 +151,7 @@ def small_doublet_model(args, n_channels,n_labels=2):
 
 
 def big_doublet_model(args, n_channels):
-    hit_shapes = Input(shape=(8, 8, n_channels), name='hit_shape_input')
+    hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='hit_shape_input')
     infos = Input(shape=(len(dataset.featureLabs),), name='info_input')
 
     drop = Dropout(args.dropout)(hit_shapes)
@@ -159,6 +178,29 @@ def big_doublet_model(args, n_channels):
     model.compile(optimizer=my_sgd, loss='categorical_crossentropy', metrics=['accuracy'])
     return model
 
+def conv_model(args, n_channels):
+    hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='hit_shape_input')
+
+    drop = Dropout(args.dropout)(hit_shapes)
+    conv = Conv2D(128, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv1')(drop)
+    conv = Conv2D(128, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv2')(conv)
+    pool = MaxPooling2D(pool_size=(2, 2), padding='same', data_format="channels_last", name='pool1')(conv)
+
+    conv = Conv2D(256, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv3')(pool)
+    conv = Conv2D(256, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv4')(conv)
+    pool = MaxPooling2D(pool_size=(2, 2), padding='same', data_format="channels_last", name='pool2')(conv)
+
+    flat = Flatten()(pool)
+
+    drop = Dropout(args.dropout)(flat)
+    dense = Dense(128, activation='relu', kernel_constraint=max_norm(args.maxnorm), name='dense1')(drop)
+    drop = Dropout(args.dropout)(dense)
+    pred = Dense(2, activation='softmax', kernel_constraint=max_norm(args.maxnorm), name='output')(drop)
+
+    model = Model(inputs=[hit_shapes, infos], outputs=pred)
+    my_sgd = optimizers.SGD(lr=args.lr, decay=1e-4, momentum=args.momentum, nesterov=True)
+    model.compile(optimizer=my_sgd, loss='categorical_crossentropy', metrics=['accuracy'])
+    return model
 
 def separate_conv_doublet_model(args, n_channels):
     in_hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='in_hit_shape_input')
