@@ -111,15 +111,14 @@ for m in models:
 
     if m == "dense_model":
         X_val_hit, X_val_info, y_val = val_data.get_data(angular_correction=args.angular,b_w_correction=args.bw,flipped_channels=False)
-        X_hit = X_hit[:args.limit]
-        X_info = X_info[:args.limit]
-        y = y[:args.limit]
-
+        X_val_hit = X_val_hit[:args.limit]
+        X_val_info = X_info[:args.limit]
+        y_val = y_val[:args.limit]
 
         X_test_hit, X_test_info, y_test = test_data.get_data(angular_correction=args.angular,b_w_correction=args.bw,flipped_channels=False)
-        X_hit = X_hit[:args.limit]
-        X_info = X_info[:args.limit]
-        y = y[:args.limit]
+        X_test_hit = X_test_hit[:args.limit]
+        X_test_info = X_test_info[:args.limit]
+        y_test = y_test[:args.limit]
 
         X_train_hit, X_train_info, y_train = train_data.get_data(angular_correction=args.angular,b_w_correction=args.bw,flipped_channels=False)
         X_hit = X_hit[:args.limit]
@@ -130,15 +129,15 @@ for m in models:
 
     if m == "conv_model":
         X_val_hit, X_val_info, y_val = val_data.get_data(angular_correction=args.angular,b_w_correction=args.bw,flipped_channels=False)
-        X_hit = X_hit[:args.limit]
-        X_info = X_info[:args.limit]
-        y = y[:args.limit]
+        X_val_hit = X_val_hit[:args.limit]
+        X_val_info = X_info[:args.limit]
+        y_val = y_val[:args.limit]
 
 
         X_test_hit, X_test_info, y_test = test_data.get_data(angular_correction=args.angular,b_w_correction=args.bw,flipped_channels=False)
-        X_hit = X_hit[:args.limit]
-        X_info = X_info[:args.limit]
-        y = y[:args.limit]
+        X_test_hit = X_test_hit[:args.limit]
+        X_test_info = X_test_info[:args.limit]
+        y_test = y_test[:args.limit]
 
         X_train_hit, X_train_info, y_train = train_data.get_data(angular_correction=args.angular,b_w_correction=args.bw,flipped_channels=False)
         X_hit = X_hit[:args.limit]
@@ -154,8 +153,19 @@ for m in models:
 
     if m == "separate_conv_model":
         X_val_hit, X_val_info, y_val = val_data.get_data(angular_correction=args.angular,b_w_correction=args.bw,flipped_channels=False)
+        X_val_hit = X_val_hit[:args.limit]
+        X_val_info = X_info[:args.limit]
+        y_val = y_val[:args.limit]
+
         X_test_hit, X_test_info, y_test = test_data.get_data(angular_correction=args.angular,b_w_correction=args.bw,flipped_channels=False)
+        X_test_hit = X_test_hit[:args.limit]
+        X_test_info = X_test_info[:args.limit]
+        y_test = y_test[:args.limit]
+
         X_train_hit, X_train_info, y_train = train_data.get_data(angular_correction=args.angular,b_w_correction=args.bw,flipped_channels=False)
+        X_hit = X_hit[:args.limit]
+        X_info = X_info[:args.limit]
+        y = y[:args.limit]
 
         train_input_list = [X_hit, X_info]
         val_input_list = [X_val_hit, X_val_info]
