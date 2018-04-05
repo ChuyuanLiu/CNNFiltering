@@ -78,6 +78,7 @@ train_files = [remote_data + '/train/' +
                               el for el in os.listdir(remote_data + 'train/')][:3]
 
 indices = np.arange(len(train_files))
+print(indices)
 np.random.shuffle(indices)
 
 sizesamp = args.k if not args.debug else 1
