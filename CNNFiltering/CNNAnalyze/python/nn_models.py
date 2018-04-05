@@ -75,7 +75,7 @@ debug_files = [ debug_data + el for el in os.listdir(debug_data)]
 print("Loading data...")
 train_files = [remote_data + '/train/' +
                el for el in os.listdir(remote_data + 'train/')] if not args.debug else[remote_data + '/train/' +
-                              el for el in os.listdir(remote_data + 'train/')][:1]
+                              el for el in os.listdir(remote_data + 'train/')][:3]
 
 indices = np.arange(len(train_files))
 np.random.shuffle(indices)
