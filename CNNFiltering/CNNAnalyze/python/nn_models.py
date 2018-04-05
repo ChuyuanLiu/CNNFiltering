@@ -40,7 +40,8 @@ parser.add_argument('--test',type=int,default=35)
 parser.add_argument('--val',type=int,default=15)
 parser.add_argument('--gepochs',type=float,default=1)
 parser.add_argument('--loadw',type=str,default=None)
-parser.add_argument('--phi',action='store_true')
+parser.add_argument('--angular',action='store_true')
+parser.add_argument('--bw',action='store_true')
 parser.add_argument('--augm',type=int,default=1)
 parser.add_argument('--limit',type=int,default=None)
 parser.add_argument('--multiclass',action='store_true')
@@ -109,20 +110,41 @@ for m in models:
 
 
     if m == "dense_model":
-        X_val_hit, X_val_info, y_val = val_data.get_data()
-        X_test_hit, X_test_info, y_test = test_data.get_data()
-        X_train_hit, X_train_info, y_train = train_data.get_data()
+        X_val_hit, X_val_info, y_val = val_data.get_data(angular_correction=args.angular,b_w_correction=args.bw,flipped_channels=False)
+        X_hit = X_hit[:args.limit]
+        X_info = X_info[:args.limit]
+        y = y[:args.limit]
 
-        train_input_list = [X_hit, X_info]
-        val_input_list = [X_val_hit, X_val_info]
-        test_input_list = [X_test_hit, X_test_info]
+
+        X_test_hit, X_test_info, y_test = test_data.get_data(angular_correction=args.angular,b_w_correction=args.bw,flipped_channels=False)
+        X_hit = X_hit[:args.limit]
+        X_info = X_info[:args.limit]
+        y = y[:args.limit]
+
+        X_train_hit, X_train_info, y_train = train_data.get_data(angular_correction=args.angular,b_w_correction=args.bw,flipped_channels=False)
+        X_hit = X_hit[:args.limit]
+        X_info = X_info[:args.limit]
+        y = y[:args.limit]
 
         model = dense_model(args,train_input_list[0].shape[-1])
 
     if m == "conv_model":
-        X_val_hit, X_val_info, y_val = val_data.get_data()
-        X_test_hit, X_test_info, y_test = test_data.get_data()
-        X_train_hit, X_train_info, y_train = train_data.get_data()
+        X_val_hit, X_val_info, y_val = val_data.get_data(angular_correction=args.angular,b_w_correction=args.bw,flipped_channels=False)
+        X_hit = X_hit[:args.limit]
+        X_info = X_info[:args.limit]
+        y = y[:args.limit]
+
+
+        X_test_hit, X_test_info, y_test = test_data.get_data(angular_correction=args.angular,b_w_correction=args.bw,flipped_channels=False)
+        X_hit = X_hit[:args.limit]
+        X_info = X_info[:args.limit]
+        y = y[:args.limit]
+
+        X_train_hit, X_train_info, y_train = train_data.get_data(angular_correction=args.angular,b_w_correction=args.bw,flipped_channels=False)
+        X_hit = X_hit[:args.limit]
+        X_info = X_info[:args.limit]
+        y = y[:args.limit]
+
 
         train_input_list = [X_hit, X_info]
         val_input_list = [X_val_hit, X_val_info]
@@ -131,9 +153,9 @@ for m in models:
         model = conv_model(args,train_input_list[0].shape[-1])
 
     if m == "separate_conv_model":
-        X_val_hit, X_val_info, y_val = val_data.get_data()
-        X_test_hit, X_test_info, y_test = test_data.get_data()
-        X_train_hit, X_train_info, y_train = train_data.get_data()
+        X_val_hit, X_val_info, y_val = val_data.get_data(angular_correction=args.angular,b_w_correction=args.bw,flipped_channels=False)
+        X_test_hit, X_test_info, y_test = test_data.get_data(angular_correction=args.angular,b_w_correction=args.bw,flipped_channels=False)
+        X_train_hit, X_train_info, y_train = train_data.get_data(angular_correction=args.angular,b_w_correction=args.bw,flipped_channels=False)
 
         train_input_list = [X_hit, X_info]
         val_input_list = [X_val_hit, X_val_info]
