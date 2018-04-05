@@ -104,7 +104,7 @@ histories = []
 #conv_model
 #separate_conv_doublet_model
 
-models = ["layer_map_model","dense_model","conv_model","separate_conv_model"]
+models = ["separate_conv_model","layer_map_model","dense_model","conv_model"]
 
 for m in models:
 
@@ -197,6 +197,7 @@ for m in models:
 
         model = adam_small_doublet_model(args,train_input_list[0].shape[-1])
 
+    model.summary()
     fname = args.log_dir + "/" + str(t_now) + "/" + str(m)
 
     callbacks = [
