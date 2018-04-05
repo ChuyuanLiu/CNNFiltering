@@ -363,9 +363,12 @@ if args.kfolding:
             train_data = Dataset(train_batch_k)
             val_data = Dataset(val_batch_k)#,balance=args.balance)
 
-            X_hit, X_info, y = train_data.get_layer_map_data(theta=True)
-            X_val_hit, X_val_info, y_val = val_data.get_layer_map_data(theta=True)
-
+            if args.multiclass:
+                X_hit, X_info, y = train_data.get_layer_map_data_multiclass()
+                X_val_hit, X_val_info, y_val = val_data.get_layer_map_data_multiclass()
+            else:
+                X_hit, X_info, y = train_data.get_layer_map_data(theta=True)
+                X_val_hit, X_val_info, y_val = val_data.get_layer_map_data(theta=True)
 
             X_hit = X_hit[:args.limit]
             X_info = X_info[:args.limit]
