@@ -395,7 +395,7 @@ if args.kfolding:
             if not args.multiclass:
                 model = adam_small_doublet_model(args,train_input_list[0].shape[-1])
             else:
-                model = small_doublet_model(args,train_input_list[0].shape[-1],len(pdg)+2)
+                model = adam_small_doublet_model(args,train_input_list[0].shape[-1],len(main_pdgs)+2)
 
             if args.verbose and i==0:
                 model.summary()
