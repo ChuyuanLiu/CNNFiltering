@@ -121,9 +121,13 @@ for m in models:
         y_test = y_test[:args.limit]
 
         X_train_hit, X_train_info, y_train = train_data.get_data(angular_correction=args.angular,b_w_correction=args.bw,flipped_channels=False)
-        X_hit = X_hit[:args.limit]
-        X_info = X_info[:args.limit]
-        y = y[:args.limit]
+        X_train_hit = X_train_hit[:args.limit]
+        X_train_info = X_train_info[:args.limit]
+        y_train = y_train[:args.limit]
+
+        train_input_list = [X_train_hit, X_train_info]
+        val_input_list = [X_val_hit, X_val_info]
+        test_input_list = [X_test_hit, X_test_info]
 
         model = dense_model(args,train_input_list[0].shape[-1])
 
@@ -139,12 +143,11 @@ for m in models:
         y_test = y_test[:args.limit]
 
         X_train_hit, X_train_info, y_train = train_data.get_data(angular_correction=args.angular,b_w_correction=args.bw,flipped_channels=False)
-        X_hit = X_hit[:args.limit]
-        X_info = X_info[:args.limit]
-        y = y[:args.limit]
+        X_train_hit = X_train_hit[:args.limit]
+        X_train_info = X_train_info[:args.limit]
+        y_train = y_train[:args.limit]
 
-
-        train_input_list = [X_hit, X_info]
+        train_input_list = [X_train_hit, X_train_info]
         val_input_list = [X_val_hit, X_val_info]
         test_input_list = [X_test_hit, X_test_info]
 
@@ -152,21 +155,21 @@ for m in models:
 
     if m == "separate_conv_model":
         X_val_hit, X_val_info, y_val = val_data.get_data(angular_correction=args.angular,b_w_correction=args.bw,flipped_channels=False)
-        X_val_hit = X_val_hit[:args.limit]
-        X_val_info = X_val_info[:args.limit]
-        y_val = y_val[:args.limit]
+        X_val_hit = X_val_hit[:args.limit/3]
+        X_val_info = X_val_info[:args.limit/3]
+        y_val = y_val[:args.limit/3]
 
         X_test_hit, X_test_info, y_test = test_data.get_data(angular_correction=args.angular,b_w_correction=args.bw,flipped_channels=False)
-        X_test_hit = X_test_hit[:args.limit]
-        X_test_info = X_test_info[:args.limit]
-        y_test = y_test[:args.limit]
+        X_test_hit = X_test_hit[:args.limit/3]
+        X_test_info = X_test_info[:args.limit/3]
+        y_test = y_test[:args.limit/3]
 
         X_train_hit, X_train_info, y_train = train_data.get_data(angular_correction=args.angular,b_w_correction=args.bw,flipped_channels=False)
-        X_hit = X_hit[:args.limit]
-        X_info = X_info[:args.limit]
-        y = y[:args.limit]
+        X_train_hit = X_train_hit[:args.limit]
+        X_train_info = X_train_info[:args.limit]
+        y_train = y_train[:args.limit]
 
-        train_input_list = [X_hit, X_info]
+        train_input_list = [X_train_hit, X_train_info]
         val_input_list = [X_val_hit, X_val_info]
         test_input_list = [X_test_hit, X_test_info]
 
@@ -174,10 +177,21 @@ for m in models:
 
     if m == "layer_map_model":
         X_val_hit, X_val_info, y_val = val_data.get_layer_map_data()
-        X_test_hit, X_test_info, y_test = test_data.get_layer_map_data()
-        X_train_hit, X_train_info, y_train = train_data.get_layer_map_data()
+        X_val_hit = X_val_hit[:args.limit/3]
+        X_val_info = X_val_info[:args.limit/3]
+        y_val = y_val[:args.limit/3]
 
-        train_input_list = [X_hit, X_info]
+        X_test_hit, X_test_info, y_test = test_data.get_layer_map_data()
+        X_test_hit = X_test_hit[:args.limit/3]
+        X_test_info = X_test_info[:args.limit/3]
+        y_test = y_test[:args.limit/3]
+
+        X_train_hit, X_train_info, y_train = train_data.get_layer_map_data()
+        X_train_hit = X_train_hit[:args.limit]
+        X_train_info = X_train_info[:args.limit]
+        y_train = y_train[:args.limit]
+
+        train_input_list = [X_train_hit, X_train_info]
         val_input_list = [X_val_hit, X_val_info]
         test_input_list = [X_test_hit, X_test_info]
 
@@ -193,7 +207,7 @@ for m in models:
                     write_graph=True, write_images=True)]
 
 
-    history = model.fit(train_input_list, y, batch_size=args.batch_size, epochs=args.n_epochs, shuffle=True,validation_data=(val_input_list,y_val), callbacks=callbacks, verbose=args.verbose)
+    history = model.fit(train_input_list, y_train, batch_size=args.batch_size, epochs=args.n_epochs, shuffle=True,validation_data=(val_input_list,y_val), callbacks=callbacks, verbose=args.verbose)
 
     histories.append([history.history,m])
 
