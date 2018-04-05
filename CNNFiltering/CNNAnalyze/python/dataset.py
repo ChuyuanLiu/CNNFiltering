@@ -411,8 +411,8 @@ class Dataset:
     def get_labels_multiclass(self):
         labels = np.full(len(self.data[target_lab].as_matrix()),1.0)
         labels[self.data[target_lab].as_matrix()==-1.0] = 0.0
-        for p in pdg:
-            labels[self.data[target_lab].as_matrix()==p] = pdg.index(p) + 2
+        for p in main_pdgs:
+            labels[(self.data[pdg_lab].abs().as_matrix==p) & (self.data[target_lab].as_matrix()!=-1.0)] = pdg.index(p) + 2
 
         print set(labels)
         return labels
