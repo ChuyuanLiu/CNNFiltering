@@ -21,8 +21,7 @@ from sklearn.model_selection import StratifiedKFold
 t_now = '{0:%Y-%m-%d_%H-%M-%S}'.format(datetime.datetime.now())
 # Model configuration
 parser = argparse.ArgumentParser()
-parser.add_argument('--n_epochs', type=int, default=200 if not DEBUG else 3,
-                    help='number of epochs')
+parser.add_argument('--n_epochs', type=int, default=200,help='number of epochs')
 parser.add_argument('--path',type=str,default="data/bal_data/")
 parser.add_argument('--batch_size', type=int, default=1024)
 parser.add_argument('--dropout', type=float, default=0.5)
