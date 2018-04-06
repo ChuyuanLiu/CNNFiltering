@@ -36,6 +36,8 @@ private:
 
   edm::RunningAverage localRA_;
 
+  std::string doubletsNames;
+
   T_Generator generator_;
 };
 
@@ -45,6 +47,7 @@ CAHitNtupletEDProducerT<T_Generator>::CAHitNtupletEDProducerT(const edm::Paramet
   generator_(iConfig, consumesCollector())
 {
   produces<RegionsSeedingHitSets>();
+  doubletsNames = (iConfig.getParameter<edm::InputTag>("doublets")).label();
 }
 
 template <typename T_Generator>
@@ -61,7 +64,7 @@ void CAHitNtupletEDProducerT<T_Generator>::fillDescriptions(edm::ConfigurationDe
 template <typename T_Generator>
 void CAHitNtupletEDProducerT<T_Generator>::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   edm::Handle<IntermediateHitDoublets> hdoublets;
-  iEvent.getByToken(doubletToken_, hdoublets);
+  iEvent.getByToken(doubletToken_, hdoublets);tag.label()
   const auto& regionDoublets = *hdoublets;
 
   const SeedingLayerSetsHits& seedingLayerHits = regionDoublets.seedingLayerHits();
@@ -80,8 +83,8 @@ void CAHitNtupletEDProducerT<T_Generator>::produce(edm::Event& iEvent, const edm
   LogDebug("CAHitNtupletEDProducer") << "Creating ntuplets for " << regionDoublets.regionSize() << " regions, and " << regionDoublets.layerPairsSize() << " layer pairs";
   std::vector<OrderedHitSeeds> ntuplets;
   ntuplets.resize(regionDoublets.regionSize());
-  for(auto& ntuplet : ntuplets)  ntuplet.reserve(localRA_.upper()); 
-   
+  for(auto& ntuplet : ntuplets)  ntuplet.reserve(localRA_.upper());
+
   generator_.hitNtuplets(regionDoublets, ntuplets, iSetup, seedingLayerHits);
   int index = 0;
   for(const auto& regionLayerPairs: regionDoublets) {
@@ -94,6 +97,7 @@ void CAHitNtupletEDProducerT<T_Generator>::produce(edm::Event& iEvent, const edm
   }
   localRA_.update(seedingHitSets->size());
 
+  std::cout << doubletsNames << " -> doublets: " << regionDoublets.size() << " quads: " << seedingHitSets.size() << std::endl;
   iEvent.put(std::move(seedingHitSets));
 }
 

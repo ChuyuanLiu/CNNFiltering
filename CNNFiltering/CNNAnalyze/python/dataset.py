@@ -266,6 +266,49 @@ class Dataset:
         # TODO: not optimal for CPU execution
         return np.transpose(data, (1, 2, 3, 0))
 
+    def get_hit_dense(self, normalize=True, angular_correction=True, flipped_channels=True, bw_cluster = True):
+        """ Return hit shape features
+        Args:
+        -----
+            normalize : (bool)
+                normalize the data matrix with zero mean and unitary variance.
+        """
+        a_in = self.data[inPixels].as_matrix()
+        a_out = self.data[outPixels].as_matrix()
+        self.recolumn()
+        # Normalize data
+        if normalize:
+	        mean, std = (13382.0011321,10525.1252954) #on 2.5M hits PU35
+ 	        a_in = a_in / std
+                a_out = a_out / std
+
+        if bw_cluster:
+            (bw_a_in,bw_a_out) = self.b_w_correction(a_in,a_out)
+            a_in  = bw_a_in
+            a_out = bw_a_out
+
+        if flipped_channels:
+            flip_in, not_flip_in = self.separate_flipped_hits(
+                a_in, self.data.isFlippedIn)
+            flip_out, not_flip_out = self.separate_flipped_hits(
+                a_out, self.data.isFlippedOut)
+            l = [flip_in, not_flip_in, flip_out, not_flip_out]
+        else:
+            l = [a_in, a_out]
+
+        if angular_correction:
+            thetac_in, thetac_out, thetas_in, thetas_out = self.theta_correction(
+                a_in, a_out)
+            l = l + [thetac_in, thetac_out, thetas_in, thetas_out]
+            phic_in, phic_out, phis_in, phis_out = self.phi_correction(
+                a_in, a_out)
+            l = l + [phic_in, phic_out, phis_in, phis_out]
+
+        data = np.array(l)  # (channels, batch_size, hit_size)
+        data = data.reshape((len(data), -1, padshape, padshape))
+        # TODO: not optimal for CPU execution
+        return data
+
     def filter(self, feature_name, value):
         """ filter data keeping only those samples where s[feature_name] = value """
         self.data = self.data[self.data[feature_name] == value]
@@ -423,6 +466,15 @@ class Dataset:
         X_info = self.get_info_features()
         y = to_categorical(self.get_labels(), num_classes=2)
         return X_hit, X_info, y
+
+    def get_data_dense(self, normalize=True, angular_correction=True, flipped_channels=True,b_w_correction=False):
+        X_hit = self.get_hit_dense(
+            normalize, angular_correction, flipped_channels,b_w_correction)
+        X_info = self.get_info_features()
+
+        X = np.hstack((X_hit,X_info))
+        y = to_categorical(self.get_labels(), num_classes=2)
+        return X, y
 
     def save(self, fname):
         # np.save(fname, self.data.as_matrix())

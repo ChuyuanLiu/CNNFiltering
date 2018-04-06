@@ -101,25 +101,6 @@ def dense_model(args, n_channels):
     model.compile(optimizer=my_sgd, loss='categorical_crossentropy', metrics=['accuracy'])
     return model
 
-def pure_dense_model(args, n_channels):
-    hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='hit_shape_input')
-    infos = Input(shape=(len(dataset.featureLabs),), name='info_input')
-    flat = Flatten()(hit_shapes)
-    concat = concatenate([flat, infos])
-
-    b_norm = BatchNormalization()(concat)
-    dense = Dense(256, activation='relu', kernel_constraint=max_norm(args.maxnorm), name='dense1')(b_norm)
-    drop = Dropout(args.dropout)(dense)
-    dense = Dense(128, activation='relu', kernel_constraint=max_norm(args.maxnorm), name='dense2')(drop)
-    drop = Dropout(args.dropout)(dense)
-    dense = Dense(64, activation='relu', kernel_constraint=max_norm(args.maxnorm), name='dense3')(drop)
-    drop = Dropout(args.dropout)(dense)
-    pred = Dense(2, activation='softmax', kernel_constraint=max_norm(args.maxnorm), name='output')(drop)
-
-    model = Model(inputs=[hit_shapes, infos], outputs=pred)
-    my_sgd = optimizers.SGD(lr=args.lr, decay=1e-4, momentum=args.momentum, nesterov=True)
-    model.compile(optimizer=my_sgd, loss='categorical_crossentropy', metrics=['accuracy'])
-    return model
 
 def small_doublet_model(args, n_channels,n_labels=2):
     hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='hit_shape_input')
