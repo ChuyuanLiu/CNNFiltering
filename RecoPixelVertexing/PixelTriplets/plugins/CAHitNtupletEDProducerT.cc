@@ -64,7 +64,7 @@ void CAHitNtupletEDProducerT<T_Generator>::fillDescriptions(edm::ConfigurationDe
 template <typename T_Generator>
 void CAHitNtupletEDProducerT<T_Generator>::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   edm::Handle<IntermediateHitDoublets> hdoublets;
-  iEvent.getByToken(doubletToken_, hdoublets);tag.label()
+  iEvent.getByToken(doubletToken_, hdoublets);
   const auto& regionDoublets = *hdoublets;
 
   const SeedingLayerSetsHits& seedingLayerHits = regionDoublets.seedingLayerHits();
