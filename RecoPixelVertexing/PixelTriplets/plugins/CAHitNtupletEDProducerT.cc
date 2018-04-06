@@ -97,15 +97,17 @@ void CAHitNtupletEDProducerT<T_Generator>::produce(edm::Event& iEvent, const edm
   }
   localRA_.update(seedingHitSets->size());
 
-  int doubSize = 0, seedSize = 0;
+  int doubSize = 0, seedSize = 0, seed;
 
   for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt = regionDoublets.layerSetsBegin(); lIt != regionDoublets.layerSetsEnd(); ++lIt)
     doubSize += lIt->doublets().size();
 
   for (std::vector<SeedingHitSet>::const_iterator lIt = seedingHitSets->layerSetsBegin(); lIt != seedingHitSets->layerSetsEnd(); ++lIt)
-    seedSize += lIt->size();
-
-  std::cout << doubletsNames << " -> doublets: " << doubSize << " seeds ("<<seedingHitSets->size()<<"): " << seedSize << std::endl;
+    {
+      seedSize += lIt->size();
+      seed = (*lIt)[0].size();
+    }
+  std::cout << doubletsNames << " -> doublets: " << doubSize << " seeds ("<<seed<<"): " << seedingHitSets->size() << std::endl;
   iEvent.put(std::move(seedingHitSets));
 }
 
