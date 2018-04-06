@@ -97,7 +97,7 @@ void CAHitNtupletEDProducerT<T_Generator>::produce(edm::Event& iEvent, const edm
   }
   localRA_.update(seedingHitSets->size());
 
-  int doubSize = 0, seedSize = 0, seed;
+  int doubSize = 0, seedSize = 0, seed = 0;
 
   for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt = regionDoublets.layerSetsBegin(); lIt != regionDoublets.layerSetsEnd(); ++lIt)
     doubSize += lIt->doublets().size();
