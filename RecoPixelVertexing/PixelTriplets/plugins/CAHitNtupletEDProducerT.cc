@@ -105,7 +105,7 @@ void CAHitNtupletEDProducerT<T_Generator>::produce(edm::Event& iEvent, const edm
   for (std::vector<SeedingHitSet>::const_iterator lIt = seedingHitSets->layerSetsBegin(); lIt != seedingHitSets->layerSetsEnd(); ++lIt)
     {
       seedSize += lIt->size();
-      seed = (*lIt)[0].size();
+      seed = lIt->size();
     }
   std::cout << doubletsNames << " -> doublets: " << doubSize << " seeds ("<<seed<<"): " << seedingHitSets->size() << std::endl;
   iEvent.put(std::move(seedingHitSets));
