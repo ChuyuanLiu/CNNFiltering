@@ -1288,7 +1288,7 @@ void MultiTrackValidatorCNNTracks::analyze(const edm::Event& event, const edm::E
           std::cout<<thisHitPars.size()<<std::endl;
         }
 
-        if(hits.size()<numPixels)
+        if(int(hits.size())<numPixels)
         {
 
           for(int j = hits.size(); j < numPixels; ++j)
