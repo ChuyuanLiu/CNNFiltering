@@ -1096,7 +1096,7 @@ void MultiTrackValidatorCNNTracks::analyze(const edm::Event& event, const edm::E
 
         bool isSimMatched(false);
         bool isChargeMatched(true);
-
+        bool isSigSimMatched(false);
         auto tpFound = recSimColl.find(track);
         isSimMatched = tpFound != recSimColl.end();
         if (!isSimMatched)
@@ -1188,7 +1188,7 @@ void MultiTrackValidatorCNNTracks::analyze(const edm::Event& event, const edm::E
 
         }
 
-        for(int j = 0; j < hits.size(); ++j)
+        for(size_t j = 0; j < hits.size(); ++j)
         {
 
           auto hit = hits[j];
@@ -1290,7 +1290,7 @@ void MultiTrackValidatorCNNTracks::analyze(const edm::Event& event, const edm::E
         if(hits.size()<numPixels)
         {
 
-          for(int j = hits.size(); j < numPixels; ++j)
+          for(size_t j = hits.size(); j < numPixels; ++j)
           {
 
             std::vector<float> thisHitPars;
