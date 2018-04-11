@@ -1135,12 +1135,14 @@ void MultiTrackValidatorCNNTracks::analyze(const edm::Event& event, const edm::E
             goodHits = false;
           }
 
-          const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>((*recHit));
+          BaseTrackerRecHit const * bhit = dynamic_cast<BaseTrackerRecHit const *>(recHit)
 
-          if (!pixHit)
+          if (!bhit)
             continue;
 
-          auto rangeIn = tpClust->equal_range((*recHit)->firstClusterRef());
+
+
+          auto rangeIn = tpClust->equal_range(bhit->firstClusterRef());
           std::vector< int > kPdgs;
 
           for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
