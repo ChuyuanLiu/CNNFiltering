@@ -1140,7 +1140,7 @@ void MultiTrackValidatorCNNTracks::analyze(const edm::Event& event, const edm::E
           if (!pixHit)
             continue;
 
-          auto rangeIn = tpClust->equal_range(recHit->firstClusterRef());
+          auto rangeIn = tpClust->equal_range((*recHit)->firstClusterRef());
           std::vector< int > kPdgs;
 
           for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
