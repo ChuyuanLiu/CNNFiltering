@@ -1097,6 +1097,7 @@ void MultiTrackValidatorCNNTracks::analyze(const edm::Event& event, const edm::E
         bool isSimMatched(false);
         bool isChargeMatched(true);
         bool isSigSimMatched(false);
+
         auto tpFound = recSimColl.find(track);
         isSimMatched = tpFound != recSimColl.end();
         if (!isSimMatched)
@@ -1323,7 +1324,7 @@ void MultiTrackValidatorCNNTracks::analyze(const edm::Event& event, const edm::E
             thisHitPars.push_back(-0.01); //avg pixel charge
 
 
-            thisHitPars.push_back((-0.01);//27
+            thisHitPars.push_back(-0.01); //27
             thisHitPars.push_back(-0.01);
             thisHitPars.push_back(-0.01);
 
