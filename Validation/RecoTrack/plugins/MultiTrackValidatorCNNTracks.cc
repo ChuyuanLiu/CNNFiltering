@@ -1,4 +1,4 @@
-#include "Validation/RecoTrack/interface/MultiTrackValidatorCNN.h"
+#include "Validation/RecoTrack/interface/MultiTrackValidatorCNNTracks.h"
 #include "Validation/RecoTrack/interface/trackFromSeedFitFailed.h"
 
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -63,7 +63,7 @@ namespace {
 
 }
 
-MultiTrackValidatorCNN::MultiTrackValidatorCNN(const edm::ParameterSet& pset):
+MultiTrackValidatorCNNTracks::MultiTrackValidatorCNNTracks(const edm::ParameterSet& pset):
   associators(pset.getUntrackedParameter< std::vector<edm::InputTag> >("associators")),
   label(pset.getParameter< std::vector<edm::InputTag> >("label")),
   parametersDefiner(pset.getParameter<std::string>("parametersDefiner")),
@@ -87,6 +87,7 @@ MultiTrackValidatorCNN::MultiTrackValidatorCNN(const edm::ParameterSet& pset):
   padHalfSize = 8;
   padSize = (int)(padHalfSize*2);
   tParams = 26;
+  numPixels = 10;
 
   const edm::InputTag& label_tp_effic_tag = pset.getParameter< edm::InputTag >("label_tp_effic");
   const edm::InputTag& label_tp_fake_tag = pset.getParameter< edm::InputTag >("label_tp_fake");
@@ -232,10 +233,10 @@ MultiTrackValidatorCNN::MultiTrackValidatorCNN(const edm::ParameterSet& pset):
 }
 
 
-MultiTrackValidatorCNN::~MultiTrackValidatorCNN() {}
+MultiTrackValidatorCNNTracks::~MultiTrackValidatorCNNTracks() {}
 
 
-void MultiTrackValidatorCNN::bookHistograms(DQMStore::IBooker& ibook, edm::Run const&, edm::EventSetup const& setup) {
+void MultiTrackValidatorCNNTracks::bookHistograms(DQMStore::IBooker& ibook, edm::Run const&, edm::EventSetup const& setup) {
 
   const auto minColl = -0.5;
   const auto maxColl = label.size()-0.5;
@@ -351,7 +352,7 @@ namespace {
   }
 }
 
-const TrackingVertex::LorentzVector *MultiTrackValidatorCNN::getSimPVPosition(const edm::Handle<TrackingVertexCollection>& htv) const {
+const TrackingVertex::LorentzVector *MultiTrackValidatorCNNTracks::getSimPVPosition(const edm::Handle<TrackingVertexCollection>& htv) const {
   for(const auto& simV: *htv) {
     if(simV.eventId().bunchCrossing() != 0) continue; // remove OOTPU
     if(simV.eventId().event() != 0) continue; // pick the PV of hard scatter
@@ -360,7 +361,7 @@ const TrackingVertex::LorentzVector *MultiTrackValidatorCNN::getSimPVPosition(co
   return nullptr;
 }
 
-const reco::Vertex::Point *MultiTrackValidatorCNN::getRecoPVPosition(const edm::Event& event, const edm::Handle<TrackingVertexCollection>& htv) const {
+const reco::Vertex::Point *MultiTrackValidatorCNNTracks::getRecoPVPosition(const edm::Event& event, const edm::Handle<TrackingVertexCollection>& htv) const {
   edm::Handle<edm::View<reco::Vertex> > hvertex;
   event.getByToken(recoVertexToken_, hvertex);
 
@@ -386,7 +387,7 @@ const reco::Vertex::Point *MultiTrackValidatorCNN::getRecoPVPosition(const edm::
   return nullptr;
 }
 
-void MultiTrackValidatorCNN::tpParametersAndSelection(const TrackingParticleRefVector& tPCeff,
+void MultiTrackValidatorCNNTracks::tpParametersAndSelection(const TrackingParticleRefVector& tPCeff,
                                                    const ParametersDefinerForTP& parametersDefinerTP,
                                                    const edm::Event& event, const edm::EventSetup& setup,
                                                    const reco::BeamSpot& bs,
@@ -443,7 +444,7 @@ void MultiTrackValidatorCNN::tpParametersAndSelection(const TrackingParticleRefV
 }
 
 
-size_t MultiTrackValidatorCNN::tpDR(const TrackingParticleRefVector& tPCeff,
+size_t MultiTrackValidatorCNNTracks::tpDR(const TrackingParticleRefVector& tPCeff,
                                  const std::vector<size_t>& selected_tPCeff,
                                  DynArray<float>& dR_tPCeff) const {
   float etaL[tPCeff.size()], phiL[tPCeff.size()];
@@ -474,7 +475,7 @@ size_t MultiTrackValidatorCNN::tpDR(const TrackingParticleRefVector& tPCeff,
   return n_selTP_dr;
 }
 
-void MultiTrackValidatorCNN::trackDR(const edm::View<reco::Track>& trackCollection, const edm::View<reco::Track>& trackCollectionDr, DynArray<float>& dR_trk) const {
+void MultiTrackValidatorCNNTracks::trackDR(const edm::View<reco::Track>& trackCollection, const edm::View<reco::Track>& trackCollectionDr, DynArray<float>& dR_trk) const {
   int i=0;
   float etaL[trackCollectionDr.size()];
   float phiL[trackCollectionDr.size()];
@@ -504,7 +505,7 @@ void MultiTrackValidatorCNN::trackDR(const edm::View<reco::Track>& trackCollecti
 }
 
 
-void MultiTrackValidatorCNN::analyze(const edm::Event& event, const edm::EventSetup& setup){
+void MultiTrackValidatorCNNTracks::analyze(const edm::Event& event, const edm::EventSetup& setup){
   using namespace reco;
 
   LogDebug("TrackValidator") << "\n====================================================" << "\n"
@@ -516,16 +517,6 @@ void MultiTrackValidatorCNN::analyze(const edm::Event& event, const edm::EventSe
   setup.get<TrackAssociatorRecord>().get(parametersDefiner,parametersDefinerTPHandle);
   //Since we modify the object, we must clone it
   auto parametersDefinerTP = parametersDefinerTPHandle->clone();
-
-  //all the doublets
-  std::vector < edm::Handle<IntermediateHitDoublets> > theDoublets;
-  std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31};
-
-  for (size_t i = 0; i < theDoubletsToken_.size(); i++) {
-    edm::Handle<IntermediateHitDoublets> thisDoublets;
-    event.getByToken(theDoubletsToken_[i],thisDoublets);
-    theDoublets.push_back(thisDoublets);
-  }
 
   //Cluster to tP association map
   edm::Handle<ClusterTPAssociation> tpClust;
@@ -1068,370 +1059,351 @@ void MultiTrackValidatorCNN::analyze(const edm::Event& event, const edm::EventSe
       int runNumber = event.id().run();
       int lumNumber = event.id().luminosityBlock();
 
-      for (size_t k = 0; k < theDoublets.size(); ++k)
+
+      std::string histname;
+      std::vector<TH2F *> hitClusters;
+      std::vector< const TrackerSingleRecHit*> hits;
+      std::vector< std::vector< float>> hitPars;
+
+      for(int i = 0; i < numPixels; ++i)
       {
-        // for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= (*iHd)->layerSetsBegin(); lIt != (*iHd)->layerSetsEnd(); ++lIt)
-        // for (std::vector < edm::Handle<IntermediateHitDoublets> >::const_iterator (*iHd)= (*iHd)->layerSetsBegin(); lIt != (*iHd)->layerSetsEnd(); ++lIt)
-        auto iHd = theDoublets[k];
-        std::string dName = theDoubletsNames_[k];
+        histname = "clusterHit_" + std::to_string(i) + "_pos_hist";
+        hitClusters.push_back(new TH2F(histname.data(),histname.data(),padSize,-padHalfSize,padHalfSize,padSize,-padHalfSize,padHalfSize));
+      }
 
-        std::string fileName = "doublets/" + std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber) + "_" + dName + "_dnn_doublets.txt";;
+      for(int i = 0; i < numPixels; ++i)
+      for (int nx = 0; nx < padSize; ++nx)
+      for (int ny = 0; ny < padSize; ++ny)
+      hitClusters[i]->SetBinContent(nx,ny,0.0);
 
-        std::ofstream outCNNFile(fileName, std::ofstream::app);
+      std::string fileName = "tracks/" + std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber) + "_" + dName + "_cnn_tracks.txt";;
+      std::ofstream outCNNFile(fileName, std::ofstream::app);
 
-        // std::cout << "Intermediate hit doublets loop start :"<< std::endl;
-        for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt= (*iHd).layerSetsBegin(); lIt != (*iHd).layerSetsEnd(); ++lIt)
+      for(View<Track>::size_type i=0; i<trackCollection.size(); ++i){
+        int loopthree = 0;
+        hits.clear(); hitPars.clear();
+        hitClusters.clear();
+
+
+
+        auto track = trackCollection.refAt(i);
+
+        rT++;
+        if(trackFromSeedFitFailed(*track)) ++seed_fit_failed;
+        if((*dRTrackSelector)(*track)) ++n_selTrack_dr;
+
+
+        bool isSimMatched(false);
+        bool isChargeMatched(true);
+
+        auto tpFound = recSimColl.find(track);
+        isSimMatched = tpFound != recSimColl.end();
+        if (!isSimMatched)
+        continue;
+
+        bool goodHits = true;
+
+        const auto& tp = tpFound->val;
+        const TrackingParticle& particle = *tp[0].first;
+        int numAssocRecoTracks = 0;
+        double sharedFraction = 0.;
+
+        sharedFraction = tp[0].second;
+        if (tp[0].first->charge() != track->charge()) isChargeMatched = false;
+        if(simRecColl.find(tp[0].first) != simRecColl.end()) numAssocRecoTracks = simRecColl[tp[0].first].size();
+
+        if(!isChargeMatched) continue;
+        if(sharedFraction<1.0) continue;
+
+        for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
         {
-          int loopone = 0;
-          std::vector< RecHitsSortedInPhi::Hit> hits;
-          std::vector< const SiPixelRecHit*> siHits;
 
-          std::vector< SiPixelRecHit::ClusterRef> clusters;
-          std::vector< DetId> detIds;
-          std::vector< const GeomDet*> geomDets;
-          std::vector <unsigned int> hitIds, subDetIds, detSeqs;
+          if(!(*recHit))
+          {
+            continue;
+            goodHits = false;
+          }
+          if (!((*recHit)->isValid()))
+          {
+            continue;
+            goodHits = false;
+          }
 
-          std::vector< std::vector< float>> hitPars;
-          std::vector< float > inHitPars, outHitPars;
-          std::vector< float > inTP, outTP, theTP;
+          if(!((*recHit)->hasPositionAndError()))
+          {
+            continue;
+            goodHits = false;
+          }
 
-          float ax1, ax2, deltaADC = 0.0, deltaPhi = 0.0, deltaR = 0.0, deltaA = 0.0, deltaS = 0.0;
+          auto rangeIn = tpClust->equal_range(lIt->doublets().hit(i, HitDoublets::inner)->firstClusterRef());
+          std::vector< int > kPdgs;
 
-          DetLayer const * innerLayer = lIt->doublets().detLayer(HitDoublets::inner);
-          if(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum())==pixelDets.end()) continue;   //TODO change to std::map ?
+          for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
+          kPdgs.push_back((*ip->second).pdgId());
 
-          DetLayer const * outerLayer = lIt->doublets().detLayer(HitDoublets::outer);
-          if(find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum())==pixelDets.end()) continue;
+          if(std::find(kPdgs.begin(),kPdgs.end(),(int)(particle.pdgId())) == kPdgs.end())
+          goodHits = false;
 
-          // std::cout << lIt->doublets().size() << std::endl;
+        }
 
-          for (size_t i = 0; i < lIt->doublets().size(); i++)
+        if(!(goodHits))
+        continue;
+
+        if(std::find(kIntPdgs.begin(),kIntPdgs.end(),(int)(particle.pdgId())) == kIntPdgs.end())
+        continue;
+        else
+        trueDoublet = true;
+
+        for (unsigned int tp_ite=0;tp_ite<tp.size();++tp_ite)
+        {
+          TrackingParticle trackpart = *(tp[tp_ite].first);
+          if ((trackpart.eventId().event() == 0) && (trackpart.eventId().bunchCrossing() == 0))
+          {
+            isSigSimMatched = true;
+            break;
+          }
+        }
+
+        int thePixels = 0;
+
+        for ( trackingRecHit_iterator recHit = (*posTrack).recHitsBegin();recHit != (*posTrack).recHitsEnd(); ++recHit )
+        {
+          TrackerSingleRecHit const * hit= dynamic_cast<TrackerSingleRecHit const *>(*recHit);
+
+          DetId detid = (*recHit)->geographicalId();
+          unsigned int subdetid = detid.subdetId();
+
+          if(detid.det() != DetId::Tracker) continue;
+          if (!((subdetid==1) || (subdetid==2))) continue;
+
+          const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(hit);
+          if (pixHit)
+          hits.push_back(hit);
+
+          if(thePixels>=numPixels) break;
+
+        }
+
+        for(int j = 0; j < hits.size(); ++j)
+        {
+
+          auto hit = hits[j];
+          const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(hit);
+          auto clust = pixHit->cluster();
+
+          DetId detId = hit->geographicalId();
+          unsigned int subdetid = detid.subdetId();
+
+          std::vector<float> thisHitPars;
+
+          //4
+          thisHitPars.push_back((hit->globalState()).position.x()); //1
+          thisHitPars.push_back((hit->globalState()).position.y());
+          thisHitPars.push_back((hit->globalState()).position.z()); //3
+
+          thisHitPars.push_back((hit->globalState()).phi); //Phi //FIXME
+          thisHitPars.push_back((hit->globalState()).r); //R //TODO add theta and DR
+
+          //Module labels
+          if(subdetid==1) //barrel
+          {
+            thisHitPars.push_back(float(true)); //isBarrel //7
+            thisHitPars.push_back(PXBDetId(detId).layer());
+            thisHitPars.push_back(PXBDetId(detId).ladder());
+            thisHitPars.push_back(-1.0);
+            thisHitPars.push_back(-1.0);
+            thisHitPars.push_back(-1.0);
+            thisHitPars.push_back(PXBDetId(detId).module()); //14
+          }
+          else
+          {
+            thisHitPars.push_back(float(false)); //isBarrel
+            thisHitPars.push_back(-1.0);
+            thisHitPars.push_back(-1.0);
+            thisHitPars.push_back(PXFDetId(detId).side());
+            thisHitPars.push_back(PXFDetId(detId).disk());
+            thisHitPars.push_back(PXFDetId(detId).panel());
+            thisHitPars.push_back(PXFDetId(detId).module());
+          }
+
+
+          //TODO check CLusterRef & OmniClusterRef
+
+          //ClusterInformations
+          thisHitPars.push_back((float)clust->x()); //20
+          thisHitPars.push_back((float)clust->y());
+          thisHitPars.push_back((float)clust->size());
+          thisHitPars.push_back((float)clust->sizeX());
+          thisHitPars.push_back((float)clust->sizeY());
+          thisHitPars.push_back((float)clust->pixel(0).adc); //25
+          thisHitPars.push_back(float(clust->charge())/float(clust->size())); //avg pixel charge
+
+
+          thisHitPars.push_back((float)(clust->sizeX() > padSize));//27
+          thisHitPars.push_back((float)(clust->sizeY() > padSize));
+          thisHitPars.push_back((float)(clust->sizeY()) / (float)(clust->sizeX()));
+
+
+          thisHitPars.push_back((float)pixHit->spansTwoROCs());
+          thisHitPars.push_back((float)pixHit->hasBadPixels());
+          thisHitPars.push_back((float)pixHit->isOnEdge()); //31
+
+          //Cluster Pad
+          TH2F hClust("hClust","hClust",
+          padSize,
+          clust->x()-padHalfSize,
+          clust->x()+padHalfSize,
+          padSize,
+          clust->y()-padHalfSize,
+          clust->y()+padHalfSize);
+
+          //Initialization
+          for (int nx = 0; nx < padSize; ++nx)
+          for (int ny = 0; ny < padSize; ++ny)
+          hClust.SetBinContent(nx,ny,0.0);
+
+          for (int k = 0; k < clust->size(); ++k)
+          hitClusters[j]->SetBinContent(hitClusters[j]->FindBin((float)clust->pixel(k).x, (float)clust->pixel(k).y),(float)clust->pixel(k).adc);
+
+          //Linearizing the cluster
+
+          for (int ny = padSize; ny>0; --ny)
+          {
+            for(int nx = 0; nx<padSize; nx++)
+            {
+              int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
+              thisHitPars.push_back(hitClusters[j]->GetBinContent(n));
+            }
+          }
+
+          //ADC sum
+          thisHitPars.push_back(float(clust->charge()));
+
+          hitPars.push_back(thisHitPars);
+          std::cout<<thisHitPars.size()<<std::endl;
+        }
+
+        if(hits.size()<numPixels)
+        {
+
+          for(int j = hits.size(); j < numPixels; ++j)
           {
 
-            int looptwo = 0;
-
-            deltaPhi = 0.0;
-            deltaR = 0.0;
-            deltaA = 0.0;
-            deltaADC = 0.0;
-            deltaS = 0.0;
-
-            hits.clear(); siHits.clear(); clusters.clear();
-            detIds.clear(); geomDets.clear(); hitIds.clear();
-            subDetIds.clear(); detSeqs.clear(); hitPars.clear(); theTP.clear();
-            inHitPars.clear(); outHitPars.clear();
-
-            hits.push_back(lIt->doublets().hit(i, HitDoublets::inner)); //TODO CHECK EMPLACEBACK
-            hits.push_back(lIt->doublets().hit(i, HitDoublets::outer));
-
-            for (auto h : hits)
-            {
-              detIds.push_back(h->hit()->geographicalId());
-              subDetIds.push_back((h->hit()->geographicalId()).subdetId());
-            }
-            // innerDetId = innerHit->hit()->geographicalId();
-
-            if (! (((subDetIds[0]==1) || (subDetIds[0]==2)) && ((subDetIds[1]==1) || (subDetIds[1]==2)))) continue;
-
-            siHits.push_back(dynamic_cast<const SiPixelRecHit*>((hits[0])));
-            siHits.push_back(dynamic_cast<const SiPixelRecHit*>((hits[1])));
-
-            clusters.push_back(siHits[0]->cluster());
-            clusters.push_back(siHits[1]->cluster());
-
-            detSeqs.push_back(innerLayer->seqNum());
-            detSeqs.push_back(outerLayer->seqNum());
-
-            geomDets.push_back(hits[0]->det());
-            geomDets.push_back(hits[1]->det());
-
-            hitPars.push_back(inHitPars);
-            hitPars.push_back(outHitPars);
-
-            HitDoublets::layer layers[2] = {HitDoublets::inner, HitDoublets::outer};
-
-            for(int j = 0; j < 2; ++j)
-            {
-
-              //4
-              hitPars[j].push_back((hits[j]->hit()->globalState()).position.x()); //1
-              hitPars[j].push_back((hits[j]->hit()->globalState()).position.y());
-              hitPars[j].push_back((hits[j]->hit()->globalState()).position.z()); //3
-
-              float phi = lIt->doublets().phi(i,layers[j]) >=0.0 ? lIt->doublets().phi(i,layers[j]) : 2*M_PI + lIt->doublets().phi(i,layers[j]);
-
-              hitPars[j].push_back(phi); //Phi //FIXME
-              hitPars[j].push_back(lIt->doublets().r(i,layers[j])); //R //TODO add theta and DR
-
-              hitPars[j].push_back(detSeqs[j]); //det number //6
-
-              //Module labels
-              if(subDetIds[j]==1) //barrel
-              {
-                hitPars[j].push_back(float(true)); //isBarrel //7
-                hitPars[j].push_back(PXBDetId(detIds[j]).layer());
-                hitPars[j].push_back(PXBDetId(detIds[j]).ladder());
-                hitPars[j].push_back(-1.0);
-                hitPars[j].push_back(-1.0);
-                hitPars[j].push_back(-1.0);
-                hitPars[j].push_back(PXBDetId(detIds[j]).module()); //14
-              }
-              else
-              {
-                hitPars[j].push_back(float(false)); //isBarrel
-                hitPars[j].push_back(-1.0);
-                hitPars[j].push_back(-1.0);
-                hitPars[j].push_back(PXFDetId(detIds[j]).side());
-                hitPars[j].push_back(PXFDetId(detIds[j]).disk());
-                hitPars[j].push_back(PXFDetId(detIds[j]).panel());
-                hitPars[j].push_back(PXFDetId(detIds[j]).module());
-              }
-
-              //Module orientation
-              ax1 = geomDets[j]->surface().toGlobal(Local3DPoint(0.,0.,0.)).perp(); //15
-              ax2 = geomDets[j]->surface().toGlobal(Local3DPoint(0.,0.,1.)).perp();
-
-              hitPars[j].push_back(float(ax1<ax2)); //isFlipped
-              hitPars[j].push_back(ax1); //Module orientation y
-              hitPars[j].push_back(ax2); //Module orientation x
+            std::vector<float> thisHitPars;
 
+            //4
+            thisHitPars.push_back(-0.01); //1
+            thisHitPars.push_back(-0.01);
+            thisHitPars.push_back(-0.01); //3
 
-              //TODO check CLusterRef & OmniClusterRef
+            thisHitPars.push_back(-0.01); //Phi //FIXME
+            thisHitPars.push_back(-0.01); //R //TODO add theta and DR
 
-              //ClusterInformations
-              hitPars[j].push_back((float)clusters[j]->x()); //20
-              hitPars[j].push_back((float)clusters[j]->y());
-              hitPars[j].push_back((float)clusters[j]->size());
-              hitPars[j].push_back((float)clusters[j]->sizeX());
-              hitPars[j].push_back((float)clusters[j]->sizeY());
-              hitPars[j].push_back((float)clusters[j]->pixel(0).adc); //25
-              hitPars[j].push_back(float(clusters[j]->charge())/float(clusters[j]->size())); //avg pixel charge
+            thisHitPars.push_back(-0.01); //isBarrel //7
+            thisHitPars.push_back(-0.01);
+            thisHitPars.push_back(-0.01);
+            thisHitPars.push_back(-0.01);
+            thisHitPars.push_back(-0.01);
+            thisHitPars.push_back(-0.01);
+            thisHitPars.push_back(-0.01); //14
 
+            //TODO check CLusterRef & OmniClusterRef
 
-              hitPars[j].push_back((float)(clusters[j]->sizeX() > padSize));//27
-              hitPars[j].push_back((float)(clusters[j]->sizeY() > padSize));
-              hitPars[j].push_back((float)(clusters[j]->sizeY()) / (float)(clusters[j]->sizeX()));
+            //ClusterInformations
+            thisHitPars.push_back(-0.01); //20
+            thisHitPars.push_back(-0.01);
+            thisHitPars.push_back(-0.01);
+            thisHitPars.push_back(-0.01);
+            thisHitPars.push_back(-0.01);
+            thisHitPars.push_back(-0.01); //25
+            thisHitPars.push_back(-0.01); //avg pixel charge
 
 
-              hitPars[j].push_back((float)siHits[j]->spansTwoROCs());
-              hitPars[j].push_back((float)siHits[j]->hasBadPixels());
-              hitPars[j].push_back((float)siHits[j]->isOnEdge()); //31
+            thisHitPars.push_back((-0.01);//27
+            thisHitPars.push_back(-0.01);
+            thisHitPars.push_back(-0.01);
 
-              //Cluster Pad
-              TH2F hClust("hClust","hClust",
-              padSize,
-              clusters[j]->x()-padHalfSize,
-              clusters[j]->x()+padHalfSize,
-              padSize,
-              clusters[j]->y()-padHalfSize,
-              clusters[j]->y()+padHalfSize);
 
-              //Initialization
-              for (int nx = 0; nx < padSize; ++nx)
-              for (int ny = 0; ny < padSize; ++ny)
-              hClust.SetBinContent(nx,ny,0.0);
+            thisHitPars.push_back(-0.01);
+            thisHitPars.push_back(-0.01);
+            thisHitPars.push_back(-0.01); //31
 
-              for (int k = 0; k < clusters[j]->size(); ++k)
-              hClust.SetBinContent(hClust.FindBin((float)clusters[j]->pixel(k).x, (float)clusters[j]->pixel(k).y),(float)clusters[j]->pixel(k).adc);
+            for (int ny = padSize; ny>0; --ny)
+            for(int nx = 0; nx<padSize; nx++)
+            thisHitPars.push_back(-0.01);
 
-              //Linearizing the cluster
 
-              for (int ny = padSize; ny>0; --ny)
-              {
-                for(int nx = 0; nx<padSize; nx++)
-                {
-                  int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
-                  hitPars[j].push_back(hClust.GetBinContent(n));
-                }
-              }
+            //ADC sum
+            thisHitPars.push_back(-0.01);
 
-              //ADC sum
-              hitPars[j].push_back(float(clusters[j]->charge()));
-
-              //Deltas
-              deltaA   -= ((float)clusters[j]->size()); deltaA *= -1.0;
-              deltaADC -= clusters[j]->charge(); deltaADC *= -1.0; //At the end == Outer Hit ADC - Inner Hit ADC
-              deltaS   -= ((float)(clusters[j]->sizeY()) / (float)(clusters[j]->sizeX())); deltaS *= -1.0;
-              deltaR   -= lIt->doublets().r(i,layers[j]); deltaR *= -1.0;
-              deltaPhi -= phi; deltaPhi *= -1.0;
-            }
-
-            deltaPhi *= deltaPhi > M_PI ? 2*M_PI - fabs(deltaPhi) : 1.0;
-
-            auto rangeIn = tpClust->equal_range(lIt->doublets().hit(i, HitDoublets::inner)->firstClusterRef());
-            auto rangeOut = tpClust->equal_range(lIt->doublets().hit(i, HitDoublets::outer)->firstClusterRef());
-
-            std::vector< std::pair<int,int> > kPdgIn, kPdgOut, kIntersection;
-            std::vector< int > kIntPdgs;
-
-            for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
-            kPdgIn.push_back({ip->second.key(),(*ip->second).pdgId()});
-
-            for(auto ip=rangeOut.first; ip != rangeOut.second; ++ip)
-            kPdgOut.push_back({ip->second.key(),(*ip->second).pdgId()});
-
-            std::set_intersection(kPdgIn.begin(), kPdgIn.end(),kPdgOut.begin(), kPdgOut.end(), std::back_inserter(kIntersection));
-
-            const TrackingRecHit* inRecHit = dynamic_cast<const TrackingRecHit*> (lIt->doublets().hit(i, HitDoublets::inner));
-            const TrackingRecHit* outRecHit = dynamic_cast<const TrackingRecHit*> (lIt->doublets().hit(i, HitDoublets::outer));
-
-            bool trueDoublet = false;
-
-            for (size_t i = 0; i < kIntersection.size(); i++) {
-              kIntPdgs.push_back(kIntersection[i].second);
-            }
-
-            bool inTrue = false, outTrue = false;
-
-            if(kIntersection.size()>0)
-            for(View<Track>::size_type i=0; i<trackCollection.size(); ++i){
-              int loopthree = 0;
-
-              inTrue = false; outTrue = false;
-              auto track = trackCollection.refAt(i);
-              rT++;
-              if(trackFromSeedFitFailed(*track)) ++seed_fit_failed;
-              if((*dRTrackSelector)(*track)) ++n_selTrack_dr;
-
-
-              bool isSimMatched(false);
-
-              auto tpFound = recSimColl.find(track);
-              isSimMatched = tpFound != recSimColl.end();
-              if (!isSimMatched)
-              continue;
-              for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
-              {
-
-                if(!(*recHit))
-                continue;
-
-                if (!((*recHit)->isValid()))
-                continue;
-
-                if(!((*recHit)->hasPositionAndError()))
-                continue;
-
-                if((*recHit)->sharesInput(inRecHit,TrackingRecHit::SharedInputType::all))
-                {
-                  inTrue = true;
-                  continue;
-                }
-
-                if((*recHit)->sharesInput(outRecHit,TrackingRecHit::SharedInputType::all))
-                outTrue = true;
-              }
-
-              if(!(outTrue && inTrue))
-              continue;
-
-              const auto& tp = tpFound->val;
-              const TrackingParticle& particle = *tp[0].first;
-
-              if(std::find(kIntPdgs.begin(),kIntPdgs.end(),(int)(particle.pdgId())) == kIntPdgs.end())
-              continue;
-              else
-              trueDoublet = true;
-
-              bool isSigSimMatched(false);
-              bool isChargeMatched(true);
-              int numAssocRecoTracks = 0;
-              double sharedFraction = 0.;
-
-              sharedFraction = tp[0].second;
-              if (tp[0].first->charge() != track->charge()) isChargeMatched = false;
-              if(simRecColl.find(tp[0].first) != simRecColl.end()) numAssocRecoTracks = simRecColl[tp[0].first].size();
-              at++;
-              for (unsigned int tp_ite=0;tp_ite<tp.size();++tp_ite)
-              {
-                TrackingParticle trackpart = *(tp[tp_ite].first);
-                if ((trackpart.eventId().event() == 0) && (trackpart.eventId().bunchCrossing() == 0))
-                {
-                  isSigSimMatched = true;
-                  break;
-                }
-              }
-              TrackingParticle::Vector momTp = particle.momentum();
-              TrackingParticle::Point  verTp  = particle.vertex();
-
-              theTP.push_back(1.0);
-              theTP.push_back(1.0); // 1
-              theTP.push_back((float)(i)); // 2
-              theTP.push_back(momTp.x()); // 3
-              theTP.push_back(momTp.y()); // 4
-              theTP.push_back(momTp.z()); // 5
-              theTP.push_back(particle.pt()); //6
-
-              theTP.push_back(particle.mt());
-              theTP.push_back(particle.et());
-              theTP.push_back(particle.massSqr()); //9
-
-              theTP.push_back(particle.pdgId());
-              theTP.push_back(particle.charge()); //11
-
-              theTP.push_back(particle.numberOfTrackerHits()); //TODO no. pixel hits?
-              theTP.push_back(particle.numberOfTrackerLayers());
-              //TODO is cosmic?
-              theTP.push_back(particle.phi());
-              theTP.push_back(particle.eta());
-              theTP.push_back(particle.rapidity()); //16
-
-              theTP.push_back(verTp.x());
-              theTP.push_back(verTp.y());
-              theTP.push_back(verTp.z());
-              theTP.push_back((-verTp.x()*sin(momTp.phi())+verTp.y()*cos(momTp.phi()))); //dxy
-              theTP.push_back((verTp.z() - (verTp.x() * momTp.x()+
-              verTp.y() *
-              momTp.y())/sqrt(momTp.perp2()) *
-              momTp.z()/sqrt(momTp.perp2())));
-
-              theTP.push_back(particle.eventId().bunchCrossing()); //22
-              theTP.push_back(isChargeMatched);
-              theTP.push_back(isSigSimMatched);
-              theTP.push_back(sharedFraction);
-              theTP.push_back(numAssocRecoTracks); //26
-
-              if(trueDoublet)
-              break;
-            }
-            // else
-            // for (int i = 0; i < tParams; i++)
-            // theTP.push_back(-1.0);
-
-
-            if(!trueDoublet)
-            for (int i = 0; i < tParams; i++)
-            theTP.push_back(-1.0);
-
-            outCNNFile << runNumber << "\t" << eveNumber << "\t" << lumNumber << "\t";
-            outCNNFile << k << "\t" << i << "\t";
-            outCNNFile <<innerLayer->seqNum() << "\t" << outerLayer->seqNum() << "\t";
-            outCNNFile << bs.x0() << "\t" << bs.y0() << "\t" << bs.z0() << "\t" << bs.sigmaZ() << "\t";
-            for (int j = 0; j < 2; j++)
-            for (size_t i = 0; i < hitPars[j].size(); i++)
+            std::cout<<thisHitPars.size()<<std::endl;
+            hitPars.push_back(thisHitPars);
+
+          }
+
+
+        }
+
+
+        TrackingParticle::Vector momTp = particle.momentum();
+        TrackingParticle::Point  verTp  = particle.vertex();
+
+        theTP.push_back((float)(i)); // 2
+        theTP.push_back(momTp.x()); // 3
+        theTP.push_back(momTp.y()); // 4
+        theTP.push_back(momTp.z()); // 5
+        theTP.push_back(particle.pt()); //6
+
+        theTP.push_back(particle.mt());
+        theTP.push_back(particle.et());
+        theTP.push_back(particle.massSqr()); //9
+
+        theTP.push_back(particle.pdgId());
+        theTP.push_back(particle.charge()); //11
+
+        theTP.push_back(particle.numberOfTrackerHits()); //TODO no. pixel hits?
+        theTP.push_back(particle.numberOfTrackerLayers());
+        //TODO is cosmic?
+        theTP.push_back(particle.phi());
+        theTP.push_back(particle.eta());
+        theTP.push_back(particle.rapidity()); //16
+
+        theTP.push_back(verTp.x());
+        theTP.push_back(verTp.y());
+        theTP.push_back(verTp.z());
+        theTP.push_back((-verTp.x()*sin(momTp.phi())+verTp.y()*cos(momTp.phi()))); //dxy
+        theTP.push_back((verTp.z() - (verTp.x() * momTp.x()+
+        verTp.y() *
+        momTp.y())/sqrt(momTp.perp2()) *
+        momTp.z()/sqrt(momTp.perp2())));
+
+        theTP.push_back(particle.eventId().bunchCrossing()); //22
+        theTP.push_back(isChargeMatched);
+        theTP.push_back(isSigSimMatched);
+        theTP.push_back(sharedFraction);
+        theTP.push_back(numAssocRecoTracks); //26
+
+        std::cout << hitPars.size() << std::endl;
+        
+        outCNNFile << runNumber << "\t" << eveNumber << "\t" << lumNumber << "\t";
+        outCNNFile << bs.x0() << "\t" << bs.y0() << "\t" << bs.z0() << "\t" << bs.sigmaZ() << "\t";
+
+        for (size_t i = 0; i < theTP.size(); i++)
+        outCNNFile << theTP[i] << "\t";
+
+        for (int j = 0; j < numPixels; j++)
+          for (size_t i = 0; i < hitPars[0].size(); i++)
             outCNNFile << hitPars[j][i] << "\t";
 
-            outCNNFile << deltaA   << "\t";
-            outCNNFile << deltaADC << "\t";
-            outCNNFile << deltaS   << "\t";
-            outCNNFile << deltaR   << "\t";
-            outCNNFile << deltaPhi << "\t";
+        outCNNFile << 542.1369;
+        outCNNFile << std::endl;
 
-            for (size_t i = 0; i < theTP.size(); i++)
-            outCNNFile << theTP[i] << "\t";
+        for (int j = 0; j < hitPars.size(); j++)
+            hitPars[j].clear();
 
-            outCNNFile << 542.1369;
-            outCNNFile << std::endl;
+        theTP.clear();
+        hitPars.clear();
 
-            // std::cout<< (1 + 3 + 2 + 2 + 4 + hitPars[0].size() + hitPars[1].size() + theTP.size() + 1) << std::endl;
-
-            theTP.clear();
-            hitPars[0].clear();
-            hitPars[1].clear();
-            hitPars.clear();
-
-          } //hits loop
-        }
       }
 
       histoProducerAlgo_->fill_trackBased_histos(w,at,rT, n_selTrack_dr, n_selTP_dr);
