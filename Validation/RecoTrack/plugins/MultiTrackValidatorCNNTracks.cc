@@ -1291,7 +1291,7 @@ void MultiTrackValidatorCNNTracks::analyze(const edm::Event& event, const edm::E
         if(hits.size()<numPixels)
         {
 
-          for(size_t j = hits.size(); j < numPixels; ++j)
+          for(int j = hits.size(); j < numPixels; ++j)
           {
 
             std::vector<float> thisHitPars;
@@ -1403,7 +1403,7 @@ void MultiTrackValidatorCNNTracks::analyze(const edm::Event& event, const edm::E
         outCNNFile << 542.1369;
         outCNNFile << std::endl;
 
-        for (int j = 0; j < hitPars.size(); j++)
+        for (size_t j = 0; j < hitPars.size(); j++)
             hitPars[j].clear();
 
         theTP.clear();
