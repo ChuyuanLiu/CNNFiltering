@@ -1135,7 +1135,7 @@ void MultiTrackValidatorCNNTracks::analyze(const edm::Event& event, const edm::E
             goodHits = false;
           }
 
-          BaseTrackerRecHit const * bhit = dynamic_cast<BaseTrackerRecHit const *>(recHit)
+          BaseTrackerRecHit const * bhit = dynamic_cast<BaseTrackerRecHit const *>(recHit);
 
           if (!bhit)
             continue;
