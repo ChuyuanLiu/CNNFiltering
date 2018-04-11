@@ -1064,6 +1064,7 @@ void MultiTrackValidatorCNNTracks::analyze(const edm::Event& event, const edm::E
       std::vector<TH2F *> hitClusters;
       std::vector< const TrackerSingleRecHit*> hits;
       std::vector< std::vector< float>> hitPars;
+      std::vector<float> theTP;
 
       for(int i = 0; i < numPixels; ++i)
       {
@@ -1081,7 +1082,7 @@ void MultiTrackValidatorCNNTracks::analyze(const edm::Event& event, const edm::E
 
       for(View<Track>::size_type i=0; i<trackCollection.size(); ++i){
         int loopthree = 0;
-        hits.clear(); hitPars.clear();
+        hits.clear(); hitPars.clear();theTP.clear();
         hitClusters.clear();
 
 
@@ -1266,7 +1267,7 @@ void MultiTrackValidatorCNNTracks::analyze(const edm::Event& event, const edm::E
           hClust.SetBinContent(nx,ny,0.0);
 
           for (int k = 0; k < clust->size(); ++k)
-          hitClusters[j]->SetBinContent(hitClusters[j]->FindBin((float)clust->pixel(k).x, (float)clust->pixel(k).y),(float)clust->pixel(k).adc);
+          hitClusters[j]->SetBinContent(hitClusters[j]->FindBin((float)clust->pixel(k).x-(float)clust->x(), (float)clust->pixel(k).y -(float)clust->y()),(float)clust->pixel(k).adc);
 
           //Linearizing the cluster
 
