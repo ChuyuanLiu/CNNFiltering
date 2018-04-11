@@ -1175,10 +1175,10 @@ void MultiTrackValidatorCNNTracks::analyze(const edm::Event& event, const edm::E
         {
           TrackerSingleRecHit const * hit= dynamic_cast<TrackerSingleRecHit const *>(*recHit);
 
-          DetId detid = (*recHit)->geographicalId();
-          unsigned int subdetid = detid.subdetId();
+          DetId detId = (*recHit)->geographicalId();
+          unsigned int subdetid = detId.subdetId();
 
-          if(detid.det() != DetId::Tracker) continue;
+          if(detId.det() != DetId::Tracker) continue;
           if (!((subdetid==1) || (subdetid==2))) continue;
 
           const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(hit);
@@ -1197,7 +1197,7 @@ void MultiTrackValidatorCNNTracks::analyze(const edm::Event& event, const edm::E
           auto clust = pixHit->cluster();
 
           DetId detId = hit->geographicalId();
-          unsigned int subdetid = detid.subdetId();
+          unsigned int subdetid = detId.subdetId();
 
           std::vector<float> thisHitPars;
 
