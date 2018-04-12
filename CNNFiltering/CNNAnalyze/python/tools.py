@@ -53,11 +53,8 @@ labels = ["PId","TId","Px","Py","Pz","Pt","MT","ET","MSqr","PdgId",
                 "VX","VY","VZ","DXY","DZ","BunchCrossing","IsChargeMatched",
                 "IsSigSimMatched","SharedFraction","NumAssocRecoTracks"]
 
-track = ["Track_" + el]
-particle = ["PId","TId","Px","Py","Pz","Pt","MT","ET","MSqr","PdgId",
-                "Charge","NTrackerHits","NTrackerLayers","Phi","Eta","Rapidity",
-                "VX","VY","VZ","DXY","DZ","BunchCrossing","IsChargeMatched",
-                "IsSigSimMatched","SharedFraction","NumAssocRecoTracks"]
+track     = ["Trak_" + str(i) for i in labels]
+particle  = ["Part_" + str(i) for i in labels]
 
 hitFeatures = hitCoord + hitDet + hitClust + hitCharge # 5 + 12 + 13 + 1 = 31
 

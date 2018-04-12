@@ -1061,17 +1061,6 @@ void MultiTrackValidatorCNNTracks::analyze(const edm::Event& event, const edm::E
       std::vector< std::vector< float>> hitPars;
       std::vector<float> theTP;
 
-      for(int i = 0; i < numPixels; ++i)
-      {
-        histname = "clusterHit_" + std::to_string(i) + "_pos_hist";
-        hitClusters.push_back(new TH2F(histname.data(),histname.data(),padSize,-padHalfSize,padHalfSize,padSize,-padHalfSize,padHalfSize));
-      }
-
-      for(int i = 0; i < numPixels; ++i)
-      for (int nx = 0; nx < padSize; ++nx)
-      for (int ny = 0; ny < padSize; ++ny)
-      hitClusters[i]->SetBinContent(nx,ny,0.0);
-
       std::string fileName = "tracks/" + std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber) + "_cnn_tracks.txt";;
       std::ofstream outCNNFile(fileName, std::ofstream::app);
 
@@ -1259,11 +1248,13 @@ void MultiTrackValidatorCNNTracks::analyze(const edm::Event& event, const edm::E
 
           //Initialization
           for (int nx = 0; nx < padSize; ++nx)
-          for (int ny = 0; ny < padSize; ++ny)
-          hClust.SetBinContent(nx,ny,0.0);
+            for (int ny = 0; ny < padSize; ++ny)
+              hClust.SetBinContent(nx,ny,0.0);
 
           for (int k = 0; k < clust->size(); ++k)
-          hitClusters[j]->SetBinContent(hitClusters[j]->FindBin((float)clust->pixel(k).x-(float)clust->x(), (float)clust->pixel(k).y -(float)clust->y()),(float)clust->pixel(k).adc);
+            hClust.SetBinContent(hClust.FindBin((float)clust->pixel(k).x, (float)clust->pixel(k).y),(float)clust->pixel(k).adc);
+
+
 
           //Linearizing the cluster
 
@@ -1272,7 +1263,7 @@ void MultiTrackValidatorCNNTracks::analyze(const edm::Event& event, const edm::E
             for(int nx = 0; nx<padSize; nx++)
             {
               int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
-              thisHitPars.push_back(hitClusters[j]->GetBinContent(n));
+              thisHitPars.push_back(hClust.GetBinContent(n));
             }
           }
 
