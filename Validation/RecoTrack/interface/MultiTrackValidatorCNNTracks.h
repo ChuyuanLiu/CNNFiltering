@@ -136,8 +136,6 @@ class MultiTrackValidatorCNNTracks : public DQMEDAnalyzer {
   // edm::EDGetTokenT<IntermediateHitDoublets> pixelLessStepHitDoublets_;
   // edm::EDGetTokenT<IntermediateHitDoublets> tripletElectronHitDoublets_;
 
-  std::vector<edm::EDGetTokenT<IntermediateHitDoublets> > theDoubletsToken_;
-  std::vector<std::string> theDoubletsNames_;
   // std::vector<IntermediateHitDoublets> theDoublets_;
   // edm::EDGetTokenT<IntermediateHitDoublets> detachedQuadStepHitDoublets_;
   // edm::EDGetTokenT<IntermediateHitDoublets> detachedTripletStepHitDoublets_;

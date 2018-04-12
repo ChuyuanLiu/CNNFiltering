@@ -109,11 +109,6 @@ MultiTrackValidatorCNNTracks::MultiTrackValidatorCNNTracks(const edm::ParameterS
     simHitTokens_.push_back(consumes<std::vector<PSimHit>>(tag));
   }
 
-  for(const auto& tag: pset.getParameter<std::vector<edm::InputTag>>("theDoublets")) {
-    theDoubletsToken_.push_back(consumes<IntermediateHitDoublets>(tag));
-    theDoubletsNames_.push_back(tag.label());
-  }
-
   std::vector<edm::InputTag> doResolutionPlotsForLabels = pset.getParameter<std::vector<edm::InputTag> >("doResolutionPlotsForLabels");
   doResolutionPlots_.reserve(label.size());
   for (auto& itag : label) {
