@@ -86,17 +86,6 @@ multiTrackValidatorCNNTracks = cms.EDAnalyzer(
 
     simPVMaxZ = cms.untracked.double(-1),
 
-    ##All the doublets
-    theDoublets = cms.VInputTag(
-      cms.InputTag( "detachedQuadStepHitDoublets" ),
-      cms.InputTag( "detachedTripletStepHitDoublets" ),
-      cms.InputTag( "initialStepHitDoubletsPreSplitting" ),
-      cms.InputTag( "lowPtQuadStepHitDoublets" ),
-      cms.InputTag( "mixedTripletStepHitDoubletsA" ),
-      cms.InputTag( "mixedTripletStepHitDoubletsB" ),
-      cms.InputTag( "pixelLessStepHitDoublets" ),
-      cms.InputTag( "tripletElectronHitDoublets" ),
-    ),
 
     # detachedQuadStepHitDoublets         = cms.InputTag( "detachedQuadStepHitDoublets" ), #TODO CHECK cms.VImputtag
     # detachedTripletStepHitDoublets      = cms.InputTag( "detachedTripletStepHitDoublets" ),
@@ -125,4 +114,4 @@ multiTrackValidatorCNNTracks = cms.EDAnalyzer(
 )
 
 from Configuration.Eras.Modifier_fastSim_cff import fastSim
-fastSim.toModify(multiTrackValidatorCNN, sim = ['fastSimProducer:TrackerHits'])
+fastSim.toModify(multiTrackValidatorCNNTracks, sim = ['fastSimProducer:TrackerHits'])
