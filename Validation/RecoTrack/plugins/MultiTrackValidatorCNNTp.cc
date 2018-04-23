@@ -1502,7 +1502,7 @@ void MultiTrackValidatorCNNTp::analyze(const edm::Event& event, const edm::Event
             outCNNFile << k << "\t" << i << "\t" << float(inTrueOnce) << "\t" << float(outTrueOnce) << "\t";
             outCNNFile <<innerLayer->seqNum() << "\t" << outerLayer->seqNum() << "\t";
             outCNNFile << bs.x0() << "\t" << bs.y0() << "\t" << bs.z0() << "\t" << bs.sigmaZ() << "\t";
-            outCNNFile << bothMatch << "\t" << trueDoublet << "\t" << tpMatched <<  "\t" << trueDoublet <<
+            outCNNFile << bothMatch << "\t" << trueDoublet << "\t" << tpMatched <<  "\t" << inTrueOnce << "\t" << outTrueOnce << "\t";
 
             for (int j = 0; j < 2; j++)
             for (size_t i = 0; i < hitPars[j].size(); i++)
