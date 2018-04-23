@@ -519,7 +519,8 @@ void MultiTrackValidatorCNNTp::analyze(const edm::Event& event, const edm::Event
 
   //all the doublets
   std::vector < edm::Handle<IntermediateHitDoublets> > theDoublets;
-  std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31};
+  std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}; //seqNumbers of pixel detectors 0,1,2,3 barrel 14,15,16, fwd 29,30,31 bkw
+  std::vector<int> partiList{11,13,15,22,111,211,311,321,2212,2112,3122,223};
 
   for (size_t i = 0; i < theDoubletsToken_.size(); i++) {
     edm::Handle<IntermediateHitDoublets> thisDoublets;
@@ -1416,7 +1417,7 @@ void MultiTrackValidatorCNNTp::analyze(const edm::Event& event, const edm::Event
               trueDoublet = true;
 
               const auto& tp = tpFound->val;
-              const TrackingParticle& particle = *tp[0].first;
+              TrackingParticle& particle = *tp[0].first;
 
               if(std::find(kIntPdgs.begin(),kIntPdgs.end(),(int)(particle.pdgId())) != kIntPdgs.end())
                 trueDoublet = true;
