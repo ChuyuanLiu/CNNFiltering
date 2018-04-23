@@ -1076,7 +1076,7 @@ void MultiTrackValidatorCNNTp::analyze(const edm::Event& event, const edm::Event
         auto iHd = theDoublets[k];
         std::string dName = theDoubletsNames_[k];
 
-        std::string fileName = "doublets/" + std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber) + "_" + dName + "_dnn_doublets.txt";;
+        std::string fileName = "doublets_tracks/" + std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber) + "_" + dName + "_dnn_doublets.txt";;
 
         std::ofstream outCNNFile(fileName, std::ofstream::app);
 
