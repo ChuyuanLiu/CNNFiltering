@@ -5,7 +5,7 @@ from SimTracker.TrackAssociation.LhcParametersDefinerForTP_cfi import *
 from SimTracker.TrackAssociation.CosmicParametersDefinerForTP_cfi import *
 from Validation.RecoTrack.MTVHistoProducerAlgoForTrackerBlock_cfi import *
 
-multiTrackValidatorCNN = cms.EDAnalyzer(
+multiTrackValidatorCNNTp = cms.EDAnalyzer(
     "MultiTrackValidatorCNNTp",
 
     ### general settings ###
