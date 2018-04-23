@@ -2,6 +2,7 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "Validation/RecoTrack/interface/MultiTrackValidator.h"
+#include "Validation/RecoTrack/interface/MultiTrackValidatorCNNTp.h"
 #include "Validation/RecoTrack/interface/MultiTrackValidatorCNN.h"
 #include "Validation/RecoTrack/interface/MultiTrackValidatorGenPs.h"
 #include "Validation/RecoTrack/interface/MultiTrackValidatorCNNTracks.h"
