@@ -1417,7 +1417,7 @@ void MultiTrackValidatorCNNTp::analyze(const edm::Event& event, const edm::Event
               trueDoublet = true;
 
               const auto& tp = tpFound->val;
-              TrackingParticle& particle = *tp[0].first;
+              TrackingParticle particle = *(tp[0].first);
 
               if(std::find(kIntPdgs.begin(),kIntPdgs.end(),(int)(particle.pdgId())) != kIntPdgs.end())
                 trueDoublet = true;
@@ -1498,7 +1498,6 @@ void MultiTrackValidatorCNNTp::analyze(const edm::Event& event, const edm::Event
             theTrack.push_back(-1.0);
 
 
-            if(trueDoublet && )
             outCNNFile << runNumber << "\t" << eveNumber << "\t" << lumNumber << "\t";
             outCNNFile << k << "\t" << i << "\t" << float(inTrueOnce) << "\t" << float(outTrueOnce) << "\t";
             outCNNFile <<innerLayer->seqNum() << "\t" << outerLayer->seqNum() << "\t";
