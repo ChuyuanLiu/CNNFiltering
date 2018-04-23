@@ -11,6 +11,7 @@
 
 DEFINE_FWK_MODULE(MultiTrackValidator);
 DEFINE_FWK_MODULE(MultiTrackValidatorCNN);
+DEFINE_FWK_MODULE(MultiTrackValidatorCNNTp);
 DEFINE_FWK_MODULE(MultiTrackValidatorCNNTracks);
 DEFINE_FWK_MODULE(MultiTrackValidatorGenPs);
 DEFINE_FWK_MODULE(SiStripTrackingRecHitsValid);
