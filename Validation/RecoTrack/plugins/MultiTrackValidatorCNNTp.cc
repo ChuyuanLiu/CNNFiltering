@@ -1400,15 +1400,17 @@ void MultiTrackValidatorCNNTp::analyze(const edm::Event& event, const edm::Event
                 if((*recHit)->sharesInput(inRecHit,TrackingRecHit::SharedInputType::all))
                 {
                   inTrue = true;
+                  intTrueOnce = true;
                   continue;
                 }
 
                 if((*recHit)->sharesInput(outRecHit,TrackingRecHit::SharedInputType::all))
-                outTrue = true;
+                {
+                  outTrue = true;
+                  outTureOnce = true;
+                }
               }
 
-              inTrueOnce = inTrueOnce || inTrue;
-              outTrueOnce = outTrueOnce || outTrue;
 
               if(!(outTrue && inTrue))
               continue;
@@ -1493,12 +1495,13 @@ void MultiTrackValidatorCNNTp::analyze(const edm::Event& event, const edm::Event
             if(trueDoublet && tpMatched)
               bothMatch = true;
 
+            if(!trueDoublet)
             for (int i = 0; i < tParams; i++)
             theTrack.push_back(-1.0);
 
 
             outCNNFile << runNumber << "\t" << eveNumber << "\t" << lumNumber << "\t";
-            outCNNFile << k << "\t" << i << "\t" << float(inTrueOnce) << "\t" << float(outTrueOnce) << "\t";
+            outCNNFile << k << "\t" << i << "\t";
             outCNNFile <<innerLayer->seqNum() << "\t" << outerLayer->seqNum() << "\t";
             outCNNFile << bs.x0() << "\t" << bs.y0() << "\t" << bs.z0() << "\t" << bs.sigmaZ() << "\t";
             outCNNFile << bothMatch << "\t" << trueDoublet << "\t" << tpMatched <<  "\t" << inTrueOnce << "\t" << outTrueOnce << "\t";
@@ -1521,7 +1524,7 @@ void MultiTrackValidatorCNNTp::analyze(const edm::Event& event, const edm::Event
 
             outCNNFile << 542.1369;
             outCNNFile << std::endl;
-            // 
+            //
             // std::cout<< (1 + 3 + 2 + 2 + 4 + hitPars[0].size() + hitPars[1].size() + theTrack.size() + theParticle.size() + 1) << std::endl;
             // std::cout<< theTrack.size() << std::endl;
             // std::cout<< theParticle.size() << std::endl;
