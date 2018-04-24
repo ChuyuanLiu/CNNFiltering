@@ -1400,14 +1400,14 @@ void MultiTrackValidatorCNNTp::analyze(const edm::Event& event, const edm::Event
                 if((*recHit)->sharesInput(inRecHit,TrackingRecHit::SharedInputType::all))
                 {
                   inTrue = true;
-                  intTrueOnce = true;
+                  inTrueOnce = true;
                   continue;
                 }
 
                 if((*recHit)->sharesInput(outRecHit,TrackingRecHit::SharedInputType::all))
                 {
                   outTrue = true;
-                  outTureOnce = true;
+                  outTrueOnce = true;
                 }
               }
 
