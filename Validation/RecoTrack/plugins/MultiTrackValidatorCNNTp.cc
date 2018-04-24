@@ -1310,9 +1310,8 @@ void MultiTrackValidatorCNNTp::analyze(const edm::Event& event, const edm::Event
                     iParticle += (1<<iTr);
               }
 
-              theParticle.push_back(iParticle);
+              theParticle.push_back(iParticle); //1
 
-              theParticle.push_back(1.0); // 1
               theParticle.push_back(kPar->second.key()); // 2
               theParticle.push_back(momTp.x()); // 3
               theParticle.push_back(momTp.y()); // 4
@@ -1364,7 +1363,7 @@ void MultiTrackValidatorCNNTp::analyze(const edm::Event& event, const edm::Event
               theParticle.push_back(1.0);
 
             }else
-              for (int i = 0; i < tParams; i++)
+              for (int i = 0; i < tParams + 1; i++)
                 theParticle.push_back(-1.0);
 
             bool inTrue = false, outTrue = false;
