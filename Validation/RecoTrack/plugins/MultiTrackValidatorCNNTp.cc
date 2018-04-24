@@ -1523,7 +1523,9 @@ void MultiTrackValidatorCNNTp::analyze(const edm::Event& event, const edm::Event
             outCNNFile << 542.1369;
             outCNNFile << std::endl;
 
-            // std::cout<< (1 + 3 + 2 + 2 + 4 + hitPars[0].size() + hitPars[1].size() + theTrack.size() + 1) << std::endl;
+            std::cout<< (1 + 3 + 2 + 2 + 4 + hitPars[0].size() + hitPars[1].size() + theTrack.size() + theParticle.size() + 1) << std::endl;
+            std::cout<< theTrack.size() << std::endl;
+            std::cout<< theParticle.size() << std::endl;
 
             theParticle.clear();
             theTrack.clear();
