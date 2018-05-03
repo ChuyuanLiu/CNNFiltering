@@ -27,14 +27,19 @@ def to_categorical(y, num_classes=None):
     categorical[np.arange(n), y] = 1
     return categorical,num_classes
 
+pt_log_bins = np.logspace(-0.3, 3, 80)
 
-target_lab = "label"
+padshape = 16
+
+target_lab = "PdgId"
 
 pdg_lab = "inTpPdgId"
 
-headLab = ["run","evt","lumi","PU","bSX","bSY","bSZ","bSdZ"]
+one_pix = "hit_0_IsBarrel"
 
-particle = ["PId","TId","Px","Py","Pz","Pt","MT","ET","MSqr","PdgId",
+headLab = ["run","evt","lumi","bSX","bSY","bSZ","bSdZ"]
+
+particle = ["TId","Px","Py","Pz","Pt","MT","ET","MSqr","PdgId",
                 "Charge","NTrackerHits","NTrackerLayers","Phi","Eta","Rapidity",
                 "VX","VY","VZ","DXY","DZ","BunchCrossing","IsChargeMatched",
                 "IsSigSimMatched","SharedFraction","NumAssocRecoTracks"]
@@ -43,7 +48,7 @@ particle = ["PId","TId","Px","Py","Pz","Pt","MT","ET","MSqr","PdgId",
 
 hitCoord = ["X","Y","Z","Phi","R"] #5
 
-hitDet = ["DetSeq","IsBarrel","Layer","Ladder","Side","Disk","Panel","Module"]#,"IsFlipped","Ax1","Ax2"] #12
+hitDet = ["IsBarrel","Layer","Ladder","Side","Disk","Panel","Module"]#,"IsFlipped","Ax1","Ax2"] #12
 
 hitClust = ["ClustX","ClustY","ClustSize","ClustSizeX","ClustSizeY","PixelZero",
             "AvgCharge","OverFlowX","OverFlowY","Skew","IsBig","IsBad","IsEdge"] #13
@@ -58,22 +63,42 @@ hitsLabs = []
 for j in range(10):
     hitsLabs.append(["hit_" + str(j) + "_" + str(i) for i in hitLabs])
 
+hitPixels = []
+for j in range(10):
+    hitPixels.append(["hit_" + str(j) + "_" + str(i) for i in  hitPixel])
+
+hitCoords = []
+for j in range(10):
+    hitCoords.append(["hit_" + str(j) + "_" + str(i) for i in  hitCoord])
+
 hitFeatures = hitCoord + hitDet + hitClust + hitCharge # 5 + 12 + 13 + 1 = 31
+
 hitsFeatures = []
 
 for j in range(10):
     hitsFeatures.append(["hit_" + str(j) + "_" + str(i) for i in hitFeatures])
 
+hitDets = []
+
+for j in range(10):
+    hitDets.append(["hit_" + str(j) + "_" + str(i) for i in hitDet])
 
 
-featureLabs = inHitFeature + outHitFeature + differences
+featureLabs = []
+
+for j in range(10):
+    featureLabs = featureLabs + hitsFeatures[j]
+
+#featureLabs = inHitFeature + outHitFeature + differences
 
 dataLab = headLab
+
+dataLab += particle
 
 for j in range(10):
     dataLab += hitsLabs[j]
 
- dataLab += particle + ["dummyFlag"]
+dataLab += ["dummyFlag"]
 
 layer_ids = [0, 1, 2, 3, 14, 15, 16, 29, 30, 31]
 
@@ -85,59 +110,102 @@ layer_ids = [0, 1, 2, 3, 14, 15, 16, 29, 30, 31]
 
 particle_ids = [-1.,11.,13.,15.,22.,111.,211.,311.,321.,2212.,2112.,3122.,223.]
 
-main_pdgs = [11.,13.,211.,321.,2212.]
+main_pdgs = [211., 321. ] #11.,13.,211.,321.,2212.]
 
-def balance_data_by_pdg(Tracks, pdgIds):
-    """ Balancing Trackss by particles. """
-
-    data_pos  = Tracks[Tracks[target_lab] == 1.0]
-    data_neg  = Tracks[Tracks[target_lab] == -1.0]
-    data_pdgs = []
-    minimum = 1E8
-    totpdg  = 0
-
-    for p in pdgIds:
-        data_excl  = data_pos[data_pos[pdg_lab].abs() != p]
-        data_pdg = data_pos[data_pos[pdg_lab].abs() == p]
-        data_pdgs.append(data_pdg)
-        minimum=min(data_pdg.shape[0]*2,minimum)
-        totpdg = totpdg + data_pdg.shape[0]
-        totpdg = totpdg + data_pdg.shape[0]
-        assert minimum > 0, "%.1f pdg id has zero entries. Returning." % p
-
-    data_excl = data_excl.sample(frac=1.0)
-    data_excl = data_excl.sample(totpdg/2)
-
-    data_neg = data_neg.sample(frac=1.0)
-    data_neg = data_neg.sample(totpdg)
-
-    for d in data_pdgs:
-        if d.shape[0] > minimum:
-            d = d.sample(minimum)
-
-    data_tot = pd.concat(data_pdgs + [data_excl,data_neg])
-    data_tot = data_tot.sample(frac=1.0)
-
-    return data_tot # allow method chaining
 
 class Tracks:
-    """ Load the Tracks from txt files. """
+    """ Load the Tracks from files. """
 
-    def __init__(self, fnames,balance=False,pdgIds=main_pdgs):
+    def __init__(self, fnames,pdgIds=main_pdgs):
         self.data = pd.DataFrame(data=[], columns=dataLab)
         for i,f in enumerate(fnames):
             print("Loading file " + str(i+1) + "/" + str(len(fnames)) + " : " + f)
             df = 0
-            if not f.lower().endswith("h5"):
-                continue
+            if f.lower().endswith("h5"):
+                df = pd.read_hdf(f, mode='r')
 
-            df = pd.read_hdf(f, mode='r')
-            if balance:
-                df = balance_data_by_pdg(df,pdgIds)
+
+            if f.lower().endswith(("txt")) or f.lower().endswith(("gz")):
+                with open(f, 'rb') as df:
+                    #print("Reading file no." + str(no+1) + ": " + d)
+                    if f.lower().endswith(("txt")):
+                        df = pd.read_table(df, sep="\t", header = None)
+                    if f.lower().endswith(("gz")):
+                        df = pd.read_table(df, sep="\t", header = None,compression="gzip")
 
             df.columns = dataLab  # change wrong columns names
+            #print(df.head())
+            #print(pdgIds)
+            #df = data_by_pdg(df,pdgIds)
+
             df.sample(frac=1.0)
             self.data = self.data.append(df)
+
+    def clean_dataset(self, pdgIds=main_pdgs,verbose=True):
+        """ Cleaning: tracks with at least 1 pixel hit. """
+
+        self.data = self.data[self.data[one_pix] >= 0.0]
+
+    def data_by_pdg(self, pdgIds=main_pdgs,verbose=True):
+        """ Balancing Tracks by particles. """
+
+        data_pdg = []
+        minimum = 1E32
+        for p in pdgIds:
+            this_pdg = self.data[self.data[target_lab].abs() == p]
+            data_pdg.append(this_pdg)
+            minimum = min(minimum,this_pdg.shape[0])
+            if verbose:
+                print("Number of " + str(p) + " : " + str(this_pdg.shape[0]))
+
+        data_pdg_bal = []
+        for d in data_pdg:
+            if d.shape[0] > minimum:
+                data_pdg_bal.append(d.sample(minimum))
+            else:
+                data_pdg_bal.append(d)
+
+        data_tot = pd.concat(data_pdg_bal)
+        data_tot = data_tot.sample(frac=1.0)
+
+        if verbose:
+            for p,d in zip(pdgIds,data_pdg_bal):
+                print(" - New no. of " + str(p) + " : " + str(d.shape[0]))
+
+        self.data = data_tot
+
+    def data_by_pt(self,verbose=True):
+        """ Balancing Tracks by pts. """
+
+        data_pts = []
+        minimum = 1E32
+        for i in range(len(pt_log_bins)-1):
+            this_pt = self.data[(self.data["Pt"] >= pt_log_bins[i]) & (self.data["Pt"] <= pt_log_bins[i+1])]
+            data_pts.append(this_pt)
+            thres = max(this_pt.shape[0],1)
+            minimum = int(min(minimum,int(5.0 * thres)))
+            if verbose:
+                print("Number of tracks in pt range [" + str(pt_log_bins[i]) + "," + str(pt_log_bins[i+1]) + "] : " + str(this_pt.shape[0]))
+
+        print(minimum)
+        data_pts_bal = []
+        for d in data_pts:
+
+            if d.shape[0] > minimum:
+                data_pts_bal.append(d.sample(minimum))
+            else:
+                data_pts_bal.append(d)
+
+        data_tot = pd.concat(data_pts_bal)
+        data_tot = data_tot.sample(frac=1.0)
+
+        if verbose:
+            for i in range(len(pt_log_bins)-1):
+                this_pt = data_tot[(data_tot["Pt"] >= pt_log_bins[i]) & (data_tot["Pt"] <= pt_log_bins[i+1])]
+                print("Number of tracks in pt range [" + str(pt_log_bins[i]) + "," + str(pt_log_bins[i+1]) + "] : " + str(this_pt.shape[0]))
+
+        print(self.data.shape[0])
+        self.data = data_tot
 
     def from_dataframe(self,data):
         """ Constructor method to initialize the classe from a DataFrame """
@@ -206,13 +274,11 @@ class Tracks:
 
         return inPhiModC, outPhiModC, inPhiModS, outPhiModS
 
-    def b_w_correction(self, hits_in, hits_out,smoothing=1.0):
+    def b_w_correction(self, hit,smoothing=1.0):
 
-        self.recolumn()
-        turned_in  = ((hits_in > 0.).astype(float)) * smoothing
-        turned_out = ((hits_out > 0.).astype(float)) * smoothing
+        turned  = ((hit > 0.).astype(float)) * smoothing
 
-        return turned_in,turned_out
+        return turned
 
     def separate_flipped_hits(self, hit_shapes, flipped):
         flipped = flipped.astype('bool')
@@ -324,58 +390,37 @@ class Tracks:
         """ Returns info features as numpy array. """
         return self.data[featureLabs].as_matrix()
 
-    def get_layer_map_data(self,augmentation=1,theta=False,phi=False,bw=False):
+    def get_track_hits_data(self,bw=False):
 
         self.recolumn()
 
-        self.data_augmentation(magnitude=augmentation)
+        #self.data_augmentation(magnitude=augmentation)
+        hits = []
+        mean, std = (13382.0011321,10525.1252954)
 
-        a_in = self.data[inPixels].as_matrix().astype(np.float16)
-        a_out = self.data[outPixels].as_matrix().astype(np.float16)
+        pixelHits = []
 
-        # mean, std precomputed for data NOPU
-#         mean, std = (668.25684, 3919.5576)
-        mean, std = (13382.0011321,10525.1252954) #on 2.5M doublets
-        a_in = (a_in - mean) / std
-        a_out = (a_out - mean) / std
+        for i in range(10):
+            h = self.data[hitPixels[i]].as_matrix().astype(np.float16)
+            #print h
+            h = (h - mean) / std
+            if bw:
+                h = self.b_w_correction(h)
 
-        if bw:
-            (bw_a_in,bw_a_out) = self.b_w_correction(a_in,a_out)
-            a_in  = bw_a_in
-            a_out = bw_a_out
+            pixelHits.append(h)
 
-        l = []
+        data = np.array(pixelHits)  # (channels, batch_size, hit_size)
+        data = data.reshape((len(data),-1,padshape, padshape))
+        X_track = np.transpose(data, (1, 2, 3, 0))
 
-        if theta:
-
-            thetac_in, thetac_out, thetas_in, thetas_out = self.theta_correction(a_in, a_out)
-            l = l + [thetac_in, thetac_out, thetas_in, thetas_out]
-
-        if phi:
-
-            phic_in, phic_out, phis_in, phis_out = self.phi_correction(a_in, a_out)
-            l = l + [phic_in, phic_out, phis_in, phis_out]
-
-        for hits, ids in [(a_in, self.data.detSeqIn), (a_out, self.data.detSeqOut)]:
-
-            for id_layer in layer_ids:
-                layer_hits = np.zeros(hits.shape)
-                bool_mask = ids == id_layer
-                layer_hits[bool_mask, :] = hits[bool_mask, :]
-                l.append(layer_hits)
-
-        data = np.array(l)  # (channels, batch_size, hit_size)
-        data = data.reshape((len(data), -1, padshape, padshape))
-        X_hit = np.transpose(data, (1, 2, 3, 0))
-
-        #print(X_hit[0,:,:,0])
+        #print(X_track[0,:,:,0])
 
         X_info = self.get_info_features()
-        y,_= to_categorical(self.get_labels())
+        y,_= to_categorical(self.get_labels_multiclass())
 
-        return X_hit, X_info, y
+        return X_track, X_info, y
 
-    def get_layer_map_data_multiclass(self):
+    def get_track_hits_data_multiclass(self):
         a_in = self.data[inPixels].as_matrix().astype(np.float16)
         a_out = self.data[outPixels].as_matrix().astype(np.float16)
 
@@ -400,15 +445,15 @@ class Tracks:
 
         data = np.array(l)  # (channels, batch_size, hit_size)
         data = data.reshape((len(data), -1, padshape, padshape))
-        X_hit = np.transpose(data, (1, 2, 3, 0))
+        X_track = np.transpose(data, (1, 2, 3, 0))
 
-        #print(X_hit[0,:,:,0])
+        #print(X_track[0,:,:,0])
 
         X_info = self.get_info_features()
         y,self.numclasses= to_categorical(self.get_labels_multiclass())
-        return X_hit, X_info, y
+        return X_track, X_info, y
 
-    def get_layer_map_data_withphi(self,augmentation=1):
+    def get_track_hits_data_withphi(self,augmentation=1):
 
         self.recolumn()
 
@@ -439,39 +484,38 @@ class Tracks:
 
         data = np.array(l)  # (channels, batch_size, hit_size)
         data = data.reshape((len(data), -1, padshape, padshape))
-        X_hit = np.transpose(data, (1, 2, 3, 0))
+        X_track = np.transpose(data, (1, 2, 3, 0))
 
-        #print(X_hit[0,:,:,0])
+        #print(X_track[0,:,:,0])
 
         X_info = self.get_info_features()
         y,_ = to_categorical(self.get_labels())
-        return X_hit, X_info, y
+        return X_track, X_info, y
 
     def get_labels(self):
         return self.data[target_lab].as_matrix() != -1.0
 
-    def get_labels_multiclass(self):
-        labels = np.full(len(self.data[target_lab].as_matrix()),1.0)
-        labels[self.data[target_lab].as_matrix()==-1.0] = 0.0
-        for p in main_pdgs:
-            labels[(self.data[pdg_lab].abs().as_matrix()==p) & (self.data[target_lab].as_matrix()!=-1.0)] = main_pdgs.index(p) + 2
+    def get_labels_multiclass(self,pdgIds=main_pdgs):
+        labels = np.full(len(self.data[target_lab].as_matrix()),0.0)
+        for p in pdgIds:
+            labels[(self.data[target_lab].abs().as_matrix()==p)] = main_pdgs.index(p)
 
         print set(labels)
         return labels
 
     def get_data(self, normalize=True, angular_correction=True, flipped_channels=True,b_w_correction=False):
-        X_hit = self.get_hit_shapes(
+        X_track = self.get_hit_shapes(
             normalize, angular_correction, flipped_channels,b_w_correction)
         X_info = self.get_info_features()
         y = to_categorical(self.get_labels(), num_classes=2)
-        return X_hit, X_info, y
+        return X_track, X_info, y
 
     def get_data_dense(self, normalize=True, angular_correction=True, flipped_channels=True,b_w_correction=False):
-        X_hit = self.get_hit_dense(
+        X_track = self.get_hit_dense(
             normalize, angular_correction, flipped_channels,b_w_correction)
         X_info = self.get_info_features()
 
-        X = np.hstack((X_hit,X_info))
+        X = np.hstack((X_track,X_info))
         y = to_categorical(self.get_labels(), num_classes=2)
         return X, y
 
