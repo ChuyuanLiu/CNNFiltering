@@ -104,8 +104,9 @@ def npTracksLoad(args):
     print ("======================================================================")
 
     start = time.time()
+    path = args.read
     #bal_dir = path + "/tracks_data/"
-    new_dir = args.read + "/tracks_data/"
+    new_dir = path + "/tracks_data/"
 
     datafiles = np.array([f for f in listdir(path) if (isfile(join(path, f)) and  f.lower().endswith(("txt","gz")) and "cnn_tracks" in f)])
 
