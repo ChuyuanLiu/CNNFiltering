@@ -156,7 +156,7 @@ class Tracks:
 
         path = ""
         idName = "_"
-        for p in fnames.split("/")[:-1]:
+        for p in fnames[0].split("/")[:-1]:
             path = new_dir + p
             if "tracks" in p:
                 idName = p
