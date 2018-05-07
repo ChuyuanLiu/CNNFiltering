@@ -131,16 +131,18 @@ def npTracksLoad(args):
         if os.stat(path + "/" + d).st_size == 0:
                 print("File no." + str(no+1) + " " + d + " empty.Skipping.")
                 continue
-        with open(path + "/" + d, 'rb') as df:
-            print("Reading file no." + str(no+1) + ": " + d)
-            if d.lower().endswith(("txt")):
-                dfDoublets = pd.read_table(df, sep="\t", header = None)
-            if d.lower().endswith(("gz")):
-                dfDoublets = pd.read_table(df, sep="\t", header = None,compression="gzip")
+        theData = np.genfromtxt(path + "/" + d,sep="\t")
+        dfDoublets = pd.DataFrame(theData,columns=tracks.dataLab)
+        # with open(path + "/" + d, 'rb') as df:
+        #     print("Reading file no." + str(no+1) + ": " + d)
+        #     if d.lower().endswith(("txt")):
+        #         dfDoublets = pd.read_table(df, sep="\t", header = None)
+        #     if d.lower().endswith(("gz")):
+        #         dfDoublets = pd.read_table(df, sep="\t", header = None,compression="gzip")
 
-            print("--Dumping unbalanced data")
-            dfDoublets.columns = tracks.dataLab
-            dfDoublets.to_hdf(new_dir + idName + "_tracks_" + d.replace(".txt",".h5"),'data',append=False)
+        print("--Dumping unbalanced data")
+        dfDoublets.columns = tracks.dataLab
+        dfDoublets.to_hdf(new_dir + idName + "_tracks_" + d.replace(".txt",".h5"),'data',append=False)
 
     end = time.time()
     print ("======================================================================")
