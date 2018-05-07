@@ -153,6 +153,20 @@ class Tracks:
 
     def __init__(self, fnames,pdgIds=main_pdgs,numHits=10,noduplicates=False):
         self.data = pd.DataFrame(data=[], columns=dataLab)
+
+        path = ""
+        idName = "_"
+        for p in fnames.split("/")[:-1]:
+            path = new_dir + p
+            if "tracks" in p:
+                idName = p
+
+        new_dir = path + "/tracks_data/"
+
+        if not os.path.exists(new_dir):
+            os.makedirs(new_dir)
+
+
         for i,f in enumerate(fnames):
             if not (f.lower().endswith("h5") or f.lower().endswith("txt") or f.lower().endswith("gz")):
                 continue
@@ -221,6 +235,8 @@ class Tracks:
 
             df.sample(frac=1.0)
             self.data = self.data.append(df)
+
+            self.save(new_dir + idName + "_" + d.replace(".txt",".h5"))
 
     def clean_dataset(self, pdgIds=main_pdgs,verbose=True):
         """ Cleaning: tracks with at least 1 pixel hit. """
