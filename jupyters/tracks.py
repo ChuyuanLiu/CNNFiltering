@@ -151,7 +151,7 @@ hitLayers = ['hit_' + str(i) + '_Layer' for i in range(10)]
 class Tracks:
     """ Load the Tracks from files. """
 
-    def __init__(self, fnames,pdgIds=main_pdgs,numHits=10,noduplicates=False):
+    def __init__(self, fnames,pdgIds=main_pdgs,numHits=10,noduplicates=False,save=True):
         self.data = pd.DataFrame(data=[], columns=dataLab)
 
         path = ""
@@ -236,7 +236,8 @@ class Tracks:
             df.sample(frac=1.0)
             self.data = self.data.append(df)
 
-            self.save(new_dir + idName + "_" + d.replace(".txt",".h5"))
+            if save:
+                self.save(new_dir + idName + "_" + d.replace(".txt",".h5"))
 
     def clean_dataset(self, pdgIds=main_pdgs,verbose=True):
         """ Cleaning: tracks with at least 1 pixel hit. """
