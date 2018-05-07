@@ -294,7 +294,6 @@ class Tracks:
 
     def pt_range(self,theRange=[1.0,10.0]):
         """ PT Range Cut Tracks by pts. """
-
         self.data = self.data[(self.data["Pt"] >= theRange[0]) & (self.data["Pt"] <= theRange[1])]
 
 
@@ -322,9 +321,8 @@ class Tracks:
     def Filter(self, feature_name, value):
         """ filter data keeping only those samples where s[feature_name] = value """
         d = Tracks(self.data[self.data[feature_name] == value])
+        d.data =  self.data[self.data[feature_name] == value]
 
-	    d.data =  self.data[self.data[feature_name] == value]
-        
         return d  # to allow method chaining
 
     def get_info_features(self):
