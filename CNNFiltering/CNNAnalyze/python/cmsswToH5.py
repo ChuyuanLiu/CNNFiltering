@@ -127,7 +127,7 @@ def npTracksLoad(args):
 
     listdata = []
 
-    for no,d in enumerate(datafiles[args.offset:args.offset+args.flimt]):
+    for no,d in enumerate(datafiles[args.offset:args.offset+args.flimit]):
         if os.stat(path + "/" + d).st_size == 0:
                 print("File no." + str(no+1) + " " + d + " empty.Skipping.")
                 continue
