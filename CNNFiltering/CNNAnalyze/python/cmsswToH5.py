@@ -6,7 +6,7 @@ import argparse
 
 from math import floor
 from dataset import *
-from tracks import *
+import tracks
 
 import pandas as pd
 import numpy as np
@@ -100,6 +100,55 @@ def npDoubletsLoad(path,fileslimit,cols):
     print ("======================================================================")
     print ("\n - Timing : " + str(end-start))
 
+def npTracksLoad(path,fileslimit,cols):
+    print ("======================================================================")
+
+    start = time.time()
+    #bal_dir = path + "/tracks_data/"
+    new_dir = path + "/tracks_data/"
+
+    datafiles = np.array([f for f in listdir(path) if (isfile(join(path, f)) and  f.lower().endswith(("txt","gz")) and "dnn_doublets" in f)])
+
+    print("Loading " + str(len(datafiles)) + " dataset file(s) . . .")
+
+    print("Balancing dataset in   : " + path)
+    print("Saving unbalanced in   : " + new_dir)
+    print("Saving balanced in     : " + bal_dir)
+
+    if not os.path.exists(bal_dir):
+        os.makedirs(bal_dir)
+    if not os.path.exists(new_dir):
+        os.makedirs(new_dir)
+
+    idName = ""
+
+    for p in path.split("/"):
+        if "runs" in p:
+            idName = p
+
+
+    print(idName)
+
+    listdata = []
+
+    for no,d in enumerate(datafiles):
+        if os.stat(path + d).st_size == 0:
+                print("File no." + str(no+1) + " " + d + " empty.Skipping.")
+                continue
+        with open(path + d, 'rb') as df:
+            print("Reading file no." + str(no+1) + ": " + d)
+            if d.lower().endswith(("txt")):
+                dfDoublets = pd.read_table(df, sep="\t", header = None)
+            if d.lower().endswith(("gz")):
+                dfDoublets = pd.read_table(df, sep="\t", header = None,compression="gzip")
+
+            print("--Dumping unbalanced data")
+            dfDoublets.columns = tracks.dataLab
+            dfDoublets.to_hdf(new_dir + idName + "_tracks_" + d.replace(".txt",".h5"),'data',append=False)
+
+    end = time.time()
+    print ("======================================================================")
+    print ("\n - Timing : " + str(end-start))
 
 def preprocess(path,fileslimit,cols,prep):
     print ("======================================================================")
@@ -206,4 +255,4 @@ if __name__ == '__main__':
     if not args.tracks:
         npDoubletsLoad(args.read,args.flimit,args.columns)
     else:
-        npTracksLoad(args.read,args.flimit,args.columns,args.preprocess)
+        npTracksLoad(args.read,args.flimit,args.columns)

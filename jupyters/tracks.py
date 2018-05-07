@@ -61,9 +61,6 @@ hitClust = ["ClustX","ClustY","ClustSize","ClustSizeX","ClustSizeY","PixelZero",
 
 hitPixel = ["Pix" + str(el) for el in range(1, padshape*padshape + 1)]
 
-areBarrels = []
-for i in range(10):
-    areBarrels = areBarrels + [hitDets[i][0]]
 
 hitCharge = ["SumADC"]
 
@@ -121,11 +118,14 @@ hitDets = []
 for j in range(maxHits):
     hitDets.append(["hit_" + str(j) + "_" + str(i) for i in hitDet])
 
-
 featureLabs = []
 
 for j in range(maxHits):
     featureLabs = featureLabs + hitsFeatures[j]
+
+areBarrels = []
+for i in range(10):
+    areBarrels = areBarrels + [hitDets[i][0]]
 
 #featureLabs = inHitFeature + outHitFeature + differences
 
@@ -158,9 +158,9 @@ class Tracks:
                 continue
             print("Loading file " + str(i+1) + "/" + str(len(fnames)) + " : " + f)
             df = pd.DataFrame(data=[], columns=dataLab)
+
             if f.lower().endswith("h5"):
                 df = pd.read_hdf(f, mode='r')
-
 
             if f.lower().endswith(("txt")) or f.lower().endswith(("gz")):
                 with open(f, 'rb') as df:
