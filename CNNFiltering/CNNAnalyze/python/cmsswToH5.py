@@ -112,8 +112,6 @@ def npTracksLoad(path,fileslimit,cols):
     print("Loading " + str(len(datafiles)) + " dataset file(s) . . .")
     print("Saving tracks in   : " + new_dir)
 
-    if not os.path.exists(bal_dir):
-        os.makedirs(bal_dir)
     if not os.path.exists(new_dir):
         os.makedirs(new_dir)
 
