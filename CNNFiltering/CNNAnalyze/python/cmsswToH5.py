@@ -110,10 +110,7 @@ def npTracksLoad(path,fileslimit,cols):
     datafiles = np.array([f for f in listdir(path) if (isfile(join(path, f)) and  f.lower().endswith(("txt","gz")) and "dnn_doublets" in f)])
 
     print("Loading " + str(len(datafiles)) + " dataset file(s) . . .")
-
-    print("Balancing dataset in   : " + path)
-    print("Saving unbalanced in   : " + new_dir)
-    print("Saving balanced in     : " + bal_dir)
+    print("Saving tracks in   : " + new_dir)
 
     if not os.path.exists(bal_dir):
         os.makedirs(bal_dir)
