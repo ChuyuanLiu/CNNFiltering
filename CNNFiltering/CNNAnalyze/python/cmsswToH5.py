@@ -107,7 +107,7 @@ def npTracksLoad(path,fileslimit,cols):
     #bal_dir = path + "/tracks_data/"
     new_dir = path + "/tracks_data/"
 
-    datafiles = np.array([f for f in listdir(path) if (isfile(join(path, f)) and  f.lower().endswith(("txt","gz")) and "dnn_doublets" in f)])
+    datafiles = np.array([f for f in listdir(path) if (isfile(join(path, f)) and  f.lower().endswith(("txt","gz")) and "cnn_tracks" in f)])
 
     print("Loading " + str(len(datafiles)) + " dataset file(s) . . .")
     print("Saving tracks in   : " + new_dir)
