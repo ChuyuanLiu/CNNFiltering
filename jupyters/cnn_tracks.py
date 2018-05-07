@@ -2,7 +2,7 @@
 import pandas as pd
 import numpy as np
 import random
-import seaborn as sns
+#import seaborn as sns
 import os
 
 import tensorflow
@@ -58,14 +58,16 @@ train_tracks = Tracks(FILES)
 val_tracks = Tracks(VAL_FILES)
 
 train_tracks.clean_dataset()
-train_tracks.data_by_pt()
+#train_tracks.data_by_pt()
+train_tracks.pt_range()
 train_tracks.data_by_pdg()
 
 val_tracks.clean_dataset()
+val_tracks.pt_range()
 val_tracks.data_by_pdg()
 
-X_track, X_info, y = train_tracks.get_track_hits_data()
-X_val_track, X_val_info, y_val = val_tracks.get_track_hits_data()
+X_track, X_info, y = train_tracks.get_track_hits_layer_data()
+X_val_track, X_val_info, y_val = val_tracks.get_track_hits_layer_data()
 
 
 train_input_list = [X_track, X_info]
