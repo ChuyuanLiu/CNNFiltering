@@ -132,6 +132,7 @@ def npTracksLoad(args):
                 print("File no." + str(no+1) + " " + d + " empty.Skipping.")
                 continue
         theData = np.genfromtxt(path + "/" + d,sep="\t")
+        theData = theData[len(theData)==len(dataLab)]
         dfDoublets = pd.DataFrame(theData,columns=tracks.dataLab)
         # with open(path + "/" + d, 'rb') as df:
         #     print("Reading file no." + str(no+1) + ": " + d)
