@@ -131,7 +131,7 @@ def npTracksLoad(args):
         if os.stat(path + "/" + d).st_size == 0:
                 print("File no." + str(no+1) + " " + d + " empty.Skipping.")
                 continue
-        theData = np.genfromtxt(path + "/" + d,delimiter="\t")
+        theData = np.genfromtxt(path + "/" + d,delimiter="\t",invalid_raise=False)
         theData = theData[len(theData)==len(dataLab)]
         dfDoublets = pd.DataFrame(theData,columns=tracks.dataLab)
         # with open(path + "/" + d, 'rb') as df:
