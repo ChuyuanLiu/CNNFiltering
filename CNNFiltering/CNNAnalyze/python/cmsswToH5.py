@@ -131,6 +131,7 @@ def npTracksLoad(args):
         if os.stat(path + "/" + d).st_size == 0:
                 print("File no." + str(no+1) + " " + d + " empty.Skipping.")
                 continue
+        print("Reading file no." + str(no+1) + ": " + d)
         theData = np.genfromtxt(path + "/" + d,delimiter="\t",invalid_raise=False)
         print(theData.shape)
         #theData = theData[len(theData.shape==len(dataLab)]
