@@ -43,10 +43,10 @@ def npDoubletsLoad(path,fileslimit,cols):
 
     listdata = []
     for no,d in enumerate(datafiles):
-        if os.stat(path + d).st_size == 0:
+        if os.stat(path + "/" + d).st_size == 0:
                 print("File no." + str(no+1) + " " + d + " empty.Skipping.")
                 continue
-        with open(path + d, 'rb') as df:
+        with open(path + "/" + d, 'rb') as df:
             print("Reading file no." + str(no+1) + ": " + d)
             if d.lower().endswith(("txt")):
                 dfDoublets = pd.read_table(df, sep="\t", header = None)
@@ -127,10 +127,10 @@ def npTracksLoad(path,fileslimit,cols):
     listdata = []
 
     for no,d in enumerate(datafiles):
-        if os.stat(path + d).st_size == 0:
+        if os.stat(path + "/" + d).st_size == 0:
                 print("File no." + str(no+1) + " " + d + " empty.Skipping.")
                 continue
-        with open(path + d, 'rb') as df:
+        with open(path + "/" + d, 'rb') as df:
             print("Reading file no." + str(no+1) + ": " + d)
             if d.lower().endswith(("txt")):
                 dfDoublets = pd.read_table(df, sep="\t", header = None)
@@ -176,10 +176,10 @@ def preprocess(path,fileslimit,cols,prep):
 
     listdata = []
     for no,d in enumerate(datafiles):
-        if os.stat(path + d).st_size == 0:
+        if os.stat(path + "/" + d).st_size == 0:
                 print("File no." + str(no+1) + " " + d + " empty.Skipping.")
                 continue
-        with open(path + d, 'rb') as df:
+        with open(path + "/" + d, 'rb') as df:
             print("Reading file no." + str(no+1) + ": " + d)
             if d.lower().endswith(("txt")):
                 dfDoublets = pd.read_table(df, sep="\t", header = None)
