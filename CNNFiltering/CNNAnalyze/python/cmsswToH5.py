@@ -100,12 +100,12 @@ def npDoubletsLoad(path,fileslimit,cols):
     print ("======================================================================")
     print ("\n - Timing : " + str(end-start))
 
-def npTracksLoad(path,fileslimit,cols):
+def npTracksLoad(args):
     print ("======================================================================")
 
     start = time.time()
     #bal_dir = path + "/tracks_data/"
-    new_dir = path + "/tracks_data/"
+    new_dir = args.read + "/tracks_data/"
 
     datafiles = np.array([f for f in listdir(path) if (isfile(join(path, f)) and  f.lower().endswith(("txt","gz")) and "cnn_tracks" in f)])
 
@@ -126,7 +126,7 @@ def npTracksLoad(path,fileslimit,cols):
 
     listdata = []
 
-    for no,d in enumerate(datafiles):
+    for no,d in enumerate(datafiles[args.offset:args.offset+args.flimt]):
         if os.stat(path + "/" + d).st_size == 0:
                 print("File no." + str(no+1) + " " + d + " empty.Skipping.")
                 continue
@@ -240,6 +240,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog="dataToHDF")
     parser.add_argument('--read', type=str, default="./",help='files path')
     parser.add_argument('--flimit', type=int, default=-1,help='max no. of files')
+    parser.add_argument('--offset', type=int, default=0,help='offset no. of files')
     parser.add_argument('--tracks','-t',action='store_true')
     parser.add_argument('--columns','-c',action='store_true')
     parser.add_argument('--preprocess','-pre',action='store_true')
@@ -250,4 +251,4 @@ if __name__ == '__main__':
     if not args.tracks:
         npDoubletsLoad(args.read,args.flimit,args.columns)
     else:
-        npTracksLoad(args.read,args.flimit,args.columns)
+        npTracksLoad(args)
