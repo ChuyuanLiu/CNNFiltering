@@ -51,7 +51,7 @@ def adam_small_doublet_model(n_channels,n_labels=2):
 padshape = 16
 
 remote_data = "/lustre/cms/store/user/adiflori/ConvTracks/PGun__n_5_e_10/dataset"
-FILES = [remote_data + "/train/" + el for el in os.listdir(remote_data + "/train/tracks_data/")]
+FILES = [remote_data + "/train/tracks_data/" + el for el in os.listdir(remote_data + "/train/tracks_data/")]
 VAL_FILES = [remote_data +"/val/" + el for el in os.listdir(remote_data +"/val/")]
 
 train_tracks = Tracks(FILES)
