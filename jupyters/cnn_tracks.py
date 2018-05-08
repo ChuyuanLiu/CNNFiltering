@@ -102,8 +102,8 @@ shuffle(FILES)
 FILES = FILES[:args.flimit]
 VAL_FILES = [remote_data +"/val/" + el for el in os.listdir(remote_data +"/val/")][:3]
 
-train_tracks = Tracks(FILES,ptCut=[5.0,100.0])
-val_tracks = Tracks(VAL_FILES,ptCut=[5.0,100.0])
+train_tracks = Tracks(FILES,ptCut=[5.0,500.0])
+val_tracks = Tracks(VAL_FILES,ptCut=[5.0,500.0])
 
 train_tracks.clean_dataset()
 #train_tracks.data_by_pt()
@@ -121,9 +121,7 @@ X_val_track, X_val_info, y_val = val_tracks.get_track_hits_layer_data()
 train_input_list = [X_track, X_info]
 val_input_list = [X_val_track, X_val_info]
 
-
 model = adam_small_doublet_model(train_input_list[0].shape[-1],n_labels=2)
-
 
 callbacks = [
         EarlyStopping(monitor='val_loss', patience=args.patience),
