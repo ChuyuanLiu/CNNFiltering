@@ -151,20 +151,8 @@ hitLayers = ['hit_' + str(i) + '_Layer' for i in range(10)]
 class Tracks:
     """ Load the Tracks from files. """
 
-    def __init__(self, fnames,pdgIds=main_pdgs,numHits=10,noduplicates=False,save=True):
+    def __init__(self, fnames,pdgIds=main_pdgs,numHits=10,noduplicates=False,ptCut=[-1.0,1e8]):
         self.data = pd.DataFrame(data=[], columns=dataLab)
-
-        path = ""
-        idName = "_"
-        for p in fnames[0].split("/")[:-1]:
-            path = path + p
-            if "tracks" in p:
-                idName = p
-
-        new_dir = path + "/tracks_data/"
-
-        if not os.path.exists(new_dir):
-            os.makedirs(new_dir)
 
 
         for i,f in enumerate(fnames):
@@ -187,6 +175,8 @@ class Tracks:
             df.columns = dataLab  # change wrong columns names
 
             df = df[df[one_pix] >= 0.0]
+
+            df = df[(df["Pt"]>ptCut[0]) & (df["Pt"]<ptCut[1])]
 
             for nhit in range(10):
 
@@ -233,12 +223,11 @@ class Tracks:
 
             df['nHits'] = pd.Series(nHits, index=df.index)
 
+            print(" -- Loaded : " + str(self.data.shape[0]))
+
             df.sample(frac=1.0)
             self.data = self.data.append(df)
 
-            print(" -- Loaded : " + str(self.data.shape[0]))
-            if save:
-                self.save(new_dir + idName + "_" + d.replace(".txt",".h5"))
 
     def clean_dataset(self, pdgIds=main_pdgs,verbose=True):
         """ Cleaning: tracks with at least 1 pixel hit. """

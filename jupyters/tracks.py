@@ -174,10 +174,12 @@ class Tracks:
 
             df.columns = dataLab  # change wrong columns names
 
+            print(" -- Loaded : " + str(self.data.shape[0]))
+
             df = df[df[one_pix] >= 0.0]
 
             df = df[(df["Pt"]>ptCut[0]) & (df["Pt"]<ptCut[1])]
-            
+
             for nhit in range(10):
 
                 hitLayer = np.full(df.shape[0],-1.0)
@@ -222,6 +224,8 @@ class Tracks:
             nHits = np.sum(np.array(df[areBarrels].values>=0.0,dtype=int),axis=1)
 
             df['nHits'] = pd.Series(nHits, index=df.index)
+
+            print(" -- Filter : " + str(self.data.shape[0]))
 
             df.sample(frac=1.0)
             self.data = self.data.append(df)
