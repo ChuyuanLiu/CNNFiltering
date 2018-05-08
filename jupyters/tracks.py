@@ -151,7 +151,7 @@ hitLayers = ['hit_' + str(i) + '_Layer' for i in range(10)]
 class Tracks:
     """ Load the Tracks from files. """
 
-    def __init__(self, fnames,pdgIds=main_pdgs,numHits=10,noduplicates=False):
+    def __init__(self, fnames,pdgIds=main_pdgs,numHits=10,noduplicates=False,ptCut=[-1.0,1e8]):
         self.data = pd.DataFrame(data=[], columns=dataLab)
 
 
@@ -176,6 +176,8 @@ class Tracks:
 
             df = df[df[one_pix] >= 0.0]
 
+            df = df[(df["Pt"]>ptCut[0]) & (df["Pt"]<ptCut[1])]
+            
             for nhit in range(10):
 
                 hitLayer = np.full(df.shape[0],-1.0)
