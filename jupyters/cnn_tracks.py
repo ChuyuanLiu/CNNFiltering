@@ -86,7 +86,7 @@ def adam_small_doublet_model(n_channels,n_labels=2):
     dense = Dense(64, activation='relu', kernel_constraint=max_norm(args.maxnorm), name='dense1')(b_norm)
     drop = Dropout(args.dropout)(dense)
     dense = Dense(32, activation='relu', kernel_constraint=max_norm(args.maxnorm), name='dense2')(drop)
-    drop = Dropout(args.dropou)(dense)
+    drop = Dropout(args.dropout)(dense)
     pred = Dense(n_labels, activation='softmax', kernel_constraint=max_norm(args.maxnorm), name='output')(drop)
 
     model = Model(inputs=[hit_shapes, infos], outputs=pred)
