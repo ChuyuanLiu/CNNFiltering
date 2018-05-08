@@ -236,6 +236,7 @@ class Tracks:
             df.sample(frac=1.0)
             self.data = self.data.append(df)
 
+            print(" -- Loaded : " + str(self.data.shape[0]))
             if save:
                 self.save(new_dir + idName + "_" + d.replace(".txt",".h5"))
 
