@@ -102,8 +102,8 @@ shuffle(FILES)
 FILES = FILES[:args.flimit]
 VAL_FILES = [remote_data +"/val/" + el for el in os.listdir(remote_data +"/val/")][:3]
 
-train_tracks = Tracks(FILES,ptCut=[5.0,500.0])
-val_tracks = Tracks(VAL_FILES,ptCut=[5.0,100.0])
+train_tracks = Tracks(FILES,ptCut=[10.0,500.0])
+val_tracks = Tracks(VAL_FILES,ptCut=[10.0,500.0])
 
 train_tracks.clean_dataset()
 #train_tracks.data_by_pt()
