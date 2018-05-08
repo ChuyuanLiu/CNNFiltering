@@ -174,7 +174,7 @@ class Tracks:
 
             df.columns = dataLab  # change wrong columns names
 
-            print(" -- Loaded : " + str(self.data.shape[0]))
+            print(" -- Loaded : " + str(df.shape[0]))
 
             df = df[df[one_pix] >= 0.0]
 
@@ -225,7 +225,7 @@ class Tracks:
 
             df['nHits'] = pd.Series(nHits, index=df.index)
 
-            print(" -- Filter : " + str(self.data.shape[0]))
+            print(" -- Filter : " + str(df.shape[0]))
 
             df.sample(frac=1.0)
             self.data = self.data.append(df)
