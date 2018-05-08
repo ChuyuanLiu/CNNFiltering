@@ -125,7 +125,7 @@ model = adam_small_doublet_model(train_input_list[0].shape[-1],n_labels=2)
 
 callbacks = [
         EarlyStopping(monitor='val_loss', patience=args.patience),
-        ModelCheckpoint(args.log_dir + str(tnow) + "_test_last.h5", save_best_only=True,
+        ModelCheckpoint(args.log_dir + str(t_now) + "_test_last.h5", save_best_only=True,
                         save_weights_only=True),
         TensorBoard(log_dir="", histogram_freq=0,
                     write_graph=True, write_images=True)
