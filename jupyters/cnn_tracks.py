@@ -42,6 +42,7 @@ parser.add_argument('--name', type=str, default="cnn_tracks")
 parser.add_argument('--maxnorm', type=float, default=10.)
 parser.add_argument('--verbose', type=int, default=1)
 parser.add_argument('--flimit', type=int, default=None)
+
 parser.add_argument('-d','--debug',action='store_true')
 parser.add_argument('--balance','--balance',action='store_true')
 parser.add_argument('--fsamp',type=int,default=10)
@@ -90,7 +91,8 @@ def adam_small_doublet_model(n_channels,n_labels=2):
     pred = Dense(n_labels, activation='softmax', kernel_constraint=max_norm(args.maxnorm), name='output')(drop)
 
     model = Model(inputs=[hit_shapes, infos], outputs=pred)
-    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+    my_sgd = optimizers.SGD(lr=args.lr, decay=1e-4, momentum=args.momentum, nesterov=True)
+    model.compile(optimizer=my_sgd, loss='categorical_crossentropy', metrics=['accuracy'])
     return model
 
 
@@ -121,7 +123,7 @@ print("================= Training is starting with k folding")
 for step in range(args.k_steps):
 
     print("k-Fold no . " +  str(step))
-    
+
     msk = np.random.rand(len(all_tracks_data)) < (1.0 - val_frac)
     train_data = all_tracks_data[msk]
     val_data   = all_tracks_data[~msk]
