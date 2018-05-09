@@ -11,7 +11,7 @@ import tensorflow
 import keras
 
 from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
-from model_architectures import *
+import model_architectures
 
 import tracks
 from tracks import *
