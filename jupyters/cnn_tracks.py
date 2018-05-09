@@ -36,9 +36,9 @@ parser.add_argument('--batch_size', type=int, default=1024)
 parser.add_argument('--dropout', type=float, default=0.5)
 parser.add_argument('--lr', type=float, default=0.01, help='learning rate')
 parser.add_argument('--momentum', type=float, default=0.5)
-parser.add_argument('--patience', type=int, default=20)
+parser.add_argument('--patience', type=int, default=50)
 parser.add_argument('--log_dir', type=str, default="models/cnn_tracks")
-parser.add_argument('--name', type=str, default=None)
+parser.add_argument('--name', type=str, default="cnn_tracks")
 parser.add_argument('--maxnorm', type=float, default=10.)
 parser.add_argument('--verbose', type=int, default=1)
 parser.add_argument('--flimit', type=int, default=None)
@@ -53,8 +53,8 @@ parser.add_argument('--phi',action='store_true')
 parser.add_argument('--augm',type=int,default=1)
 parser.add_argument('--limit',type=int,default=None)
 parser.add_argument('--multiclass',action='store_true')
-parser.add_argument('--kfolding',action='store_true')
-parser.add_argument('--k',type=int,default=1)
+parser.add_argument('--k_steps',type=int,default=1)
+
 args = parser.parse_args()
 
 
@@ -100,37 +100,49 @@ remote_data = "/lustre/cms/store/user/adiflori/ConvTracks/PGun__n_5_e_10/dataset
 FILES = [remote_data + "/train/tracks_data/" + el for el in os.listdir(remote_data + "/train/tracks_data/")]
 shuffle(FILES)
 FILES = FILES[:args.flimit]
-VAL_FILES = [remote_data +"/val/" + el for el in os.listdir(remote_data +"/val/")][:3]
+#VAL_FILES = [remote_data +"/val/" + el for el in os.listdir(remote_data +"/val/")][:3]
 
-train_tracks = Tracks(FILES,ptCut=[10.0,500.0])
-val_tracks = Tracks(VAL_FILES,ptCut=[10.0,500.0])
+all_tracks = Tracks(FILES,ptCut=[10.0,500.0])
+all_tracks.clean_dataset()
+all_tracks.data_by_pdg()
+all_tracks_data = all_tracks.data
 
-train_tracks.clean_dataset()
-#train_tracks.data_by_pt()
-#train_tracks.pt_range()
-train_tracks.data_by_pdg()
+val_frac = 1.0 / float(args.k_steps)
 
-val_tracks.clean_dataset()
-#val_tracks.pt_range()
-val_tracks.data_by_pdg()
+for step in range(args.k_steps):
 
-X_track, X_info, y = train_tracks.get_track_hits_layer_data()
-X_val_track, X_val_info, y_val = val_tracks.get_track_hits_layer_data()
+    msk = np.random.rand(len(all_tracks_data)) < (1.0 - val_frac)
+    train_data = all_tracks_data[msk]
+    val_data   = all_tracks_data[~msk]
 
+    train_tracks = Tracks([])
+    tran_tracks.from_dataframe(train_data)
+    val_tracks = Tracks([])
+    val_tracks.from_dataframe(val_data)
 
-train_input_list = [X_track, X_info]
-val_input_list = [X_val_track, X_val_info]
+    train_tracks.clean_dataset()
+    train_tracks.data_by_pdg()
 
-model = adam_small_doublet_model(train_input_list[0].shape[-1],n_labels=2)
+    val_tracks.clean_dataset()
+    val_tracks.data_by_pdg()
 
-callbacks = [
-        EarlyStopping(monitor='val_loss', patience=args.patience),
-        ModelCheckpoint(args.log_dir + str(t_now) + "_test_last.h5", save_best_only=True,
-                        save_weights_only=True),
-        TensorBoard(log_dir="", histogram_freq=0,
-                    write_graph=True, write_images=True)
-		#roc_callback(training_data=(train_input_list,y),validation_data=(val_input_list,y_val))
-    ]
+    X_track, X_info, y = train_tracks.get_track_hits_layer_data()
+    X_val_track, X_val_info, y_val = val_tracks.get_track_hits_layer_data()
 
 
-history = model.fit(train_input_list, y, batch_size=args.batch_size, epochs=args.n_epochs, shuffle=True,validation_data=(val_input_list,y_val), callbacks=callbacks, verbose=True)
+    train_input_list = [X_track, X_info]
+    val_input_list = [X_val_track, X_val_info]
+
+    model = adam_small_doublet_model(train_input_list[0].shape[-1],n_labels=2)
+
+    callbacks = [
+            EarlyStopping(monitor='val_acc', patience=args.patience),
+            ModelCheckpoint(args.log_dir + str(t_now) + "_" + str(step) + "_" + args.name + "_test_last.h5", save_best_only=True,
+                            save_weights_only=True),
+            TensorBoard(log_dir=args.log_dir, histogram_freq=0,
+                        write_graph=True, write_images=True)
+    		#roc_callback(training_data=(train_input_list,y),validation_data=(val_input_list,y_val))
+        ]
+
+
+    history = model.fit(train_input_list, y, batch_size=args.batch_size, epochs=args.n_epochs, shuffle=True,validation_data=(val_input_list,y_val), callbacks=callbacks, verbose=True)
