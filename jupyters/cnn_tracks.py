@@ -66,7 +66,7 @@ def adam_small_doublet_model(n_channels,n_labels=2):
     hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='hit_shape_input')
     infos = Input(shape=(len(tracks.featureLabs),), name='info_input')
 
-    #drop = Dropout(args.dropou)(hit_shapes)
+    #drop = Dropout(args.dropout)(hit_shapes)
     conv = Conv2D(32, (4, 4), activation='relu', padding='same', data_format="channels_last", name='conv1')(hit_shapes)
     conv = Conv2D(32, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv2')(conv)
     b_norm = BatchNormalization()(conv)
@@ -91,10 +91,11 @@ def adam_small_doublet_model(n_channels,n_labels=2):
     pred = Dense(n_labels, activation='softmax', kernel_constraint=max_norm(args.maxnorm), name='output')(drop)
 
     model = Model(inputs=[hit_shapes, infos], outputs=pred)
-    #my_opt = optimizers.SGD(lr=args.lr, decay=1e-4, momentum=args.momentum, nesterov=True)
+    my_opt = optimizers.SGD(lr=args.lr, decay=1e-4, momentum=args.momentum, nesterov=True)
     #my_opt = keras.optimizers.Adam(lr=args.lr, beta_1=0.9, beta_2=0.999, epsilon=None, decay=1e-3, amsgrad=False)
 
-    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer=my_opt, loss='categorical_crossentropy', metrics=['accuracy'])
+
     return model
 
 
