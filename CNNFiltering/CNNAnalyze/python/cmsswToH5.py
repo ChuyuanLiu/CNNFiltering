@@ -127,11 +127,11 @@ def npTracksLoad(args):
 
     listdata = []
 
-    for no,d in enumerate(datafiles[args.offset:args.offset+args.flimit]):
+    for no,d in enumerate(datafiles):
         if os.stat(path + "/" + d).st_size == 0:
                 print("File no." + str(no+1) + " " + d + " empty.Skipping.")
                 continue
-                
+
         with open(path + "/" + d, 'rb') as df:
             print("Reading file no." + str(no+1) + ": " + d)
             if d.lower().endswith(("txt")):
