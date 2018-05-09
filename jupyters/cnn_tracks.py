@@ -91,7 +91,7 @@ def adam_small_doublet_model(n_channels,n_labels=2):
     pred = Dense(n_labels, activation='softmax', kernel_constraint=max_norm(args.maxnorm), name='output')(drop)
 
     model = Model(inputs=[hit_shapes, infos], outputs=pred)
-    #my_sgd = optimizers.SGD(lr=args.lr, decay=1e-4, momentum=args.momentum, nesterov=True)
+    #my_opt = optimizers.SGD(lr=args.lr, decay=1e-4, momentum=args.momentum, nesterov=True)
     my_opt = keras.optimizers.Adam(lr=args.lr, beta_1=0.9, beta_2=0.999, epsilon=None, decay=1e-3, amsgrad=False)
 
     model.compile(optimizer=my_opt, loss='categorical_crossentropy', metrics=['accuracy'])
