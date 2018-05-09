@@ -94,7 +94,7 @@ def adam_small_doublet_model(n_channels,n_labels=2):
     #my_opt = optimizers.SGD(lr=args.lr, decay=1e-4, momentum=args.momentum, nesterov=True)
     my_opt = keras.optimizers.Adam(lr=args.lr, beta_1=0.9, beta_2=0.999, epsilon=None, decay=1e-3, amsgrad=False)
 
-    model.compile(optimizer=my_opt, loss='categorical_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
     return model
 
 
