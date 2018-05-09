@@ -92,7 +92,7 @@ def adam_small_doublet_model(n_channels,n_labels=2):
 
     model = Model(inputs=[hit_shapes, infos], outputs=pred)
     #my_opt = optimizers.SGD(lr=args.lr, decay=1e-4, momentum=args.momentum, nesterov=True)
-    my_opt = keras.optimizers.Adam(lr=args.lr, beta_1=0.9, beta_2=0.999, epsilon=None, decay=1e-3, amsgrad=False)
+    #my_opt = keras.optimizers.Adam(lr=args.lr, beta_1=0.9, beta_2=0.999, epsilon=None, decay=1e-3, amsgrad=False)
 
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
     return model
@@ -127,7 +127,7 @@ val_frac = 1.0 / float(args.k_steps)
 print("================= Training is starting with k folding")
 for step in range(args.k_steps):
 
-    print("k-Fold no . " +  str(step))
+
 
     msk = np.random.rand(len(all_tracks_data)) < (1.0 - val_frac)
     train_data = all_tracks_data[msk]
@@ -144,10 +144,12 @@ for step in range(args.k_steps):
     val_tracks.clean_dataset()
     val_tracks.data_by_pdg()
 
+    print("Data loading . . . ")
+
     X_track, X_info, y = train_tracks.get_track_hits_layer_data()
     X_val_track, X_val_info, y_val = val_tracks.get_track_hits_layer_data()
 
-
+    
     train_input_list = [X_track, X_info]
     val_input_list = [X_val_track, X_val_info]
 
@@ -162,5 +164,5 @@ for step in range(args.k_steps):
     		#roc_callback(training_data=(train_input_list,y),validation_data=(val_input_list,y_val))
         ]
 
-
+    print("k-Fold no . " +  str(step))
     history = model.fit(train_input_list, y, batch_size=args.batch_size, epochs=args.n_epochs, shuffle=True,validation_data=(val_input_list,y_val), callbacks=callbacks, verbose=True)
