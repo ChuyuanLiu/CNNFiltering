@@ -116,7 +116,7 @@ for step in range(args.k_steps):
     val_data   = all_tracks_data[~msk]
 
     train_tracks = Tracks([])
-    tran_tracks.from_dataframe(train_data)
+    train_tracks.from_dataframe(train_data)
     val_tracks = Tracks([])
     val_tracks.from_dataframe(val_data)
 
