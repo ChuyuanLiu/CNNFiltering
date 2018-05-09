@@ -99,9 +99,17 @@ padshape = 16
 remote_data = "/lustre/cms/store/user/adiflori/ConvTracks/PGun__n_5_e_10/dataset"
 FILES = [remote_data + "/train/tracks_data/" + el for el in os.listdir(remote_data + "/train/tracks_data/")]
 shuffle(FILES)
-FILES = FILES[:args.flimit]
+
+TEST_FILE = FILES[0]
+
+if args.limit + 1 < len(FILES) - 1:
+    FILES = FILES[1:args.flimit+1]
+else:
+    FILE = FILES[1:]
+
 #VAL_FILES = [remote_data +"/val/" + el for el in os.listdir(remote_data +"/val/")][:3]
 
+#test_tracks = Tracks(TEST_FILE,ptCut=[10.0,500.0])
 all_tracks = Tracks(FILES,ptCut=[10.0,500.0])
 all_tracks.clean_dataset()
 all_tracks.data_by_pdg()
@@ -109,8 +117,11 @@ all_tracks_data = all_tracks.data
 
 val_frac = 1.0 / float(args.k_steps)
 
+print("================= Training is starting with k folding")
 for step in range(args.k_steps):
 
+    print("k-Fold no . " +  str(step))
+    
     msk = np.random.rand(len(all_tracks_data)) < (1.0 - val_frac)
     train_data = all_tracks_data[msk]
     val_data   = all_tracks_data[~msk]
