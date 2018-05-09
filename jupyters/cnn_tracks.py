@@ -149,10 +149,12 @@ for step in range(args.k_steps):
     X_track, X_info, y = train_tracks.get_track_hits_layer_data()
     X_val_track, X_val_info, y_val = val_tracks.get_track_hits_layer_data()
 
-    
+    print(". . . done!")
+
     train_input_list = [X_track, X_info]
     val_input_list = [X_val_track, X_val_info]
 
+    print("Model loaded")
     model = adam_small_doublet_model(train_input_list[0].shape[-1],n_labels=2)
 
     callbacks = [
