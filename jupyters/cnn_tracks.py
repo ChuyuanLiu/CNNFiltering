@@ -157,7 +157,7 @@ for step in range(args.k_steps):
 
     model = adam_small_doublet_model(train_input_list[0].shape[-1],n_labels=2)
     print("Model loaded")
-    
+
     callbacks = [
             EarlyStopping(monitor='val_acc', patience=args.patience),
             ModelCheckpoint(args.log_dir + str(t_now) + "_" + str(step) + "_" + args.name + "_test_last.h5", save_best_only=True,
