@@ -104,10 +104,13 @@ shuffle(FILES)
 
 TEST_FILE = FILES[0]
 
-if args.flimit + 1 < len(FILES) - 1:
-    FILES = FILES[1:args.flimit+1]
+if args.flimit is not None:
+    if args.flimit + 1 < len(FILES) - 1:
+        FILES = FILES[1:args.flimit+1]
+    else:
+        FILES = FILES[1:]
 else:
-    FILE = FILES[1:]
+    FILES = FILES[1:]
 
 #VAL_FILES = [remote_data +"/val/" + el for el in os.listdir(remote_data +"/val/")][:3]
 
