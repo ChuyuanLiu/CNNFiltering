@@ -104,7 +104,7 @@ shuffle(FILES)
 
 TEST_FILE = FILES[0]
 
-if args.limit + 1 < len(FILES) - 1:
+if args.flimit + 1 < len(FILES) - 1:
     FILES = FILES[1:args.flimit+1]
 else:
     FILE = FILES[1:]
