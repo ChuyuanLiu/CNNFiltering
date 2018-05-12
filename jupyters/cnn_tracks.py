@@ -176,7 +176,7 @@ for step in range(args.k_steps):
             ModelCheckpoint(args.log_dir + str(t_now) + "_" + str(step) + "_" + args.name + "_test_last.h5", save_best_only=True,
                             save_weights_only=True),
             TensorBoard(log_dir=args.log_dir, histogram_freq=0,
-                        write_graph=True, write_images=True)
+                        write_graph=True, write_images=True),
     		roc_callback(training_data=(train_input_list,y),validation_data=(val_input_list,y_val))
         ]
 
