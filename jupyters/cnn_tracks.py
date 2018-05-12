@@ -140,7 +140,7 @@ for step in range(args.k_steps):
     fname = args.log_dir + "/" + str(t_now) + "/" + args.name
 
     if step>0:
-        model.load_weights(fname + "_fold_" + str(step-1) + ".h5", overwrite=True))
+        model.load_weights(fname + "_fold_" + str(step-1) + ".h5", overwrite=True)
 
     msk = np.random.rand(len(all_tracks_data)) < (1.0 - val_frac)
     train_data = all_tracks_data[msk]
