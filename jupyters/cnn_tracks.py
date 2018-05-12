@@ -23,6 +23,8 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
 
 #import model_architectures
 
+IMAGE_SIZE = dataset.padshape
+
 import tracks
 from tracks import *
 
@@ -135,7 +137,11 @@ val_frac = 1.0 / float(args.k_steps)
 print("================= Training is starting with k folding")
 for step in range(args.k_steps):
 
+    fname = args.log_dir + "/" + str(t_now) + "/" + args.name
 
+    if step>0:
+
+    model.load_weights(fname + "_fold_" + str(step-1) + ".h5", overwrite=True))
 
     msk = np.random.rand(len(all_tracks_data)) < (1.0 - val_frac)
     train_data = all_tracks_data[msk]
@@ -172,8 +178,11 @@ for step in range(args.k_steps):
                             save_weights_only=True),
             TensorBoard(log_dir=args.log_dir, histogram_freq=0,
                         write_graph=True, write_images=True)
-    		#roc_callback(training_data=(train_input_list,y),validation_data=(val_input_list,y_val))
+    		roc_callback(training_data=(train_input_list,y),validation_data=(val_input_list,y_val))
         ]
 
-    print("k-Fold no . " +  str(step))
+    print("k-Fold no . " +  str(step) )
     history = model.fit(train_input_list, y, batch_size=args.batch_size, epochs=args.n_epochs, shuffle=True,validation_data=(val_input_list,y_val), callbacks=callbacks, verbose=True)
+
+    print("saving model " + fname)
+    model.save_weights(fname + "_fold_" + str(step) + ".h5", overwrite=True)
