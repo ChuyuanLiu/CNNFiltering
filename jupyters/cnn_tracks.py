@@ -23,11 +23,11 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
 
 #import model_architectures
 
-IMAGE_SIZE = dataset.padshape
-
 import tracks
 from tracks import *
 
+
+IMAGE_SIZE = tracks.padshape
 
 DEBUG = os.name == 'nt'  # DEBUG on laptop
 
@@ -108,7 +108,7 @@ def adam_small_doublet_model(n_channels,n_labels=2):
     return model
 
 
-padshape = 16
+padshape = tracks.padshape
 
 remote_data = "/lustre/cms/store/user/adiflori/ConvTracks/PGun__n_5_e_10/dataset"
 FILES = [remote_data + "/train/tracks_data/" + el for el in os.listdir(remote_data + "/train/tracks_data/")]
