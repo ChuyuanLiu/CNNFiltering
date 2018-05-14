@@ -26,6 +26,7 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
 import tracks
 from tracks import *
 
+from model_architectures import *
 
 IMAGE_SIZE = tracks.padshape
 
@@ -54,7 +55,6 @@ parser.add_argument('--name', type=str, default="cnn_tracks")
 parser.add_argument('--maxnorm', type=float, default=10.)
 parser.add_argument('--verbose', type=int, default=1)
 parser.add_argument('--flimit', type=int, default=None)
-parser.add_argument('--loadw',type=str,default=None)
 
 parser.add_argument('-d','--debug',action='store_true')
 parser.add_argument('--balance','--balance',action='store_true')
@@ -62,7 +62,7 @@ parser.add_argument('--fsamp',type=int,default=10)
 parser.add_argument('--test',type=int,default=35)
 parser.add_argument('--val',type=int,default=15)
 parser.add_argument('--gepochs',type=float,default=1)
-
+parser.add_argument('--loadw',type=str,default=None)
 parser.add_argument('--phi',action='store_true')
 parser.add_argument('--augm',type=int,default=1)
 parser.add_argument('--limit',type=int,default=None)
@@ -175,17 +175,13 @@ for step in range(args.k_steps):
     model = adam_small_doublet_model(train_input_list[0].shape[-1],n_labels=2)
     print("Model loaded")
 
-
-
-
-
     callbacks = [
             EarlyStopping(monitor='val_acc', patience=args.patience),
             ModelCheckpoint(args.log_dir + str(t_now) + "_" + str(step) + "_" + args.name + "_test_last.h5", save_best_only=True,
                             save_weights_only=True),
             TensorBoard(log_dir=args.log_dir, histogram_freq=0,
                         write_graph=True, write_images=True),
-    		roc_callback(training_data=(train_input_list,y),validation_data=(val_input_list,y_val))
+                roc_callback(training_data=(train_input_list,y),validation_data=(val_input_list,y_val))
         ]
 
     print("k-Fold no . " +  str(step) )
