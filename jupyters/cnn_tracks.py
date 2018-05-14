@@ -75,8 +75,8 @@ args = parser.parse_args()
 if not os.path.isdir(args.log_dir):
     os.makedirs(args.log_dir)
 
-if not os.path.isdir(args.log_dir + "/" + str(t_now) + "/".log_dir):
-    os.makedirs(args.args.log_dir + "/" + str(t_now) + "/")
+if not os.path.isdir(args.log_dir + "/" + str(t_now) + "/"):
+    os.makedirs(args.log_dir + "/" + str(t_now) + "/")
 
 def adam_small_doublet_model(n_channels,n_labels=2):
     hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='hit_shape_input')
