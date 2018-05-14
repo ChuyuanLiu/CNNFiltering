@@ -55,13 +55,13 @@ parser.add_argument('--name', type=str, default="cnn_tracks")
 parser.add_argument('--maxnorm', type=float, default=10.)
 parser.add_argument('--verbose', type=int, default=1)
 parser.add_argument('--flimit', type=int, default=None)
+parser.add_argument('--gepochs',type=int,default=5)
 
 parser.add_argument('-d','--debug',action='store_true')
 parser.add_argument('--balance','--balance',action='store_true')
 parser.add_argument('--fsamp',type=int,default=10)
 parser.add_argument('--test',type=int,default=35)
 parser.add_argument('--val',type=int,default=15)
-parser.add_argument('--gepochs',type=float,default=1)
 parser.add_argument('--loadw',type=str,default=None)
 parser.add_argument('--phi',action='store_true')
 parser.add_argument('--augm',type=int,default=1)
@@ -138,60 +138,66 @@ all_tracks_data = all_tracks.data
 
 val_frac = 1.0 / float(args.k_steps)
 
+prevname = None
+
 print("================= Training is starting with k folding")
-for step in range(args.k_steps):
+for g in range(args.gepochs):
+    for step in range(args.k_steps):
 
-    fname = args.log_dir + "/" + str(t_now) + "/" + args.name
+        fname = args.log_dir + "/" + str(t_now) + "/" + args.name
 
-    msk = np.random.rand(len(all_tracks_data)) < (1.0 - val_frac)
-    train_data = all_tracks_data[msk]
-    val_data   = all_tracks_data[~msk]
+        msk = np.random.rand(len(all_tracks_data)) < (1.0 - val_frac)
+        train_data = all_tracks_data[msk]
+        val_data   = all_tracks_data[~msk]
 
-    train_tracks = Tracks([])
-    train_tracks.from_dataframe(train_data)
-    val_tracks = Tracks([])
-    val_tracks.from_dataframe(val_data)
+        train_tracks = Tracks([])
+        train_tracks.from_dataframe(train_data)
+        val_tracks = Tracks([])
+        val_tracks.from_dataframe(val_data)
 
-    train_tracks.clean_dataset()
-    train_tracks.data_by_pdg()
+        train_tracks.clean_dataset()
+        train_tracks.data_by_pdg()
 
-    val_tracks.clean_dataset()
-    val_tracks.data_by_pdg()
+        val_tracks.clean_dataset()
+        val_tracks.data_by_pdg()
 
-    print("Data loading . . . ")
+        print("Data loading . . . ")
 
-    X_track, X_info, y = train_tracks.get_track_hits_layer_data()
-    X_val_track, X_val_info, y_val = val_tracks.get_track_hits_layer_data()
+        X_track, X_info, y = train_tracks.get_track_hits_layer_data()
+        X_val_track, X_val_info, y_val = val_tracks.get_track_hits_layer_data()
 
-    print(". . . done!")
+        print(". . . done!")
 
-    train_input_list = [X_track, X_info]
-    val_input_list = [X_val_track, X_val_info]
+        train_input_list = [X_track, X_info]
+        val_input_list = [X_val_track, X_val_info]
 
 
-    model = adam_small_doublet_model(train_input_list[0].shape[-1],n_labels=2)
+        model = adam_small_doublet_model(train_input_list[0].shape[-1],n_labels=2)
 
-    if step>0:
-        print("Loading weights from iteration: " + str(step-1))
-        model.load_weights(fname + "_fold_" + str(step-1) + ".h5")
-    else:
-        if args.loadw is not None:
-            print("Loading weights from previous run: " + str(args.loadw))
-            model.load_weights(args.loadw)
+        if (step>0 or g>0) and (prevname is not None):
+            print("Loading weights from iteration: " + str(step-1))
+            model.load_weights(prevname)
+        else:
+            if args.loadw is not None:
+                print("Loading weights from previous run: " + str(args.loadw))
+                model.load_weights(args.loadw)
 
-    print("Model loaded")
+        print("Model loaded")
 
-    callbacks = [
-            EarlyStopping(monitor='val_acc', patience=args.patience),
-            ModelCheckpoint(args.log_dir + str(t_now) + "_" + str(step) + "_" + args.name + "_test_last.h5", save_best_only=True,
-                            save_weights_only=True),
-            TensorBoard(log_dir=args.log_dir, histogram_freq=0,
-                        write_graph=True, write_images=True),
-                roc_callback(training_data=(train_input_list,y),validation_data=(val_input_list,y_val))
-        ]
+        callbacks = [
+                EarlyStopping(monitor='val_acc', patience=args.patience),
+                ModelCheckpoint(args.log_dir + str(t_now) + "_" + str(step) + "_" + args.name + "_test_last.h5", save_best_only=True,
+                                save_weights_only=True),
+                TensorBoard(log_dir=args.log_dir, histogram_freq=0,
+                            write_graph=True, write_images=True),
+                    roc_callback(training_data=(train_input_list,y),validation_data=(val_input_list,y_val))
+            ]
 
-    print("k-Fold no . " +  str(step) )
-    history = model.fit(train_input_list, y, batch_size=args.batch_size, epochs=args.n_epochs, shuffle=True,validation_data=(val_input_list,y_val), callbacks=callbacks, verbose=True)
+        print("k-Fold no . " +  str(step) + " (epoch" + str(g) + ")")
+        history = model.fit(train_input_list, y, batch_size=args.batch_size, epochs=args.n_epochs, shuffle=True,validation_data=(val_input_list,y_val), callbacks=callbacks, verbose=True)
 
-    print("saving model " + fname)
-    model.save_weights(fname + "_fold_" + str(step) + ".h5", overwrite=True)
+        print("saving model " + fname)
+
+        prevname = fname + "_fold_" + str(g) + "_" + str(step) + ".h5"
+
+        model.save_weights(prevname, overwrite=True)
