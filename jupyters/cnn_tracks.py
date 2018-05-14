@@ -140,12 +140,6 @@ for step in range(args.k_steps):
 
     fname = args.log_dir + "/" + str(t_now) + "/" + args.name
 
-    if step>0:
-        model.load_weights(fname + "_fold_" + str(step-1) + ".h5", overwrite=True)
-    else:
-        if args.loadw is not None:
-            model.load_weights(args.loadw, overwrite=True)
-
     msk = np.random.rand(len(all_tracks_data)) < (1.0 - val_frac)
     train_data = all_tracks_data[msk]
     val_data   = all_tracks_data[~msk]
@@ -173,6 +167,13 @@ for step in range(args.k_steps):
 
 
     model = adam_small_doublet_model(train_input_list[0].shape[-1],n_labels=2)
+
+    if step>0:
+        model.load_weights(fname + "_fold_" + str(step-1) + ".h5", overwrite=True)
+    else:
+        if args.loadw is not None:
+            model.load_weights(args.loadw, overwrite=True)
+            
     print("Model loaded")
 
     callbacks = [
