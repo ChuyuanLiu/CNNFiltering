@@ -75,6 +75,9 @@ args = parser.parse_args()
 if not os.path.isdir(args.log_dir):
     os.makedirs(args.log_dir)
 
+if not os.path.isdir(args.log_dir + "/" + str(t_now) + "/".log_dir):
+    os.makedirs(args.args.log_dir + "/" + str(t_now) + "/")
+
 def adam_small_doublet_model(n_channels,n_labels=2):
     hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='hit_shape_input')
     infos = Input(shape=(len(tracks.featureLabs),), name='info_input')
@@ -169,9 +172,11 @@ for step in range(args.k_steps):
     model = adam_small_doublet_model(train_input_list[0].shape[-1],n_labels=2)
 
     if step>0:
+        print("Loading weights from iteration: " + str(step-1))
         model.load_weights(fname + "_fold_" + str(step-1) + ".h5")
     else:
         if args.loadw is not None:
+            print("Loading weights from previous run: " + str(args.loadw))
             model.load_weights(args.loadw)
 
     print("Model loaded")
