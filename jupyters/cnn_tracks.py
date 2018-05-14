@@ -54,6 +54,7 @@ parser.add_argument('--name', type=str, default="cnn_tracks")
 parser.add_argument('--maxnorm', type=float, default=10.)
 parser.add_argument('--verbose', type=int, default=1)
 parser.add_argument('--flimit', type=int, default=None)
+parser.add_argument('--loadw',type=str,default=None)
 
 parser.add_argument('-d','--debug',action='store_true')
 parser.add_argument('--balance','--balance',action='store_true')
@@ -61,7 +62,7 @@ parser.add_argument('--fsamp',type=int,default=10)
 parser.add_argument('--test',type=int,default=35)
 parser.add_argument('--val',type=int,default=15)
 parser.add_argument('--gepochs',type=float,default=1)
-parser.add_argument('--loadw',type=str,default=None)
+
 parser.add_argument('--phi',action='store_true')
 parser.add_argument('--augm',type=int,default=1)
 parser.add_argument('--limit',type=int,default=None)
@@ -141,6 +142,9 @@ for step in range(args.k_steps):
 
     if step>0:
         model.load_weights(fname + "_fold_" + str(step-1) + ".h5", overwrite=True)
+    else:
+        if args.loadw is not None:
+            model.load_weights(args.loadw, overwrite=True)
 
     msk = np.random.rand(len(all_tracks_data)) < (1.0 - val_frac)
     train_data = all_tracks_data[msk]
@@ -170,6 +174,10 @@ for step in range(args.k_steps):
 
     model = adam_small_doublet_model(train_input_list[0].shape[-1],n_labels=2)
     print("Model loaded")
+
+
+
+
 
     callbacks = [
             EarlyStopping(monitor='val_acc', patience=args.patience),
