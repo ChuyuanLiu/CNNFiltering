@@ -154,7 +154,7 @@ test_tracks = Tracks(TEST_FILES,ptCut=thePtCut)
 test_tracks.clean_dataset()
 test_tracks.data_by_pdg()
 
-Test_track, Test_info, Test_y = test_tracks.get_track_hits_layer_data()
+Test_track, Test_info, y_test = test_tracks.get_track_hits_layer_data()
 test_input_list = [Test_track, Test_info]
 
 thePtString = "_" + str(thePtCut[0]) + "_" + str(thePtCut[1])
@@ -260,7 +260,7 @@ for g in range(args.gepochs):
         print('Train loss / train AUC       = {:.4f} / {:.4f} '.format(loss,train_roc))
         print('Train acc /  acc max (@t)   = {:.4f} / {:.4f} ({:.3f})'.format(acc,train_acc,t_train))
 
-        loss, acc = model.evaluate(test_input_list, Test_y, batch_size=args.batch_size)
+        loss, acc = model.evaluate(test_input_list, y_test, batch_size=args.batch_size)
         test_pred = model.predict(test_input_list)
         test_roc = roc_auc_score(y_test, test_pred)
         test_acc,t_test = max_binary_accuracy(y_test,test_pred,n=1000)
