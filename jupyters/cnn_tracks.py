@@ -57,6 +57,7 @@ parser.add_argument('--name', type=str, default="cnn_tracks")
 parser.add_argument('--maxnorm', type=float, default=10.)
 parser.add_argument('--verbose', type=int, default=1)
 parser.add_argument('--flimit', type=int, default=None)
+parser.add_argument('--tlimit', type=int, default=50)
 parser.add_argument('--gepochs',type=int,default=5)
 parser.add_argument('--pt_up',type=float,default=100.0)
 parser.add_argument('--pt_dw',type=float,default=1.0)
@@ -125,8 +126,11 @@ shuffle(FILES)
 TEST_FILES = [remote_data + "/test/" + el for el in os.listdir(remote_data + "/test/")]
 shuffle(TEST_FILES)
 
-if (args.flimit is not None) and (args.flimit + 1 < len(FILES) - 1):
-    FILES = FILES[:args.flimit+1]
+if (args.flimit is not None) and (args.flimit < len(FILES) ):
+    FILES = FILES[:args.flimit]
+
+if (args.tlimit < len(TEST_FILES)):
+    TEST_FILES = TEST_FILES[:args.tlimit]
 
 if args.debug:
     FILES = FILES[:3]
@@ -145,7 +149,7 @@ all_tracks_data = all_tracks.data
 
 val_frac = 1.0 / float(args.k_steps)
 
-test_tracks = Tracks(TEST_FILES,ptCut=[10.0,500.0])
+test_tracks = Tracks(TEST_FILES,ptCut=thePtCut)
 test_tracks.clean_dataset()
 test_tracks.data_by_pdg()
 
