@@ -154,6 +154,9 @@ test_tracks = Tracks(TEST_FILES,ptCut=thePtCut)
 test_tracks.clean_dataset()
 test_tracks.data_by_pdg()
 
+Test_track, Test_info, Test_y = test_tracks.get_track_hits_layer_data()
+test_input_list = [Test_track, Test_info]
+
 thePtString = "_" + str(thePtCut[0]) + "_" + str(thePtCut[1])
 
 prevname = None
@@ -238,8 +241,8 @@ for g in range(args.gepochs):
                 ModelCheckpoint(args.log_dir + str(t_now) + "_" + str(step) + "_" + args.name + "_test_last.h5", save_best_only=True,
                                 save_weights_only=True),
                 TensorBoard(log_dir=args.log_dir, histogram_freq=0,
-                            write_graph=True, write_images=True),
-                    roc_callback(training_data=(train_input_list,y),validation_data=(val_input_list,y_val))
+                            write_graph=True, write_images=True)
+                #roc_callback(training_data=(train_input_list,y),validation_data=(val_input_list,y_val))
             ]
 
         print("k-Fold no . " +  str(step) + " (epoch" + str(g) + ")")
@@ -248,5 +251,21 @@ for g in range(args.gepochs):
         print("saving model " + fname)
 
         prevname = fname + "_fold_" + str(g) + "_" + str(step) + ".h5"
+
+        loss, acc = model.evaluate(train_input_list, y, batch_size=args.batch_size)
+        train_pred = model.predict(train_input_list)
+        train_roc = roc_auc_score(y, train_pred)
+        train_acc,t_train = max_binary_accuracy(y,train_pred,n=1000)
+
+        print('Train loss / train AUC       = {:.4f} / {:.4f} '.format(loss,train_roc))
+        print('Train acc /  acc max (@t)   = {:.4f} / {:.4f} ({:.3f})'.format(acc,train_acc,t_train))
+
+        loss, acc = model.evaluate(test_input_list, Test_y, batch_size=args.batch_size)
+        test_pred = model.predict(test_input_list)
+        test_roc = roc_auc_score(y_test, test_pred)
+        test_acc,t_test = max_binary_accuracy(y_test,test_pred,n=1000)
+
+        print('Test loss / test AUC       = {:.4f} / {:.4f} '.format(loss,test_roc))
+        print('Test acc /  acc max (@t)   = {:.4f} / {:.4f} ({:.3f})'.format(acc,test_acc,t_test))
 
         model.save_weights(prevname, overwrite=True)
