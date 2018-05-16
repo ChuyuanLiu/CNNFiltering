@@ -187,7 +187,7 @@ if (args.save is not None):
         chunk_data = all_tracks_data[first:last]
         chunk_tracks = Tracks([])
         chunk_tracks.from_dataframe(chunk_data)
-        chunk_tracks.save(args.path + "/chunks/data" + thePtString + "_" + str(i) + ".h5")
+        chunk_tracks.save(ptCutDir + "/" + thePtString + "_" + str(i) + ".h5")
 
 print("================= Training is starting with k folding")
 for g in range(args.gepochs):
