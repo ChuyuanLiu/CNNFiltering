@@ -62,6 +62,7 @@ parser.add_argument('--gepochs',type=int,default=5)
 parser.add_argument('--pt_up',type=float,default=100.0)
 parser.add_argument('--pt_dw',type=float,default=1.0)
 parser.add_argument('-d','--debug',action='store_true')
+parser.add_argument('-s','--save',type=int,default=None)
 
 parser.add_argument('--balance','--balance',action='store_true')
 parser.add_argument('--fsamp',type=int,default=10)
@@ -153,14 +154,43 @@ test_tracks = Tracks(TEST_FILES,ptCut=thePtCut)
 test_tracks.clean_dataset()
 test_tracks.data_by_pdg()
 
+thePtString = "_" + str(thePtCut[0]) + "_" + str(thePtCut[1])
 
 prevname = None
+
+if (args.save is not None) and (args.save < all_tracks_data.shape[0]):
+
+    print("Saving data chunks...")
+    print("- size   : " + str(args.save))
+    print("- pt cut : " + str(thePtCut))
+
+    ptCutDir = args.path + "/chunks/Pt" + thePtString
+
+    if not os.path.isdir(args.path + "/chunks/")
+        os.makedirs(args.path + "/chunks/")
+
+    if not os.path.isdir(ptCutDir):
+        os.makedirs(ptCutDir)
+
+    chunk = int((all_tracks_data.shape[0]) / args.save)
+
+    for i in range(chunk):
+        first = args.save * i
+        last = min(args.save * (i + 1),all_tracks_data.shape[0])
+
+        if first > all_tracks_data.shape[0]:
+            continue
+
+        chunk_data = all_tracks_data[first:last]
+        chunk_tracks = Tracks([])
+        chunk_tracks.from_dataframe(chunk_data)
+        chunk_tracks.save(args.path + "/chunks/data" + thePtString + "_" + str(i) + ".h5")
 
 print("================= Training is starting with k folding")
 for g in range(args.gepochs):
     for step in range(args.k_steps):
 
-        fname = args.log_dir + "/" + str(t_now) + "/" + args.name + "_" + str(thePtCut[0]) + "_" + str(thePtCut[1]) + "_"
+        fname = args.log_dir + "/" + str(t_now) + "/" + args.name + thePtString + "_"
 
         msk = np.random.rand(len(all_tracks_data)) < (1.0 - val_frac)
         train_data = all_tracks_data[msk]
