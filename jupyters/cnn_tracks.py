@@ -39,13 +39,15 @@ pdg = [-211., 211., 321., -321., 2212., -2212., 11., -11., 13., -13.]
 if DEBUG:
     print("DEBUG mode")
 
+defaultPath = "/lustre/cms/store/user/adiflori/ConvTracks/PGun__n_5_e_10/dataset"
+
 t_now = '{0:%Y-%m-%d_%H-%M-%S}'.format(datetime.datetime.now())
 # Model configuration
 parser = argparse.ArgumentParser()
 parser.add_argument('--n_epochs', type=int, default=200 if not DEBUG else 3,
                     help='number of epochs')
-parser.add_argument('--path',type=str,default="data/bal_data/")
-parser.add_argument('--batch_size', type=int, default=1024)
+parser.add_argument('--path',type=str,default=defaultPath)
+parser.add_argument('--batch_size', type=int, default=4096)
 parser.add_argument('--dropout', type=float, default=0.5)
 parser.add_argument('--lr', type=float, default=0.01, help='learning rate')
 parser.add_argument('--momentum', type=float, default=0.5)
@@ -56,8 +58,10 @@ parser.add_argument('--maxnorm', type=float, default=10.)
 parser.add_argument('--verbose', type=int, default=1)
 parser.add_argument('--flimit', type=int, default=None)
 parser.add_argument('--gepochs',type=int,default=5)
-
+parser.add_argument('--pt_up',type=float,default=100.0)
+parser.add_argument('--pt_dw',type=float,default=1.0)
 parser.add_argument('-d','--debug',action='store_true')
+
 parser.add_argument('--balance','--balance',action='store_true')
 parser.add_argument('--fsamp',type=int,default=10)
 parser.add_argument('--test',type=int,default=35)
@@ -114,29 +118,37 @@ def adam_small_doublet_model(n_channels,n_labels=2):
 
 padshape = tracks.padshape
 
-remote_data = "/lustre/cms/store/user/adiflori/ConvTracks/PGun__n_5_e_10/dataset"
-FILES = [remote_data + "/train/tracks_data/" + el for el in os.listdir(remote_data + "/train/tracks_data/")]
+remote_data = args.path
+FILES = [remote_data + "/" + el for el in os.listdir(remote_data + "/")]
 shuffle(FILES)
 
-TEST_FILE = FILES[0]
+TEST_FILES = [remote_data + "/test/" + el for el in os.listdir(remote_data + "/test/")]
+shuffle(TEST_FILES)
 
-if args.flimit is not None:
-    if args.flimit + 1 < len(FILES) - 1:
-        FILES = FILES[1:args.flimit+1]
-    else:
-        FILES = FILES[1:]
-else:
-    FILES = FILES[1:]
+if (args.flimit is not None) and (args.flimit + 1 < len(FILES) - 1):
+    FILES = FILES[:args.flimit+1]
+
+if args.debug:
+    FILES = FILES[:3]
+    TEST_FILES = TEST_FILES[:2]
+    args.patience = 2
+    args.n_epochs = 10
 
 #VAL_FILES = [remote_data +"/val/" + el for el in os.listdir(remote_data +"/val/")][:3]
 
-#test_tracks = Tracks(TEST_FILE,ptCut=[10.0,500.0])
-all_tracks = Tracks(FILES,ptCut=[10.0,500.0])
+thePtCut = [args.pt_dw,args.pt_up]
+
+all_tracks = Tracks(FILES,ptCut=thePtCut)
 all_tracks.clean_dataset()
 all_tracks.data_by_pdg()
 all_tracks_data = all_tracks.data
 
 val_frac = 1.0 / float(args.k_steps)
+
+test_tracks = Tracks(TEST_FILES,ptCut=[10.0,500.0])
+test_tracks.clean_dataset()
+test_tracks.data_by_pdg()
+
 
 prevname = None
 
@@ -144,7 +156,7 @@ print("================= Training is starting with k folding")
 for g in range(args.gepochs):
     for step in range(args.k_steps):
 
-        fname = args.log_dir + "/" + str(t_now) + "/" + args.name
+        fname = args.log_dir + "/" + str(t_now) + "/" + args.name + "_" + str(thePtCut[0]) + "_" + str(thePtCut[1]) + "_"
 
         msk = np.random.rand(len(all_tracks_data)) < (1.0 - val_frac)
         train_data = all_tracks_data[msk]
