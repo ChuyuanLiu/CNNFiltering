@@ -158,7 +158,7 @@ thePtString = "_" + str(thePtCut[0]) + "_" + str(thePtCut[1])
 
 prevname = None
 
-if (args.save is not None) and (args.save < all_tracks_data.shape[0]):
+if (args.save is not None):
 
     print("Saving data chunks...")
     print("- size   : " + str(args.save))
@@ -166,13 +166,16 @@ if (args.save is not None) and (args.save < all_tracks_data.shape[0]):
 
     ptCutDir = args.path + "/chunks/Pt" + thePtString
 
-    if not os.path.isdir(args.path + "/chunks/")
+    if not os.path.isdir(args.path + "/chunks/"):
         os.makedirs(args.path + "/chunks/")
 
     if not os.path.isdir(ptCutDir):
         os.makedirs(ptCutDir)
 
-    chunk = int((all_tracks_data.shape[0]) / args.save)
+    if args.save > all_tracks_data.shape[0]:
+        chunk = 1
+    else:
+        chunk = int((all_tracks_data.shape[0]) / args.save)
 
     for i in range(chunk):
         first = args.save * i
