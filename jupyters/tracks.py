@@ -174,9 +174,9 @@ class Tracks:
 
             df.columns = dataLab  # change wrong columns names
 
-            print(" -- Loaded : " + str(df.shape[0]))
-
             df = df[df[one_pix] >= 0.0]
+            
+            print(" -- Loaded : " + str(df.shape[0]))
 
             df = df[(df["Pt"]>ptCut[0]) & (df["Pt"]<ptCut[1])]
 
@@ -340,7 +340,6 @@ class Tracks:
 
     def get_track_hits_data(self,bw=False,numHits=4):
 
-
         #self.data_augmentation(magnitude=augmentation)
         hits = []
         mean, std = (13382.0011321,10525.1252954)
@@ -380,7 +379,6 @@ class Tracks:
             ids = self.data[hitLayers].values
 
     def get_track_hits_layer_data(self,bw=False,numHits=4,duplicate=False):
-
 
         if not duplicate:
             self.remove_duplicates()

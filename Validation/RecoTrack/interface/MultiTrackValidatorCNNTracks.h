@@ -151,7 +151,7 @@ class MultiTrackValidatorCNNTracks : public DQMEDAnalyzer {
   std::vector<MonitorElement *> h_reco_coll, h_assoc_coll, h_assoc2_coll, h_simul_coll, h_looper_coll, h_pileup_coll;
 
   float padHalfSize;
-  int padSize, tParams,numPixels;
+  int padSize, tParams, numPixels, numStrips;
 
 };
 

@@ -37,8 +37,6 @@ track_lab = "PdgId"
 
 pdg_lab = "inTpPdgId"
 
-one_pix = "hit_0_IsBarrel"
-
 headLab = ["run","evt","lumi","bSX","bSY","bSZ","bSdZ"]
 
 particle = ["TId","Px","Py","Pz","Pt","MT","ET","MSqr","PdgId",
@@ -136,7 +134,14 @@ dataLab += particle
 for j in range(maxHits):
     dataLab += hitsLabs[j]
 
+nHits = []
+
+for nhit in range(10):
+    nHits.append('hit_' + str(nhit) + '_Layer')
+
 dataLab += ["dummyFlag"]
+
+dataLabPost += nHits + ["nHits"]
 
 particle_ids = [-1.,11.,13.,15.,22.,111.,211.,311.,321.,2212.,2112.,3122.,223.]
 
@@ -151,7 +156,7 @@ hitLayers = ['hit_' + str(i) + '_Layer' for i in range(10)]
 class Tracks:
     """ Load the Tracks from files. """
 
-    def __init__(self, fnames,pdgIds=main_pdgs,numHits=10,noduplicates=False,ptCut=[-1.0,1e8]):
+    def __init__(self, fnames,pdgIds=main_pdgs,numHits=10,noduplicates=False,ptCut=[-1.0,1e8], minPix = 4):
         self.data = pd.DataFrame(data=[], columns=dataLab)
 
 
@@ -174,7 +179,9 @@ class Tracks:
 
             df.columns = dataLab  # change wrong columns names
 
-            df = df[df[one_pix] >= 0.0]
+            thePix = "hit_" + str(minPix-1) + "_IsBarrel"
+
+            df = df[df[thePix] >= 0.0]
 
             df = df[(df["Pt"]>ptCut[0]) & (df["Pt"]<ptCut[1])]
 
@@ -231,6 +238,8 @@ class Tracks:
 
     def clean_dataset(self, pdgIds=main_pdgs,verbose=True):
         """ Cleaning: tracks with at least 1 pixel hit. """
+
+        one_pix = "hit_0_IsBarrel"
 
         self.data = self.data[self.data[one_pix] >= 0.0]
 
@@ -312,6 +321,7 @@ class Tracks:
     def from_dataframe(self,data):
         """ Constructor method to initialize the classe from a DataFrame """
         self.data = data
+        self.data.columns = dataLabPost
 
     def b_w_correction(self, hit,smoothing=1.0):
 

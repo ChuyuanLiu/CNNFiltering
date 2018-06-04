@@ -47,7 +47,9 @@
 #include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
 #include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
+#include "DataFormats/SiStripDetId/interface/SiStripDetId.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHit.h"
+#include "DataFormats/​TrackerRecHit2D/​interface/​SiStripRecHit2D.h"
 
 #include "SimTracker/TrackerHitAssociation/interface/ClusterTPAssociation.h"
 #include "RecoTracker/TkHitPairs/interface/IntermediateHitDoublets.h"
@@ -87,7 +89,8 @@ MultiTrackValidatorCNNTracks::MultiTrackValidatorCNNTracks(const edm::ParameterS
   padHalfSize = 8;
   padSize = (int)(padHalfSize*2);
   tParams = 26;
-  numPixels = 10;
+  numPixels = 15;
+  numStrips = 15;
 
   const edm::InputTag& label_tp_effic_tag = pset.getParameter< edm::InputTag >("label_tp_effic");
   const edm::InputTag& label_tp_fake_tag = pset.getParameter< edm::InputTag >("label_tp_fake");
@@ -1057,7 +1060,7 @@ void MultiTrackValidatorCNNTracks::analyze(const edm::Event& event, const edm::E
 
       std::string histname;
       std::vector<TH2F *> hitClusters;
-      std::vector< const TrackerSingleRecHit*> hits;
+      std::vector< const TrackerSingleRecHit*> hits,stripHits;
       std::vector< std::vector< float>> hitPars;
       std::vector<float> theTP;
 
@@ -1153,7 +1156,7 @@ void MultiTrackValidatorCNNTracks::analyze(const edm::Event& event, const edm::E
           }
         }
 
-        int thePixels = 0;
+        int thePixels = 0, theStrips = 0;
 
         for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
         {
@@ -1169,7 +1172,29 @@ void MultiTrackValidatorCNNTracks::analyze(const edm::Event& event, const edm::E
           if (pixHit)
           hits.push_back(hit);
 
+          thePixels++;
+
           if(thePixels>=numPixels) break;
+
+        }
+
+        for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
+        {
+          TrackerSingleRecHit const * hit= dynamic_cast<TrackerSingleRecHit const *>(*recHit);
+
+          DetId detId = (*recHit)->geographicalId();
+          unsigned int subdetid = detId.subdetId();
+
+          if(detId.det() != DetId::Tracker) continue;
+          if (!((subdetid==3) || (subdetid==4) || (subdetid==5) || (subdetid==6))) continue;
+
+          const SiPixelRecHit* stripHit = dynamic_cast<SiPixelRecHit const *>(hit);
+          if (stripHit)
+          stripHits.push_back(hit);
+
+          theStrips++;
+
+          if(theStrips>=numStrips) break;
 
         }
 
@@ -1271,7 +1296,106 @@ void MultiTrackValidatorCNNTracks::analyze(const edm::Event& event, const edm::E
           thisHitPars.push_back(float(clust->charge()));
 
           hitPars.push_back(thisHitPars);
-          std::cout<<thisHitPars.size()<<std::endl;
+        }
+
+        for(size_t j = 0; j < hits.size(); ++j)
+        {
+
+          auto hit = hits[j];
+          const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(hit);
+          auto clust = pixHit->cluster();
+
+          DetId detId = hit->geographicalId();
+          unsigned int subdetid = detId.subdetId();
+
+          std::vector<float> thisHitPars;
+
+          //4
+          thisHitPars.push_back((hit->globalState()).position.x()); //1
+          thisHitPars.push_back((hit->globalState()).position.y());
+          thisHitPars.push_back((hit->globalState()).position.z()); //3
+
+          thisHitPars.push_back((hit->globalState()).phi); //Phi //FIXME
+          thisHitPars.push_back((hit->globalState()).r); //R //TODO add theta and DR
+
+          //Module labels
+          if(subdetid==1) //barrel
+          {
+            thisHitPars.push_back(float(true)); //isBarrel //7
+            thisHitPars.push_back(PXBDetId(detId).layer());
+            thisHitPars.push_back(PXBDetId(detId).ladder());
+            thisHitPars.push_back(-1.0);
+            thisHitPars.push_back(-1.0);
+            thisHitPars.push_back(-1.0);
+            thisHitPars.push_back(PXBDetId(detId).module()); //14
+          }
+          else
+          {
+            thisHitPars.push_back(float(false)); //isBarrel
+            thisHitPars.push_back(-1.0);
+            thisHitPars.push_back(-1.0);
+            thisHitPars.push_back(PXFDetId(detId).side());
+            thisHitPars.push_back(PXFDetId(detId).disk());
+            thisHitPars.push_back(PXFDetId(detId).panel());
+            thisHitPars.push_back(PXFDetId(detId).module());
+          }
+
+
+          //TODO check CLusterRef & OmniClusterRef
+
+          //ClusterInformations
+          thisHitPars.push_back((float)clust->x()); //20
+          thisHitPars.push_back((float)clust->y());
+          thisHitPars.push_back((float)clust->size());
+          thisHitPars.push_back((float)clust->sizeX());
+          thisHitPars.push_back((float)clust->sizeY());
+          thisHitPars.push_back((float)clust->pixel(0).adc); //25
+          thisHitPars.push_back(float(clust->charge())/float(clust->size())); //avg pixel charge
+
+
+          thisHitPars.push_back((float)(clust->sizeX() > padSize));//27
+          thisHitPars.push_back((float)(clust->sizeY() > padSize));
+          thisHitPars.push_back((float)(clust->sizeY()) / (float)(clust->sizeX()));
+
+
+          thisHitPars.push_back((float)pixHit->spansTwoROCs());
+          thisHitPars.push_back((float)pixHit->hasBadPixels());
+          thisHitPars.push_back((float)pixHit->isOnEdge()); //31
+
+          //Cluster Pad
+          TH2F hClust("hClust","hClust",
+          padSize,
+          clust->x()-padHalfSize,
+          clust->x()+padHalfSize,
+          padSize,
+          clust->y()-padHalfSize,
+          clust->y()+padHalfSize);
+
+          //Initialization
+          for (int nx = 0; nx < padSize; ++nx)
+            for (int ny = 0; ny < padSize; ++ny)
+              hClust.SetBinContent(nx,ny,0.0);
+
+          for (int k = 0; k < clust->size(); ++k)
+            hClust.SetBinContent(hClust.FindBin((float)clust->pixel(k).x, (float)clust->pixel(k).y),(float)clust->pixel(k).adc);
+
+
+
+          //Linearizing the cluster
+
+          for (int ny = padSize; ny>0; --ny)
+          {
+            for(int nx = 0; nx<padSize; nx++)
+            {
+              int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
+              thisHitPars.push_back(hClust.GetBinContent(n));
+            }
+          }
+
+          //ADC sum
+          thisHitPars.push_back(float(clust->charge()));
+
+          hitPars.push_back(thisHitPars);
         }
 
         if(int(hits.size())<numPixels)

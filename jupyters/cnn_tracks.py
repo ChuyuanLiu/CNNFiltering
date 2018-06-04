@@ -89,16 +89,17 @@ def adam_small_doublet_model(n_channels,n_labels=2):
     infos = Input(shape=(len(tracks.featureLabs),), name='info_input')
 
     #drop = Dropout(args.dropout)(hit_shapes)
-    conv = Conv2D(32, (4, 4), activation='relu', padding='same', data_format="channels_last", name='conv1')(hit_shapes)
-    conv = Conv2D(32, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv2')(conv)
+    conv = Conv2D(256, (4, 4), activation='relu', padding='same', data_format="channels_last", name='conv1')(hit_shapes)
+    conv = Conv2D(256, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv2')(conv)
     b_norm = BatchNormalization()(conv)
     pool = MaxPooling2D(pool_size=(2, 2), padding='same', data_format="channels_last", name='pool1')(b_norm)
 
-    conv = Conv2D(64, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv3')(pool)
-    conv = Conv2D(64, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv4')(conv)
+    conv = Conv2D(128, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv3')(pool)
+    conv = Conv2D(128, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv4')(conv)
     b_norm = BatchNormalization()(conv)
     pool = MaxPooling2D(pool_size=(2, 2), padding='same', data_format="channels_last", name='pool2')(b_norm)
 
+    conv = Conv2D(64, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv5')(pool)
     conv = Conv2D(64, (3, 3), activation='relu', padding='same', data_format="channels_last", name='conv5')(pool)
     pool = MaxPooling2D(pool_size=(2, 2), padding='same', data_format="channels_last", name='avgpool')(conv)
 
@@ -225,6 +226,8 @@ for g in range(args.gepochs):
 
 
         model = adam_small_doublet_model(train_input_list[0].shape[-1],n_labels=2)
+        
+        model.summary()
 
         if (step>0 or g>0) and (prevname is not None):
             print("Loading weights from iteration: " + str(step-1))
