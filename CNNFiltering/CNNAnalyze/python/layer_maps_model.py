@@ -82,7 +82,7 @@ parser.add_argument('--limit',type=int,default=None)
 parser.add_argument('--multiclass',action='store_true')
 parser.add_argument('--kfolding',action='store_true')
 parser.add_argument('--k',type=int,default=1)
-parser.add_argument('--step',type=str,default="detachedQuadStep")
+parser.add_argument('--step',type=str,default="detachedQuadStepHitDoublets")
 
 args = parser.parse_args()
 
