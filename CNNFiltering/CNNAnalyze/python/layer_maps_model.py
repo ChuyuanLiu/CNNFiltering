@@ -46,6 +46,7 @@ from sklearn.model_selection import StratifiedKFold
 DEBUG = os.name == 'nt'  # DEBUG on laptop
 
 pdg = [-211., 211., 321., -321., 2212., -2212., 11., -11., 13., -13.]
+steps = ["detachedQuadStepHitDoublets","detachedTripletStepHitDoublets","initialStepHitDoubletsPreSplitting","lowPtQuadStepHitDoublets","mixedTripletStepHitDoublets","tripletElectronHitDoublets"]
 
 #DEBUG = True
 
@@ -81,6 +82,8 @@ parser.add_argument('--limit',type=int,default=None)
 parser.add_argument('--multiclass',action='store_true')
 parser.add_argument('--kfolding',action='store_true')
 parser.add_argument('--k',type=int,default=1)
+parser.add_argument('--step',type=str,default="detachedQuadStep")
+
 args = parser.parse_args()
 
 if args.name is None:
@@ -127,6 +130,12 @@ test_files = [remote_data + 'test/' +
              el for el in os.listdir(remote_data + 'test/')]
 shuffle(test_files)
 test_files  = test_files[:args.test] if not args.debug else debug_files
+
+if args.step not in steps:
+    print("Step name must be in: ")
+    print(steps)
+    print("Exiting.")
+    sys.exit()
 # don't test yet. Test on evaluation.ipynb... # [ remote_data + el for el in  ["203_doublets.h5",  "22_doublets.h5",   "53_doublets.h5",  "64_doublets.h5",  "92_doublets.h5", "132_doublets.h5",  "159_doublets.h5",  "180_doublets.h5",  "206_doublets.h5",  "33_doublets.h5"]]
 #test_files = val_files
 
