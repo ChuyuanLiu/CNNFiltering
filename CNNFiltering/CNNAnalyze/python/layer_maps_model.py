@@ -122,17 +122,21 @@ debug_files = [ debug_data + el for el in os.listdir(debug_data)]
 
 
 print("Loading data...")
-main_files  = [remote_data + '/train/' +
-               el for el in os.listdir(remote_data )] 
-train_files = [remote_data + '/train/' +
-               el for el in os.listdir(remote_data + 'train/')] if not args.debug else debug_files
+main_files  = [remote_data + el for el in os.listdir(remote_data )]
+shuffle(main_files)
 
-val_files = [remote_data + 'val/' +
-             el for el in os.listdir(remote_data + 'val/')]
-shuffle(val_files)
-val_files = val_files[:args.val] if not args.debug else debug_files
+train_files = main_files[:int(len(main_files)*0.8)]#[remote_data + '/train/' +
+               #el for el in os.listdir(remote_data + 'train/')] if not args.debug else debug_files
 
-print(len(val_files))
+val_files = main_files[int(len(main_files)*0.8):]
+#
+# val_files = [remote_data + 'val/' +
+#              el for el in os.listdir(remote_data + 'val/')]
+# shuffle(val_files)
+# val_files = val_files[:args.val] if not args.debug else debug_files
+#
+# print(len(val_files))
+
 test_files = [remote_data + 'test/' +
              el for el in os.listdir(remote_data + 'test/')]
 shuffle(test_files)
