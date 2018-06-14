@@ -49,7 +49,7 @@
 #include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
 #include "DataFormats/SiStripDetId/interface/SiStripDetId.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHit.h"
-#include "DataFormats/​TrackerRecHit2D/​interface/​SiStripRecHit2D.h"
+#include "DataFormats/TrackerRecHit2D/​interface/SiStripRecHit2D.h"
 
 #include "SimTracker/TrackerHitAssociation/interface/ClusterTPAssociation.h"
 #include "RecoTracker/TkHitPairs/interface/IntermediateHitDoublets.h"
