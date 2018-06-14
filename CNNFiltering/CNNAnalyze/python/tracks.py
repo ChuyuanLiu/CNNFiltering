@@ -141,6 +141,8 @@ for nhit in range(10):
 
 dataLab += ["dummyFlag"]
 
+dataLabPost = dataLab
+
 dataLabPost += nHits + ["nHits"]
 
 particle_ids = [-1.,11.,13.,15.,22.,111.,211.,311.,321.,2212.,2112.,3122.,223.]

@@ -46,7 +46,7 @@ from sklearn.model_selection import StratifiedKFold
 DEBUG = os.name == 'nt'  # DEBUG on laptop
 
 pdg = [-211., 211., 321., -321., 2212., -2212., 11., -11., 13., -13.]
-steps = ["detachedQuadStepHitDoublets","detachedTripletStepHitDoublets","initialStepHitDoubletsPreSplitting","lowPtQuadStepHitDoublets","mixedTripletStepHitDoublets","tripletElectronHitDoublets"]
+steps = ["detachedQuadStepHitDoublets","detachedTripletStepHitDoublets","initialStepHitDoubletsPreSplitting","lowPtQuadStepHitDoublets","mixedTripletStepHitDoublets","tripletElectronHitDoublets","allSteps"]
 
 #DEBUG = True
 
@@ -107,9 +107,14 @@ fname = args.log_dir + "/" + str(t_now) + "/" + args.name
 if args.phi:
 	fname = fname + "_phi"
 
+if args.step not in steps:
+    print("Step name must be in: ")
+    print(steps)
+    print("Exiting.")
+    sys.exit()
 # "/eos/cms/store/cmst3/group/dehep/convPixels/TTBar_13TeV_PU35/"
 
-remote_data = args.path
+remote_data = args.path + "/" + args.step
 #debug_data = ['data/h5data/' + el for el in ['doublets.h5', 'doublets2.h5']]
 debug_data = remote_data + "/debug/"
 
@@ -117,6 +122,8 @@ debug_files = [ debug_data + el for el in os.listdir(debug_data)]
 
 
 print("Loading data...")
+main_files  = [remote_data + '/train/' +
+               el for el in os.listdir(remote_data )] 
 train_files = [remote_data + '/train/' +
                el for el in os.listdir(remote_data + 'train/')] if not args.debug else debug_files
 
@@ -131,11 +138,6 @@ test_files = [remote_data + 'test/' +
 shuffle(test_files)
 test_files  = test_files[:args.test] if not args.debug else debug_files
 
-if args.step not in steps:
-    print("Step name must be in: ")
-    print(steps)
-    print("Exiting.")
-    sys.exit()
 # don't test yet. Test on evaluation.ipynb... # [ remote_data + el for el in  ["203_doublets.h5",  "22_doublets.h5",   "53_doublets.h5",  "64_doublets.h5",  "92_doublets.h5", "132_doublets.h5",  "159_doublets.h5",  "180_doublets.h5",  "206_doublets.h5",  "33_doublets.h5"]]
 #test_files = val_files
 
