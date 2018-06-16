@@ -122,7 +122,7 @@ debug_files = [ debug_data + el for el in os.listdir(debug_data)]
 
 
 print("Loading data...")
-main_files  = [remote_data + el for el in os.listdir(remote_data )]
+main_files  = [remote_data + el for el in os.listdir(remote_data) if ".h5" in el]
 shuffle(main_files)
 
 train_files = main_files[:int(len(main_files)*0.8)] if not args.debug else debug_files #[remote_data + '/train/' +
@@ -153,6 +153,9 @@ test_files  = test_files[:args.test] if not args.debug else debug_files
 
 if not args.kfolding:
     val_data = Dataset(val_files)#,balance=args.balance)
+
+if args.kfolding:
+	train_files = main_files
 
 test_data = Dataset(test_files)#,balance=args.balance)
 
@@ -358,13 +361,17 @@ if not args.kfolding:
 
 if args.kfolding:
     while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < args.gepochs).any():
+        
+	print("Start to k-fold")
         numprobs = len(problematics_y)
         problematics = [problematics_hit,problematics_info]
         thisindices = indices[i*args.fsamp:(i+1)*args.fsamp]
         train_batch_file = np.take(train_files,thisindices)
         sizesamp = args.k
-
-        for i in range(0,len(thisindices)/args.k):
+	#print(len(thisindices)/args.k)	
+        #print(len(thisindices))
+	#print(indices)
+	for i in range(0,len(thisindices)/args.k):
 
             kfoldindices_val   = thisindices[i*sizesamp:(i+1)*sizesamp]
             kfoldindices_train = [el for el in thisindices if el not in kfoldindices_val]
@@ -434,7 +441,7 @@ if args.kfolding:
                                 save_weights_only=True),
                 TensorBoard(log_dir=log_dir_tf, histogram_freq=0,
                             write_graph=True, write_images=True),
-        		roc_callback(training_data=(train_input_list,y),validation_data=(val_input_list,y_val))
+        		roc_callback(training_data=(test_input_list,y_test),validation_data=(val_input_list,y_val))
             ]
 
             #model.fit_generator(myGenerator(), samples_per_epoch = 60000, nb_epoch = 2, verbose=2, show_accuracy=True, callbacks=[], validation_data=None, class_weight=None, nb_worker=1)

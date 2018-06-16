@@ -1,6 +1,7 @@
 from __future__ import print_function
 import argparse
 import dataset
+import time
 from keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense
 from keras.layers import concatenate, Dropout, BatchNormalization, AveragePooling2D
 from keras.models import Model
@@ -242,13 +243,19 @@ class roc_callback(Callback):
         return
 
     def on_epoch_end(self, epoch, logs={}):
-        y_pred = self.model.predict(self.x)
+        
+	start = time.time()
+	y_pred = self.model.predict(self.x)
         roc = roc_auc_score(self.y, y_pred)
-        y_pred_val = self.model.predict(self.x_val)
-        roc_val = roc_auc_score(self.y_val, y_pred_val)
+        #y_pred_val = self.model.predict(self.x_val)
+        roc_val = 0#roc_auc_score(self.y_val, y_pred_val)
         # acc_val,t = max_binary_accuracy(np.array(self.y_val),np.array(y_pred_val),n=200)
         # print('\n ==> ROC: %s - ROC val: %s - MaxAcc val: %s (t = %s)\n' % (str(round(roc,4)),str(round(roc_val,4)),str(round(acc_val,4)),str(round(t,3))))
-        print('\n ==> ROC: %s - ROC val: %s \n' % (str(round(roc,4)),str(round(roc_val,4))))
+
+	done = time.time()
+	elapsed = done - start
+
+	print('\n ==> ROC: %s - ROC val: %s (%d sec.)\n' % (str(round(roc,4)),str(round(roc_val,4)),elapsed))
 
         return
 
