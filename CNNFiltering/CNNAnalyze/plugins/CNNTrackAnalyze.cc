@@ -159,8 +159,6 @@ alltracks_(consumes<edm::View<reco::Track> >(iConfig.getParameter<edm::InputTag>
 tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap")))
 {
 
-  usesResource("TFileService");
-
   edm::Service<TFileService> fs;
   cnntree = fs->make<TTree>("CNNTree","Doublets Tree");
 
