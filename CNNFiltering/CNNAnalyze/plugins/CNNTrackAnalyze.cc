@@ -126,7 +126,7 @@ private:
 
   int doubletSize;
   std::string processName_;
-  edm::EDGetTokenT<edm::View<reco::Track> alltracks_;
+  edm::EDGetTokenT<edm::View<reco::Track>> alltracks_;
   edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
   edm::EDGetTokenT<reco::BeamSpot>  bsSrc_;
   edm::EDGetTokenT<std::vector<PileupSummaryInfo>>  infoPileUp_;
