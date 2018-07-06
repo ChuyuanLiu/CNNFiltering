@@ -305,7 +305,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
     auto track = trackCollection->refAt(i);
     auto hitPattern = track->hitPattern();
-    bool trkQual  = track->quality(trackQuality_);
+    bool trkQual  = track->quality(trackQuality);
 
     if(!trkQual)
       continue;
