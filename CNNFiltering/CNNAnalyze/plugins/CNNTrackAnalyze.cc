@@ -138,7 +138,7 @@ private:
   float pt, eta, phi, p, chi2n, d0, dx, dz;
   int nhit, nhpxf, nhtib, nhtob, nhtid, nhtec, nhpxb;
 
-  std::vector<float>  x, y, z, phi, r, c_x, c_y, size, sizex, sizey, charge, ovfx, ovfy, ratio;
+  std::vector<float>  x, y, z, phi_hit, r, c_x, c_y, size, sizex, sizey, charge, ovfx, ovfy, ratio;
   //std::vector<TH2> hitClust;
   std::vector< std::vector<float> > hitPixels;
 
@@ -200,7 +200,7 @@ tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap
   {
     std::string name = "hitPix_" + std::to_string(i);
     std::string tree = name + "/D";
-    cnntree->Branch(name,      &hitPixels[i],          tree);
+    cnntree->Branch(name.c_str(),      &hitPixels[i],          tree.c_str());
   }
 
   edm::InputTag beamSpotTag = iConfig.getParameter<edm::InputTag>("beamSpot");
