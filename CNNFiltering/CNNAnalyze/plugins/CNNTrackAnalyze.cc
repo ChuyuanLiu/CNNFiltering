@@ -257,7 +257,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   // std::cout<<"CNNDoublets Analyzer"<<std::endl;
 
   std::string theTrackQuality = "highPurity";
-  reco::TrackBase::TrackQuality trackQualit_= reco::TrackBase::qualityByName(theTrackQuality);
+  reco::TrackBase::TrackQuality trackQuality= reco::TrackBase::qualityByName(theTrackQuality);
 
   edm::Handle<View<reco::Track> >  trackCollection;
   iEvent.getByToken(alltracks_, trackCollection);
