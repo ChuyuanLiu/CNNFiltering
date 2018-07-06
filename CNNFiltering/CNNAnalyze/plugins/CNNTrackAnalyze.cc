@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Package:    CNNFiltering/CNNAnalyze
-// Class:      CNNAnalyze
+// Package:    CNNFiltering/CNNTrackAnalyze
+// Class:      CNNTrackAnalyze
 //
-/**\class CNNAnalyze CNNAnalyze.cc CNNFiltering/CNNAnalyze/plugins/CNNAnalyze.cc
+/**\class CNNTrackAnalyze CNNTrackAnalyze.cc CNNFiltering/CNNTrackAnalyze/plugins/CNNTrackAnalyze.cc
 
 Description: [one line class summary]
 
@@ -108,10 +108,10 @@ Implementation:
 // constructor "usesResource("TFileService");"
 // This will improve performance in multithreaded jobs.
 
-class CNNAnalyze : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
+class CNNTrackAnalyze : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 public:
-  explicit CNNAnalyze(const edm::ParameterSet&);
-  ~CNNAnalyze();
+  explicit CNNTrackAnalyze(const edm::ParameterSet&);
+  ~CNNTrackAnalyze();
 
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
@@ -153,7 +153,7 @@ private:
 //
 // constructors and destructor
 //
-CNNAnalyze::CNNAnalyze(const edm::ParameterSet& iConfig):
+CNNTrackAnalyze::CNNTrackAnalyze(const edm::ParameterSet& iConfig):
 processName_(iConfig.getParameter<std::string>("processName")),
 alltracks_(consumes<edm::View<reco::Track> >(iConfig.getParameter<edm::InputTag>("tracks"))),
 tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap")))
@@ -178,7 +178,7 @@ tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap
 }
 
 
-CNNAnalyze::~CNNAnalyze()
+CNNTrackAnalyze::~CNNTrackAnalyze()
 {
 
   // do anything here that needs to be done at desctruction time
@@ -193,7 +193,7 @@ CNNAnalyze::~CNNAnalyze()
 
 // ------------ method called for each event  ------------
 void
-CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
 
@@ -351,19 +351,19 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 // ------------ method called once each job just before starting event loop  ------------
 void
-CNNAnalyze::beginJob()
+CNNTrackAnalyze::beginJob()
 {
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 void
-CNNAnalyze::endJob()
+CNNTrackAnalyze::endJob()
 {
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
-CNNAnalyze::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+CNNTrackAnalyze::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   //The following says we do not know what parameters are allowed so do no validation
   // Please change this to state exactly what you do use, even if it is no parameters
   edm::ParameterSetDescription desc;
@@ -372,4 +372,4 @@ CNNAnalyze::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(CNNAnalyze);
+DEFINE_FWK_MODULE(CNNTrackAnalyze);
