@@ -138,6 +138,10 @@ private:
   float pt, eta, phi, p, chi2n, d0, dx, dz;
   int nhit, nhpxf, nhtib, nhtob, nhtid, nhtec, nhpxb;
 
+  std::vector<float>  x, y, z, phi, r, c_x, c_y, size, sizex, sizey, charge, ovfx, ovfy, ratio;
+  //std::vector<TH2> hitClust;
+  std::vector< std::vector<float> > hitPixels;
+
   TTree* cnntree;
 
   UInt_t test;
@@ -162,6 +166,12 @@ alltracks_(consumes<edm::View<reco::Track> >(iConfig.getParameter<edm::InputTag>
 tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap")))
 {
 
+  padHalfSize = 7.5;
+  padSize = (int)(padHalfSize*2);
+  tParams = 26;
+
+  hitPixels.reserve(10);
+
   edm::Service<TFileService> fs;
   cnntree = fs->make<TTree>("CNNTree","Doublets Tree");
 
@@ -184,14 +194,21 @@ tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap
   cnntree->Branch("nhtec",      &nhtec,          "nhtec/I");
   cnntree->Branch("nhpxb",      &nhpxb,          "nhpxb/I");
 
+  cnntree->Branch("nhpxb",      &nhpxb,          "nhpxb/I");
+
+  for(int i = 0; i<10,i++)
+  {
+    std::string name = "hitPix_" + std::to_string(i);
+    std::string tree = name + "/D"
+    cnntree->Branch(name,      &hitPixels[i],          tree);
+  }
+
   edm::InputTag beamSpotTag = iConfig.getParameter<edm::InputTag>("beamSpot");
   bsSrc_ = consumes<reco::BeamSpot>(beamSpotTag);
 
   infoPileUp_ = consumes<std::vector<PileupSummaryInfo> >(iConfig.getParameter< edm::InputTag >("infoPileUp"));
 
-  padHalfSize = 7.5;
-  padSize = (int)(padHalfSize*2);
-  tParams = 26;
+
 
 }
 
@@ -358,7 +375,6 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
     }
 
-    for (auto& h: theHits)
     for(int i =0; i<10;i++)
     {
         if(flagHit.find(i) != flagHit.end())
@@ -369,6 +385,31 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
           const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(h);
           auto clust = pixHit->cluster();
+
+          x.push_back((hit->globalState()).position.x()); //1
+        //   (hit->globalState()).position.y();
+        //   (hit->globalState()).position.z(); //3
+        //
+        //   (hit->globalState()).phi; //Phi //FIXME
+        //   (hit->globalState()).r;
+        // //ClusterInformations
+        //   (float)clust->x(); //20
+        //   (float)clust->y();
+        //   (float)clust->size();
+        //   (float)clust->sizeX();
+        //   (float)clust->sizeY();
+        //   (float)clust->pixel(0).adc; //25
+        //   float(clust->charge())/float(clust->size()); //avg pixel charge
+        //
+        //
+        //   (float)(clust->sizeX() > padSize);//27
+        //   (float)(clust->sizeY() > padSize);
+        //   (float)(clust->sizeY()) / (float)(clust->sizeX());
+        //
+        //
+        //   (float)pixHit->spansTwoROCs();
+        //   (float)pixHit->hasBadPixels();
+        //   (float)pixHit->isOnEdge(); //31
 
           TH2F hClust("hClust","hClust",
           padSize,
@@ -390,14 +431,14 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
           // //Linearizing the cluster
           //
-          // for (int ny = padSize; ny>0; --ny)
-          // {
-          //   for(int nx = 0; nx<padSize; nx++)
-          //   {
-          //     int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
-          //     thisHitPars.push_back(hClust.GetBinContent(n));
-          //   }
-          // }
+          for (int ny = padSize; ny>0; --ny)
+          {
+            for(int nx = 0; nx<padSize; nx++)
+            {
+              int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
+              hitPixels[i].push_back(hClust.GetBinContent(n));
+            }
+          }
           //
           // //ADC sum
           // thisHitPars.push_back(float(clust->charge()));
@@ -405,6 +446,8 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
         }
 
     }
+
+    cnntree->Fill();
 
   }
 
