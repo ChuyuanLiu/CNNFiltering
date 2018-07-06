@@ -170,8 +170,9 @@ tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap
   padSize = (int)(padHalfSize*2);
   tParams = 26;
 
+  x = 0;
   hitPixels.reserve(10);
-
+  x.reserve(10);
   edm::Service<TFileService> fs;
   cnntree = fs->make<TTree>("CNNTree","Doublets Tree");
 
