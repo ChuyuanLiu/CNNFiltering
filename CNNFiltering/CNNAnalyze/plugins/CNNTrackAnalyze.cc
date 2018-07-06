@@ -366,7 +366,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
           //std::cout << h.first << ": " << h.second->geographicalId().subdetId() << '\n';
 
-          const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(h.second);
+          const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(h);
           auto clust = pixHit->cluster();
 
           TH2F hClust("hClust","hClust",
