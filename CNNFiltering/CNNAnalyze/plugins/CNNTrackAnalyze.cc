@@ -305,8 +305,11 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     nhtid   = hitPattern.numberOfValidStripTIDHits();
     nhtec   = hitPattern.numberOfValidStripTECHits();
 
+    std::cout<<nhit<<std::endl;
+
     for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
     {
+      std::cout <<"Hit"<<std::endl;
       TrackerSingleRecHit const * hit= dynamic_cast<TrackerSingleRecHit const *>(*recHit);
 
       if(!hit)
@@ -375,13 +378,14 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
     }
 
-    for(int i =0; i<10;i++)
+
+    for(int i = 0; i<10;i++)
     {
-        if(flagHit.find(i) != flagHit.end())
+        if(theHits.find(i) != theHits.end())
         {
           auto h = theHits[i];
 
-          //std::cout << h.first << ": " << h.second->geographicalId().subdetId() << '\n';
+          std::cout << h->geographicalId().subdetId() << '\n';
 
           const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(h);
           auto clust = pixHit->cluster();
@@ -446,6 +450,8 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
         }
 
     }
+
+    std::cout<< "Filling" <<std::endl;
 
     cnntree->Fill();
 
