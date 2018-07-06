@@ -135,7 +135,7 @@ private:
   float padHalfSize;
   int padSize, tParams;
 
-  float pt, eta, phi, p, chi2n, d0, dx;
+  float pt, eta, phi, p, chi2n, d0, dx, dz;
   int nhit, nhpxf, nhtib, nhtob, nhtid, nhtec, nhpxb;
 
   TTree* cnntree;
@@ -174,6 +174,7 @@ tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap
   cnntree->Branch("chi2n",      &chi2n,  "chi2n/D");
   cnntree->Branch("d0",      &d0,          "d0/D");
   cnntree->Branch("dx",      &dx,          "dx/D");
+  cnntree->Branch("dz",      &dz,          "dz/D");
 
   cnntree->Branch("nhit",      &nhit,            "nhit/I");
   cnntree->Branch("nhpxf",      &nhpxf,          "nhpxf/I");
