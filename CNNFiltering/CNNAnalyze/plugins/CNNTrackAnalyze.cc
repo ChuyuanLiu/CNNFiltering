@@ -360,11 +360,11 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     for (auto& h: theHits)
     for(int i =0; i<10;i++)
     {
-        if(flagHit.find(hitLayer) != flagHit.end())
+        if(flagHit.find(i) != flagHit.end())
         {
           auto h = theHits[i];
 
-          std::cout << h.first << ": " << h.second->geographicalId().subdetId() << '\n';
+          //std::cout << h.first << ": " << h.second->geographicalId().subdetId() << '\n';
 
           const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(h.second);
           auto clust = pixHit->cluster();
@@ -387,19 +387,19 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
 
 
-          //Linearizing the cluster
-
-          for (int ny = padSize; ny>0; --ny)
-          {
-            for(int nx = 0; nx<padSize; nx++)
-            {
-              int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
-              thisHitPars.push_back(hClust.GetBinContent(n));
-            }
-          }
-
-          //ADC sum
-          thisHitPars.push_back(float(clust->charge()));
+          // //Linearizing the cluster
+          //
+          // for (int ny = padSize; ny>0; --ny)
+          // {
+          //   for(int nx = 0; nx<padSize; nx++)
+          //   {
+          //     int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
+          //     thisHitPars.push_back(hClust.GetBinContent(n));
+          //   }
+          // }
+          //
+          // //ADC sum
+          // thisHitPars.push_back(float(clust->charge()));
 
         }
 
@@ -407,7 +407,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
   }
 
-
+std::cout << "Closing" << std::endl;
 
 }
 
@@ -422,6 +422,7 @@ CNNTrackAnalyze::beginJob()
 void
 CNNTrackAnalyze::endJob()
 {
+  std::cout << "Closing" << std::endl;
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
