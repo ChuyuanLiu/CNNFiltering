@@ -126,9 +126,9 @@ private:
 
   int doubletSize;
   std::string processName_;
-  edm::EDGetTokenT<edm::View<Track>> alltracks_;
+  edm::EDGetTokenT<edm::View<reco::Track>> alltracks_;
   edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
-  edm::EDGetTokenT<BeamSpot>  bsSrc_;
+  edm::EDGetTokenT<reco::BeamSpot>  bsSrc_;
   edm::EDGetTokenT<std::vector<PileupSummaryInfo>>  infoPileUp_;
   // edm::GetterOfProducts<IntermediateHitDoublets> getterOfProducts_;
 
@@ -155,7 +155,7 @@ private:
 //
 CNNAnalyze::CNNAnalyze(const edm::ParameterSet& iConfig):
 processName_(iConfig.getParameter<std::string>("processName")),
-alltracks_(consumes<edm::View<Track> >(iConfig.getParameter<edm::InputTag>("tracks"))),
+alltracks_(consumes<edm::View<reco::Track> >(iConfig.getParameter<edm::InputTag>("tracks"))),
 tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap")))
 {
 
@@ -167,7 +167,7 @@ tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap
   cnntree->Branch("test",      &test,          "test/I");
 
   edm::InputTag beamSpotTag = iConfig.getParameter<edm::InputTag>("beamSpot");
-  bsSrc_ = consumes<BeamSpot>(beamSpotTag);
+  bsSrc_ = consumes<reco::BeamSpot>(beamSpotTag);
 
   infoPileUp_ = consumes<std::vector<PileupSummaryInfo> >(iConfig.getParameter< edm::InputTag >("infoPileUp"));
 
@@ -196,13 +196,13 @@ void
 CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
-  using namespace reco;
+
   // int detOnArr[10] = {0,1,2,3,14,15,16,29,30,31};
   // std::vector<int> detOn(detOnArr,detOnArr+sizeof(detOnArr)/sizeof(int));
 
   // std::cout<<"CNNDoublets Analyzer"<<std::endl;
 
-  edm::Handle<View<Track> >  trackCollection;
+  edm::Handle<View<reco::Track> >  trackCollection;
   iEvent.getByToken(alltracks_, trackCollection);
 
   edm::Handle<ClusterTPAssociation> tpClust;
@@ -219,13 +219,13 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}; //seqNumbers of pixel detectors 0,1,2,3 barrel 14,15,16, fwd 29,30,31 bkw
   std::vector<int> partiList{11,13,15,22,111,211,311,321,2212,2112,3122,223};
 
-  // Vertex thePrimaryV, theBeamSpotV;
+  // reco::Vertex thePrimaryV, theBeamSpotV;
 
   //The Beamspot
-  edm::Handle<BeamSpot> recoBeamSpotHandle;
+  edm::Handle<reco::BeamSpot> recoBeamSpotHandle;
   iEvent.getByToken(bsSrc_,recoBeamSpotHandle);
-  BeamSpot const & bs = *recoBeamSpotHandle;
-  // Vertex theBeamSpotV(bs.position(), bs.covariance3D());
+  reco::BeamSpot const & bs = *recoBeamSpotHandle;
+  // reco::Vertex theBeamSpotV(bs.position(), bs.covariance3D());
 
   edm::Handle< std::vector<PileupSummaryInfo> > puinfoH;
   iEvent.getByToken(infoPileUp_,puinfoH);
@@ -240,7 +240,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   int puNumInt = puinfo.getPU_NumInteractions();
 
-  for(edm::View<Track>::size_type i=0; i<trackCollection->size(); ++i)
+  for(edm::View<reco::Track>::size_type i=0; i<trackCollection->size(); ++i)
   {
     std::map<int,TrackerSingleRecHit*> theHits;
     std::map<int,bool> flagHit,isBad,isEdge,isBig;
