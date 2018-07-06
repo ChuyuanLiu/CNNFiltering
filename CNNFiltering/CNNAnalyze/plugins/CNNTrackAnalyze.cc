@@ -289,7 +289,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       else
       {
         int side = PXFDetId(detId).side();
-        float z = hit->globalState()).position.z();
+        float z = (hit->globalState()).position.z();
 
         if(fabs(z)>28.0) hitLayer = 4;
         if(fabs(z)>36.0) hitLayer = 5;
@@ -339,7 +339,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     for (auto& h: theHits)
     {
-        std::cout << h.first << ": " << h.second->cluster()->size() << '\n';
+        std::cout << h.first << ": " << h.second->geographicalId().subdetId() << '\n';
     }
 
   }
