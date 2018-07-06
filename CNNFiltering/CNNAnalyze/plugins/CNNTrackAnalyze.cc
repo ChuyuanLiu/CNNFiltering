@@ -196,10 +196,10 @@ tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap
 
   cnntree->Branch("nhpxb",      &nhpxb,          "nhpxb/I");
 
-  for(int i = 0; i<10,i++)
+  for(int i = 0; i<10;i++)
   {
     std::string name = "hitPix_" + std::to_string(i);
-    std::string tree = name + "/D"
+    std::string tree = name + "/D";
     cnntree->Branch(name,      &hitPixels[i],          tree);
   }
 
@@ -386,7 +386,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(h);
           auto clust = pixHit->cluster();
 
-          x.push_back((hit->globalState()).position.x()); //1
+          x.push_back((h->globalState()).position.x()); //1
         //   (hit->globalState()).position.y();
         //   (hit->globalState()).position.z(); //3
         //
