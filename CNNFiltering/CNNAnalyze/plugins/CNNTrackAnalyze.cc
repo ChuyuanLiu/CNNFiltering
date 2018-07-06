@@ -135,6 +135,9 @@ private:
   float padHalfSize;
   int padSize, tParams;
 
+  float pt, eta, phi, p, chi2n, d0, dx;
+  int nhit, nhpxf, nhtib, nhtob, nhtid, nhtec, nhpxb;
+
   TTree* cnntree;
 
   UInt_t test;
@@ -164,12 +167,28 @@ tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap
 
   cnntree->Branch("test",      &test,          "test/I");
 
+  cnntree->Branch("pt",      &pt,          "pt/D");
+  cnntree->Branch("eta",      &eta,          "eta/D");
+  cnntree->Branch("phi",      &phi,          "phi/D");
+  cnntree->Branch("p",      &p,          "p/D");
+  cnntree->Branch("chi2n",      &chi2n,  "chi2n/D");
+  cnntree->Branch("d0",      &d0,          "d0/D");
+  cnntree->Branch("dx",      &dx,          "dx/D");
+
+  cnntree->Branch("nhit",      &nhit,            "nhit/I");
+  cnntree->Branch("nhpxf",      &nhpxf,          "nhpxf/I");
+  cnntree->Branch("nhtib",      &nhtib,          "nhtib/I");
+  cnntree->Branch("nhtob",      &nhtob,          "nhtob/I");
+  cnntree->Branch("nhtid",      &nhtid,          "nhtid/I");
+  cnntree->Branch("nhtec",      &nhtec,          "nhtec/I");
+  cnntree->Branch("nhpxb",      &nhpxb,          "nhpxb/I");
+
   edm::InputTag beamSpotTag = iConfig.getParameter<edm::InputTag>("beamSpot");
   bsSrc_ = consumes<reco::BeamSpot>(beamSpotTag);
 
   infoPileUp_ = consumes<std::vector<PileupSummaryInfo> >(iConfig.getParameter< edm::InputTag >("infoPileUp"));
 
-  padHalfSize = 8;
+  padHalfSize = 7.5;
   padSize = (int)(padHalfSize*2);
   tParams = 26;
 
@@ -252,25 +271,28 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     if(pixHits < 4)
       continue;
 
-    float pt    = track->pt();
-    float eta   = track->eta();
-    float phi   = track->phi();
-    float p     = track->p();
-    float chi2n = track->normalizedChi2();
-    int   nhit  = track->numberOfValidHits();
-    float d0    = track->d0();
-    float dz    = track->dz();
+    pt    = track->pt();
+    eta   = track->eta();
+    phi   = track->phi();
+    p     = track->p();
+    chi2n = track->normalizedChi2();
+    nhit  = track->numberOfValidHits();
+    d0    = track->d0();
+    dz    = track->dz();
 
-    int nhpxb   = hitPattern.numberOfValidPixelBarrelHits();
-    int nhpxf   = hitPattern.numberOfValidPixelEndcapHits();
-    int nhtib   = hitPattern.numberOfValidStripTIBHits();
-    int nhtob   = hitPattern.numberOfValidStripTOBHits();
-    int nhtid   = hitPattern.numberOfValidStripTIDHits();
-    int nhtec   = hitPattern.numberOfValidStripTECHits();
+    nhpxb   = hitPattern.numberOfValidPixelBarrelHits();
+    nhpxf   = hitPattern.numberOfValidPixelEndcapHits();
+    nhtib   = hitPattern.numberOfValidStripTIBHits();
+    nhtob   = hitPattern.numberOfValidStripTOBHits();
+    nhtid   = hitPattern.numberOfValidStripTIDHits();
+    nhtec   = hitPattern.numberOfValidStripTECHits();
 
     for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
     {
       TrackerSingleRecHit const * hit= dynamic_cast<TrackerSingleRecHit const *>(*recHit);
+
+      if(!hit)
+        continue;
 
       DetId detId = (*recHit)->geographicalId();
       unsigned int subdetid = detId.subdetId();
@@ -336,8 +358,51 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     }
 
     for (auto& h: theHits)
+    for(int i =0; i<10;i++)
     {
-        std::cout << h.first << ": " << h.second->geographicalId().subdetId() << '\n';
+        if(flagHit.find(hitLayer) != flagHit.end())
+        {
+          auto h = theHits[i];
+
+          std::cout << h.first << ": " << h.second->geographicalId().subdetId() << '\n';
+
+          const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(h.second);
+          auto clust = pixHit->cluster();
+
+          TH2F hClust("hClust","hClust",
+          padSize,
+          clust->x()-padHalfSize,
+          clust->x()+padHalfSize,
+          padSize,
+          clust->y()-padHalfSize,
+          clust->y()+padHalfSize);
+
+          //Initialization
+          for (int nx = 0; nx < padSize; ++nx)
+            for (int ny = 0; ny < padSize; ++ny)
+              hClust.SetBinContent(nx,ny,0.0);
+
+          for (int k = 0; k < clust->size(); ++k)
+            hClust.SetBinContent(hClust.FindBin((float)clust->pixel(k).x, (float)clust->pixel(k).y),(float)clust->pixel(k).adc);
+
+
+
+          //Linearizing the cluster
+
+          for (int ny = padSize; ny>0; --ny)
+          {
+            for(int nx = 0; nx<padSize; nx++)
+            {
+              int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
+              thisHitPars.push_back(hClust.GetBinContent(n));
+            }
+          }
+
+          //ADC sum
+          thisHitPars.push_back(float(clust->charge()));
+
+        }
+
     }
 
   }
