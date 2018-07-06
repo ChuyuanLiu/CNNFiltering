@@ -242,7 +242,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   for(edm::View<reco::Track>::size_type i=0; i<trackCollection->size(); ++i)
   {
-    std::map<int,TrackerSingleRecHit*> theHits;
+    std::map<int,const TrackerSingleRecHit*> theHits;
     std::map<int,bool> flagHit,isBad,isEdge,isBig;
     std::map<int,int> hitSize;
 
@@ -251,7 +251,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     int pixHits = hitPattern.numberOfValidPixelHits();
     test = pixHits;
 
-    if(pixHist < 4)
+    if(pixHits < 4)
       continue;
 
     float pt    = track->pt();
@@ -285,7 +285,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       int hitLayer = -1;
 
       if(subdetid==1) //barrel
-        hitLayer = PXBDetId(detId).layer()
+        hitLayer = PXBDetId(detId).layer();
       else
       {
         int side = PXFDetId(detId).side();
@@ -303,7 +303,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         bool thisBad,thisEdge,thisBig;
 
         auto thisClust = pixHit->cluster();
-        int thisSize   = thisCluts->size();
+        int thisSize   = thisClust->size();
 
         thisBig  = pixHit->spansTwoROCs();
         thisBad  = pixHit->hasBadPixels();
@@ -314,7 +314,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         if(flagHit.find(hitLayer) != flagHit.end())
         {
           //Keeping the good,not on edge,not big, with higher charge
-          if(isBad[hitLayer] || isEdge[hitLayer] || is[hitLayer])
+          if(isBad[hitLayer] || isEdge[hitLayer] || isBig[hitLayer])
             if(!(thisBad || thisEdge || thisBig))
               keepThis = true;
           if(isBad[hitLayer] && !thisBad)
@@ -339,7 +339,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     for (auto& h: theHits)
     {
-        std::cout << h.first << ": " << h.second->clust()->size() << '\n';
+        std::cout << h.first << ": " << h.second->cluster()->size() << '\n';
     }
 
   }
