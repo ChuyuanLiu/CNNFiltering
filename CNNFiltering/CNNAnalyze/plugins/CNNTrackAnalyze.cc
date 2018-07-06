@@ -71,6 +71,33 @@ Implementation:
 #include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHit.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
+
+#include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/TrackReco/interface/TrackFwd.h"
+#include "DataFormats/GsfTrackReco/interface/GsfTrack.h"
+#include "DataFormats/GsfTrackReco/interface/GsfTrackFwd.h"
+#include "SimDataFormats/Track/interface/SimTrackContainer.h"
+#include "SimDataFormats/Vertex/interface/SimVertexContainer.h"
+#include "SimDataFormats/Associations/interface/TrackToTrackingParticleAssociator.h"
+#include "SimTracker/TrackerHitAssociation/interface/TrackerHitAssociator.h"
+#include "SimDataFormats/TrackingAnalysis/interface/TrackingParticle.h"
+#include "SimDataFormats/TrackingAnalysis/interface/TrackingVertex.h"
+#include "SimDataFormats/TrackingAnalysis/interface/TrackingVertexContainer.h"
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+#include "SimDataFormats/EncodedEventId/interface/EncodedEventId.h"
+#include "TrackingTools/TrajectoryState/interface/FreeTrajectoryState.h"
+#include "TrackingTools/PatternTools/interface/TSCBLBuilderNoMaterial.h"
+#include "SimTracker/TrackAssociation/plugins/ParametersDefinerForTPESProducer.h"
+#include "SimTracker/TrackAssociation/plugins/CosmicParametersDefinerForTPESProducer.h"
+#include "SimTracker/TrackAssociation/interface/TrackingParticleIP.h"
+
+#include "DataFormats/TrackReco/interface/DeDxData.h"
+#include "DataFormats/Common/interface/ValueMap.h"
+#include "DataFormats/Common/interface/Ref.h"
+#include "CommonTools/Utils/interface/associationMapFilterValues.h"
+#include "FWCore/Utilities/interface/IndexSet.h"
+#include <type_traits>
+
 //
 // class declaration
 //
@@ -99,7 +126,7 @@ private:
 
   int doubletSize;
   std::string processName_;
-  edm::EDGetTokenT<IntermediateHitDoublets> intHitDoublets_;
+  edm::EDGetTokenT<edm::View<reco::Track> alltracks_;
   edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
   edm::EDGetTokenT<reco::BeamSpot>  bsSrc_;
   edm::EDGetTokenT<std::vector<PileupSummaryInfo>>  infoPileUp_;
