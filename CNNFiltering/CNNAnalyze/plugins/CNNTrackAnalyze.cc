@@ -137,6 +137,7 @@ private:
 
   float pt, eta, phi, p, chi2n, d0, dx, dz;
   int nhit, nhpxf, nhtib, nhtob, nhtid, nhtec, nhpxb;
+  int eveNumber, runNumber, lumNumber;
 
   std::vector<float>  x, y, z, phi_hit, r, c_x, c_y, size, sizex, sizey, charge, ovfx, ovfy, ratio;
   //std::vector<TH2> hitClust;
@@ -191,7 +192,9 @@ tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap
   edm::Service<TFileService> fs;
   cnntree = fs->make<TTree>("CNNTree","Doublets Tree");
 
-  cnntree->Branch("test",      &test,          "test/I");
+  cnntree->Branch("eveNumber",      &eveNumber,          "eveNumber/I");
+  cnntree->Branch("runNumber",      &runNumber,          "runNumber/I");
+  cnntree->Branch("lumNumber",      &lumNumber,          "lumNumber/I");
 
   cnntree->Branch("pt",      &pt,          "pt/D");
   cnntree->Branch("eta",      &eta,          "eta/D");
@@ -253,6 +256,9 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
   // std::cout<<"CNNDoublets Analyzer"<<std::endl;
 
+  std::string theTrackQuality = "highPurity";
+  reco::TrackBase::TrackQuality trackQualit_= reco::TrackBase::qualityByName(theTrackQuality);
+
   edm::Handle<View<reco::Track> >  trackCollection;
   iEvent.getByToken(alltracks_, trackCollection);
 
@@ -263,9 +269,9 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   //
   // cnntree->Fill();
 
-  int eveNumber = iEvent.id().event();
-  int runNumber = iEvent.id().run();
-  int lumNumber = iEvent.id().luminosityBlock();
+  eveNumber = iEvent.id().event();
+  runNumber = iEvent.id().run();
+  lumNumber = iEvent.id().luminosityBlock();
 
   std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}; //seqNumbers of pixel detectors 0,1,2,3 barrel 14,15,16, fwd 29,30,31 bkw
   std::vector<int> partiList{11,13,15,22,111,211,311,321,2212,2112,3122,223};
@@ -299,8 +305,14 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
     auto track = trackCollection->refAt(i);
     auto hitPattern = track->hitPattern();
+    bool trkQual  = track->quality(trackQuality_);
+
+    if(!trkQual)
+      continue;
+
     int pixHits = hitPattern.numberOfValidPixelHits();
-    test = pixHits;
+
+
 
     if(pixHits < 4)
       continue;
@@ -406,9 +418,10 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(h);
           auto clust = pixHit->cluster();
 
-          x.push_back((h->globalState()).position.x()); //1
-        //   (hit->globalState()).position.y();
-        //   (hit->globalState()).position.z(); //3
+          x.push_back((h->globalState()).position.y()); //1
+          y.push_back((h->globalState()).position.y()); //1
+          z.push_back((h->globalState()).position.z()); //1
+
         //
         //   (hit->globalState()).phi; //Phi //FIXME
         //   (hit->globalState()).r;
