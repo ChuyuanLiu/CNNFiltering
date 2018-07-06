@@ -140,6 +140,10 @@ private:
 
   std::vector<float>  x, y, z, phi_hit, r, c_x, c_y, size, sizex, sizey, charge, ovfx, ovfy, ratio;
   //std::vector<TH2> hitClust;
+
+  std::vector<float> hitPixel0, hitPixel1, hitPixel2, hitPixel3, hitPixel4;
+  std::vector<float> hitPixel5, hitPixel6, hitPixel7, hitPixel8, hitPixel9;
+
   std::vector< std::vector<float> > hitPixels;
 
   TTree* cnntree;
@@ -171,6 +175,18 @@ tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap
   tParams = 26;
 
   hitPixels.reserve(10);
+
+  hitPixels.push_back(hitPixel0);
+  hitPixels.push_back(hitPixel1);
+  hitPixels.push_back(hitPixel2);
+  hitPixels.push_back(hitPixel3);
+  hitPixels.push_back(hitPixel4);
+  hitPixels.push_back(hitPixel5);
+  hitPixels.push_back(hitPixel6);
+  hitPixels.push_back(hitPixel7);
+  hitPixels.push_back(hitPixel8);
+  hitPixels.push_back(hitPixel9);
+
   x.reserve(10);
   edm::Service<TFileService> fs;
   cnntree = fs->make<TTree>("CNNTree","Doublets Tree");
