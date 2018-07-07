@@ -190,8 +190,6 @@ genMap_(consumes<reco::TrackToGenParticleAssociator>(iConfig.getParameter<edm::I
   padSize = (int)(padHalfSize*2);
   tParams = 26;
 
-  hitPixels.reserve(10);
-
   hitPixels.push_back(hitPixel0);
   hitPixels.push_back(hitPixel1);
   hitPixels.push_back(hitPixel2);
@@ -205,7 +203,7 @@ genMap_(consumes<reco::TrackToGenParticleAssociator>(iConfig.getParameter<edm::I
 
   for(int i = 0; i<10;i++)
     for(int j =0;j<padSize*padSize;j++)
-      hitPixels[i][j].push_back(0.0);
+      hitPixels[i].push_back(0.0);
 
   x.reserve(10);
 
