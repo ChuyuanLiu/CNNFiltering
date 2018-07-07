@@ -424,13 +424,13 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
             sharedFraction = tp[0].second;
             isGenMatched = true;
-            if (tp[0].first->charge() != track->charge()) isChargeMatched = false;
-            if(genRecColl.find(tp[0].first) != genRecColl.end()) numAssocRecoTracks = genRecColl[tp[0].first].size();
+            //if (tp[0].first->charge() != track->charge()) isChargeMatched = false;
+            //if(genRecColl.find(tp[0].first) != genRecColl.end()) numAssocRecoTracks = genRecColl[tp[0].first].size();
             //std::cout << numAssocRecoTracks << std::endl;
-            for (unsigned int tp_ite=0;tp_ite<tp.size();++tp_ite)
-            {
-              GenParticle trackpart = *(tp[tp_ite].first);
-            }
+            // for (unsigned int tp_ite=0;tp_ite<tp.size();++tp_ite)
+            // {
+            //   reco::GenParticle trackpart = *(tp[tp_ite].first);
+            // }
     }
   }
     if(isGenMatched)
