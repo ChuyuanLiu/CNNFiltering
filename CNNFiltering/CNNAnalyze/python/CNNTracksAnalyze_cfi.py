@@ -29,6 +29,8 @@ tracksCNN = cms.EDAnalyzer('CNNTrackAnalyze',
         tracks          = cms.InputTag( "generalTracks" ),
         tpMap           = cms.InputTag( "tpClusterProducer" ),
         trMap           = cms.InputTag("trackingParticleRecoTrackAsssociation"),
+        genParticles    = cms.InputTag("genParticles"),
+        traParticles    = cms.InputTag("mix","MergedTrackTruth"),
         beamSpot        = cms.InputTag("offlineBeamSpot"),
         infoPileUp      = cms.InputTag("addPileupInfo")
 )

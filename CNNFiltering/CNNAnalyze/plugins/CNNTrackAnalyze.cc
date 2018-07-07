@@ -79,6 +79,7 @@ Implementation:
 #include "SimDataFormats/Track/interface/SimTrackContainer.h"
 #include "SimDataFormats/Vertex/interface/SimVertexContainer.h"
 #include "SimDataFormats/Associations/interface/TrackToTrackingParticleAssociator.h"
+#include "SimDataFormats/Associations/interface/TrackToGenParticleAssociator.h"
 #include "SimTracker/TrackerHitAssociation/interface/TrackerHitAssociator.h"
 #include "SimDataFormats/TrackingAnalysis/interface/TrackingParticle.h"
 #include "SimDataFormats/TrackingAnalysis/interface/TrackingVertex.h"
@@ -127,7 +128,9 @@ private:
   int doubletSize;
   std::string processName_;
   edm::EDGetTokenT<edm::View<reco::Track>> alltracks_;
+  edm::EDGetTokenT<GenParticleCollection> genParticles_;
   edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
+  edm::EDGetTokenT<reco::TrackToTrackingParticleAssociator> trMap_;
   edm::EDGetTokenT<reco::BeamSpot>  bsSrc_;
   edm::EDGetTokenT<std::vector<PileupSummaryInfo>>  infoPileUp_;
   // edm::GetterOfProducts<IntermediateHitDoublets> getterOfProducts_;
@@ -168,6 +171,8 @@ private:
 CNNTrackAnalyze::CNNTrackAnalyze(const edm::ParameterSet& iConfig):
 processName_(iConfig.getParameter<std::string>("processName")),
 alltracks_(consumes<edm::View<reco::Track> >(iConfig.getParameter<edm::InputTag>("tracks"))),
+genParticles_(consumes<GenParticleCollection>(iConfig.getParameter<edm::InputTag>("genParticles"))),
+traParticles_(consumes<TrackingParticleCollection>(iConfig.getParameter<edm::InputTag>("traParticles"))),
 tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap"))),
 trMap_(consumes<reco::TrackToTrackingParticleAssociator>(iConfig.getParameter<edm::InputTag>("trMap")))
 {
@@ -334,9 +339,32 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   edm::Handle<reco::TrackToTrackingParticleAssociator> tpTracks;
   event.getByToken(trMap_, tpTracks);
 
-  // test = iEvent.id().event();
-  //
-  // cnntree->Fill();
+  edm::Handle<GenParticleCollection>  genParticles ;
+  event.getByToken(genParticles_,genParticles);
+
+  //Reco To GEN association
+  reco::RecoToGenCollection recGenColl;
+  recGenColl=trackGenAssociator->associateRecoToGen(trackCollection,genParticles);
+
+  //Reco To SIM association
+  edm::RefToBaseVector<reco::Track> trackRefs;
+  for(edm::View<Track>::size_type i=0; i<trackCollection.size(); ++i) {
+    trackRefs.push_back(trackCollection.refAt(i));
+  }
+
+  TrackingParticleRefVector tparVec;
+  const TrackingParticleRefVector *tparPtr = nullptr;
+  edm::Handle<TrackingParticleCollection> tparCollection;
+  event.getByToken(traParticles_,tparCollection);
+  for(size_t i=0, size=tparCollection->size(); i<size; ++i) {
+    tparVec.push_back(TrackingParticleRef(tparCollection, i));
+  }
+  tparPtr = &tparVec;
+  TrackingParticleRefVector const & tPartVector = *tparPtr;
+
+  reco::RecoToSimCollection recSimCollL = std::move(tpTracks->associateRecoToSim(trackRefs, tPartVector));
+  recSimCollP = &recSimCollL;
+  reco::RecoToSimCollection const & recSimColl = *recSimCollP;o
 
   eveNumber = iEvent.id().event();
   runNumber = iEvent.id().run();
