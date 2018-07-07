@@ -408,8 +408,8 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
   for(edm::View<reco::Track>::size_type i=0; i<trackCollection->size(); ++i)
   {
-    std::cout<< "Track"<<std::endl;
-
+    std::cout << "Track ------------------- "<< std::endl;
+    std::cout << std::endl;
     std::map<int,const TrackerSingleRecHit*> theHits;
     std::map<int,bool> flagHit,isBad,isEdge,isBig;
     std::map<int,int> hitSize;
@@ -577,15 +577,12 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
             hClust.SetBinContent(hClust.FindBin((float)clust->pixel(k).x, (float)clust->pixel(k).y),(float)clust->pixel(k).adc);
 
 
-          // std::vector< int > kPdgs;
-          //
-          // for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
-          // kPdgs.push_back((*ip->second).pdgId());
-          //
-          // if(std::find(kPdgs.begin(),kPdgs.end(),(int)(particle.pdgId())) == kPdgs.end())
-          // goodHits = false;
-          // //Linearizing the cluster
-          //
+          auto rangeIn = tpClust->equal_range(h->firstClusterRef());
+
+
+          for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
+          std::cout << (*ip->second).pdgId() << " - ";
+          std::cout << std::endl;
           int c = 0;
           for (int ny = padSize; ny>0; --ny)
           {
