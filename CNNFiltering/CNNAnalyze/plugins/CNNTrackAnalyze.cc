@@ -491,7 +491,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           size.push_back((float)clust->size());
           sizex.push_back((float)clust->sizeX());
           sizey.push_back((float)clust->sizeY());
-          charge.push_back((float)clust->charge();
+          charge.push_back((float)clust->charge());
           ovfx.push_back((float)clust->sizeX() > padSize);
           ovfy.push_back((float)clust->sizeY() > padSize);
           ratio.push_back((float)(clust->sizeY()) / (float)(clust->sizeX()));
