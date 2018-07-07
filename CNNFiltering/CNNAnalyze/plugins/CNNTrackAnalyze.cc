@@ -188,7 +188,31 @@ tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap
   hitPixels.push_back(hitPixel8);
   hitPixels.push_back(hitPixel9);
 
+  for(int i = 0; i<10;i++)
+    for(int i =0,i<padSize*padSize;i++)
+      hitPixels[i].push_back(0.0)
+
   x.reserve(10);
+
+  for(int i = 0; i<10;i++)
+  {
+    x.push_back(0.0);
+    y.push_back(0.0);
+    z.push_back(0.0);
+    phi_hit.push_back(0.0);
+    r.push_back(0.0);
+    c_x.push_back(0.0);
+    c_y.push_back(0.0);
+    size.push_back(0.0);
+    sizex.push_back(0.0);
+    sizey.push_back(0.0);
+    charge.push_back(0.0);
+    ovfx.push_back(0.0);
+    ovfy.push_back(0.0);
+    ratio.push_back(0.0);
+
+  }
+
   edm::Service<TFileService> fs;
   cnntree = fs->make<TTree>("CNNTree","Doublets Tree");
 
@@ -212,15 +236,56 @@ tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap
   cnntree->Branch("nhtid",      &nhtid,          "nhtid/I");
   cnntree->Branch("nhtec",      &nhtec,          "nhtec/I");
   cnntree->Branch("nhpxb",      &nhpxb,          "nhpxb/I");
-
   cnntree->Branch("nhpxb",      &nhpxb,          "nhpxb/I");
 
   for(int i = 0; i<10;i++)
   {
-    std::string name = "hitPix_" + std::to_string(i);
-    std::string tree = name + "/D";
-    cnntree->Branch(name.c_str(),      &hitPixels[i],          tree.c_str());
+    std::string name;
+
+    for(int j = 0,j<padSize*padSize;j++)
+    {
+      name = "hit_" + std::to_string(i) + "_Pix_" + std::to_string(j);
+      std::string tree = name + "/D";
+      cnntree->Branch(name.c_str(),      &hitPixels[i][j],          tree.c_str());
+    }
+
+    name = "hit_" + std::to_string(i) + "_x";
+    cnntree->Branch(name.c_str(),      &x[i],          tree.c_str());
+    name = "hit_" + std::to_string(i) + "_y";
+    cnntree->Branch(name.c_str(),      &y[i],          tree.c_str());
+    name = "hit_" + std::to_string(i) + "_z";
+    cnntree->Branch(name.c_str(),      &z[i],          tree.c_str());
+
+    name = "hit_" + std::to_string(i) + "_phi_hit";
+    cnntree->Branch(name.c_str(),      &phi_hit[i],          tree.c_str());
+    name = "hit_" + std::to_string(i) + "_r";
+    cnntree->Branch(name.c_str(),      &r[i],          tree.c_str());
+
+    name = "hit_" + std::to_string(i) + "_c_x";
+    cnntree->Branch(name.c_str(),      &c_x[i],          tree.c_str());
+    name = "hit_" + std::to_string(i) + "_c_y";
+    cnntree->Branch(name.c_str(),      &c_y[i],          tree.c_str());
+
+    name = "hit_" + std::to_string(i) + "_size";
+    cnntree->Branch(name.c_str(),      &size[i],          tree.c_str());
+    name = "hit_" + std::to_string(i) + "_sizex";
+    cnntree->Branch(name.c_str(),      &sizex[i],          tree.c_str());
+    name = "hit_" + std::to_string(i) + "_sizey";
+    cnntree->Branch(name.c_str(),      &sizey[i],          tree.c_str());
+
+    name = "hit_" + std::to_string(i) + "_charge";
+    cnntree->Branch(name.c_str(),      &charge[i],          tree.c_str());
+
+    name = "hit_" + std::to_string(i) + "_ovfx";
+    cnntree->Branch(name.c_str(),      &ovfx[i],          tree.c_str());
+    name = "hit_" + std::to_string(i) + "_ovfy";
+    cnntree->Branch(name.c_str(),      &ovfy[i],          tree.c_str());
+    name = "hit_" + std::to_string(i) + "_ratio";
+    cnntree->Branch(name.c_str(),      &ratio[i],          tree.c_str());
+
+
   }
+
 
   edm::InputTag beamSpotTag = iConfig.getParameter<edm::InputTag>("beamSpot");
   bsSrc_ = consumes<reco::BeamSpot>(beamSpotTag);
@@ -311,8 +376,6 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       continue;
 
     int pixHits = hitPattern.numberOfValidPixelHits();
-
-
 
     if(pixHits < 4)
       continue;
@@ -418,31 +481,20 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(h);
           auto clust = pixHit->cluster();
 
-          x.push_back((h->globalState()).position.y()); //1
-          y.push_back((h->globalState()).position.y()); //1
-          z.push_back((h->globalState()).position.z()); //1
-
-        //
-        //   (hit->globalState()).phi; //Phi //FIXME
-        //   (hit->globalState()).r;
-        // //ClusterInformations
-        //   (float)clust->x(); //20
-        //   (float)clust->y();
-        //   (float)clust->size();
-        //   (float)clust->sizeX();
-        //   (float)clust->sizeY();
-        //   (float)clust->pixel(0).adc; //25
-        //   float(clust->charge())/float(clust->size()); //avg pixel charge
-        //
-        //
-        //   (float)(clust->sizeX() > padSize);//27
-        //   (float)(clust->sizeY() > padSize);
-        //   (float)(clust->sizeY()) / (float)(clust->sizeX());
-        //
-        //
-        //   (float)pixHit->spansTwoROCs();
-        //   (float)pixHit->hasBadPixels();
-        //   (float)pixHit->isOnEdge(); //31
+          x.push_back((h->globalState()).position.y());
+          y.push_back((h->globalState()).position.y());
+          z.push_back((h->globalState()).position.z());
+          phi_hit.push_back((h->globalState()).phi);
+          r.push_back((h->globalState()).position.r);
+          c_x.push_back((float)clust->x());
+          c_y.push_back((float)clust->y());
+          size.push_back((float)clust->size());
+          sizex.push_back((float)clust->sizeX());
+          sizey.push_back((float)clust->sizeY());
+          charge.push_back((float)clust->charge()());
+          ovfx.push_back((float)clust->sizeX() > padSize);
+          ovfy.push_back((float)clust->sizeY() > padSize);
+          ratio.push_back((float)(clust->sizeY()) / (float)(clust->sizeX());
 
           TH2F hClust("hClust","hClust",
           padSize,
@@ -464,23 +516,21 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
           // //Linearizing the cluster
           //
+          int c = 0;
           for (int ny = padSize; ny>0; --ny)
           {
             for(int nx = 0; nx<padSize; nx++)
             {
               int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
-              hitPixels[i].push_back(hClust.GetBinContent(n));
+              hitPixels[i][c] = hClust.GetBinContent(n);
+              c++;
             }
           }
-          //
-          // //ADC sum
-          // thisHitPars.push_back(float(clust->charge()));
 
         }
 
     }
 
-    std::cout<< "Filling" <<std::endl;
 
     cnntree->Fill();
 
