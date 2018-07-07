@@ -242,7 +242,7 @@ tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap
   {
     std::string name,tree;
 
-    for(int j = 0,j<padSize*padSize;j++)
+    for(int j = 0;j<padSize*padSize;j++)
     {
       name = "hit_" + std::to_string(i) + "_Pix_" + std::to_string(j);
       tree = name + "/D";
@@ -485,16 +485,16 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           y.push_back((h->globalState()).position.y());
           z.push_back((h->globalState()).position.z());
           phi_hit.push_back((h->globalState()).phi);
-          r.push_back((h->globalState()).position.r);
+          r.push_back((h->globalState()).r);
           c_x.push_back((float)clust->x());
           c_y.push_back((float)clust->y());
           size.push_back((float)clust->size());
           sizex.push_back((float)clust->sizeX());
           sizey.push_back((float)clust->sizeY());
-          charge.push_back((float)clust->charge()());
+          charge.push_back((float)clust->charge();
           ovfx.push_back((float)clust->sizeX() > padSize);
           ovfy.push_back((float)clust->sizeY() > padSize);
-          ratio.push_back((float)(clust->sizeY()) / (float)(clust->sizeX());
+          ratio.push_back((float)(clust->sizeY()) / (float)(clust->sizeX()));
 
           TH2F hClust("hClust","hClust",
           padSize,
