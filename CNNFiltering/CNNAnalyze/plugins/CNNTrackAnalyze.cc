@@ -359,24 +359,24 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   // recGenColl=genTracks->associateRecoToGen(trackCollection,genParticles);
 
   //Reco To SIM association
-  edm::RefToBaseVector<reco::Track> trackRefs;
-  for(edm::View<reco::Track>::size_type i=0; i<trackCollection->size(); ++i) {
-    trackRefs.push_back(trackCollection->refAt(i));
-  }
-
-  TrackingParticleRefVector tparVec;
-  const TrackingParticleRefVector *tparPtr = nullptr;
-  edm::Handle<TrackingParticleCollection> tparCollection;
-  iEvent.getByToken(traParticles_,tparCollection);
-  for(size_t i=0, size=tparCollection->size(); i<size; ++i) {
-    tparVec.push_back(TrackingParticleRef(tparCollection, i));
-  }
-  tparPtr = &tparVec;
-  TrackingParticleRefVector const & tPartVector = *tparPtr;
-
-  reco::RecoToSimCollection recSimCollL = std::move(tpTracks->associateRecoToSim(trackRefs, tPartVector));
-  reco::RecoToSimCollection const * recSimCollP = &recSimCollL;
-  reco::RecoToSimCollection const & recSimColl  = *recSimCollP;
+  // edm::RefToBaseVector<reco::Track> trackRefs;
+  // for(edm::View<reco::Track>::size_type i=0; i<trackCollection->size(); ++i) {
+  //   trackRefs.push_back(trackCollection->refAt(i));
+  // }
+  //
+  // TrackingParticleRefVector tparVec;
+  // const TrackingParticleRefVector *tparPtr = nullptr;
+  // edm::Handle<TrackingParticleCollection> tparCollection;
+  // iEvent.getByToken(traParticles_,tparCollection);
+  // for(size_t i=0, size=tparCollection->size(); i<size; ++i) {
+  //   tparVec.push_back(TrackingParticleRef(tparCollection, i));
+  // }
+  // tparPtr = &tparVec;
+  // TrackingParticleRefVector const & tPartVector = *tparPtr;
+  //
+  // reco::RecoToSimCollection recSimCollL = std::move(tpTracks->associateRecoToSim(trackRefs, tPartVector));
+  // reco::RecoToSimCollection const * recSimCollP = &recSimCollL;
+  // reco::RecoToSimCollection const & recSimColl  = *recSimCollP;
 
   eveNumber = iEvent.id().event();
   runNumber = iEvent.id().run();
@@ -418,21 +418,21 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     auto hitPattern = track->hitPattern();
     bool trkQual  = track->quality(trackQuality);
 
-    float sharedFraction = 0.0;
-    bool isSimMatched = false;
-
-    auto tpFound = recSimColl.find(track);
-    isSimMatched = tpFound != recSimColl.end();
-
-    if (isSimMatched) {
-        const auto& tp = tpFound->val;
-        //nSimHits = tp[0].first->numberOfTrackerHits();
-        sharedFraction = tp[0].second;
-    }
-    if(isSimMatched)
-      std::cout<< "Good Track - "<<sharedFraction<<std::endl;
-    else
-      std::cout<< "Bad Track"<<std::endl;
+    // float sharedFraction = 0.0;
+    // bool isSimMatched = false;
+    //
+    // auto tpFound = recSimColl.find(track);
+    // isSimMatched = tpFound != recSimColl.end();
+    //
+    // if (isSimMatched) {
+    //     const auto& tp = tpFound->val;
+    //     //nSimHits = tp[0].first->numberOfTrackerHits();
+    //     sharedFraction = tp[0].second;
+    // }
+    // if(isSimMatched)
+    //   std::cout<< "Good Track - "<<sharedFraction<<std::endl;
+    // else
+    //   std::cout<< "Bad Track"<<std::endl;
 
     if(!trkQual)
       continue;
