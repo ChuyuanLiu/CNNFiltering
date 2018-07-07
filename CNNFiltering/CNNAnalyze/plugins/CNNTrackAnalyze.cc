@@ -413,7 +413,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     std::cout<< "Track"<<std::endl;
     RefToBase<reco::Track> trackRef(trackCollection, i);
 
-    float sharedFraction;
+    float sharedFraction = 0.0;
     bool isGenMatched = false;
 
     std::vector<std::pair<reco::GenParticleRef, double> > tp;
@@ -434,7 +434,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     }
   }
     if(isGenMatched)
-      std::cout<< "Good Track"<<std::endl;
+      std::cout<< "Good Track - "<<sharedFraction<<std::endl;
     else
       std::cout<< "Bad Track"<<std::endl;
 
