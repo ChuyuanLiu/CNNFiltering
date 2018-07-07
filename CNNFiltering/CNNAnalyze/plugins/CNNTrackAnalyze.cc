@@ -95,6 +95,8 @@ Implementation:
 #include "CommonTools/CandAlgos/interface/GenParticleCustomSelector.h"
 #include "SimDataFormats/Associations/interface/TrackToGenParticleAssociator.h"
 
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/TrackReco/interface/DeDxData.h"
 #include "DataFormats/Common/interface/ValueMap.h"
 #include "DataFormats/Common/interface/Ref.h"
