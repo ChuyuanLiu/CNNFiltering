@@ -411,15 +411,15 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   for(edm::View<reco::Track>::size_type i=0; i<trackCollection->size(); ++i)
   {
     std::cout<< "Track"<<std::endl;
-    RefToBase<Track> track(trackCollection, i)
+    RefToBase<Track> trackRef(trackCollection, i)
 
     float sharedFraction;
     bool isGenMatched = false;
 
     std::vector<std::pair<GenParticleRef, double> > tp;
-    if(recGenColl.find(track) != recGenColl.end())
+    if(recGenColl.find(trackRef) != recGenColl.end())
     {
-      tp = recGenColl[track];
+      tp = recGenColl[trackRef];
       if (!tp.empty()) {
 
             sharedFraction = tp[0].second;
