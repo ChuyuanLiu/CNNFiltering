@@ -603,7 +603,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           {
             for(int nx = 0; nx<padSize; nx++)
             {
-              std::cout << c << std:endl;
+              std::cout << c << std::endl;
               int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
               hitPixels[i][c] = hClust.GetBinContent(n);
               c++;
