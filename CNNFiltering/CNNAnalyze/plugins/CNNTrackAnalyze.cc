@@ -82,6 +82,7 @@ Implementation:
 #include "SimDataFormats/Associations/interface/TrackToGenParticleAssociator.h"
 #include "SimTracker/TrackerHitAssociation/interface/TrackerHitAssociator.h"
 #include "SimDataFormats/TrackingAnalysis/interface/TrackingParticle.h"
+#include "SimDataFormats/TrackingAnalysis/interface/TrackingParticleFwd.h"
 #include "SimDataFormats/TrackingAnalysis/interface/TrackingVertex.h"
 #include "SimDataFormats/TrackingAnalysis/interface/TrackingVertexContainer.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
@@ -134,6 +135,7 @@ private:
   std::string processName_;
   edm::EDGetTokenT<edm::View<reco::Track>> alltracks_;
   edm::EDGetTokenT<reco::GenParticleCollection> genParticles_;
+  edm::EDGetTokenT<reco::TrackingParticleCollection> traParticles_;
   edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
   edm::EDGetTokenT<reco::TrackToTrackingParticleAssociator> trMap_;
   edm::EDGetTokenT<reco::TrackToGenParticleAssociator> genMap_;
@@ -344,24 +346,24 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   iEvent.getByToken(tpMap_,tpClust);
 
   edm::Handle<reco::TrackToTrackingParticleAssociator> tpTracks;
-  event.getByToken(trMap_, tpTracks);
+  iEvent.getByToken(trMap_, tpTracks);
 
   edm::Handle<reco::GenParticleCollection>  genParticles ;
-  event.getByToken(genParticles_,genParticles);
+  iEvent.getByToken(genParticles_,genParticles);
 
-  const reco::TrackToGenParticleAssociator* trackGenAssociator =nullptr;
+  const reco::TrackToGenParticleAssociator* genTracks =nullptr;
   edm::Handle<reco::TrackToGenParticleAssociator> trackGenAssociatorH;
-  event.getByToken(label_gen_associator,trackGenAssociatorH);
-  trackGenAssociator = trackGenAssociatorH.product();
+  iEvent.getByToken(genMap_,trackGenAssociatorH);
+  genTracks = trackGenAssociatorH.product();
 
   //Reco To GEN association
   reco::RecoToGenCollection recGenColl;
-  recGenColl=trackGenAssociator->associateRecoToGen(trackCollection,genParticles);
+  recGenColl=genTracks->associateRecoToGen(trackCollection,genParticles);
 
   //Reco To SIM association
   edm::RefToBaseVector<reco::Track> trackRefs;
-  for(edm::View<Track>::size_type i=0; i<trackCollection.size(); ++i) {
-    trackRefs.push_back(trackCollection.refAt(i));
+  for(edm::View<reco::Track>::size_type i=0; i<trackCollection->size(); ++i) {
+    trackRefs.push_back(trackCollection->refAt(i));
   }
 
   TrackingParticleRefVector tparVec;
