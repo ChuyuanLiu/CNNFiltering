@@ -92,6 +92,9 @@ Implementation:
 #include "SimTracker/TrackAssociation/plugins/CosmicParametersDefinerForTPESProducer.h"
 #include "SimTracker/TrackAssociation/interface/TrackingParticleIP.h"
 
+#include "CommonTools/CandAlgos/interface/GenParticleCustomSelector.h"
+#include "SimDataFormats/Associations/interface/TrackToGenParticleAssociator.h"
+
 #include "DataFormats/TrackReco/interface/DeDxData.h"
 #include "DataFormats/Common/interface/ValueMap.h"
 #include "DataFormats/Common/interface/Ref.h"
