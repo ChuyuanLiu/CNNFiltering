@@ -136,6 +136,7 @@ private:
   edm::EDGetTokenT<reco::GenParticleCollection> genParticles_;
   edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
   edm::EDGetTokenT<reco::TrackToTrackingParticleAssociator> trMap_;
+  edm::EDGetTokenT<reco::TrackToGenParticleAssociator> genMap_;
   edm::EDGetTokenT<reco::BeamSpot>  bsSrc_;
   edm::EDGetTokenT<std::vector<PileupSummaryInfo>>  infoPileUp_;
   // edm::GetterOfProducts<IntermediateHitDoublets> getterOfProducts_;
@@ -179,7 +180,8 @@ alltracks_(consumes<edm::View<reco::Track> >(iConfig.getParameter<edm::InputTag>
 genParticles_(consumes<reco::GenParticleCollection>(iConfig.getParameter<edm::InputTag>("genParticles"))),
 traParticles_(consumes<reco::TrackingParticleCollection>(iConfig.getParameter<edm::InputTag>("traParticles"))),
 tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap"))),
-trMap_(consumes<reco::TrackToTrackingParticleAssociator>(iConfig.getParameter<edm::InputTag>("trMap")))
+trMap_(consumes<reco::TrackToTrackingParticleAssociator>(iConfig.getParameter<edm::InputTag>("trMap"))),
+genMap_(consumes<reco::TrackToGenParticleAssociator>(iConfig.getParameter<edm::InputTag>("genMap")))
 {
 
   padHalfSize = 7.5;
@@ -346,6 +348,11 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
   edm::Handle<reco::GenParticleCollection>  genParticles ;
   event.getByToken(genParticles_,genParticles);
+
+  const reco::TrackToGenParticleAssociator* trackGenAssociator =nullptr;
+  edm::Handle<reco::TrackToGenParticleAssociator> trackGenAssociatorH;
+  event.getByToken(label_gen_associator,trackGenAssociatorH);
+  trackGenAssociator = trackGenAssociatorH.product();
 
   //Reco To GEN association
   reco::RecoToGenCollection recGenColl;
