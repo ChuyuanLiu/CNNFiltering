@@ -204,8 +204,8 @@ genMap_(consumes<reco::TrackToGenParticleAssociator>(iConfig.getParameter<edm::I
   hitPixels.push_back(hitPixel9);
 
   for(int i = 0; i<10;i++)
-    for(int i =0;i<padSize*padSize;i++)
-      hitPixels[i].push_back(0.0);
+    for(int j =0;j<padSize*padSize;j++)
+      hitPixels[i][j].push_back(0.0);
 
   x.reserve(10);
 
