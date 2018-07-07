@@ -411,7 +411,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   for(edm::View<reco::Track>::size_type i=0; i<trackCollection->size(); ++i)
   {
     std::cout<< "Track"<<std::endl;
-    RefToBase<Track> trackRef(trackCollection, i)
+    RefToBase<reco::Track> trackRef(trackCollection, i);
 
     float sharedFraction;
     bool isGenMatched = false;
