@@ -133,7 +133,7 @@ private:
   int doubletSize;
   std::string processName_;
   edm::EDGetTokenT<edm::View<reco::Track>> alltracks_;
-  edm::EDGetTokenT<GenParticleCollection> genParticles_;
+  edm::EDGetTokenT<reco::GenParticleCollection> genParticles_;
   edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
   edm::EDGetTokenT<reco::TrackToTrackingParticleAssociator> trMap_;
   edm::EDGetTokenT<reco::BeamSpot>  bsSrc_;
@@ -176,8 +176,8 @@ private:
 CNNTrackAnalyze::CNNTrackAnalyze(const edm::ParameterSet& iConfig):
 processName_(iConfig.getParameter<std::string>("processName")),
 alltracks_(consumes<edm::View<reco::Track> >(iConfig.getParameter<edm::InputTag>("tracks"))),
-genParticles_(consumes<GenParticleCollection>(iConfig.getParameter<edm::InputTag>("genParticles"))),
-traParticles_(consumes<TrackingParticleCollection>(iConfig.getParameter<edm::InputTag>("traParticles"))),
+genParticles_(consumes<reco::GenParticleCollection>(iConfig.getParameter<edm::InputTag>("genParticles"))),
+traParticles_(consumes<reco::TrackingParticleCollection>(iConfig.getParameter<edm::InputTag>("traParticles"))),
 tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap"))),
 trMap_(consumes<reco::TrackToTrackingParticleAssociator>(iConfig.getParameter<edm::InputTag>("trMap")))
 {
@@ -344,7 +344,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   edm::Handle<reco::TrackToTrackingParticleAssociator> tpTracks;
   event.getByToken(trMap_, tpTracks);
 
-  edm::Handle<GenParticleCollection>  genParticles ;
+  edm::Handle<reco::GenParticleCollection>  genParticles ;
   event.getByToken(genParticles_,genParticles);
 
   //Reco To GEN association
@@ -359,7 +359,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
   TrackingParticleRefVector tparVec;
   const TrackingParticleRefVector *tparPtr = nullptr;
-  edm::Handle<TrackingParticleCollection> tparCollection;
+  edm::Handle<reco::TrackingParticleCollection> tparCollection;
   event.getByToken(traParticles_,tparCollection);
   for(size_t i=0, size=tparCollection->size(); i<size; ++i) {
     tparVec.push_back(TrackingParticleRef(tparCollection, i));
