@@ -377,8 +377,8 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   TrackingParticleRefVector const & tPartVector = *tparPtr;
 
   reco::RecoToSimCollection recSimCollL = std::move(tpTracks->associateRecoToSim(trackRefs, tPartVector));
-  recSimCollP = &recSimCollL;
-  reco::RecoToSimCollection const & recSimColl = *recSimCollP;o
+  reco::RecoToSimCollection const * recSimCollP = &recSimCollL;
+  reco::RecoToSimCollection const & recSimColl  = *recSimCollP;
 
   eveNumber = iEvent.id().event();
   runNumber = iEvent.id().run();
@@ -410,6 +410,34 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
   for(edm::View<reco::Track>::size_type i=0; i<trackCollection->size(); ++i)
   {
+    std::cout<< "Track"<<std::endl;
+    RefToBase<Track> track(trackCollection, i)
+
+    float sharedFraction;
+    bool isGenMatched = false;
+
+    std::vector<std::pair<GenParticleRef, double> > tp;
+    if(recGenColl.find(track) != recGenColl.end())
+    {
+      tp = recGenColl[track];
+      if (!tp.empty()) {
+
+            sharedFraction = tp[0].second;
+            isGenMatched = true;
+            if (tp[0].first->charge() != track->charge()) isChargeMatched = false;
+            if(genRecColl.find(tp[0].first) != genRecColl.end()) numAssocRecoTracks = genRecColl[tp[0].first].size();
+            //std::cout << numAssocRecoTracks << std::endl;
+            for (unsigned int tp_ite=0;tp_ite<tp.size();++tp_ite){
+              GenParticle trackpart = *(tp[tp_ite].first);
+
+            }
+    }
+
+    if(isGenMatched)
+      std::cout<< "Good Track"<<std::endl;
+    else
+      std::cout<< "Bad Track"<<std::endl;
+
     std::map<int,const TrackerSingleRecHit*> theHits;
     std::map<int,bool> flagHit,isBad,isEdge,isBig;
     std::map<int,int> hitSize;
@@ -561,13 +589,13 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
             hClust.SetBinContent(hClust.FindBin((float)clust->pixel(k).x, (float)clust->pixel(k).y),(float)clust->pixel(k).adc);
 
 
-          std::vector< int > kPdgs;
-
-          for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
-          kPdgs.push_back((*ip->second).pdgId());
-
-          if(std::find(kPdgs.begin(),kPdgs.end(),(int)(particle.pdgId())) == kPdgs.end())
-          goodHits = false;
+          // std::vector< int > kPdgs;
+          //
+          // for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
+          // kPdgs.push_back((*ip->second).pdgId());
+          //
+          // if(std::find(kPdgs.begin(),kPdgs.end(),(int)(particle.pdgId())) == kPdgs.end())
+          // goodHits = false;
           // //Linearizing the cluster
           //
           int c = 0;
