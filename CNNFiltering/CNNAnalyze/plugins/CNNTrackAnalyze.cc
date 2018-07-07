@@ -135,7 +135,7 @@ private:
   std::string processName_;
   edm::EDGetTokenT<edm::View<reco::Track>> alltracks_;
   edm::EDGetTokenT<reco::GenParticleCollection> genParticles_;
-  edm::EDGetTokenT<reco::TrackingParticleCollection> traParticles_;
+  edm::EDGetTokenT<TrackingParticleCollection> traParticles_;
   edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
   edm::EDGetTokenT<reco::TrackToTrackingParticleAssociator> trMap_;
   edm::EDGetTokenT<reco::TrackToGenParticleAssociator> genMap_;
@@ -180,7 +180,7 @@ CNNTrackAnalyze::CNNTrackAnalyze(const edm::ParameterSet& iConfig):
 processName_(iConfig.getParameter<std::string>("processName")),
 alltracks_(consumes<edm::View<reco::Track> >(iConfig.getParameter<edm::InputTag>("tracks"))),
 genParticles_(consumes<reco::GenParticleCollection>(iConfig.getParameter<edm::InputTag>("genParticles"))),
-traParticles_(consumes<reco::TrackingParticleCollection>(iConfig.getParameter<edm::InputTag>("traParticles"))),
+traParticles_(consumes<TrackingParticleCollection>(iConfig.getParameter<edm::InputTag>("traParticles"))),
 tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap"))),
 trMap_(consumes<reco::TrackToTrackingParticleAssociator>(iConfig.getParameter<edm::InputTag>("trMap"))),
 genMap_(consumes<reco::TrackToGenParticleAssociator>(iConfig.getParameter<edm::InputTag>("genMap")))
@@ -368,7 +368,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
   TrackingParticleRefVector tparVec;
   const TrackingParticleRefVector *tparPtr = nullptr;
-  edm::Handle<reco::TrackingParticleCollection> tparCollection;
+  edm::Handle<TrackingParticleCollection> tparCollection;
   event.getByToken(traParticles_,tparCollection);
   for(size_t i=0, size=tparCollection->size(); i<size; ++i) {
     tparVec.push_back(TrackingParticleRef(tparCollection, i));
