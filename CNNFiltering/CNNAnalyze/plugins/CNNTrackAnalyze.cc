@@ -189,8 +189,8 @@ tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap
   hitPixels.push_back(hitPixel9);
 
   for(int i = 0; i<10;i++)
-    for(int i =0,i<padSize*padSize;i++)
-      hitPixels[i].push_back(0.0)
+    for(int i =0;i<padSize*padSize;i++)
+      hitPixels[i].push_back(0.0);
 
   x.reserve(10);
 
@@ -240,47 +240,47 @@ tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap
 
   for(int i = 0; i<10;i++)
   {
-    std::string name;
+    std::string name,tree;
 
     for(int j = 0,j<padSize*padSize;j++)
     {
       name = "hit_" + std::to_string(i) + "_Pix_" + std::to_string(j);
-      std::string tree = name + "/D";
+      tree = name + "/D";
       cnntree->Branch(name.c_str(),      &hitPixels[i][j],          tree.c_str());
     }
 
-    name = "hit_" + std::to_string(i) + "_x";
+    name = "hit_" + std::to_string(i) + "_x"; tree = name + "/D";
     cnntree->Branch(name.c_str(),      &x[i],          tree.c_str());
-    name = "hit_" + std::to_string(i) + "_y";
+    name = "hit_" + std::to_string(i) + "_y"; tree = name + "/D";
     cnntree->Branch(name.c_str(),      &y[i],          tree.c_str());
-    name = "hit_" + std::to_string(i) + "_z";
+    name = "hit_" + std::to_string(i) + "_z"; tree = name + "/D";
     cnntree->Branch(name.c_str(),      &z[i],          tree.c_str());
 
-    name = "hit_" + std::to_string(i) + "_phi_hit";
+    name = "hit_" + std::to_string(i) + "_phi_hit"; tree = name + "/D";
     cnntree->Branch(name.c_str(),      &phi_hit[i],          tree.c_str());
-    name = "hit_" + std::to_string(i) + "_r";
+    name = "hit_" + std::to_string(i) + "_r"; tree = name + "/D";
     cnntree->Branch(name.c_str(),      &r[i],          tree.c_str());
 
-    name = "hit_" + std::to_string(i) + "_c_x";
+    name = "hit_" + std::to_string(i) + "_c_x"; tree = name + "/D";
     cnntree->Branch(name.c_str(),      &c_x[i],          tree.c_str());
-    name = "hit_" + std::to_string(i) + "_c_y";
+    name = "hit_" + std::to_string(i) + "_c_y"; tree = name + "/D";
     cnntree->Branch(name.c_str(),      &c_y[i],          tree.c_str());
 
-    name = "hit_" + std::to_string(i) + "_size";
+    name = "hit_" + std::to_string(i) + "_size"; tree = name + "/D";
     cnntree->Branch(name.c_str(),      &size[i],          tree.c_str());
-    name = "hit_" + std::to_string(i) + "_sizex";
+    name = "hit_" + std::to_string(i) + "_sizex"; tree = name + "/D";
     cnntree->Branch(name.c_str(),      &sizex[i],          tree.c_str());
-    name = "hit_" + std::to_string(i) + "_sizey";
+    name = "hit_" + std::to_string(i) + "_sizey"; tree = name + "/D";
     cnntree->Branch(name.c_str(),      &sizey[i],          tree.c_str());
 
-    name = "hit_" + std::to_string(i) + "_charge";
+    name = "hit_" + std::to_string(i) + "_charge"; tree = name + "/D";
     cnntree->Branch(name.c_str(),      &charge[i],          tree.c_str());
 
-    name = "hit_" + std::to_string(i) + "_ovfx";
+    name = "hit_" + std::to_string(i) + "_ovfx"; tree = name + "/D";
     cnntree->Branch(name.c_str(),      &ovfx[i],          tree.c_str());
-    name = "hit_" + std::to_string(i) + "_ovfy";
+    name = "hit_" + std::to_string(i) + "_ovfy"; tree = name + "/D";
     cnntree->Branch(name.c_str(),      &ovfy[i],          tree.c_str());
-    name = "hit_" + std::to_string(i) + "_ratio";
+    name = "hit_" + std::to_string(i) + "_ratio"; tree = name + "/D";
     cnntree->Branch(name.c_str(),      &ratio[i],          tree.c_str());
 
 
