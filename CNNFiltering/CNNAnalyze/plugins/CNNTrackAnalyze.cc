@@ -416,7 +416,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     float sharedFraction;
     bool isGenMatched = false;
 
-    std::vector<std::pair<GenParticleRef, double> > tp;
+    std::vector<std::pair<reco::GenParticleRef, double> > tp;
     if(recGenColl.find(trackRef) != recGenColl.end())
     {
       tp = recGenColl[trackRef];
