@@ -427,12 +427,12 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
             if (tp[0].first->charge() != track->charge()) isChargeMatched = false;
             if(genRecColl.find(tp[0].first) != genRecColl.end()) numAssocRecoTracks = genRecColl[tp[0].first].size();
             //std::cout << numAssocRecoTracks << std::endl;
-            for (unsigned int tp_ite=0;tp_ite<tp.size();++tp_ite){
+            for (unsigned int tp_ite=0;tp_ite<tp.size();++tp_ite)
+            {
               GenParticle trackpart = *(tp[tp_ite].first);
-
             }
     }
-
+  }
     if(isGenMatched)
       std::cout<< "Good Track"<<std::endl;
     else
@@ -554,7 +554,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
           const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(h);
 
-          auto rangeIn = tpClust->equal_range(bhit->firstClusterRef());
+          //auto rangeIn = tpClust->equal_range(bhit->firstClusterRef());
           auto clust = pixHit->cluster();
 
           x.push_back((h->globalState()).position.y());
