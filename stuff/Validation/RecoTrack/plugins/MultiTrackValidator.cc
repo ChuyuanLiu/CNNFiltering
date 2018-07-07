@@ -198,7 +198,7 @@ MultiTrackValidator::MultiTrackValidator(const edm::ParameterSet& pset):
     for (auto const& src: associators) {
       associatorTokens.push_back(consumes<reco::TrackToTrackingParticleAssociator>(src));
     }
-  } else {   
+  } else {
     for (auto const& src: associators) {
       associatormapStRs.push_back(consumes<reco::SimToRecoCollection>(src));
       associatormapRtSs.push_back(consumes<reco::RecoToSimCollection>(src));
@@ -717,7 +717,7 @@ void MultiTrackValidator::dqmAnalyze(const edm::Event& event, const edm::EventSe
 
       reco::RecoToSimCollection const & recSimColl = *recSimCollP;
       reco::SimToRecoCollection const & simRecColl = *simRecCollP;
- 
+
       // read MVA collections
       if(doMVAPlots_ && !mvaQualityCollectionTokens_[www].empty()) {
         edm::Handle<MVACollection> hmva;
@@ -914,7 +914,7 @@ void MultiTrackValidator::dqmAnalyze(const edm::Event& event, const edm::EventSe
 	rT++;
         if(trackFromSeedFitFailed(*track)) ++seed_fit_failed;
         if((*dRTrackSelector)(*track, bs.position())) ++n_selTrack_dr;
- 
+
 	bool isSigSimMatched(false);
 	bool isSimMatched(false);
         bool isChargeMatched(true);

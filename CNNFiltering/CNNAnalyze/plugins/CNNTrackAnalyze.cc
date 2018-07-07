@@ -168,7 +168,8 @@ private:
 CNNTrackAnalyze::CNNTrackAnalyze(const edm::ParameterSet& iConfig):
 processName_(iConfig.getParameter<std::string>("processName")),
 alltracks_(consumes<edm::View<reco::Track> >(iConfig.getParameter<edm::InputTag>("tracks"))),
-tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap")))
+tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap"))),
+trMap_(consumes<reco::TrackToTrackingParticleAssociator>(iConfig.getParameter<edm::InputTag>("trMap")))
 {
 
   padHalfSize = 7.5;
@@ -330,6 +331,9 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   edm::Handle<ClusterTPAssociation> tpClust;
   iEvent.getByToken(tpMap_,tpClust);
 
+  edm::Handle<reco::TrackToTrackingParticleAssociator> tpTracks;
+  event.getByToken(trMap_, tpTracks);
+
   // test = iEvent.id().event();
   //
   // cnntree->Fill();
@@ -479,6 +483,8 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           std::cout << h->geographicalId().subdetId() << '\n';
 
           const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(h);
+
+          auto rangeIn = tpClust->equal_range(bhit->firstClusterRef());
           auto clust = pixHit->cluster();
 
           x.push_back((h->globalState()).position.y());
@@ -513,7 +519,13 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
             hClust.SetBinContent(hClust.FindBin((float)clust->pixel(k).x, (float)clust->pixel(k).y),(float)clust->pixel(k).adc);
 
 
+          std::vector< int > kPdgs;
 
+          for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
+          kPdgs.push_back((*ip->second).pdgId());
+
+          if(std::find(kPdgs.begin(),kPdgs.end(),(int)(particle.pdgId())) == kPdgs.end())
+          goodHits = false;
           // //Linearizing the cluster
           //
           int c = 0;
@@ -521,6 +533,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           {
             for(int nx = 0; nx<padSize; nx++)
             {
+              std::cout << c << std:endl;
               int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
               hitPixels[i][c] = hClust.GetBinContent(n);
               c++;
