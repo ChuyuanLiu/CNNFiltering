@@ -369,7 +369,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   TrackingParticleRefVector tparVec;
   const TrackingParticleRefVector *tparPtr = nullptr;
   edm::Handle<TrackingParticleCollection> tparCollection;
-  event.getByToken(traParticles_,tparCollection);
+  iEvent.getByToken(traParticles_,tparCollection);
   for(size_t i=0, size=tparCollection->size(); i<size; ++i) {
     tparVec.push_back(TrackingParticleRef(tparCollection, i));
   }
