@@ -346,17 +346,17 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   edm::Handle<reco::TrackToTrackingParticleAssociator> tpTracks;
   iEvent.getByToken(trMap_, tpTracks);
 
-  edm::Handle<reco::GenParticleCollection>  genParticles ;
-  iEvent.getByToken(genParticles_,genParticles);
+  // edm::Handle<reco::GenParticleCollection>  genParticles ;
+  // iEvent.getByToken(genParticles_,genParticles);
 
-  const reco::TrackToGenParticleAssociator* genTracks =nullptr;
-  edm::Handle<reco::TrackToGenParticleAssociator> trackGenAssociatorH;
-  iEvent.getByToken(genMap_,trackGenAssociatorH);
-  genTracks = trackGenAssociatorH.product();
+  // const reco::TrackToGenParticleAssociator* genTracks =nullptr;
+  // edm::Handle<reco::TrackToGenParticleAssociator> trackGenAssociatorH;
+  // iEvent.getByToken(genMap_,trackGenAssociatorH);
+  // genTracks = trackGenAssociatorH.product();
 
   //Reco To GEN association
-  reco::RecoToGenCollection recGenColl;
-  recGenColl=genTracks->associateRecoToGen(trackCollection,genParticles);
+  // reco::RecoToGenCollection recGenColl;
+  // recGenColl=genTracks->associateRecoToGen(trackCollection,genParticles);
 
   //Reco To SIM association
   edm::RefToBaseVector<reco::Track> trackRefs;
@@ -409,32 +409,6 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   for(edm::View<reco::Track>::size_type i=0; i<trackCollection->size(); ++i)
   {
     std::cout<< "Track"<<std::endl;
-    RefToBase<reco::Track> trackRef(trackCollection, i);
-
-    float sharedFraction = 0.0;
-    bool isGenMatched = false;
-
-    std::vector<std::pair<reco::GenParticleRef, double> > tp;
-    if(recGenColl.find(trackRef) != recGenColl.end())
-    {
-      tp = recGenColl[trackRef];
-      if (!tp.empty()) {
-
-            sharedFraction = tp[0].second;
-            isGenMatched = true;
-            //if (tp[0].first->charge() != track->charge()) isChargeMatched = false;
-            //if(genRecColl.find(tp[0].first) != genRecColl.end()) numAssocRecoTracks = genRecColl[tp[0].first].size();
-            //std::cout << numAssocRecoTracks << std::endl;
-            // for (unsigned int tp_ite=0;tp_ite<tp.size();++tp_ite)
-            // {
-            //   reco::GenParticle trackpart = *(tp[tp_ite].first);
-            // }
-    }
-  }
-    if(isGenMatched)
-      std::cout<< "Good Track - "<<sharedFraction<<std::endl;
-    else
-      std::cout<< "Bad Track"<<std::endl;
 
     std::map<int,const TrackerSingleRecHit*> theHits;
     std::map<int,bool> flagHit,isBad,isEdge,isBig;
@@ -443,6 +417,22 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     auto track = trackCollection->refAt(i);
     auto hitPattern = track->hitPattern();
     bool trkQual  = track->quality(trackQuality);
+
+    float sharedFraction = 0.0;
+    bool isSimMatched = false;
+
+    auto tpFound = recSimColl.find(track);
+    isSimMatched = tpFound != recSimColl.end();
+
+    if (isSimMatched) {
+        const auto& tp = tpFound->val;
+        //nSimHits = tp[0].first->numberOfTrackerHits();
+        sharedFraction = tp[0].second;
+    }
+    if(isSimMatched)
+      std::cout<< "Good Track - "<<sharedFraction<<std::endl;
+    else
+      std::cout<< "Bad Track"<<std::endl;
 
     if(!trkQual)
       continue;
