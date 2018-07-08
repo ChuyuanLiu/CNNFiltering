@@ -637,7 +637,8 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       // std::cout << tt << " - UnMatched " << std::endl;
     }
 
-    cnntree->Fill();
+    if(pdgMap.size()>0)
+      cnntree->Fill();
 
   }
 
