@@ -417,8 +417,8 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
   for(edm::View<reco::Track>::size_type tt=0; tt<trackCollection->size(); ++tt)
   {
-    std::cout << "Track ------------------- "<< std::endl;
-    std::cout << std::endl;
+    // std::cout << "Track ------------------- "<< std::endl;
+    // std::cout << std::endl;
     std::map<int,const TrackerSingleRecHit*> theHits;
     std::map<int,bool> flagHit,isBad,isEdge,isBig;
     std::map<int,int> hitSize, pdgMap,pdgIds;
@@ -446,9 +446,9 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
     if(!trkQual)
       continue;
-    std::cout << "- Track Quality " <<std::endl;
+    // std::cout << "- Track Quality " <<std::endl;
     int pixHits = hitPattern.numberOfValidPixelHits();
-    std::cout << "- No Pixel Hits :" << pixHits << std::endl;
+    // std::cout << "- No Pixel Hits :" << pixHits << std::endl;
     if(pixHits < 4)
       continue;
 
@@ -468,7 +468,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     nhtid   = hitPattern.numberOfValidStripTIDHits();
     nhtec   = hitPattern.numberOfValidStripTECHits();
 
-    std::cout<<nhit<<std::endl;
+    // std::cout<<nhit<<std::endl;
 
     for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
     {
@@ -547,7 +547,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           ++nHits;
           auto h = theHits[i];
 
-          std::cout << h->geographicalId().subdetId() << '\n';
+          // std::cout << h->geographicalId().subdetId() << '\n';
 
           const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(h);
 
@@ -595,7 +595,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
             {
               pdgId[i] = ((*rangeIn.first->second).pdgId());
               pdgIds[i] = ((*rangeIn.first->second).pdgId());
-              std::cout << pdgId[i] << std::endl;
+              // std::cout << pdgId[i] << std::endl;
             }
 
           if(pdgMap.find(pdgId[i]) != pdgMap.end())
@@ -627,21 +627,21 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           if(p.second==modePdg->first)
             ++allMatched;
       sharedFraction = (float) allMatched/float(nHits);
-      std::cout << tt << " - " << modePdg->first << " - " << sharedFraction << std::endl;
+      // std::cout << tt << " - " << modePdg->first << " - " << sharedFraction << std::endl;
       trackPdg = modePdg->first;
     }
     else
     {
       trackPdg = 0.0;
       sharedFraction = 0.0;
-      std::cout << tt << " - UnMatched " << std::endl;
+      // std::cout << tt << " - UnMatched " << std::endl;
     }
 
     cnntree->Fill();
 
   }
 
-std::cout << "Closing" << std::endl;
+// std::cout << "Closing" << std::endl;
 
 }
 
@@ -656,7 +656,7 @@ CNNTrackAnalyze::beginJob()
 void
 CNNTrackAnalyze::endJob()
 {
-  std::cout << "Closing" << std::endl;
+  // std::cout << "Closing" << std::endl;
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
