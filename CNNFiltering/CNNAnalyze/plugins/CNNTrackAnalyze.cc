@@ -621,6 +621,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     }
 
     int allMatched = 0;
+    trackPdg = 0.0;
 
     if(pdgMap.size()>0)
     {
@@ -640,8 +641,9 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     }
 
     if(pdgMap.size()>0)
+    {
       cnntree->Fill();
-
+    }
   }
 
 // std::cout << "Closing" << std::endl;
