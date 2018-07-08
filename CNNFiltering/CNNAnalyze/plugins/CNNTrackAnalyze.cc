@@ -596,12 +596,14 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
               pdgId[i] = ((*rangeIn.first->second).pdgId());
               pdgIds[i] = ((*rangeIn.first->second).pdgId());
               // std::cout << pdgId[i] << std::endl;
+
+              if(pdgMap.find(pdgId[i]) != pdgMap.end())
+                ++pdgMap[pdgId[i]];
+              else
+                pdgMap[pdgId[i]] = 1;
+
             }
 
-          if(pdgMap.find(pdgId[i]) != pdgMap.end())
-            ++pdgMap[pdgId[i]];
-          else
-            pdgMap[pdgId[i]] = 1;
 
           int c = 0;
           for (int ny = padSize; ny>0; --ny)
