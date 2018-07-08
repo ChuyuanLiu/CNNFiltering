@@ -150,7 +150,8 @@ private:
   int nhit, nhpxf, nhtib, nhtob, nhtid, nhtec, nhpxb, nHits;
   int eveNumber, runNumber, lumNumber;
 
-  std::vector<float>  x, y, z, phi_hit, r, c_x, c_y, size, sizex, sizey, charge, ovfx, ovfy, ratio;
+  std::vector<float>  x, y, z, phi_hit, r, c_x, c_y, charge, ovfx, ovfy, ratio;
+  std::vector<int> pdgId, size, sizex, sizey;
   //std::vector<TH2> hitClust;
 
   std::vector<float> hitPixel0, hitPixel1, hitPixel2, hitPixel3, hitPixel4;
@@ -214,10 +215,11 @@ genMap_(consumes<reco::TrackToGenParticleAssociator>(iConfig.getParameter<edm::I
     r.push_back(0.0);
     c_x.push_back(0.0);
     c_y.push_back(0.0);
-    size.push_back(0.0);
-    sizex.push_back(0.0);
-    sizey.push_back(0.0);
-    charge.push_back(0.0);
+    pdgId.push_back(0)
+    size.push_back(0);
+    sizex.push_back(0);
+    sizey.push_back(0);
+    charge.push_back(0);
     ovfx.push_back(0.0);
     ovfy.push_back(0.0);
     ratio.push_back(0.0);
@@ -280,6 +282,9 @@ genMap_(consumes<reco::TrackToGenParticleAssociator>(iConfig.getParameter<edm::I
     cnntree->Branch(name.c_str(),      &c_x[i],          tree.c_str());
     name = "hit_" + std::to_string(i) + "_c_y"; tree = name + "/D";
     cnntree->Branch(name.c_str(),      &c_y[i],          tree.c_str());
+
+    name = "hit_" + std::to_string(i) + "_pdgId"; tree = name + "/D";
+    cnntree->Branch(name.c_str(),      &pdgId[i],          tree.c_str());
 
     name = "hit_" + std::to_string(i) + "_size"; tree = name + "/D";
     cnntree->Branch(name.c_str(),      &size[i],          tree.c_str());
@@ -414,7 +419,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     std::cout << std::endl;
     std::map<int,const TrackerSingleRecHit*> theHits;
     std::map<int,bool> flagHit,isBad,isEdge,isBig;
-    std::map<int,int> hitSize, pdgIds, pdgMap;
+    std::map<int,int> hitSize, pdgMap;
 
     auto track = trackCollection->refAt(tt);
     auto hitPattern = track->hitPattern();
@@ -439,9 +444,9 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
     if(!trkQual)
       continue;
-
+    std::cout << "- Track Quality " <<std::endl;
     int pixHits = hitPattern.numberOfValidPixelHits();
-
+    std::cout << "- No Pixel Hits :" << pixHits << std::endl;
     if(pixHits < 4)
       continue;
 
@@ -465,7 +470,6 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
     for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
     {
-      std::cout <<"Hit"<<std::endl;
       TrackerSingleRecHit const * hit= dynamic_cast<TrackerSingleRecHit const *>(*recHit);
 
       if(!hit)
@@ -585,12 +589,16 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           //for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
           //kPdgs.push_back((*ip->second).pdgId());
 
-          pdgIds[i] = ((*rangeIn.first->second).pdgId());
+          if(rangeIn.first!=rangeIn.second)
+            {
+              pdgId[i] = ((*rangeIn.first->second).pdgId());
+              std::cout << pdgId[i] << std::endl;
+            }
 
-          if(pdgMap.find(pdgIds[i]) != pdgMap.end())
-            ++pdgMap[pdgIds[i]];
+          if(pdgMap.find(pdgId[i]) != pdgMap.end())
+            ++pdgMap[pdgId[i]];
           else
-            pdgMap[pdgIds[i]] = 1;
+            pdgMap[pdgId[i]] = 1;
 
           int c = 0;
           for (int ny = padSize; ny>0; --ny)
@@ -613,10 +621,11 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     {
       auto modePdg = std::max_element(pdgMap.begin(), pdgMap.end(),[](const std::pair<int, int>& p1, const std::pair<int, int>& p2) {return p1.second < p2.second; });
       for (auto const& p : pdgMap)
-          if(p.second==modePdg->second)
+          if(p.second==modePdg->first)
             ++allMatched;
       sharedFraction = (float) allMatched/float(nHits);
-      std::cout << tt << " - " << modePdg->second << " " << sharedFraction << std::endl;
+      std::cout << tt << " - " << modePdg->first << " - " << sharedFraction << std::endl;
+      trackPdg = modePdg->first
     }
     else
     {
