@@ -548,11 +548,11 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           //auto rangeIn = tpClust->equal_range(bhit->firstClusterRef());
           auto clust = pixHit->cluster();
 
-          x[i] = h->globalState()).position.y();
-          y[i] = h->globalState()).position.y();
-          z[i] = h->globalState()).position.z();
-          phi_hit[i] = h->globalState()).phi;
-          r[i] = h->globalState()).r;
+          x[i] = h->globalState().position.y();
+          y[i] = h->globalState().position.y();
+          z[i] = h->globalState().position.z();
+          phi_hit[i] = h->globalState().phi;
+          r[i] = h->globalState().r;
           c_x[i] =(float)clust->x();
           c_y[i] =(float)clust->y();
           size[i] =(float)clust->size();
@@ -581,7 +581,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
 
           auto rangeIn = tpClust->equal_range(h->firstClusterRef());
-          pdgIds[i] = (*rangeIn.first).pdgId();
+          pdgIds[i] = ((*rangeIn.first)->second).pdgId();
 
           if(pdgMap.find(pdgIds[i]) != pdgMap.end())
             ++pdgMap[pdgIds[i]];
