@@ -603,7 +603,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
         }
     }
 
-    auto modePdg = std::max_element(pdgMap.begin(), pdgMap.end(),[](const pair<int, int>& p1, const pair<int, int>& p2) {return p1.second < p2.second; });
+    auto modePdg = std::max_element(pdgMap.begin(), pdgMap.end(),[](const std::pair<int, int>& p1, const std::pair<int, int>& p2) {return p1.second < p2.second; });
     int allMatched = 0;
 
     for (auto const& p : pdgMap)
