@@ -421,7 +421,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     std::cout << std::endl;
     std::map<int,const TrackerSingleRecHit*> theHits;
     std::map<int,bool> flagHit,isBad,isEdge,isBig;
-    std::map<int,int> hitSize, pdgMap;
+    std::map<int,int> hitSize, pdgMap,pdgIds;
 
     auto track = trackCollection->refAt(tt);
     auto hitPattern = track->hitPattern();
@@ -594,6 +594,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           if(rangeIn.first!=rangeIn.second)
             {
               pdgId[i] = ((*rangeIn.first->second).pdgId());
+              pdgIds[i] = ((*rangeIn.first->second).pdgId());
               std::cout << pdgId[i] << std::endl;
             }
 
@@ -622,7 +623,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     if(pdgMap.size()>0)
     {
       auto modePdg = std::max_element(pdgMap.begin(), pdgMap.end(),[](const std::pair<int, int>& p1, const std::pair<int, int>& p2) {return p1.second < p2.second; });
-      for (auto const& p : pdgMap)
+      for (auto const& p : pdgIds)
           if(p.second==modePdg->first)
             ++allMatched;
       sharedFraction = (float) allMatched/float(nHits);
