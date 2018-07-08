@@ -615,13 +615,15 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       for (auto const& p : pdgMap)
           if(p.second==modePdg->second)
             ++allMatched;
+      sharedFraction = (float) allMatched/float(nHits);
+      std::cout << tt << " - " << modePdg->second << " " << sharedFraction << std::endl;
+    }
+    else
+    {
+      sharedFraction = 0.0;
+      std::cout << tt << " - UnMatched " << std::endl;
     }
 
-    sharedFraction = (float) allMatched/float(nHits);
-    if(pdgMap.size()>0)
-      std::cout << tt << " - " << modePdg->second << " " << sharedFraction << std::endl;
-    else
-      std::cout << tt << " - UnMatched " << std::endl;
     cnntree->Fill();
 
   }
