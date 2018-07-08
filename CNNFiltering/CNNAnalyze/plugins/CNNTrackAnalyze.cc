@@ -408,7 +408,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
   int puNumInt = puinfo.getPU_NumInteractions();
 
-  for(edm::View<reco::Track>::size_type i=0; i<trackCollection->size(); ++i)
+  for(edm::View<reco::Track>::size_type tt=0; tt<trackCollection->size(); ++tt)
   {
     std::cout << "Track ------------------- "<< std::endl;
     std::cout << std::endl;
@@ -416,7 +416,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     std::map<int,bool> flagHit,isBad,isEdge,isBig;
     std::map<int,int> hitSize, pdgIds, pdgMap;
 
-    auto track = trackCollection->refAt(i);
+    auto track = trackCollection->refAt(tt);
     auto hitPattern = track->hitPattern();
     bool trkQual  = track->quality(trackQuality);
 
@@ -607,15 +607,21 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
         }
     }
 
-    auto modePdg = std::max_element(pdgMap.begin(), pdgMap.end(),[](const std::pair<int, int>& p1, const std::pair<int, int>& p2) {return p1.second < p2.second; });
     int allMatched = 0;
 
-    for (auto const& p : pdgMap)
-        if(p.second==modePdg->second)
-          ++allMatched;
+    if(pdgMap.size()>0)
+    {
+      auto modePdg = std::max_element(pdgMap.begin(), pdgMap.end(),[](const std::pair<int, int>& p1, const std::pair<int, int>& p2) {return p1.second < p2.second; });
+      for (auto const& p : pdgMap)
+          if(p.second==modePdg->second)
+            ++allMatched;
+    }
 
     sharedFraction = (float) allMatched/float(nHits);
-
+    if(pdgMap.size()>0)
+      std::cout << tt << " - " << modePdg->second << " " << sharedFraction << std::endl;
+    else
+      std::cout << tt << " - UnMatched " << std::endl;
     cnntree->Fill();
 
   }
