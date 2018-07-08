@@ -611,7 +611,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     int allMatched = 0;
 
     for (auto const& p : pdgMap)
-        if(p.second==modePdg.second)
+        if(p.second==modePdg->second)
           ++allMatched;
 
     sharedFraction = (float) allMatched/float(nHits);
