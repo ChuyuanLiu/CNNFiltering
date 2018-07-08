@@ -147,7 +147,7 @@ private:
   int padSize, tParams;
 
   float pt, eta, phi, p, chi2n, d0, dx, dz, sharedFraction;
-  int nhit, nhpxf, nhtib, nhtob, nhtid, nhtec, nhpxb, nHits;
+  int nhit, nhpxf, nhtib, nhtob, nhtid, nhtec, nhpxb, nHits, trackPdg;
   int eveNumber, runNumber, lumNumber;
 
   std::vector<float>  x, y, z, phi_hit, r, c_x, c_y, charge, ovfx, ovfy, ratio;
@@ -215,7 +215,7 @@ genMap_(consumes<reco::TrackToGenParticleAssociator>(iConfig.getParameter<edm::I
     r.push_back(0.0);
     c_x.push_back(0.0);
     c_y.push_back(0.0);
-    pdgId.push_back(0)
+    pdgId.push_back(0);
     size.push_back(0);
     sizex.push_back(0);
     sizey.push_back(0);
@@ -253,6 +253,8 @@ genMap_(consumes<reco::TrackToGenParticleAssociator>(iConfig.getParameter<edm::I
   cnntree->Branch("nhpxb",      &nhpxb,          "nhpxb/I");
   cnntree->Branch("nhpxb",      &nhpxb,          "nhpxb/I");
   cnntree->Branch("nHits",      &nHits,          "nHits/I");
+
+  cnntree->Branch("trackPdg",      &trackPdg,          "trackPdg/I");
 
 
   for(int i = 0; i<10;i++)
@@ -629,6 +631,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     }
     else
     {
+      trackPdg = 0.0;
       sharedFraction = 0.0;
       std::cout << tt << " - UnMatched " << std::endl;
     }
