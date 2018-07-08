@@ -627,7 +627,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
             ++allMatched;
       sharedFraction = (float) allMatched/float(nHits);
       std::cout << tt << " - " << modePdg->first << " - " << sharedFraction << std::endl;
-      trackPdg = modePdg->first
+      trackPdg = modePdg->first;
     }
     else
     {
