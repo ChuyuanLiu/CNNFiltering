@@ -581,7 +581,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
 
           auto rangeIn = tpClust->equal_range(h->firstClusterRef());
-          pdgIds[i] = ((*rangeIn.first)->second).pdgId();
+          pdgIds[i] = ((*rangeIn.first).second).pdgId();
 
           if(pdgMap.find(pdgIds[i]) != pdgMap.end())
             ++pdgMap[pdgIds[i]];
