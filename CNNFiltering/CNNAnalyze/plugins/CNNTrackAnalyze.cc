@@ -146,8 +146,8 @@ private:
   float padHalfSize;
   int padSize, tParams;
 
-  float pt, eta, phi, p, chi2n, d0, dx, dz;
-  int nhit, nhpxf, nhtib, nhtob, nhtid, nhtec, nhpxb;
+  float pt, eta, phi, p, chi2n, d0, dx, dz, sharedFraction;
+  int nhit, nhpxf, nhtib, nhtob, nhtid, nhtec, nhpxb, nHits;
   int eveNumber, runNumber, lumNumber;
 
   std::vector<float>  x, y, z, phi_hit, r, c_x, c_y, size, sizex, sizey, charge, ovfx, ovfy, ratio;
@@ -205,8 +205,6 @@ genMap_(consumes<reco::TrackToGenParticleAssociator>(iConfig.getParameter<edm::I
     for(int j =0;j<padSize*padSize;j++)
       hitPixels[i].push_back(0.0);
 
-  x.reserve(10);
-
   for(int i = 0; i<10;i++)
   {
     x.push_back(0.0);
@@ -242,6 +240,8 @@ genMap_(consumes<reco::TrackToGenParticleAssociator>(iConfig.getParameter<edm::I
   cnntree->Branch("dx",      &dx,          "dx/D");
   cnntree->Branch("dz",      &dz,          "dz/D");
 
+  cnntree->Branch("sharedFraction",      &sharedFraction,          "sharedFraction/D");
+
   cnntree->Branch("nhit",      &nhit,            "nhit/I");
   cnntree->Branch("nhpxf",      &nhpxf,          "nhpxf/I");
   cnntree->Branch("nhtib",      &nhtib,          "nhtib/I");
@@ -250,6 +250,8 @@ genMap_(consumes<reco::TrackToGenParticleAssociator>(iConfig.getParameter<edm::I
   cnntree->Branch("nhtec",      &nhtec,          "nhtec/I");
   cnntree->Branch("nhpxb",      &nhpxb,          "nhpxb/I");
   cnntree->Branch("nhpxb",      &nhpxb,          "nhpxb/I");
+  cnntree->Branch("nHits",      &nHits,          "nHits/I");
+
 
   for(int i = 0; i<10;i++)
   {
@@ -412,13 +414,14 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     std::cout << std::endl;
     std::map<int,const TrackerSingleRecHit*> theHits;
     std::map<int,bool> flagHit,isBad,isEdge,isBig;
-    std::map<int,int> hitSize;
+    std::map<int,int> hitSize, pdgIds, pdgMap;
 
     auto track = trackCollection->refAt(i);
     auto hitPattern = track->hitPattern();
     bool trkQual  = track->quality(trackQuality);
 
-    // float sharedFraction = 0.0;
+    sharedFraction = 0.0;
+    nHits = 0;
     // bool isSimMatched = false;
     //
     // auto tpFound = recSimColl.find(track);
@@ -531,11 +534,11 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
     }
 
-
     for(int i = 0; i<10;i++)
     {
         if(theHits.find(i) != theHits.end())
         {
+          ++nHits;
           auto h = theHits[i];
 
           std::cout << h->geographicalId().subdetId() << '\n';
@@ -545,20 +548,20 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           //auto rangeIn = tpClust->equal_range(bhit->firstClusterRef());
           auto clust = pixHit->cluster();
 
-          x.push_back((h->globalState()).position.y());
-          y.push_back((h->globalState()).position.y());
-          z.push_back((h->globalState()).position.z());
-          phi_hit.push_back((h->globalState()).phi);
-          r.push_back((h->globalState()).r);
-          c_x.push_back((float)clust->x());
-          c_y.push_back((float)clust->y());
-          size.push_back((float)clust->size());
-          sizex.push_back((float)clust->sizeX());
-          sizey.push_back((float)clust->sizeY());
-          charge.push_back((float)clust->charge());
-          ovfx.push_back((float)clust->sizeX() > padSize);
-          ovfy.push_back((float)clust->sizeY() > padSize);
-          ratio.push_back((float)(clust->sizeY()) / (float)(clust->sizeX()));
+          x[i] = h->globalState()).position.y();
+          y[i] = h->globalState()).position.y();
+          z[i] = h->globalState()).position.z();
+          phi_hit[i] = h->globalState()).phi;
+          r[i] = h->globalState()).r;
+          c_x[i] =(float)clust->x();
+          c_y[i] =(float)clust->y();
+          size[i] =(float)clust->size();
+          sizex[i] =(float)clust->sizeX();
+          sizey[i] =(float)clust->sizeY();
+          charge[i] =(float)clust->charge();
+          ovfx[i] =(float)clust->sizeX() > padSize;
+          ovfy[i] =(float)clust->sizeY() > padSize;
+          ratio[i] =(float)(clust->sizeY()) / (float)(clust->sizeX());
 
           TH2F hClust("hClust","hClust",
           padSize,
@@ -578,17 +581,19 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
 
           auto rangeIn = tpClust->equal_range(h->firstClusterRef());
+          pdgIds[i] = (*rangeIn.first).pdgId();
 
+          if(pdgMap.find(pdgIds[i]) != pdgMap.end())
+            ++pdgMap[pdgIds[i]];
+          else
+            pdgMap[pdgIds[i]] = 1;
 
-          for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
-          std::cout << (*ip->second).pdgId() << " - ";
-          std::cout << std::endl;
           int c = 0;
           for (int ny = padSize; ny>0; --ny)
           {
             for(int nx = 0; nx<padSize; nx++)
             {
-              std::cout << c << std::endl;
+
               int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
               hitPixels[i][c] = hClust.GetBinContent(n);
               c++;
@@ -596,9 +601,16 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           }
 
         }
-
     }
 
+    auto modePdg = std::max_element(pdgMap.begin(), pdgMap.end(),[](const pair<int, int>& p1, const pair<int, int>& p2) {return p1.second < p2.second; });
+    int allMatched = 0;
+
+    for (auto const& p : pdgMap)
+        if(p.second==modePdg.second)
+          ++allMatched;
+
+    sharedFraction = (float) allMatched/float(nHits);
 
     cnntree->Fill();
 
