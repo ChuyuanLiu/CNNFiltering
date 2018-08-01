@@ -424,7 +424,8 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     // std::cout << std::endl;
     std::map<int,const TrackerSingleRecHit*> theHits;
     std::map<int,bool> flagHit,isBad,isEdge,isBig;
-    std::map<int,int> hitSize, pdgMap,pdgIds;
+    std::map<int,double> hitSize,pdgIds;
+    std::map<double,int> pdgMap;
 
     auto track = trackCollection->refAt(tt);
     auto hitPattern = track->hitPattern();
@@ -534,8 +535,13 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           keepThis = true;
 
         if(keepThis)
-          theHits[hitLayer] = hit;
-
+          {
+            theHits[hitLayer] = hit;
+            hitSize[hitLayer] = (double)thisSize;
+            isBad[hitLayer] = thisBad;
+            isEdge[hitLayer] = thisEdge;
+            isBig[hitLayer] = thisBad;
+          }
         flagHit[hitLayer] = true;
 
       }
@@ -562,15 +568,15 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           z[i] = h->globalState().position.z();
           phi_hit[i] = h->globalState().phi;
           r[i] = h->globalState().r;
-          c_x[i] =(float)clust->x();
-          c_y[i] =(float)clust->y();
-          size[i] =(float)clust->size();
-          sizex[i] =(float)clust->sizeX();
-          sizey[i] =(float)clust->sizeY();
-          charge[i] =(float)clust->charge();
-          ovfx[i] =(float)clust->sizeX() > padSize;
-          ovfy[i] =(float)clust->sizeY() > padSize;
-          ratio[i] =(float)(clust->sizeY()) / (float)(clust->sizeX());
+          c_x[i] =(double)clust->x();
+          c_y[i] =(double)clust->y();
+          size[i] =(double)clust->size();
+          sizex[i] =(double)clust->sizeX();
+          sizey[i] =(double)clust->sizeY();
+          charge[i] =(double)clust->charge();
+          ovfx[i] =(double)clust->sizeX() > padSize;
+          ovfy[i] =(double)clust->sizeY() > padSize;
+          ratio[i] =(double)(clust->sizeY()) / (double)(clust->sizeX());
 
           TH2F hClust("hClust","hClust",
           padSize,
@@ -596,21 +602,21 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
           if(rangeIn.first!=rangeIn.second)
             {
-              pdgId[i] = ((*rangeIn.first->second).pdgId());
-              pdgIds[i] = ((*rangeIn.first->second).pdgId());
+              pdgId[i] = (double)((*rangeIn.first->second).pdgId());
+              pdgIds[i] = (double)((*rangeIn.first->second).pdgId());
               // std::cout << pdgId[i] << std::endl;
 
               if((*rangeIn.first->second).genParticle_begin()!=(*rangeIn.first->second).genParticle_end())
-              {
-                motherPdgId[i] = ((*(*rangeIn.first->second).genParticle_begin())->mother()->pdgId());
+              // {
+                motherPdgId[i] = (double)((*(*rangeIn.first->second).genParticle_begin())->mother()->pdgId());
 
-                auto gStart = (*rangeIn.first->second).genParticle_begin();
-                int mm = 0;
-                for(;gStart!=(*rangeIn.first->second).genParticle_end();++gStart)
-                {
-                  std::cout << ++mm << (*gStart)->mother()->pdgId() << std::endl;
-                }
-              }
+                // auto gStart = (*rangeIn.first->second).genParticle_begin();
+                // int mm = 0;
+                // for(;gStart!=(*rangeIn.first->second).genParticle_end();++gStart)
+                // {
+                //   std::cout << ++mm << (*gStart)->mother()->pdgId() << std::endl;
+                // }
+              // }
 
               if(pdgMap.find(pdgId[i]) != pdgMap.end())
                 ++pdgMap[pdgId[i]];
