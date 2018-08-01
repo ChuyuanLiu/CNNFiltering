@@ -151,7 +151,7 @@ private:
   int eveNumber, runNumber, lumNumber;
 
   std::vector<float>  x, y, z, phi_hit, r, c_x, c_y, charge, ovfx, ovfy, ratio;
-  std::vector<int> pdgId, size, sizex, sizey;
+  std::vector<int> pdgId, motherPdgId, size, sizex, sizey;
   //std::vector<TH2> hitClust;
 
   std::vector<float> hitPixel0, hitPixel1, hitPixel2, hitPixel3, hitPixel4;
@@ -215,7 +215,8 @@ genMap_(consumes<reco::TrackToGenParticleAssociator>(iConfig.getParameter<edm::I
     r.push_back(0.0);
     c_x.push_back(0.0);
     c_y.push_back(0.0);
-    pdgId.push_back(0);
+    pdgId.push_back(0.0);
+    motherPdgId.push_back(0.0)
     size.push_back(0);
     sizex.push_back(0);
     sizey.push_back(0);
@@ -287,6 +288,8 @@ genMap_(consumes<reco::TrackToGenParticleAssociator>(iConfig.getParameter<edm::I
 
     name = "hit_" + std::to_string(i) + "_pdgId"; tree = name + "/D";
     cnntree->Branch(name.c_str(),      &pdgId[i],          tree.c_str());
+    name = "hit_" + std::to_string(i) + "_motherPdgId"; tree = name + "/D";
+    cnntree->Branch(name.c_str(),      &motherPdgId[i],          tree.c_str());
 
     name = "hit_" + std::to_string(i) + "_size"; tree = name + "/D";
     cnntree->Branch(name.c_str(),      &size[i],          tree.c_str());
@@ -598,9 +601,15 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
               // std::cout << pdgId[i] << std::endl;
 
               if((*rangeIn.first->second).genParticle_begin()!=(*rangeIn.first->second).genParticle_end())
-              for(size_t mm = 0; mm < (*rangeIn.first->second).genParticle_begin()->numberOfMothers();mm++)
               {
-                std::cout << mm << " - " << ((*rangeIn.first->second).genParticle_begin()->mother()->pdgId()) << std::endl;
+                motherPdgId[i] = ((*(*rangeIn.first->second).genParticle_begin())->mother()->pdgId());
+
+                auto gStart = ((*(*rangeIn.first->second).genParticle_begin());
+                int mm = 0;
+                for(;gStart!=(*rangeIn.first->second).genParticle_end();++g)
+                {
+                  std::cout << ++mm << gStart->mother()->pdgId() << std::endl;
+                }
               }
 
               if(pdgMap.find(pdgId[i]) != pdgMap.end())
