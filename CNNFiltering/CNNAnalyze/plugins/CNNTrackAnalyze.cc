@@ -216,8 +216,8 @@ genMap_(consumes<reco::TrackToGenParticleAssociator>(iConfig.getParameter<edm::I
     c_x.push_back(0.0);
     c_y.push_back(0.0);
     pdgId.push_back(0.0);
-    motherPdgId.push_back(0.0)
-    size.push_back(0);
+    motherPdgId.push_back(0.0);
+    size.sh_back(0);
     sizex.push_back(0);
     sizey.push_back(0);
     charge.push_back(0);
@@ -604,11 +604,11 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
               {
                 motherPdgId[i] = ((*(*rangeIn.first->second).genParticle_begin())->mother()->pdgId());
 
-                auto gStart = ((*(*rangeIn.first->second).genParticle_begin());
+                auto gStart = (*rangeIn.first->second).genParticle_begin();
                 int mm = 0;
                 for(;gStart!=(*rangeIn.first->second).genParticle_end();++g)
                 {
-                  std::cout << ++mm << gStart->mother()->pdgId() << std::endl;
+                  std::cout << ++mm << (*gStart)->mother()->pdgId() << std::endl;
                 }
               }
 
