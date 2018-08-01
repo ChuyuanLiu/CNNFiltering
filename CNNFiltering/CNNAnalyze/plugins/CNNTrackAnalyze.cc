@@ -597,6 +597,11 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
               pdgIds[i] = ((*rangeIn.first->second).pdgId());
               // std::cout << pdgId[i] << std::endl;
 
+              for(size_t mm = 0; mm < (*rangeIn.first->second).numberOfMothers(),mm++)
+              {
+                std::cout << mm << " - " << ((*rangeIn.first->second).mother()->pdgId()) << std::endl;
+              }
+
               if(pdgMap.find(pdgId[i]) != pdgMap.end())
                 ++pdgMap[pdgId[i]];
               else
