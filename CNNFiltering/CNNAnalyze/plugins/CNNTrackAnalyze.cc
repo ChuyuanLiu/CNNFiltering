@@ -479,6 +479,9 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     // nhtec   = hitPattern.numberOfValidStripTECHits();
 
     // std::cout<<nhit<<std::endl;
+    theData.push_back((double)eveNumber);
+    theData.push_back((double)runNumber);
+    theData.push_back((double)lumNumber);
 
     theData.push_back((double)track->pt());
     theData.push_back((double)track->eta());
