@@ -227,89 +227,89 @@ genMap_(consumes<reco::TrackToGenParticleAssociator>(iConfig.getParameter<edm::I
 
   }
 
-  edm::Service<TFileService> fs;
-  cnntree = fs->make<TTree>("CNNTree","Doublets Tree");
-
-  cnntree->Branch("eveNumber",      &eveNumber,          "eveNumber/I");
-  cnntree->Branch("runNumber",      &runNumber,          "runNumber/I");
-  cnntree->Branch("lumNumber",      &lumNumber,          "lumNumber/I");
-
-  cnntree->Branch("pt",      &pt,          "pt/D");
-  cnntree->Branch("eta",      &eta,          "eta/D");
-  cnntree->Branch("phi",      &phi,          "phi/D");
-  cnntree->Branch("p",      &p,          "p/D");
-  cnntree->Branch("chi2n",      &chi2n,  "chi2n/D");
-  cnntree->Branch("d0",      &d0,          "d0/D");
-  cnntree->Branch("dx",      &dx,          "dx/D");
-  cnntree->Branch("dz",      &dz,          "dz/D");
-
-  cnntree->Branch("sharedFraction",      &sharedFraction,          "sharedFraction/D");
-
-  cnntree->Branch("nhit",      &nhit,            "nhit/I");
-  cnntree->Branch("nhpxf",      &nhpxf,          "nhpxf/I");
-  cnntree->Branch("nhtib",      &nhtib,          "nhtib/I");
-  cnntree->Branch("nhtob",      &nhtob,          "nhtob/I");
-  cnntree->Branch("nhtid",      &nhtid,          "nhtid/I");
-  cnntree->Branch("nhtec",      &nhtec,          "nhtec/I");
-  cnntree->Branch("nhpxb",      &nhpxb,          "nhpxb/I");
-  cnntree->Branch("nhpxb",      &nhpxb,          "nhpxb/I");
-  cnntree->Branch("nHits",      &nHits,          "nHits/I");
-
-  cnntree->Branch("trackPdg",      &trackPdg,          "trackPdg/I");
-
-
-  for(int i = 0; i<10;i++)
-  {
-    std::string name,tree;
-
-    for(int j = 0;j<padSize*padSize;j++)
-    {
-      name = "hit_" + std::to_string(i) + "_Pix_" + std::to_string(j);
-      tree = name + "/D";
-      cnntree->Branch(name.c_str(),      &hitPixels[i][j],          tree.c_str());
-    }
-
-    name = "hit_" + std::to_string(i) + "_x"; tree = name + "/D";
-    cnntree->Branch(name.c_str(),      &x[i],          tree.c_str());
-    name = "hit_" + std::to_string(i) + "_y"; tree = name + "/D";
-    cnntree->Branch(name.c_str(),      &y[i],          tree.c_str());
-    name = "hit_" + std::to_string(i) + "_z"; tree = name + "/D";
-    cnntree->Branch(name.c_str(),      &z[i],          tree.c_str());
-
-    name = "hit_" + std::to_string(i) + "_phi_hit"; tree = name + "/D";
-    cnntree->Branch(name.c_str(),      &phi_hit[i],          tree.c_str());
-    name = "hit_" + std::to_string(i) + "_r"; tree = name + "/D";
-    cnntree->Branch(name.c_str(),      &r[i],          tree.c_str());
-
-    name = "hit_" + std::to_string(i) + "_c_x"; tree = name + "/D";
-    cnntree->Branch(name.c_str(),      &c_x[i],          tree.c_str());
-    name = "hit_" + std::to_string(i) + "_c_y"; tree = name + "/D";
-    cnntree->Branch(name.c_str(),      &c_y[i],          tree.c_str());
-
-    name = "hit_" + std::to_string(i) + "_pdgId"; tree = name + "/D";
-    cnntree->Branch(name.c_str(),      &pdgId[i],          tree.c_str());
-    name = "hit_" + std::to_string(i) + "_motherPdgId"; tree = name + "/D";
-    cnntree->Branch(name.c_str(),      &motherPdgId[i],          tree.c_str());
-
-    name = "hit_" + std::to_string(i) + "_size"; tree = name + "/D";
-    cnntree->Branch(name.c_str(),      &size[i],          tree.c_str());
-    name = "hit_" + std::to_string(i) + "_sizex"; tree = name + "/D";
-    cnntree->Branch(name.c_str(),      &sizex[i],          tree.c_str());
-    name = "hit_" + std::to_string(i) + "_sizey"; tree = name + "/D";
-    cnntree->Branch(name.c_str(),      &sizey[i],          tree.c_str());
-
-    name = "hit_" + std::to_string(i) + "_charge"; tree = name + "/D";
-    cnntree->Branch(name.c_str(),      &charge[i],          tree.c_str());
-
-    name = "hit_" + std::to_string(i) + "_ovfx"; tree = name + "/D";
-    cnntree->Branch(name.c_str(),      &ovfx[i],          tree.c_str());
-    name = "hit_" + std::to_string(i) + "_ovfy"; tree = name + "/D";
-    cnntree->Branch(name.c_str(),      &ovfy[i],          tree.c_str());
-    name = "hit_" + std::to_string(i) + "_ratio"; tree = name + "/D";
-    cnntree->Branch(name.c_str(),      &ratio[i],          tree.c_str());
-
-
-  }
+  // edm::Service<TFileService> fs;
+  // cnntree = fs->make<TTree>("CNNTree","Doublets Tree");
+  //
+  // cnntree->Branch("eveNumber",      &eveNumber,          "eveNumber/I");
+  // cnntree->Branch("runNumber",      &runNumber,          "runNumber/I");
+  // cnntree->Branch("lumNumber",      &lumNumber,          "lumNumber/I");
+  //
+  // cnntree->Branch("pt",      &pt,          "pt/D");
+  // cnntree->Branch("eta",     &eta,          "eta/D");
+  // cnntree->Branch("phi",     &phi,          "phi/D");
+  // cnntree->Branch("p",       &p,          "p/D");
+  // cnntree->Branch("chi2n",   &chi2n,  "chi2n/D");
+  // cnntree->Branch("d0",      &d0,          "d0/D");
+  // cnntree->Branch("dx",      &dx,          "dx/D");
+  // cnntree->Branch("dz",      &dz,          "dz/D");
+  //
+  // cnntree->Branch("sharedFraction",      &sharedFraction,          "sharedFraction/D");
+  //
+  // cnntree->Branch("nhit",      &nhit,            "nhit/I");
+  // cnntree->Branch("nhpxf",      &nhpxf,          "nhpxf/I");
+  // cnntree->Branch("nhtib",      &nhtib,          "nhtib/I");
+  // cnntree->Branch("nhtob",      &nhtob,          "nhtob/I");
+  // cnntree->Branch("nhtid",      &nhtid,          "nhtid/I");
+  // cnntree->Branch("nhtec",      &nhtec,          "nhtec/I");
+  // cnntree->Branch("nhpxb",      &nhpxb,          "nhpxb/I");
+  // cnntree->Branch("nhpxb",      &nhpxb,          "nhpxb/I");
+  // cnntree->Branch("nHits",      &nHits,          "nHits/I");
+  //
+  // cnntree->Branch("trackPdg",      &trackPdg,          "trackPdg/I");
+  //
+  //
+  // for(int i = 0; i<10;i++)
+  // {
+  //   std::string name,tree;
+  //
+  //   for(int j = 0;j<padSize*padSize;j++)
+  //   {
+  //     name = "hit_" + std::to_string(i) + "_Pix_" + std::to_string(j);
+  //     tree = name + "/D";
+  //     cnntree->Branch(name.c_str(),      &hitPixels[i][j],          tree.c_str());
+  //   }
+  //
+  //   name = "hit_" + std::to_string(i) + "_x"; tree = name + "/D";
+  //   cnntree->Branch(name.c_str(),      &x[i],          tree.c_str());
+  //   name = "hit_" + std::to_string(i) + "_y"; tree = name + "/D";
+  //   cnntree->Branch(name.c_str(),      &y[i],          tree.c_str());
+  //   name = "hit_" + std::to_string(i) + "_z"; tree = name + "/D";
+  //   cnntree->Branch(name.c_str(),      &z[i],          tree.c_str());
+  //
+  //   name = "hit_" + std::to_string(i) + "_phi_hit"; tree = name + "/D";
+  //   cnntree->Branch(name.c_str(),      &phi_hit[i],          tree.c_str());
+  //   name = "hit_" + std::to_string(i) + "_r"; tree = name + "/D";
+  //   cnntree->Branch(name.c_str(),      &r[i],          tree.c_str());
+  //
+  //   name = "hit_" + std::to_string(i) + "_c_x"; tree = name + "/D";
+  //   cnntree->Branch(name.c_str(),      &c_x[i],          tree.c_str());
+  //   name = "hit_" + std::to_string(i) + "_c_y"; tree = name + "/D";
+  //   cnntree->Branch(name.c_str(),      &c_y[i],          tree.c_str());
+  //
+  //   name = "hit_" + std::to_string(i) + "_pdgId"; tree = name + "/D";
+  //   cnntree->Branch(name.c_str(),      &pdgId[i],          tree.c_str());
+  //   name = "hit_" + std::to_string(i) + "_motherPdgId"; tree = name + "/D";
+  //   cnntree->Branch(name.c_str(),      &motherPdgId[i],          tree.c_str());
+  //
+  //   name = "hit_" + std::to_string(i) + "_size"; tree = name + "/D";
+  //   cnntree->Branch(name.c_str(),      &size[i],          tree.c_str());
+  //   name = "hit_" + std::to_string(i) + "_sizex"; tree = name + "/D";
+  //   cnntree->Branch(name.c_str(),      &sizex[i],          tree.c_str());
+  //   name = "hit_" + std::to_string(i) + "_sizey"; tree = name + "/D";
+  //   cnntree->Branch(name.c_str(),      &sizey[i],          tree.c_str());
+  //
+  //   name = "hit_" + std::to_string(i) + "_charge"; tree = name + "/D";
+  //   cnntree->Branch(name.c_str(),      &charge[i],          tree.c_str());
+  //
+  //   name = "hit_" + std::to_string(i) + "_ovfx"; tree = name + "/D";
+  //   cnntree->Branch(name.c_str(),      &ovfx[i],          tree.c_str());
+  //   name = "hit_" + std::to_string(i) + "_ovfy"; tree = name + "/D";
+  //   cnntree->Branch(name.c_str(),      &ovfy[i],          tree.c_str());
+  //   name = "hit_" + std::to_string(i) + "_ratio"; tree = name + "/D";
+  //   cnntree->Branch(name.c_str(),      &ratio[i],          tree.c_str());
+  //
+  //
+  // }
 
 
   edm::InputTag beamSpotTag = iConfig.getParameter<edm::InputTag>("beamSpot");
@@ -394,6 +394,11 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   runNumber = iEvent.id().run();
   lumNumber = iEvent.id().luminosityBlock();
 
+  std::string fileName = processName_ + ".txt";
+  //std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
+  //fileName += "_" + processName_ + "_dnn_doublets.txt";
+  std::ofstream outCNNFile(fileName, std::ofstream::app);
+
   std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}; //seqNumbers of pixel detectors 0,1,2,3 barrel 14,15,16, fwd 29,30,31 bkw
   std::vector<int> partiList{11,13,15,22,111,211,311,321,2212,2112,3122,223};
 
@@ -420,11 +425,12 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
   for(edm::View<reco::Track>::size_type tt=0; tt<trackCollection->size(); ++tt)
   {
+    std::vector<double> theData;
     // std::cout << "Track ------------------- "<< std::endl;
     // std::cout << std::endl;
     std::map<int,const TrackerSingleRecHit*> theHits;
-    std::map<int,bool> flagHit,isBad,isEdge,isBig;
-    std::map<int,double> hitSize,pdgIds;
+    std::map<int,bool> isBad,isEdge,isBig;
+    std::map<int,double> hitSize,pdgIds,flagHit;
     std::map<double,int> pdgMap;
 
     auto track = trackCollection->refAt(tt);
@@ -456,23 +462,39 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     if(pixHits < 4)
       continue;
 
-    pt    = track->pt();
-    eta   = track->eta();
-    phi   = track->phi();
-    p     = track->p();
-    chi2n = track->normalizedChi2();
-    nhit  = track->numberOfValidHits();
-    d0    = track->d0();
-    dz    = track->dz();
+    // pt    = (double)track->pt();
+    // eta   = (double)track->eta();
+    // phi   = (double)track->phi();
+    // p     = (double)track->p();
+    // chi2n = (double)track->normalizedChi2();
+    // nhit  = (double)track->numberOfValidHits();
+    // d0    = (double)track->d0();
+    // dz    = (double)track->dz();
 
-    nhpxb   = hitPattern.numberOfValidPixelBarrelHits();
-    nhpxf   = hitPattern.numberOfValidPixelEndcapHits();
-    nhtib   = hitPattern.numberOfValidStripTIBHits();
-    nhtob   = hitPattern.numberOfValidStripTOBHits();
-    nhtid   = hitPattern.numberOfValidStripTIDHits();
-    nhtec   = hitPattern.numberOfValidStripTECHits();
+    // nhpxb   = hitPattern.numberOfValidPixelBarrelHits();
+    // nhpxf   = hitPattern.numberOfValidPixelEndcapHits();
+    // nhtib   = hitPattern.numberOfValidStripTIBHits();
+    // nhtob   = hitPattern.numberOfValidStripTOBHits();
+    // nhtid   = hitPattern.numberOfValidStripTIDHits();
+    // nhtec   = hitPattern.numberOfValidStripTECHits();
 
     // std::cout<<nhit<<std::endl;
+
+    theData.push_back((double)track->pt());
+    theData.push_back((double)track->eta());
+    theData.push_back((double)track->phi());
+    theData.push_back((double)track->p());
+    theData.push_back((double)track->normalizedChi2());
+    theData.push_back((double)track->numberOfValidHits());
+    theData.push_back((double)track->d0());
+    theData.push_back((double)track->dz());
+
+    theData.push_back((double)hitPattern.numberOfValidPixelBarrelHits());
+    theData.push_back((double)hitPattern.numberOfValidPixelEndcapHits());
+    theData.push_back((double)hitPattern.numberOfValidStripTIBHits());
+    theData.push_back((double)hitPattern.numberOfValidStripTOBHits());
+    theData.push_back((double)hitPattern.numberOfValidStripTIDHits());
+    theData.push_back((double)hitPattern.numberOfValidStripTECHits());
 
     for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
     {
@@ -522,15 +544,32 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
         {
           //Keeping the good,not on edge,not big, with higher charge
           if(isBad[hitLayer] || isEdge[hitLayer] || isBig[hitLayer])
-            if(!(thisBad || thisEdge || thisBig))
+          {
+              if(!(thisBig || thisBad || thisEdge))
+                keepThis = true;
+              else
+              {
+                if(thisSize > hitSize[hitLayer])
+                keepThis = true;
+              }
+          }
+          else
+          {
+            if(!(thisBig || thisBad || thisEdge))
+            {
+              if(thisSize > hitSize[hitLayer])
               keepThis = true;
-          if(isBad[hitLayer] && !thisBad)
-              keepThis = true;
-          if((isBad[hitLayer] && thisBad)||(!(isBad[hitLayer] || thisBad)))
-            if(thisSize > hitSize[hitLayer])
-              keepThis = true;
-          if(thisBad && !isBad[hitLayer])
-              keepThis = false;
+            }
+          }
+          //   if(!(thisBad || thisEdge || thisBig))
+          //     keepThis = true;
+          // if(isBad[hitLayer] && !thisBad)
+          //     keepThis = true;
+          // if((isBad[hitLayer] && thisBad)||(!(isBad[hitLayer] || thisBad)))
+          //   if(thisSize > hitSize[hitLayer])
+          //     keepThis = true;
+          // if(thisBad && !isBad[hitLayer])
+          //     keepThis = false;
         }else
           keepThis = true;
 
@@ -542,7 +581,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
             isEdge[hitLayer] = thisEdge;
             isBig[hitLayer] = thisBad;
           }
-        flagHit[hitLayer] = true;
+        flagHit[hitLayer] = 1.0;
 
       }
 
@@ -563,11 +602,11 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           //auto rangeIn = tpClust->equal_range(bhit->firstClusterRef());
           auto clust = pixHit->cluster();
 
-          x[i] = h->globalState().position.y();
-          y[i] = h->globalState().position.y();
-          z[i] = h->globalState().position.z();
-          phi_hit[i] = h->globalState().phi;
-          r[i] = h->globalState().r;
+          x[i] = (double)h->globalState().position.y();
+          y[i] = (double)h->globalState().position.y();
+          z[i] = (double)h->globalState().position.z();
+          phi_hit[i] = (double)h->globalState().phi;
+          r[i] = (double)h->globalState().r;
           c_x[i] =(double)clust->x();
           c_y[i] =(double)clust->y();
           size[i] =(double)clust->size();
@@ -577,6 +616,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           ovfx[i] =(double)clust->sizeX() > padSize;
           ovfy[i] =(double)clust->sizeY() > padSize;
           ratio[i] =(double)(clust->sizeY()) / (double)(clust->sizeX());
+
 
           TH2F hClust("hClust","hClust",
           padSize,
@@ -633,7 +673,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
             {
 
               int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
-              hitPixels[i][c] = hClust.GetBinContent(n);
+              hitPixels[i][c] = (double)hClust.GetBinContent(n);
               c++;
             }
           }
@@ -650,7 +690,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       for (auto const& p : pdgIds)
           if(p.second==modePdg->first)
             ++allMatched;
-      sharedFraction = (float) allMatched/float(nHits);
+      sharedFraction = (float)(float(allMatched)/float(nHits));
       // std::cout << tt << " - " << modePdg->first << " - " << sharedFraction << std::endl;
       trackPdg = modePdg->first;
     }
@@ -661,9 +701,46 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       // std::cout << tt << " - UnMatched " << std::endl;
     }
 
+    theData.push_back((double)trackPdg);
+    theData.push_back((double)sharedFraction);
+
+    for(int i = 0; i<10;i++)
+    {
+
+      theData.push_back((double)x[i]);
+      theData.push_back((double)y[i]);
+      theData.push_back((double)z[i]);
+
+      theData.push_back((double)phi_hit[i]);
+      theData.push_back((double)r[i]);
+
+      theData.push_back((double)c_x[i]);
+      theData.push_back((double)c_y[i]);
+      theData.push_back((double)size[i]);
+      theData.push_back((double)sizex[i]);
+      theData.push_back((double)sizey[i]);
+
+      theData.push_back((double)charge[i]);
+
+      theData.push_back((double)ovfx[i]);
+      theData.push_back((double)ovfy[i]);
+
+      theData.push_back((double)ratio[i]);
+
+    }
+
+    for(int i = 0; i<10;i++)
+      for(int j =0;j<padSize*padSize;j++)
+        theData.push_back((double)(hitPixels[i][j]));
+
     if(pdgMap.size()>0)
     {
-      cnntree->Fill();
+      for (size_t i = 0; i < theData.size(); i++) {
+        outCNNFile << theData[i] << "\t";
+      }
+      outCNNFile << 542.1369 << std::endl;
+
+      //cnntree->Fill();
     }
   }
 
