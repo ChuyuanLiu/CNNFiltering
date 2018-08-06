@@ -146,8 +146,8 @@ private:
   float padHalfSize;
   int padSize, tParams;
 
-  float pt, eta, phi, p, chi2n, d0, dx, dz, sharedFraction;
-  int nhit, nhpxf, nhtib, nhtob, nhtid, nhtec, nhpxb, nHits, trackPdg;
+  float pt, eta, phi, p, chi2n, d0, dx, dz, sharedFraction,sharedMomFraction;
+  int nhit, nhpxf, nhtib, nhtob, nhtid, nhtec, nhpxb, nHits, trackPdg,trackMomPdg;
   int eveNumber, runNumber, lumNumber;
 
   std::vector<float>  x, y, z, phi_hit, r, c_x, c_y, charge, ovfx, ovfy, ratio;
@@ -431,7 +431,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     std::map<int,const TrackerSingleRecHit*> theHits;
     std::map<int,bool> isBad,isEdge,isBig;
     std::map<int,double> hitSize,pdgIds,flagHit;
-    std::map<double,int> pdgMap;
+    std::map<double,int> pdgMap,pdgMomMap;
 
     auto track = trackCollection->refAt(tt);
     auto hitPattern = track->hitPattern();
@@ -620,7 +620,6 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           ovfy[i] =(double)clust->sizeY() > padSize;
           ratio[i] =(double)(clust->sizeY()) / (double)(clust->sizeX());
 
-
           TH2F hClust("hClust","hClust",
           padSize,
           clust->x()-padHalfSize,
@@ -650,16 +649,12 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
               // std::cout << pdgId[i] << std::endl;
 
               if((*rangeIn.first->second).genParticle_begin()!=(*rangeIn.first->second).genParticle_end())
-              // {
                 motherPdgId[i] = (double)((*(*rangeIn.first->second).genParticle_begin())->mother()->pdgId());
 
-                // auto gStart = (*rangeIn.first->second).genParticle_begin();
-                // int mm = 0;
-                // for(;gStart!=(*rangeIn.first->second).genParticle_end();++gStart)
-                // {
-                //   std::cout << ++mm << (*gStart)->mother()->pdgId() << std::endl;
-                // }
-              // }
+              if(pdgMomMap.find(motherPdgId[i]) != pdgMomMap.end())
+                ++pdgMomMap[motherPdgId[i]];
+              else
+                pdgMomMap[motherPdgId[i]] = 1;
 
               if(pdgMap.find(pdgId[i]) != pdgMap.end())
                 ++pdgMap[pdgId[i]];
@@ -704,8 +699,27 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       // std::cout << tt << " - UnMatched " << std::endl;
     }
 
+    if(pdgMomMap.size()>0)
+    {
+      auto modePdg = std::max_element(pdgMomMap.begin(), pdgMomMap.end(),[](const std::pair<int, int>& p1, const std::pair<int, int>& p2) {return p1.second < p2.second; });
+      for (auto const& p : pdgIds)
+          if(p.second==modePdg->first)
+            ++allMatched;
+      sharedMomFraction = (float)(float(allMatched)/float(nHits));
+      // std::cout << tt << " - " << modePdg->first << " - " << sharedFraction << std::endl;
+      trackMomPdg = modePdg->first;
+    }
+    else
+    {
+      trackMomPdg = 0.0;
+      sharedMomFraction = 0.0;
+      // std::cout << tt << " - UnMatched " << std::endl;
+    }
+
     theData.push_back((double)trackPdg);
     theData.push_back((double)sharedFraction);
+    theData.push_back((double)trackMomPdg);
+    theData.push_back((double)sharedMomFraction);
 
     for(int i = 0; i<10;i++)
     {
@@ -729,6 +743,9 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       theData.push_back((double)ovfy[i]);
 
       theData.push_back((double)ratio[i]);
+
+      theData.push_back((double)motherPdgId[i]);
+      theData.push_back((double)pdgId[i]);
 
     }
 
