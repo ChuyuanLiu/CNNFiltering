@@ -150,8 +150,8 @@ private:
   int nhit, nhpxf, nhtib, nhtob, nhtid, nhtec, nhpxb, nHits, trackPdg,trackMomPdg;
   int eveNumber, runNumber, lumNumber;
 
-  std::vector<float>  x, y, z, phi_hit, r, c_x, c_y, charge, ovfx, ovfy, ratio;
-  std::vector<int> pdgId, motherPdgId, size, sizex, sizey;
+  std::vector<float>  x, y, z, phi_hit, r, c_x, c_y, charge, ovfx, ovfy;
+  std::vector<float> ratio, pdgId, motherPdgId, size, sizex, sizey;
   //std::vector<TH2> hitClust;
 
   std::vector<float> hitPixel0, hitPixel1, hitPixel2, hitPixel3, hitPixel4;
@@ -159,7 +159,7 @@ private:
 
   std::vector< std::vector<float> > hitPixels;
 
-  TTree* cnntree;
+  // TTree* cnntree;
 
   UInt_t test;
 
@@ -455,10 +455,10 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       c_y[i] = 0.0;
       pdgId[i] = 0.0;
       motherPdgId[i] = 0.0;
-      size[i] = 0);
-      sizex[i] = 0);
-      sizey[i] = 0);
-      charge[i] = 0);
+      size[i] = 0.0;
+      sizex[i] = 0.0;
+      sizey[i] = 0.0;
+      charge[i] = 0.0;
       ovfx[i] = 0.0;
       ovfy[i] = 0.0;
       ratio[i] = 0.0;
