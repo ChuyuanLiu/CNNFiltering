@@ -278,8 +278,8 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
   for(edm::View<reco::Track>::size_type i=0; i<trackCollection->size(); ++i)
   {
            auto posTrack = trackCollection->refAt(i);
-           bool trkQual  = track->quality(trackQuality);
-           auto hitPattern = track->hitPattern();
+           bool trkQual  = posTrack->quality(trackQuality);
+           auto hitPattern = posTrack->hitPattern();
 
            posPixHits = hitPattern.numberOfValidPixelHits();
            // std::cout << "- No Pixel Hits :" << pixHits << std::endl;
@@ -291,14 +291,14 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
            if(!trkQual)
              continue;
 
-           if(posTrack.charge() <= 0 ) continue;
-           if(posTrack.pt()<0.9) continue;
+           if(posTrack->charge() <= 0 ) continue;
+           if(posTrack->pt()<0.9) continue;
 
      for(edm::View<reco::Track>::size_type j=0; j<trackCollection->size(); ++j)
      {
        auto negTrack = trackCollection->refAt(j);
-       bool trkQual  = track->quality(trackQuality);
-       auto hitPattern = track->hitPattern();
+       bool trkQual  = negTrack->quality(trackQuality);
+       auto hitPattern = negTrack->hitPattern();
 
        negPixHits = hitPattern.numberOfValidPixelHits();
        // std::cout << "- No Pixel Hits :" << pixHits << std::endl;
@@ -310,17 +310,17 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
        if(!trkQual)
          continue;
 
-       if(negTrack.charge() <= 0 ) continue;
-       if(negTrack.pt()<0.9) continue;
+       if(negTrack->charge() <= 0 ) continue;
+       if(negTrack->pt()<0.9) continue;
 
-       pat::CompositeCandidate TTCand = makeTTCandidate(posTrack,negTrack);
+       pat::CompositeCandidate TTCand = makeTTCandidate(*posTrack,*negTrack);
 
        if ( !(TTCand.mass() < TrakTrakMassMax_ && TTCand.mass() > TrakTrakMassMin_) )
         continue;
 
        vector<TransientTrack> tt_ttks;
-       tt_ttks.push_back(theTTBuilder->build(negTrack));  // pass the reco::Track, not  the reco::TrackRef (which can be transient)
-       tt_ttks.push_back(theTTBuilder->build(posTrack));
+       tt_ttks.push_back(theTTBuilder->build(*negTrack));  // pass the reco::Track, not  the reco::TrackRef (which can be transient)
+       tt_ttks.push_back(theTTBuilder->build(*posTrack));
 
        TransientVertex ttVertex = vtxFitter.vertex(tt_ttks);
        CachingVertex<5> VtxForInvMass = vtxFitter.vertex( tt_ttks );
