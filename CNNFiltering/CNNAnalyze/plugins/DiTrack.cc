@@ -259,7 +259,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
   lumiblock = iEvent.id().luminosityBlock();
 
   numPrimaryVertices = 0;
-  if (primaryVertices_handle.isValid()) numPrimaryVertices = (int) primaryVertices_handle->size();
+  // if (primaryVertices_handle.isValid()) numPrimaryVertices = (int) primaryVertices_handle->size();
   //
   // edm::Handle< edm::TriggerResults > triggerResults_handle;
   // iEvent.getByToken( triggerResults_Label , triggerResults_handle);
