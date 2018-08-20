@@ -19,6 +19,21 @@
 #include "DataFormats/PatCandidates/interface/TriggerObjectStandAlone.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
 
+#include "TrackingTools/PatternTools/interface/TwoTrackMinimumDistance.h"
+#include "TrackingTools/IPTools/interface/IPTools.h"
+#include "TrackingTools/PatternTools/interface/ClosestApproachInRPhi.h"
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
+#include "TrackingTools/Records/interface/TransientTrackRecord.h"
+#include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
+#include "RecoVertex/VertexTools/interface/VertexDistanceXY.h"
+#include "RecoVertex/KinematicFit/interface/KinematicParticleVertexFitter.h"
+#include "RecoVertex/KinematicFit/interface/KinematicParticleFitter.h"
+#include "RecoVertex/KinematicFit/interface/MassKinematicConstraint.h"
+#include "RecoVertex/KinematicFitPrimitives/interface/RefCountedKinematicParticle.h"
+#include "RecoVertex/KinematicFitPrimitives/interface/TransientTrackKinematicParticle.h"
+#include "RecoVertex/KinematicFitPrimitives/interface/KinematicParticleFactoryFromTransientTrack.h"
+#include "RecoVertex/VertexTools/interface/InvariantMassFromVertex.h"
+
 #include "FWCore/Common/interface/TriggerNames.h"
 
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
@@ -93,7 +108,7 @@ class DiTrack:public edm::EDAnalyzer {
   UInt_t charge;
   UInt_t negPixHits, posPixHits;
 
-  Double_t ditrak_m, ditrak_p, ditrak_pt, ditrak_eta, ditrak_phi;
+  Double_t ditrak_m, ditrak_p, ditrak_pt, ditrak_eta, ditrak_phi,ditrak_vProb;
 
 	TLorentzVector ditrak_p4;
 	TLorentzVector trakP_p4;
@@ -108,7 +123,7 @@ class DiTrack:public edm::EDAnalyzer {
 	TTree *ditrak_tree;
 
   UInt_t nditrak, ntraks;
-
+  UInt_t tJ, tI;
 
 };
 
@@ -119,8 +134,8 @@ const pat::CompositeCandidate DiTrack::makeTTCandidate(
                                          ){
 
   pat::CompositeCandidate TTCand;
-  TTCand.addDaughter(trakP,"trakP");
-  TTCand.addDaughter(trakN,"trakN");
+  // TTCand.addDaughter(trakP,"trakP");
+  // TTCand.addDaughter(trakN,"trakN");
   TTCand.setCharge(trakP.charge()+trakN.charge());
 
   double m_kaon1 = MassTraks_[0];
@@ -145,7 +160,7 @@ DiTrack::DiTrack(const edm::ParameterSet & iConfig):
 alltracks_(consumes<edm::View<reco::Track> >(iConfig.getParameter<edm::InputTag>("tracks"))),
 //triggerResults_Label(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("TriggerResults"))),
 ditrakMassCuts_(iConfig.getParameter<std::vector<double>>("TrakTrakMassCuts")),
-MassTraks_(iConfig.getParameter<std::vector<double>>("MassTraks")),
+MassTraks_(iConfig.getParameter<std::vector<double>>("MassTraks"))
 //HLTs_(iConfig.getParameter<std::vector<std::string>>("HLTs")),
 //HLTFilters_(iConfig.getParameter<std::vector<std::string>>("Filters"))
 {
@@ -228,7 +243,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
   std::string theTrackQuality = "highPurity";
   reco::TrackBase::TrackQuality trackQuality= reco::TrackBase::qualityByName(theTrackQuality);
 
-  edm::Handle<View<reco::Track> >  trackCollection;
+  edm::Handle<edm::View<reco::Track> >  trackCollection;
   iEvent.getByToken(alltracks_, trackCollection);
 
   edm::ESHandle<TransientTrackBuilder> theTTBuilder;
