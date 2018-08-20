@@ -234,6 +234,9 @@ UInt_t DiTrack::getTriggerBits(const edm::Event& iEvent, const edm::Handle< edm:
 // ------------ method called for each event  ------------
 void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup) {
 
+  using namespace edm;
+  using namespace std;
+  using namespace reco;
   // edm::Handle<pat::CompositeCandidateCollection> ditraks;
   // iEvent.getByToken(diTrak_label,ditraks);
 
@@ -318,7 +321,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
        if ( !(TTCand.mass() < TrakTrakMassMax_ && TTCand.mass() > TrakTrakMassMin_) )
         continue;
 
-       vector<TransientTrack> tt_ttks;
+       std::vector<TransientTrack> tt_ttks;
        tt_ttks.push_back(theTTBuilder->build(*negTrack));  // pass the reco::Track, not  the reco::TrackRef (which can be transient)
        tt_ttks.push_back(theTTBuilder->build(*posTrack));
 
