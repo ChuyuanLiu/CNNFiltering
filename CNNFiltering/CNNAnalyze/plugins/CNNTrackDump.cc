@@ -682,7 +682,7 @@
       }
 
       theData.push_back(float(tt)); //instead of trackPdg : track number in the collection
-      theData.push_back(0.0);
+      theData.push_back(float(seqNumber_)); //instead of sF: seqNumber in the collection
       theData.push_back(0.0);
       theData.push_back(0.0);
 

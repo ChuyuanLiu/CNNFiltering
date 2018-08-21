@@ -260,6 +260,14 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
   event     = iEvent.id().event();
   lumiblock = iEvent.id().luminosityBlock();
 
+  std::string fileName = "phicandsCNN_" + std::to_string(lumNumber) + "_" ;
+  fileName = fileName + std::to_string(runNumber) + "_" ;
+  fileName = fileName + std::to_string(eveNumber) + "_" ;
+  fileName = fileName + std::to_string(seqNumber_);
+  fileName = fileName + ".txt";
+
+  std::ofstream outCNNFile(fileName, std::ofstream::app);
+
   numPrimaryVertices = 0;
   // if (primaryVertices_handle.isValid()) numPrimaryVertices = (int) primaryVertices_handle->size();
   //
@@ -344,20 +352,27 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
 
        if(ditrak_vProb>0.0)
         {
-          // run
-          // event
-          // lumiblock
-          // tI
-          // tJ
-          // posPixHits
-          // negPixHits
-          std::cout << ditrak_m << std::endl;
+
+          outCNNFile << (float)run << "\t";
+          outCNNFile << (float)event << "\t";
+          outCNNFile << (float)lumiblock << "\t";
+          outCNNFile << (float)(seqNumber_) << "\t";
+
+          outCNNFile << (float)tI << "\t";
+          outCNNFile << (float)tJ << "\t";
+
+          outCNNFile << (float)posPixHits << "\t";
+          outCNNFile << (float)negPixHits << "\t";
+
+          outCNNFile << (float)ditrak_m << "\t";
+          outCNNFile << (float)ditrak_p << "\t";
+          outCNNFile << (float)ditrak_pt << "\t";
+          outCNNFile << (float)ditrak_eta << "\t";
+          outCNNFile << (float)ditrak_phi << "\t";
+          outCNNFile << (float)ditrak_vProb << "\t";
+
           ++nditrak ;
-          // ditrak_p
-          // ditrak_pt
-          // ditrak_eta
-          // ditrak_phi
-          // ditrak_vProb
+
 
         }
 
