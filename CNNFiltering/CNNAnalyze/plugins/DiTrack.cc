@@ -243,6 +243,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
   // edm::Handle<pat::CompositeCandidateCollection> ditrigs;
   // iEvent.getByToken(diTrig_label,ditrigs);
 
+  std::cout<<"DiTrack"<< std::endl;
   std::string theTrackQuality = "highPurity";
   reco::TrackBase::TrackQuality trackQuality= reco::TrackBase::qualityByName(theTrackQuality);
 
@@ -253,6 +254,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
   iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theTTBuilder);
   KalmanVertexFitter vtxFitter(true);
 
+  std::cout<<"ttbuilder"<< std::endl;
 
   run       = iEvent.id().run();
   event     = iEvent.id().event();
