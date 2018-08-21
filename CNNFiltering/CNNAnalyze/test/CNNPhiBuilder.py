@@ -12,7 +12,7 @@ options.register ('i',
 
 options.parseArguments()
 
-input_file = "file:/lustre/cms/store/user/adiflori/GEN-MINIAODSIMBBbar_JpsiFilter_HardQCD_50/crab_GEN-MINIAODSIM_BBbar_JpsiFilter_HardQCD_50_20180805_104626/180805_084640/0000/BBbar_JpsiFilter_HardQCD_MINIAODSIM_PU40_100.root"
+input_file = "file:/lustre/cms/store/user/adiflori/GEN-MINIAODSIMBBbar_JpsiFilter_HardQCD_50/crab_GEN-MINIAODSIM_BBbar_JpsiFilter_HardQCD_50_20180805_104626/180805_084640/0000/BBbar_JpsiFilter_HardQCD_RECOSIM_PU40_100.root"
 
 process.load("CNNFiltering.CNNAnalyze.CNNTracksAnalyze_cfi")
 process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
