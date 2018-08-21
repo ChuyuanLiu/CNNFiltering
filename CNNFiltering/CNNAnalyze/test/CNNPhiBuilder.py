@@ -4,6 +4,28 @@ process.load("CNNFiltering.CNNAnalyze.CNNTracksAnalyze_cfi")
 
 process = cms.Process('phikk')
 
+process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
+process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
+process.load("Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff")
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
+process.load("SimTracker.TrackerHitAssociation.tpClusterProducer_cfi")
+from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
+#process.GlobalTag = GlobalTag(process.GlobalTag, '94X_dataRun2_ReReco_EOY17_v1')
+#process.GlobalTag = GlobalTag(process.GlobalTag, '94X_dataRun2_ReReco_EOY17_v2') #F
+#process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v11')
+process.GlobalTag = GlobalTag(process.GlobalTag, par.gtag)
+
+process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
+
+process.load("FWCore.MessageLogger.MessageLogger_cfi")
+process.MessageLogger.cerr.FwkReport.reportEvery = 500
+
+process.source = cms.Source("PoolSource",
+    fileNames = cms.untracked.vstring(input_file)
+)
+
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
+
 charmoniumHLT = [
 #Phi
 'HLT_DoubleMu2_Jpsi_DoubleTrk1_Phi1p05',
