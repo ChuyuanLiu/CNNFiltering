@@ -35,9 +35,9 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(input_file)
 )
 
-process.TFileService = cms.Service("TFileService",
-        fileName = cms.string('rootuple-2017-dimuonditrak.root'),
-)
+# process.TFileService = cms.Service("TFileService",
+#         fileName = cms.string('rootuple-2017-dimuonditrak.root'),
+# )
 
 kaonmass = 0.493677
 
@@ -150,6 +150,6 @@ process.phitokk = cms.EDAnalyzer('DiTrack',
          )
 
 
-process.p = cms.Path(process.triggerSelection * process.kaonTracks * process.tracksCNN * process.kaonsCNN * process.phitokk)
+process.p = cms.Path(process.triggerSelection * process.tracksCNN * process.phitokk)
 
 #CNNTrackSequence = cms.Sequence(tracksCNN)
