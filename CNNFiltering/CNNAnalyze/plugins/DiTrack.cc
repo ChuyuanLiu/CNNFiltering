@@ -40,6 +40,10 @@
 #include "TLorentzVector.h"
 #include "TTree.h"
 
+#include <iostream>
+#include <string>
+#include <fstream>
+
 //
 // class declaration
 //
