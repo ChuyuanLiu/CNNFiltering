@@ -741,15 +741,12 @@ CNNTrackDump::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       for(int j =0;j<padSize*padSize;j++)
         theData.push_back((double)(hitPixels[i][j]));
 
-    if(pdgMap.size()>0)
-    {
       for (size_t i = 0; i < theData.size(); i++) {
         outCNNFile << theData[i] << "\t";
       }
       outCNNFile << 542.1369 << std::endl;
 
       //cnntree->Fill();
-    }
   }
 
 // std::cout << "Closing" << std::endl;
