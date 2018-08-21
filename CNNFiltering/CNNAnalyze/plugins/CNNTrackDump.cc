@@ -544,7 +544,8 @@
         int hitLayer = -1;
 
         std::cout<< "pixHit?" << std::endl;
-
+        if (!pixHit)
+          continue;
         if(subdetid==1) //barrel
           hitLayer = PXBDetId(detId).layer();
         else
