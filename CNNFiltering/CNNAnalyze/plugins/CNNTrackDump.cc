@@ -561,6 +561,7 @@
 
         if (pixHit && hitLayer >= 0)
         {
+          std::cout<< "good pixHit?" << std::endl;
           bool thisBad,thisEdge,thisBig;
 
           auto thisClust = pixHit->cluster();
@@ -572,6 +573,7 @@
 
           bool keepThis = false;
 
+          std::cout<< "flag?" << std::endl;
           if(flagHit.find(hitLayer) != flagHit.end())
           {
             //Keeping the good,not on edge,not big, with higher charge
@@ -605,6 +607,7 @@
           }else
             keepThis = true;
 
+          std::cout<< "keep?" << std::endl;
           if(keepThis)
             {
               theHits[hitLayer] = hit;
@@ -614,7 +617,7 @@
               isBig[hitLayer] = thisBad;
             }
           flagHit[hitLayer] = 1.0;
-
+          std::cout<< "keep" << std::endl;
         }
 
         std::cout<< "endHit?" << std::endl;
