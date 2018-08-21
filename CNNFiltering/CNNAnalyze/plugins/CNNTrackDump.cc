@@ -554,7 +554,7 @@
         {
           std::cout<< "else?" << std::endl;
           //int side = PXFDetId(detId).side();
-          float z = (hit->globalState()).position.z();
+          float z = (pixHit->globalState()).position.z();
           std::cout<< "z?" << std::endl;
           if(fabs(z)>28.0) hitLayer = 4;
           if(fabs(z)>36.0) hitLayer = 5;
