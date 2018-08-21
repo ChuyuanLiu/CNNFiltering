@@ -102,6 +102,11 @@ process.kaonsCNN = cms.EDAnalyzer('CNNTrackDump',
         infoPileUp      = cms.InputTag("addPileupInfo")
 )
 
+process.phitokk = cms.EDAnalyzer('DiTrack',
+         tracks             = cms.string( "generalTracks"),
+         TrakTrakMassCuts   = cms.vdouble(1.0,1.04),
+         MassTraks          = cms.vdouble(kaonmass,kaonmass)
+         )
 
 
 process.p = cms.Path(process.triggerSelection * process.kaonTracks * process.tracksCNN * process.kaonsCNN * process.phitokk)

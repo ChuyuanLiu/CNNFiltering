@@ -20,5 +20,12 @@
 <use   name="CommonTools/UtilAlgos"/>
 <use   name="SimDataFormats/PileupSummaryInfo"/>
 <use   name="SimDataFormats/Vertex"/>
+<use   name="RecoVertex/KinematicFit"/>
+<use   name="RecoVertex/KinematicFitPrimitives"/>
+<use   name="RecoVertex/PrimaryVertexProducer"/>
+<use   name="TrackingTools/Records"/>
+<use   name="TrackingTools/TransientTrack"/>
+<use   name="TrackingTools/IPTools"/>
+<use   name="PhysicsTools/PatUtils"/>
 
 <flags EDM_PLUGIN="1"/>
