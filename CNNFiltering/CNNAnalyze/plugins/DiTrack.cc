@@ -177,9 +177,9 @@ MassTraks_(iConfig.getParameter<std::vector<double>>("MassTraks"))
   ditrak_tree->Branch("posPixHits",&posPixHits,"posPixHits/i");
   ditrak_tree->Branch("negPixHits",&negPixHits,"negPixHits/i");
 
-  ditrak_tree->Branch("nditrak",    &nditrak,    "nditrak/i");
-  ditrak_tree->Branch("ntraks",   &ntraks,   "ntraks/i");
-  ditrak_tree->Branch("trigger",  &trigger,  "trigger/i");
+  // ditrak_tree->Branch("nditrak",    &nditrak,    "nditrak/i");
+  // ditrak_tree->Branch("ntraks",   &ntraks,   "ntraks/i");
+  // ditrak_tree->Branch("trigger",  &trigger,  "trigger/i");
   ditrak_tree->Branch("charge",   &charge,   "charge/I");
 
   ditrak_tree->Branch("ditrak_m",   "TLorentzVector", &ditrak_m);
@@ -189,7 +189,7 @@ MassTraks_(iConfig.getParameter<std::vector<double>>("MassTraks"))
   ditrak_tree->Branch("ditrak_phi", "TLorentzVector", &ditrak_phi);
   ditrak_tree->Branch("ditrak_vProb", "TLorentzVector", &ditrak_vProb);
 
-  ditrak_tree->Branch("numPrimaryVertices", &numPrimaryVertices, "numPrimaryVertices/i");
+  // ditrak_tree->Branch("numPrimaryVertices", &numPrimaryVertices, "numPrimaryVertices/i");
 
   candidates = 0;
   nevents = 0;
@@ -278,6 +278,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
 
 
   // for (std::vector<pat::PackedCandidate>::const_iterator posTrack = filteredTracks.begin(), trakend=filteredTracks.end(); posTrack!= trakend; ++posTrack)
+
   for(edm::View<reco::Track>::size_type i=0; i<trackCollection->size(); ++i)
   {
            auto posTrack = trackCollection->refAt(i);
@@ -299,7 +300,15 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
 	std::cout<<"postrack"<< std::endl;
      for(edm::View<reco::Track>::size_type j=0; j<trackCollection->size(); ++j)
      {
-       auto negTrack = trackCollection->refAt(j); 
+
+       ditrak_m     = 0.0;
+       ditrak_p     = 0.0;
+       ditrak_pt    = 0.0;
+       ditrak_eta   = 0.0;
+       ditrak_phi   = 0.0;
+       ditrak_vProb = 0.0;
+
+       auto negTrack = trackCollection->refAt(j);
 
        negPixHits = negTrack->hitPattern().numberOfValidPixelHits();
        // std::cout << "- No Pixel Hits :" << pixHits << std::endl;
@@ -315,7 +324,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
        if(negTrack->pt()<0.9) continue;
 	std::cout<<"postrack"<< std::endl;
        pat::CompositeCandidate TTCand = makeTTCandidate(*posTrack,*negTrack);
-	
+
        if ( !(TTCand.mass() < TrakTrakMassMax_ && TTCand.mass() > TrakTrakMassMin_) )
         continue;
 	std::cout<<"cand"<< std::endl;
@@ -329,6 +338,12 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
        double vChi2 = ttVertex.totalChiSquared();
        double vNDF  = ttVertex.degreesOfFreedom();
        ditrak_vProb = TMath::Prob(vChi2,(int)vNDF);
+
+       ditrak_m     = TTCand.mass();
+       ditrak_p     = TTCand.pt();
+       ditrak_pt    = TTCand.p();
+       ditrak_eta   = TTCand.eta();
+       ditrak_phi   = TTCand.phi();
 
        if(ditrak_vProb>0.0)
         ditrak_tree->Fill();
