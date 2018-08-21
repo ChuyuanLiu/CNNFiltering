@@ -164,30 +164,30 @@ MassTraks_(iConfig.getParameter<std::vector<double>>("MassTraks"))
 //HLTs_(iConfig.getParameter<std::vector<std::string>>("HLTs")),
 //HLTFilters_(iConfig.getParameter<std::vector<std::string>>("Filters"))
 {
-  edm::Service < TFileService > fs;
-  ditrak_tree = fs->make < TTree > ("DiTrakDiTrigTree", "Tree of ditrakditrig");
-
-  ditrak_tree->Branch("run",      &run,      "run/i");
-  ditrak_tree->Branch("event",    &event,    "event/l");
-  ditrak_tree->Branch("lumiblock",&lumiblock,"lumiblock/i");
-
-  ditrak_tree->Branch("tI",&tI,"tI/i");
-  ditrak_tree->Branch("tJ",&tJ,"tJ/i");
-
-  ditrak_tree->Branch("posPixHits",&posPixHits,"posPixHits/i");
-  ditrak_tree->Branch("negPixHits",&negPixHits,"negPixHits/i");
-
-  // ditrak_tree->Branch("nditrak",    &nditrak,    "nditrak/i");
-  // ditrak_tree->Branch("ntraks",   &ntraks,   "ntraks/i");
-  // ditrak_tree->Branch("trigger",  &trigger,  "trigger/i");
-  ditrak_tree->Branch("charge",   &charge,   "charge/I");
-
-  ditrak_tree->Branch("ditrak_m",   "TLorentzVector", &ditrak_m);
-  ditrak_tree->Branch("ditrak_p",   "TLorentzVector", &ditrak_p);
-  ditrak_tree->Branch("ditrak_pt",  "TLorentzVector", &ditrak_pt);
-  ditrak_tree->Branch("ditrak_eta", "TLorentzVector", &ditrak_eta);
-  ditrak_tree->Branch("ditrak_phi", "TLorentzVector", &ditrak_phi);
-  ditrak_tree->Branch("ditrak_vProb", "TLorentzVector", &ditrak_vProb);
+  // edm::Service < TFileService > fs;
+  // ditrak_tree = fs->make < TTree > ("DiTrakDiTrigTree", "Tree of ditrakditrig");
+  //
+  // ditrak_tree->Branch("run",      &run,      "run/i");
+  // ditrak_tree->Branch("event",    &event,    "event/l");
+  // ditrak_tree->Branch("lumiblock",&lumiblock,"lumiblock/i");
+  //
+  // ditrak_tree->Branch("tI",&tI,"tI/i");
+  // ditrak_tree->Branch("tJ",&tJ,"tJ/i");
+  //
+  // ditrak_tree->Branch("posPixHits",&posPixHits,"posPixHits/i");
+  // ditrak_tree->Branch("negPixHits",&negPixHits,"negPixHits/i");
+  //
+  // // ditrak_tree->Branch("nditrak",    &nditrak,    "nditrak/i");
+  // // ditrak_tree->Branch("ntraks",   &ntraks,   "ntraks/i");
+  // // ditrak_tree->Branch("trigger",  &trigger,  "trigger/i");
+  // ditrak_tree->Branch("charge",   &charge,   "charge/I");
+  //
+  // ditrak_tree->Branch("ditrak_m",   "TLorentzVector", &ditrak_m);
+  // ditrak_tree->Branch("ditrak_p",   "TLorentzVector", &ditrak_p);
+  // ditrak_tree->Branch("ditrak_pt",  "TLorentzVector", &ditrak_pt);
+  // ditrak_tree->Branch("ditrak_eta", "TLorentzVector", &ditrak_eta);
+  // ditrak_tree->Branch("ditrak_phi", "TLorentzVector", &ditrak_phi);
+  // ditrak_tree->Branch("ditrak_vProb", "TLorentzVector", &ditrak_vProb);
 
   // ditrak_tree->Branch("numPrimaryVertices", &numPrimaryVertices, "numPrimaryVertices/i");
 
@@ -348,7 +348,22 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
        ditrak_phi   = TTCand.phi();
 
        if(ditrak_vProb>0.0)
-        ditrak_tree->Fill();
+        {
+          // run
+          // event
+          // lumiblock
+          // tI
+          // tJ
+          // posPixHits
+          // negPixHits
+          std::cout << ditrak_m << std::endl;
+          // ditrak_p
+          // ditrak_pt
+          // ditrak_eta
+          // ditrak_phi
+          // ditrak_vProb
+
+        }
 
 	std::cout<<"fill"<< std::endl;
            } // loop over second track
