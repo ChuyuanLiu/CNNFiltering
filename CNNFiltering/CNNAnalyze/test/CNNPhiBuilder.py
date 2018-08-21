@@ -1,5 +1,16 @@
 import FWCore.ParameterSet.Config as cms
-process = cms.Process('phikk')
+process = cms.Process('phikkml')
+
+from FWCore.ParameterSet.VarParsing import VarParsing
+options = VarParsing ('analysis')
+
+options.register ('i',
+				  0,
+				  VarParsing.multiplicity.singleton,
+				  VarParsing.varType.int,
+				  "Sequential number ")
+
+options.parseArguments()
 
 input_file = "file:/lustre/cms/store/user/adiflori/GEN-MINIAODSIMBBbar_JpsiFilter_HardQCD_50/crab_GEN-MINIAODSIM_BBbar_JpsiFilter_HardQCD_50_20180805_104626/180805_084640/0000/BBbar_JpsiFilter_HardQCD_MINIAODSIM_PU40_100.root"
 
@@ -100,6 +111,7 @@ process.triggerSelection = cms.EDFilter("TriggerResultsFilter",
 
 
 process.tracksCNN = cms.EDAnalyzer('CNNTrackDump',
+        seqNumber       = cms.int32(options.i),
         processName     = cms.string( "generalTracksCNN"),
         tracks          = cms.InputTag( "generalTracks" ),
         tpMap           = cms.InputTag( "tpClusterProducer" ),
@@ -111,26 +123,27 @@ process.tracksCNN = cms.EDAnalyzer('CNNTrackDump',
         infoPileUp      = cms.InputTag("addPileupInfo")
 )
 
-process.kaonTracks = cms.EDProducer("MCTruthDeltaRMatcher",
-    pdgId = cms.vint32(321),
-    src = cms.InputTag("generalTracks"),
-    distMin = cms.double(0.25),
-    matched = cms.InputTag("genParticleCandidates")
-)
-
-process.kaonsCNN = cms.EDAnalyzer('CNNTrackDump',
-        processName     = cms.string( "kaonTracksCNN"),
-        tracks          = cms.InputTag( "generalTracks" ),
-        tpMap           = cms.InputTag( "tpClusterProducer" ),
-        trMap           = cms.InputTag("trackingParticleRecoTrackAsssociation"),
-        genMap          = cms.InputTag("TrackAssociatorByChi2"),
-        genParticles    = cms.InputTag("genParticles"),
-        traParticles    = cms.InputTag("mix","MergedTrackTruth"),
-        beamSpot        = cms.InputTag("offlineBeamSpot"),
-        infoPileUp      = cms.InputTag("addPileupInfo")
-)
+# process.kaonTracks = cms.EDProducer("MCTruthDeltaRMatcher",
+#     pdgId = cms.vint32(321),
+#     src = cms.InputTag("generalTracks"),
+#     distMin = cms.double(0.25),
+#     matched = cms.InputTag("genParticleCandidates")
+# )
+#
+# process.kaonsCNN = cms.EDAnalyzer('CNNTrackDump',
+#         processName     = cms.string( "kaonTracksCNN"),
+#         tracks          = cms.InputTag( "generalTracks" ),
+#         tpMap           = cms.InputTag( "tpClusterProducer" ),
+#         trMap           = cms.InputTag("trackingParticleRecoTrackAsssociation"),
+#         genMap          = cms.InputTag("TrackAssociatorByChi2"),
+#         genParticles    = cms.InputTag("genParticles"),
+#         traParticles    = cms.InputTag("mix","MergedTrackTruth"),
+#         beamSpot        = cms.InputTag("offlineBeamSpot"),
+#         infoPileUp      = cms.InputTag("addPileupInfo")
+# )
 
 process.phitokk = cms.EDAnalyzer('DiTrack',
+         seqNumber          = cms.int32(options.i),
          tracks             = cms.InputTag( "generalTracks"),
          TrakTrakMassCuts   = cms.vdouble(1.0,1.04),
          MassTraks          = cms.vdouble(kaonmass,kaonmass)

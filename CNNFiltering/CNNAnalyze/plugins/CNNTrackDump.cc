@@ -133,6 +133,7 @@
 
     int doubletSize;
     std::string processName_;
+    int seqNumber_;
     edm::EDGetTokenT<edm::View<reco::Track>> alltracks_;
     edm::EDGetTokenT<reco::GenParticleCollection> genParticles_;
     edm::EDGetTokenT<TrackingParticleCollection> traParticles_;
@@ -179,6 +180,7 @@
   //
   CNNTrackDump::CNNTrackDump(const edm::ParameterSet& iConfig):
   processName_(iConfig.getParameter<std::string>("processName")),
+  seqNumber_(iConfig.getParameter<int>("seqNumber")),
   alltracks_(consumes<edm::View<reco::Track> >(iConfig.getParameter<edm::InputTag>("tracks"))),
   genParticles_(consumes<reco::GenParticleCollection>(iConfig.getParameter<edm::InputTag>("genParticles"))),
   traParticles_(consumes<TrackingParticleCollection>(iConfig.getParameter<edm::InputTag>("traParticles"))),
@@ -391,7 +393,11 @@
     runNumber = iEvent.id().run();
     lumNumber = iEvent.id().luminosityBlock();
 
-    std::string fileName = processName_ + ".txt";
+    std::string fileName = processName_ + "_" + std::to_string(lumNumber) + "_" ;
+    fileName = fileName + std::to_string(runNumber) + "_" ;
+    fileName = fileName + std::to_string(eveNumber) + "_" ;
+    fileName = fileName + std::to_string(seqNumber_);
+    fileName = fileName + ".txt";
     //std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
     //fileName += "_" + processName_ + "_dnn_doublets.txt";
     std::ofstream outCNNFile(fileName, std::ofstream::app);
@@ -479,7 +485,6 @@
         continue;
       // std::cout << "- Track Quality " <<std::endl;
       int pixHits = hitPattern.numberOfValidPixelHits();
-      std::cout<< "pattern?" << std::endl;
       // std::cout << "- No Pixel Hits :" << pixHits << std::endl;
       if(pixHits < 4)
         continue;

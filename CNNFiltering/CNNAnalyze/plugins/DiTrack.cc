@@ -68,6 +68,7 @@ class DiTrack:public edm::EDAnalyzer {
 
 	// ----------member data ---------------------------
 	std::string file_name;
+  int seqNumber_;
 	// edm::EDGetTokenT<pat::CompositeCandidateCollection> diTrak_label;
   edm::EDGetTokenT<edm::View<reco::Track>> alltracks_;
   edm::EDGetTokenT<edm::TriggerResults> triggerResults_Label;
@@ -157,6 +158,7 @@ const pat::CompositeCandidate DiTrack::makeTTCandidate(
 //
 
 DiTrack::DiTrack(const edm::ParameterSet & iConfig):
+seqNumber_(iConfig.getParameter<int>("seqNumber")),
 alltracks_(consumes<edm::View<reco::Track> >(iConfig.getParameter<edm::InputTag>("tracks"))),
 //triggerResults_Label(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("TriggerResults"))),
 ditrakMassCuts_(iConfig.getParameter<std::vector<double>>("TrakTrakMassCuts")),
