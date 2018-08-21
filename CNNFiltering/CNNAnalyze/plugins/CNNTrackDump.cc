@@ -341,7 +341,6 @@
   {
     using namespace edm;
 
-    std::cout<< "CNNTrackDump?" << std::endl;
     // int detOnArr[10] = {0,1,2,3,14,15,16,29,30,31};
     // std::vector<int> detOn(detOnArr,detOnArr+sizeof(detOnArr)/sizeof(int));
 
@@ -430,7 +429,6 @@
       std::map<int,bool> isBad,isEdge,isBig;
       std::map<int,double> hitSize,pdgIds,flagHit;
 
-      std::cout<< "track?" << std::endl;
       auto track = trackCollection->refAt(tt);
       auto hitPattern = track->hitPattern();
       bool trkQual  = track->quality(trackQuality);
@@ -524,17 +522,15 @@
       theData.push_back((double)hitPattern.numberOfValidStripTIDHits());
       theData.push_back((double)hitPattern.numberOfValidStripTECHits());
 
-      std::cout<< "first push?" << std::endl;
       for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
       {
-        std::cout<< "hit?" << std::endl;
         TrackerSingleRecHit const * hit= dynamic_cast<TrackerSingleRecHit const *>(*recHit);
 
         if(!hit)
           continue;
         if(!hit->hasPositionAndError())
           continue;
-          
+
         DetId detId = (*recHit)->geographicalId();
         unsigned int subdetid = detId.subdetId();
 
@@ -545,7 +541,6 @@
 
         int hitLayer = -1;
 
-        std::cout<< "pixHit?" << std::endl;
         if (!pixHit)
           continue;
 
@@ -554,21 +549,17 @@
         else
         if(subdetid==2)
         {
-          std::cout<< "else?" << std::endl;
           //int side = PXFDetId(detId).side();
           float z = (pixHit->globalState()).position.z();
-          std::cout<< "z?" << std::endl;
           if(fabs(z)>28.0) hitLayer = 4;
           if(fabs(z)>36.0) hitLayer = 5;
           if(fabs(z)>44.0) hitLayer = 6;
 
           if(z<=0.0) hitLayer +=3;
-          std::cout<< "side?" << std::endl;
         }
 
         if (pixHit && hitLayer >= 0)
         {
-          std::cout<< "good pixHit?" << std::endl;
           bool thisBad,thisEdge,thisBig;
 
           auto thisClust = pixHit->cluster();
@@ -580,7 +571,6 @@
 
           bool keepThis = false;
 
-          std::cout<< "flag?" << std::endl;
           if(flagHit.find(hitLayer) != flagHit.end())
           {
             //Keeping the good,not on edge,not big, with higher charge
@@ -614,7 +604,6 @@
           }else
             keepThis = true;
 
-          std::cout<< "keep?" << std::endl;
           if(keepThis)
             {
               theHits[hitLayer] = hit;
@@ -624,16 +613,13 @@
               isBig[hitLayer] = thisBad;
             }
           flagHit[hitLayer] = 1.0;
-          std::cout<< "keep" << std::endl;
         }
 
-        std::cout<< "endHit?" << std::endl;
 
       }
 
       for(int i = 0; i<10;i++)
       {
-          std::cout<< "hit cycle" << std::endl;
           if(theHits.find(i) != theHits.end())
           {
             ++nHits;
@@ -645,7 +631,6 @@
 
             //auto rangeIn = tpClust->equal_range(bhit->firstClusterRef());
             auto clust = pixHit->cluster();
-            std::cout<< "clust?" << std::endl;
             x[i] = (double)h->globalState().position.y();
             y[i] = (double)h->globalState().position.y();
             z[i] = (double)h->globalState().position.z();
@@ -660,7 +645,6 @@
             ovfx[i] =(double)clust->sizeX() > padSize;
             ovfy[i] =(double)clust->sizeY() > padSize;
             ratio[i] =(double)(clust->sizeY()) / (double)(clust->sizeX());
-            std::cout<< "clust!" << std::endl;
             TH2F hClust("hClust","hClust",
             padSize,
             clust->x()-padHalfSize,
