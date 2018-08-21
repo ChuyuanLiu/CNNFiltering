@@ -431,7 +431,6 @@ CNNTrackDump::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     std::map<int,const TrackerSingleRecHit*> theHits;
     std::map<int,bool> isBad,isEdge,isBig;
     std::map<int,double> hitSize,pdgIds,flagHit;
-    std::map<double,int> pdgMap,pdgMomMap;
 
     auto track = trackCollection->refAt(tt);
     auto hitPattern = track->hitPattern();
@@ -660,34 +659,6 @@ CNNTrackDump::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
           for (int k = 0; k < clust->size(); ++k)
             hClust.SetBinContent(hClust.FindBin((float)clust->pixel(k).x, (float)clust->pixel(k).y),(float)clust->pixel(k).adc);
-
-
-          auto rangeIn = tpClust->equal_range(h->firstClusterRef());
-
-          //for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
-          //kPdgs.push_back((*ip->second).pdgId());
-
-          if(rangeIn.first!=rangeIn.second)
-            {
-              pdgId[i] = (double)((*rangeIn.first->second).pdgId());
-              pdgIds[i] = (double)((*rangeIn.first->second).pdgId());
-              // std::cout << pdgId[i] << std::endl;
-
-              if((*rangeIn.first->second).genParticle_begin()!=(*rangeIn.first->second).genParticle_end())
-                motherPdgId[i] = (double)((*(*rangeIn.first->second).genParticle_begin())->mother()->pdgId());
-
-              if(pdgMomMap.find(motherPdgId[i]) != pdgMomMap.end())
-                ++pdgMomMap[motherPdgId[i]];
-              else
-                pdgMomMap[motherPdgId[i]] = 1;
-
-              if(pdgMap.find(pdgId[i]) != pdgMap.end())
-                ++pdgMap[pdgId[i]];
-              else
-                pdgMap[pdgId[i]] = 1;
-
-            }
-
 
           int c = 0;
           for (int ny = padSize; ny>0; --ny)
