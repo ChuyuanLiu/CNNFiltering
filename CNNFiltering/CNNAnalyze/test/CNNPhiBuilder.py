@@ -1,9 +1,9 @@
 import FWCore.ParameterSet.Config as cms
-
-process.load("CNNFiltering.CNNAnalyze.CNNTracksAnalyze_cfi")
-
 process = cms.Process('phikk')
 
+input_file = "file:/lustre/cms/store/user/adiflori/GEN-MINIAODSIMBBbar_JpsiFilter_HardQCD_50/crab_GEN-MINIAODSIM_BBbar_JpsiFilter_HardQCD_50_20180805_104626/180805_084640/0000/BBbar_JpsiFilter_HardQCD_MINIAODSIM_PU40_100.root"
+
+process.load("CNNFiltering.CNNAnalyze.CNNTracksAnalyze_cfi")
 process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 process.load("Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff")
@@ -13,7 +13,7 @@ from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 #process.GlobalTag = GlobalTag(process.GlobalTag, '94X_dataRun2_ReReco_EOY17_v1')
 #process.GlobalTag = GlobalTag(process.GlobalTag, '94X_dataRun2_ReReco_EOY17_v2') #F
 #process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v11')
-process.GlobalTag = GlobalTag(process.GlobalTag, par.gtag)
+process.GlobalTag = GlobalTag(process.GlobalTag, '100X_upgrade2018_realistic_v10')
 
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
 
@@ -111,7 +111,7 @@ process.tracksCNN = cms.EDAnalyzer('CNNTrackDump',
         infoPileUp      = cms.InputTag("addPileupInfo")
 )
 
-process.kaonTracks = cms.EDFilter("MCTruthDeltaRMatcher",
+process.kaonTracks = cms.EDProducer("MCTruthDeltaRMatcher",
     pdgId = cms.vint32(321),
     src = cms.InputTag("generalTracks"),
     distMin = cms.double(0.25),
@@ -131,7 +131,7 @@ process.kaonsCNN = cms.EDAnalyzer('CNNTrackDump',
 )
 
 process.phitokk = cms.EDAnalyzer('DiTrack',
-         tracks             = cms.string( "generalTracks"),
+         tracks             = cms.InputTag( "generalTracks"),
          TrakTrakMassCuts   = cms.vdouble(1.0,1.04),
          MassTraks          = cms.vdouble(kaonmass,kaonmass)
          )

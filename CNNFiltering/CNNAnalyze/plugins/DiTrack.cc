@@ -296,38 +296,36 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
 
            if(posTrack->charge() <= 0 ) continue;
            if(posTrack->pt()<0.9) continue;
-
+	std::cout<<"postrack"<< std::endl;
      for(edm::View<reco::Track>::size_type j=0; j<trackCollection->size(); ++j)
      {
-       auto negTrack = trackCollection->refAt(j);
-       bool trkQual  = negTrack->quality(trackQuality);
-       auto hitPattern = negTrack->hitPattern();
+       auto negTrack = trackCollection->refAt(j); 
 
-       negPixHits = hitPattern.numberOfValidPixelHits();
+       negPixHits = negTrack->hitPattern().numberOfValidPixelHits();
        // std::cout << "- No Pixel Hits :" << pixHits << std::endl;
        if(negPixHits < 4)
          continue;
 
        tJ = (UInt_t)(j);
 
-       if(!trkQual)
+       if(!(negTrack->quality(trackQuality)))
          continue;
 
        if(negTrack->charge() <= 0 ) continue;
        if(negTrack->pt()<0.9) continue;
-
+	std::cout<<"postrack"<< std::endl;
        pat::CompositeCandidate TTCand = makeTTCandidate(*posTrack,*negTrack);
-
+	
        if ( !(TTCand.mass() < TrakTrakMassMax_ && TTCand.mass() > TrakTrakMassMin_) )
         continue;
-
+	std::cout<<"cand"<< std::endl;
        std::vector<TransientTrack> tt_ttks;
        tt_ttks.push_back(theTTBuilder->build(*negTrack));  // pass the reco::Track, not  the reco::TrackRef (which can be transient)
        tt_ttks.push_back(theTTBuilder->build(*posTrack));
 
        TransientVertex ttVertex = vtxFitter.vertex(tt_ttks);
        CachingVertex<5> VtxForInvMass = vtxFitter.vertex( tt_ttks );
-
+	std::cout<<"fit"<< std::endl;
        double vChi2 = ttVertex.totalChiSquared();
        double vNDF  = ttVertex.degreesOfFreedom();
        ditrak_vProb = TMath::Prob(vChi2,(int)vNDF);
@@ -335,6 +333,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
        if(ditrak_vProb>0.0)
         ditrak_tree->Fill();
 
+	std::cout<<"fill"<< std::endl;
            } // loop over second track
          }   // loop on track candidates
 }
