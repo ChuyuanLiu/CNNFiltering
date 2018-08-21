@@ -374,7 +374,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
           outCNNFile << (float)ditrak_eta << "\t";
           outCNNFile << (float)ditrak_phi << "\t";
           outCNNFile << (float)ditrak_vProb << "\t";
-
+          outCNNFile << 542.1369 << std::endl;
           ++nditrak ;
 
 
