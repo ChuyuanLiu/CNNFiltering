@@ -24,6 +24,12 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(input_file)
 )
 
+process.TFileService = cms.Service("TFileService",
+        fileName = cms.string('rootuple-2017-dimuonditrak.root'),
+)
+
+kaonmass = 0.493677
+
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
 
 charmoniumHLT = [
