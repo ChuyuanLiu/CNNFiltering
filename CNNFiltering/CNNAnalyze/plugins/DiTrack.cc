@@ -193,7 +193,7 @@ MassTraks_(iConfig.getParameter<std::vector<double>>("MassTraks"))
 
   candidates = 0;
   nevents = 0;
-  ndimuon = 0;
+  nditrak = 0;
   nreco = 0;
   maxDeltaR = 0.01;
   maxDPtRel = 2.0;
@@ -243,7 +243,6 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
   // edm::Handle<pat::CompositeCandidateCollection> ditrigs;
   // iEvent.getByToken(diTrig_label,ditrigs);
 
-  std::cout<<"DiTrack"<< std::endl;
   std::string theTrackQuality = "highPurity";
   reco::TrackBase::TrackQuality trackQuality= reco::TrackBase::qualityByName(theTrackQuality);
 
@@ -254,7 +253,6 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
   iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theTTBuilder);
   KalmanVertexFitter vtxFitter(true);
 
-  std::cout<<"ttbuilder"<< std::endl;
 
   run       = iEvent.id().run();
   event     = iEvent.id().event();
@@ -299,7 +297,6 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
 
            if(posTrack->charge() <= 0 ) continue;
            if(posTrack->pt()<0.9) continue;
-	std::cout<<"postrack"<< std::endl;
      for(edm::View<reco::Track>::size_type j=0; j<trackCollection->size(); ++j)
      {
 
@@ -313,7 +310,6 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
        auto negTrack = trackCollection->refAt(j);
 
        negPixHits = negTrack->hitPattern().numberOfValidPixelHits();
-       // std::cout << "- No Pixel Hits :" << pixHits << std::endl;
        if(negPixHits < 4)
          continue;
 
@@ -324,19 +320,16 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
 
        if(negTrack->charge() <= 0 ) continue;
        if(negTrack->pt()<0.9) continue;
-	std::cout<<"postrack"<< std::endl;
        pat::CompositeCandidate TTCand = makeTTCandidate(*posTrack,*negTrack);
 
        if ( !(TTCand.mass() < TrakTrakMassMax_ && TTCand.mass() > TrakTrakMassMin_) )
         continue;
-	std::cout<<"cand"<< std::endl;
        std::vector<TransientTrack> tt_ttks;
        tt_ttks.push_back(theTTBuilder->build(*negTrack));  // pass the reco::Track, not  the reco::TrackRef (which can be transient)
        tt_ttks.push_back(theTTBuilder->build(*posTrack));
 
        TransientVertex ttVertex = vtxFitter.vertex(tt_ttks);
        CachingVertex<5> VtxForInvMass = vtxFitter.vertex( tt_ttks );
-	std::cout<<"fit"<< std::endl;
        double vChi2 = ttVertex.totalChiSquared();
        double vNDF  = ttVertex.degreesOfFreedom();
        ditrak_vProb = TMath::Prob(vChi2,(int)vNDF);
@@ -357,6 +350,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
           // posPixHits
           // negPixHits
           std::cout << ditrak_m << std::endl;
+          ++nditrak ;
           // ditrak_p
           // ditrak_pt
           // ditrak_eta
@@ -365,7 +359,6 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
 
         }
 
-	std::cout<<"fill"<< std::endl;
            } // loop over second track
          }   // loop on track candidates
 }
@@ -374,7 +367,12 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
 void DiTrack::beginJob() {}
 
 // ------------ method called once each job just after ending the event loop  ------------
-void DiTrack::endJob() {}
+void DiTrack::endJob() {
+
+  std::cout << "=============== Di Track Analyzer ===============" << std::endl;
+  std::cout << "n of di tracks: " << nditrak << std::endl;
+  std::cout << "=============== ================= ===============" << std::endl;
+}
 
 // ------------ method called when starting to processes a run  ------------
 void DiTrack::beginRun(edm::Run const &, edm::EventSetup const &) {}
