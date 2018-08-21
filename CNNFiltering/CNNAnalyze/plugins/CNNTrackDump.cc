@@ -546,10 +546,12 @@
         std::cout<< "pixHit?" << std::endl;
         if (!pixHit)
           continue;
+
         if(subdetid==1) //barrel
           hitLayer = PXBDetId(detId).layer();
         else
         {
+          std::cout<< "else?" << std::endl;
           int side = PXFDetId(detId).side();
           float z = (hit->globalState()).position.z();
 
