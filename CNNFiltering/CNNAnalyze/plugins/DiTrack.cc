@@ -260,9 +260,9 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
   event     = iEvent.id().event();
   lumiblock = iEvent.id().luminosityBlock();
 
-  std::string fileName = "phicandsCNN_" + std::to_string(lumNumber) + "_" ;
-  fileName = fileName + std::to_string(runNumber) + "_" ;
-  fileName = fileName + std::to_string(eveNumber) + "_" ;
+  std::string fileName = "phicandsCNN_" + std::to_string(lumiblock) + "_" ;
+  fileName = fileName + std::to_string(run) + "_" ;
+  fileName = fileName + std::to_string(event) + "_" ;
   fileName = fileName + std::to_string(seqNumber_);
   fileName = fileName + ".txt";
 
