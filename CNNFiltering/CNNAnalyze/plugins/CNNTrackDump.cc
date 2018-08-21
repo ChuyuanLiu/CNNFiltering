@@ -352,9 +352,6 @@ CNNTrackDump::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<View<reco::Track> >  trackCollection;
   iEvent.getByToken(alltracks_, trackCollection);
 
-  edm::Handle<ClusterTPAssociation> tpClust;
-  iEvent.getByToken(tpMap_,tpClust);
-
   edm::Handle<reco::TrackToTrackingParticleAssociator> tpTracks;
   iEvent.getByToken(trMap_, tpTracks);
 
@@ -628,7 +625,7 @@ CNNTrackDump::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
           //auto rangeIn = tpClust->equal_range(bhit->firstClusterRef());
           auto clust = pixHit->cluster();
-
+          std::cout<< "clust?" << std::endl;
           x[i] = (double)h->globalState().position.y();
           y[i] = (double)h->globalState().position.y();
           z[i] = (double)h->globalState().position.z();
@@ -643,7 +640,7 @@ CNNTrackDump::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
           ovfx[i] =(double)clust->sizeX() > padSize;
           ovfy[i] =(double)clust->sizeY() > padSize;
           ratio[i] =(double)(clust->sizeY()) / (double)(clust->sizeX());
-
+          std::cout<< "clust!" << std::endl;
           TH2F hClust("hClust","hClust",
           padSize,
           clust->x()-padHalfSize,
