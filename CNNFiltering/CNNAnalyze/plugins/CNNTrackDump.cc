@@ -341,6 +341,7 @@ CNNTrackDump::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
 
+  std::cout<< "CNNTrackDump?" << std::endl;
   // int detOnArr[10] = {0,1,2,3,14,15,16,29,30,31};
   // std::vector<int> detOn(detOnArr,detOnArr+sizeof(detOnArr)/sizeof(int));
 
@@ -429,6 +430,7 @@ CNNTrackDump::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     std::map<int,bool> isBad,isEdge,isBig;
     std::map<int,double> hitSize,pdgIds,flagHit;
 
+    std::cout<< "track?" << std::endl;
     auto track = trackCollection->refAt(tt);
     auto hitPattern = track->hitPattern();
     bool trkQual  = track->quality(trackQuality);
@@ -479,6 +481,7 @@ CNNTrackDump::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       continue;
     // std::cout << "- Track Quality " <<std::endl;
     int pixHits = hitPattern.numberOfValidPixelHits();
+    std::cout<< "pattern?" << std::endl;
     // std::cout << "- No Pixel Hits :" << pixHits << std::endl;
     if(pixHits < 4)
       continue;
