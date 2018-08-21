@@ -532,7 +532,9 @@
 
         if(!hit)
           continue;
-
+        if(!hit->hasPositionAndError())
+          continue;
+          
         DetId detId = (*recHit)->geographicalId();
         unsigned int subdetid = detId.subdetId();
 
