@@ -550,6 +550,7 @@
         if(subdetid==1) //barrel
           hitLayer = PXBDetId(detId).layer();
         else
+        if(subdetid==2)
         {
           std::cout<< "else?" << std::endl;
           int side = PXFDetId(detId).side();
