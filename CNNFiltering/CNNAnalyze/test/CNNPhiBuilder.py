@@ -4,6 +4,8 @@ process = cms.Process('phikkml')
 from FWCore.ParameterSet.VarParsing import VarParsing
 options = VarParsing ('analysis')
 
+from bbbar_filelist_reco import *
+
 options.register ('i',
 				  0,
 				  VarParsing.multiplicity.singleton,
@@ -11,6 +13,8 @@ options.register ('i',
 				  "Sequential number ")
 
 options.parseArguments()
+
+i = options.i
 
 input_file = "file:/lustre/cms/store/user/adiflori/GEN-MINIAODSIMBBbar_JpsiFilter_HardQCD_50/crab_GEN-MINIAODSIM_BBbar_JpsiFilter_HardQCD_50_20180805_104626/180805_084640/0000/BBbar_JpsiFilter_HardQCD_RECOSIM_PU40_100.root"
 
@@ -30,6 +34,14 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
 
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 500
+
+n=1000
+filename = "bbbar_file_list"
+filelist = bbbar_file_list
+size = (len(filelist) + n) / n
+input_file = filelist[min(i*size,len(filelist)):min((i+1)*size,len(filelist))]
+print min((i+1)*size,len(filelist))
+
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(input_file)
