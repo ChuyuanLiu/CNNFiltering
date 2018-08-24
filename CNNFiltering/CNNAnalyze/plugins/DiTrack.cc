@@ -130,6 +130,19 @@ class DiTrack:public edm::EDAnalyzer {
   UInt_t nditrak, ntraks;
   UInt_t tJ, tI;
 
+  float pt, eta, phi, p, chi2n, d0, dx, dz, sharedFraction,sharedMomFraction;
+  int nhit, nhpxf, nhtib, nhtob, nhtid, nhtec, nhpxb, nHits, trackPdg,trackMomPdg;
+  int eveNumber, runNumber, lumNumber;
+
+  std::vector<float>  x, y, z, phi_hit, r, c_x, c_y, charge, ovfx, ovfy;
+  std::vector<float> ratio, pdgId, motherPdgId, size, sizex, sizey;
+  //std::vector<TH2> hitClust;
+
+  std::vector<float> hitPixel0, hitPixel1, hitPixel2, hitPixel3, hitPixel4;
+  std::vector<float> hitPixel5, hitPixel6, hitPixel7, hitPixel8, hitPixel9;
+
+  std::vector< std::vector<float> > hitPixels;
+
 };
 
 
@@ -204,6 +217,42 @@ MassTraks_(iConfig.getParameter<std::vector<double>>("MassTraks"))
   maxDeltaR = 0.01;
   maxDPtRel = 2.0;
 
+  hitPixels.push_back(hitPixel0);
+  hitPixels.push_back(hitPixel1);
+  hitPixels.push_back(hitPixel2);
+  hitPixels.push_back(hitPixel3);
+  hitPixels.push_back(hitPixel4);
+  hitPixels.push_back(hitPixel5);
+  hitPixels.push_back(hitPixel6);
+  hitPixels.push_back(hitPixel7);
+  hitPixels.push_back(hitPixel8);
+  hitPixels.push_back(hitPixel9);
+
+  for(int i = 0; i<10;i++)
+    for(int j =0;j<padSize*padSize;j++)
+      hitPixels[i].push_back(0.0);
+
+  for(int i = 0; i<10;i++)
+  {
+    x.push_back(0.0);
+    y.push_back(0.0);
+    z.push_back(0.0);
+    phi_hit.push_back(0.0);
+    r.push_back(0.0);
+    c_x.push_back(0.0);
+    c_y.push_back(0.0);
+    pdgId.push_back(0.0);
+    motherPdgId.push_back(0.0);
+    size.push_back(0);
+    sizex.push_back(0);
+    sizey.push_back(0);
+    charge.push_back(0);
+    ovfx.push_back(0.0);
+    ovfy.push_back(0.0);
+    ratio.push_back(0.0);
+
+  }
+
 }
 
 DiTrack::~DiTrack() {}
@@ -270,7 +319,16 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
   fileName = fileName + std::to_string(seqNumber_);
   fileName = fileName + ".txt";
 
-  std::ofstream outCNNFile(fileName, std::ofstream::app);
+  std::ofstream outPhiFile(fileName, std::ofstream::app);
+
+  // fileName = "generalTracksCNN_" + std::to_string(lumNumber) + "_" ;
+  // fileName = fileName + std::to_string(runNumber) + "_" ;
+  // fileName = fileName + std::to_string(eveNumber) + "_" ;
+  // fileName = fileName + std::to_string(seqNumber_);
+  // fileName = fileName + ".txt";
+  // //std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
+  // //fileName += "_" + processName_ + "_dnn_doublets.txt";
+  // std::ofstream outCNNFile(fileName, std::ofstream::app);
 
   numPrimaryVertices = 0;
   // if (primaryVertices_handle.isValid()) numPrimaryVertices = (int) primaryVertices_handle->size();
@@ -355,27 +413,325 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
        ditrak_phi   = TTCand.phi();
 
        if(ditrak_vProb>0.0)
-        {
+       {
 
-          outCNNFile << (float)run << "\t";
-          outCNNFile << (float)event << "\t";
-          outCNNFile << (float)lumiblock << "\t";
-          outCNNFile << (float)(seqNumber_) << "\t";
+          outPhiFile << (float)run << "\t";
+          outPhiFile << (float)event << "\t";
+          outPhiFile << (float)lumiblock << "\t";
+          outPhiFile << (float)(seqNumber_) << "\t";
 
-          outCNNFile << (float)tI << "\t";
-          outCNNFile << (float)tJ << "\t";
+          outPhiFile << (float)tI << "\t";
+          outPhiFile << (float)tJ << "\t";
 
-          outCNNFile << (float)posPixHits << "\t";
-          outCNNFile << (float)negPixHits << "\t";
+          outPhiFile << (float)posPixHits << "\t";
+          outPhiFile << (float)negPixHits << "\t";
 
-          outCNNFile << (float)ditrak_m << "\t";
-          outCNNFile << (float)ditrak_p << "\t";
-          outCNNFile << (float)ditrak_pt << "\t";
-          outCNNFile << (float)ditrak_eta << "\t";
-          outCNNFile << (float)ditrak_phi << "\t";
-          outCNNFile << (float)ditrak_vProb << "\t";
+          outPhiFile << (float)ditrak_m << "\t";
+          outPhiFile << (float)ditrak_p << "\t";
+          outPhiFile << (float)ditrak_pt << "\t";
+          outPhiFile << (float)ditrak_eta << "\t";
+          outPhiFile << (float)ditrak_phi << "\t";
+          outPhiFile << (float)ditrak_vProb << "\t";
+          //outPhiFile << 542.1369 << std::endl;
+          ++nditrak;
+
+          UInt_t tIds[2] = {tI,tJ};
+
+          for(int i =0;i<2;i++)
+          {
+            UInt_t tt = tIds[i];
+            std::vector<double> theData;
+            // std::cout << "Track ------------------- "<< std::endl;
+            // std::cout << std::endl;
+            std::map<int,const TrackerSingleRecHit*> theHits;
+            std::map<int,bool> isBad,isEdge,isBig;
+            std::map<int,double> hitSize,pdgIds,flagHit;
+
+            auto track = trackCollection->refAt(tt);
+            auto hitPattern = track->hitPattern();
+            bool trkQual  = track->quality(trackQuality);
+
+            sharedFraction = 0.0;
+            nHits = 0;
+
+            for(int i = 0; i<10;i++)
+              for(int j =0;j<padSize*padSize;j++)
+                hitPixels[i][j] = 0.0;
+
+            for(int i = 0; i<10;i++)
+            {
+              x[i] = 0.0;
+              y[i] = 0.0;
+              z[i] = 0.0;
+              phi_hit[i] = 0.0;
+              r[i] = 0.0;
+              c_x[i] = 0.0;
+              c_y[i] = 0.0;
+              pdgId[i] = 0.0;
+              motherPdgId[i] = 0.0;
+              size[i] = 0.0;
+              sizex[i] = 0.0;
+              sizey[i] = 0.0;
+              charge[i] = 0.0;
+              ovfx[i] = 0.0;
+              ovfy[i] = 0.0;
+              ratio[i] = 0.0;
+
+            }
+            // bool isSimMatched = false;
+            //
+            // auto tpFound = recSimColl.find(track);
+            // isSimMatched = tpFound != recSimColl.end();
+            //
+            // if (isSimMatched) {
+            //     const auto& tp = tpFound->val;
+            //     //nSimHits = tp[0].first->numberOfTrackerHits();
+            //     sharedFraction = tp[0].second;
+            // }
+            // if(isSimMatched)
+            //   std::cout<< "Good Track - "<<sharedFraction<<std::endl;
+            // else
+            //   std::cout<< "Bad Track"<<std::endl;
+
+            if(!trkQual)
+              continue;
+            // std::cout << "- Track Quality " <<std::endl;
+            int pixHits = hitPattern.numberOfValidPixelHits();
+            // std::cout << "- No Pixel Hits :" << pixHits << std::endl;
+            if(pixHits < 4)
+              continue;
+
+            // pt    = (double)track->pt();
+            // eta   = (double)track->eta();
+            // phi   = (double)track->phi();
+            // p     = (double)track->p();
+            // chi2n = (double)track->normalizedChi2();
+            // nhit  = (double)track->numberOfValidHits();
+            // d0    = (double)track->d0();
+            // dz    = (double)track->dz();
+
+            // nhpxb   = hitPattern.numberOfValidPixelBarrelHits();
+            // nhpxf   = hitPattern.numberOfValidPixelEndcapHits();
+            // nhtib   = hitPattern.numberOfValidStripTIBHits();
+            // nhtob   = hitPattern.numberOfValidStripTOBHits();
+            // nhtid   = hitPattern.numberOfValidStripTIDHits();
+            // nhtec   = hitPattern.numberOfValidStripTECHits();
+
+            // std::cout<<nhit<<std::endl;
+            theData.clear();
+      
+            theData.push_back((double)track->pt());
+            theData.push_back((double)track->eta());
+            theData.push_back((double)track->phi());
+            theData.push_back((double)track->p());
+            theData.push_back((double)track->normalizedChi2());
+            theData.push_back((double)track->numberOfValidHits());
+            theData.push_back((double)track->d0());
+            theData.push_back((double)track->dz());
+
+            theData.push_back((double)hitPattern.numberOfValidPixelBarrelHits());
+            theData.push_back((double)hitPattern.numberOfValidPixelEndcapHits());
+            theData.push_back((double)hitPattern.numberOfValidStripTIBHits());
+            theData.push_back((double)hitPattern.numberOfValidStripTOBHits());
+            theData.push_back((double)hitPattern.numberOfValidStripTIDHits());
+            theData.push_back((double)hitPattern.numberOfValidStripTECHits());
+
+            for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
+            {
+              TrackerSingleRecHit const * hit= dynamic_cast<TrackerSingleRecHit const *>(*recHit);
+
+              if(!hit)
+                continue;
+              if(!hit->hasPositionAndError())
+                continue;
+
+              DetId detId = (*recHit)->geographicalId();
+              unsigned int subdetid = detId.subdetId();
+
+              if(detId.det() != DetId::Tracker) continue;
+              if (!((subdetid==1) || (subdetid==2))) continue;
+
+              const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(hit);
+
+              int hitLayer = -1;
+
+              if (!pixHit)
+                continue;
+
+              if(subdetid==1) //barrel
+                hitLayer = PXBDetId(detId).layer();
+              else
+              if(subdetid==2)
+              {
+                //int side = PXFDetId(detId).side();
+                float z = (pixHit->globalState()).position.z();
+                if(fabs(z)>28.0) hitLayer = 4;
+                if(fabs(z)>36.0) hitLayer = 5;
+                if(fabs(z)>44.0) hitLayer = 6;
+
+                if(z<=0.0) hitLayer +=3;
+              }
+
+              if (pixHit && hitLayer >= 0)
+              {
+                bool thisBad,thisEdge,thisBig;
+
+                auto thisClust = pixHit->cluster();
+                int thisSize   = thisClust->size();
+
+                thisBig  = pixHit->spansTwoROCs();
+                thisBad  = pixHit->hasBadPixels();
+                thisEdge = pixHit->isOnEdge();
+
+                bool keepThis = false;
+
+                if(flagHit.find(hitLayer) != flagHit.end())
+                {
+                  //Keeping the good,not on edge,not big, with higher charge
+                  if(isBad[hitLayer] || isEdge[hitLayer] || isBig[hitLayer])
+                  {
+                      if(!(thisBig || thisBad || thisEdge))
+                        keepThis = true;
+                      else
+                      {
+                        if(thisSize > hitSize[hitLayer])
+                        keepThis = true;
+                      }
+                  }
+                  else
+                  {
+                    if(!(thisBig || thisBad || thisEdge))
+                    {
+                      if(thisSize > hitSize[hitLayer])
+                      keepThis = true;
+                    }
+                  }
+                  //   if(!(thisBad || thisEdge || thisBig))
+                  //     keepThis = true;
+                  // if(isBad[hitLayer] && !thisBad)
+                  //     keepThis = true;
+                  // if((isBad[hitLayer] && thisBad)||(!(isBad[hitLayer] || thisBad)))
+                  //   if(thisSize > hitSize[hitLayer])
+                  //     keepThis = true;
+                  // if(thisBad && !isBad[hitLayer])
+                  //     keepThis = false;
+                }else
+                  keepThis = true;
+
+                if(keepThis)
+                  {
+                    theHits[hitLayer] = hit;
+                    hitSize[hitLayer] = (double)thisSize;
+                    isBad[hitLayer] = thisBad;
+                    isEdge[hitLayer] = thisEdge;
+                    isBig[hitLayer] = thisBad;
+                  }
+                flagHit[hitLayer] = 1.0;
+              }
+
+
+            }
+
+            for(int i = 0; i<10;i++)
+            {
+                if(theHits.find(i) != theHits.end())
+                {
+                  ++nHits;
+                  auto h = theHits[i];
+
+                  // std::cout << h->geographicalId().subdetId() << '\n';
+
+                  const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(h);
+
+                  //auto rangeIn = tpClust->equal_range(bhit->firstClusterRef());
+                  auto clust = pixHit->cluster();
+                  x[i] = (double)h->globalState().position.y();
+                  y[i] = (double)h->globalState().position.y();
+                  z[i] = (double)h->globalState().position.z();
+                  phi_hit[i] = (double)h->globalState().phi;
+                  r[i] = (double)h->globalState().r;
+                  c_x[i] =(double)clust->x();
+                  c_y[i] =(double)clust->y();
+                  size[i] =(double)clust->size();
+                  sizex[i] =(double)clust->sizeX();
+                  sizey[i] =(double)clust->sizeY();
+                  charge[i] =(double)clust->charge();
+                  ovfx[i] =(double)clust->sizeX() > padSize;
+                  ovfy[i] =(double)clust->sizeY() > padSize;
+                  ratio[i] =(double)(clust->sizeY()) / (double)(clust->sizeX());
+                  TH2F hClust("hClust","hClust",
+                  padSize,
+                  clust->x()-padHalfSize,
+                  clust->x()+padHalfSize,
+                  padSize,
+                  clust->y()-padHalfSize,
+                  clust->y()+padHalfSize);
+
+                  //Initialization
+                  for (int nx = 0; nx < padSize; ++nx)
+                    for (int ny = 0; ny < padSize; ++ny)
+                      hClust.SetBinContent(nx,ny,0.0);
+
+                  for (int k = 0; k < clust->size(); ++k)
+                    hClust.SetBinContent(hClust.FindBin((float)clust->pixel(k).x, (float)clust->pixel(k).y),(float)clust->pixel(k).adc);
+
+                  int c = 0;
+                  for (int ny = padSize; ny>0; --ny)
+                  {
+                    for(int nx = 0; nx<padSize; nx++)
+                    {
+
+                      int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
+                      hitPixels[i][c] = (double)hClust.GetBinContent(n);
+                      c++;
+                    }
+                  }
+
+                }
+            }
+
+            theData.push_back(float(tt)); //instead of trackPdg : track number in the collection
+            theData.push_back(float(seqNumber_)); //instead of sF: seqNumber in the collection
+            theData.push_back(0.0);
+            theData.push_back(0.0);
+
+            for(int i = 0; i<10;i++)
+            {
+
+              theData.push_back((double)x[i]);
+              theData.push_back((double)y[i]);
+              theData.push_back((double)z[i]);
+
+              theData.push_back((double)phi_hit[i]);
+              theData.push_back((double)r[i]);
+
+              theData.push_back((double)c_x[i]);
+              theData.push_back((double)c_y[i]);
+              theData.push_back((double)size[i]);
+              theData.push_back((double)sizex[i]);
+              theData.push_back((double)sizey[i]);
+
+              theData.push_back((double)charge[i]);
+
+              theData.push_back((double)ovfx[i]);
+              theData.push_back((double)ovfy[i]);
+
+              theData.push_back((double)ratio[i]);
+
+              theData.push_back((double)motherPdgId[i]);
+              theData.push_back((double)pdgId[i]);
+
+            }
+
+            for(int i = 0; i<10;i++)
+              for(int j =0;j<padSize*padSize;j++)
+                theData.push_back((double)(hitPixels[i][j]));
+
+              for (size_t i = 0; i < theData.size(); i++) {
+                outCNNFile << theData[i] << "\t";
+              }
+          }
           outCNNFile << 542.1369 << std::endl;
-          ++nditrak ;
 
 
         }
