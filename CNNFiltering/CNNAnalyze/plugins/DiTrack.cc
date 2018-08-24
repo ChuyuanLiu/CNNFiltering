@@ -121,7 +121,6 @@ class DiTrack:public edm::EDAnalyzer {
   UInt_t    trigger;
   UInt_t    tMatchOne,tMatchTwo;
 
-  UInt_t charge;
   UInt_t negPixHits, posPixHits;
 
   Double_t ditrak_m, ditrak_p, ditrak_pt, ditrak_eta, ditrak_phi,ditrak_vProb;
