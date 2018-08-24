@@ -103,6 +103,9 @@ class DiTrack:public edm::EDAnalyzer {
   float maxDeltaR;
   float maxDPtRel;
 
+  float padHalfSize;
+  int padSize, tParams;
+
 	UInt_t    run;
 	ULong64_t event;
   UInt_t    lumiblock;
@@ -328,7 +331,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
   // fileName = fileName + ".txt";
   // //std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
   // //fileName += "_" + processName_ + "_dnn_doublets.txt";
-  // std::ofstream outCNNFile(fileName, std::ofstream::app);
+  // std::ofstream outPhiFile(fileName, std::ofstream::app);
 
   numPrimaryVertices = 0;
   // if (primaryVertices_handle.isValid()) numPrimaryVertices = (int) primaryVertices_handle->size();
@@ -519,7 +522,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
 
             // std::cout<<nhit<<std::endl;
             theData.clear();
-      
+
             theData.push_back((double)track->pt());
             theData.push_back((double)track->eta());
             theData.push_back((double)track->phi());
@@ -728,10 +731,10 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
                 theData.push_back((double)(hitPixels[i][j]));
 
               for (size_t i = 0; i < theData.size(); i++) {
-                outCNNFile << theData[i] << "\t";
+                outPhiFile << theData[i] << "\t";
               }
           }
-          outCNNFile << 542.1369 << std::endl;
+          outPhiFile << 542.1369 << std::endl;
 
 
         }
