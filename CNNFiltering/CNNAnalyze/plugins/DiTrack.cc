@@ -34,6 +34,14 @@
 #include "RecoVertex/KinematicFitPrimitives/interface/KinematicParticleFactoryFromTransientTrack.h"
 #include "RecoVertex/VertexTools/interface/InvariantMassFromVertex.h"
 
+#include "TH2F.h"
+#include "TTree.h"
+#include "DataFormats/DetId/interface/DetId.h"
+#include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
+#include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
+#include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHit.h"
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
+
 #include "FWCore/Common/interface/TriggerNames.h"
 
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
