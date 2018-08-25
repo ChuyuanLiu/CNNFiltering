@@ -162,6 +162,6 @@ process.phitokk = cms.EDAnalyzer('DiTrack',
          )
 
 
-process.p = cms.Path(process.triggerSelection * process.tracksCNN * process.phitokk)
+process.p = cms.Path(process.triggerSelection * process.phitokk)
 
 #CNNTrackSequence = cms.Sequence(tracksCNN)
