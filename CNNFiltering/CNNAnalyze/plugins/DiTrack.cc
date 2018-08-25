@@ -546,6 +546,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
             theData.push_back((double)hitPattern.numberOfValidStripTIDHits());
             theData.push_back((double)hitPattern.numberOfValidStripTECHits());
 
+            std::cout << "track" << std::endl;
             for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
             {
               TrackerSingleRecHit const * hit= dynamic_cast<TrackerSingleRecHit const *>(*recHit);
@@ -641,7 +642,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
 
 
             }
-
+            std::cout << "hits" << std::endl;
             for(int i = 0; i<10;i++)
             {
                 if(theHits.find(i) != theHits.end())
@@ -700,6 +701,8 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
                 }
             }
 
+            std::cout << "pads" << std::endl;
+
             theData.push_back(float(tt)); //instead of trackPdg : track number in the collection
             theData.push_back(float(seqNumber_)); //instead of sF: seqNumber in the collection
             theData.push_back(0.0);
@@ -742,7 +745,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
               }
           }
           outPhiFile << 542.1369 << std::endl;
-
+          
 
         } //if vProb > 0.0
 
