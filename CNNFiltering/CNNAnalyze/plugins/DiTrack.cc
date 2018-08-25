@@ -361,9 +361,9 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
 
   // for (std::vector<pat::PackedCandidate>::const_iterator posTrack = filteredTracks.begin(), trakend=filteredTracks.end(); posTrack!= trakend; ++posTrack)
 
-  for(edm::View<reco::Track>::size_type i=0; i<trackCollection->size(); ++i)
+  for(edm::View<reco::Track>::size_type k=0; i<trackCollection->size(); ++k)
   {
-           auto posTrack = trackCollection->refAt(i);
+           auto posTrack = trackCollection->refAt(k);
            bool trkQual  = posTrack->quality(trackQuality);
            auto hitPattern = posTrack->hitPattern();
 
@@ -372,7 +372,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
            if(posPixHits < 4)
              continue;
 
-           tI = (UInt_t)(i);
+           tI = (UInt_t)(k);
 
            if(!trkQual)
              continue;
@@ -447,9 +447,9 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
 
           UInt_t tIds[2] = {tI,tJ};
 
-          for(int i =0;i<2;i++)
+          for(int ii =0;ii<2;ii++)
           {
-            UInt_t tt = tIds[i];
+            UInt_t tt = tIds[ii];
             std::vector<double> theData;
             // std::cout << "Track ------------------- "<< std::endl;
             // std::cout << std::endl;

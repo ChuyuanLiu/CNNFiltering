@@ -62,7 +62,7 @@ charmoniumHLT = [
 'HLT_DoubleMu4_JpsiTrkTrk_Displaced',
 'HLT_DoubleMu4_JpsiTrk_Displaced',
 #vi'HLT_DoubleMu4_Jpsi_Displaced',
-'HLT_DoubleMu4_3_Jpsi_Displaced',
+#'HLT_DoubleMu4_3_Jpsi_Displaced',
 #'HLT_Dimuon20_Jpsi_Barrel_Seagulls',
 #'HLT_Dimuon25_Jpsi',
 ]
