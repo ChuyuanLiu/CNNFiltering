@@ -361,7 +361,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
 
   // for (std::vector<pat::PackedCandidate>::const_iterator posTrack = filteredTracks.begin(), trakend=filteredTracks.end(); posTrack!= trakend; ++posTrack)
 
-  for(edm::View<reco::Track>::size_type k=0; i<trackCollection->size(); ++k)
+  for(edm::View<reco::Track>::size_type k=0; k<trackCollection->size(); ++k)
   {
            auto posTrack = trackCollection->refAt(k);
            bool trkQual  = posTrack->quality(trackQuality);
@@ -745,7 +745,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
               }
           }
           outPhiFile << 542.1369 << std::endl;
-          
+
 
         } //if vProb > 0.0
 
