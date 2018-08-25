@@ -329,8 +329,6 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
   fileName = fileName + std::to_string(seqNumber_);
   fileName = fileName + ".txt";
 
-  std::ofstream outPhiFile(fileName, std::ofstream::app);
-
   // fileName = "generalTracksCNN_" + std::to_string(lumNumber) + "_" ;
   // fileName = fileName + std::to_string(runNumber) + "_" ;
   // fileName = fileName + std::to_string(eveNumber) + "_" ;
@@ -424,6 +422,8 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
 
        if(ditrak_vProb>0.05)
        {
+
+          std::ofstream outPhiFile(fileName, std::ofstream::app);
 
           outPhiFile << (float)run << "\t";
           outPhiFile << (float)event << "\t";
@@ -546,7 +546,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
             theData.push_back((double)hitPattern.numberOfValidStripTIDHits());
             theData.push_back((double)hitPattern.numberOfValidStripTECHits());
 
-            std::cout << "track" << std::endl;
+            // std::cout << "track" << std::endl;
             for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
             {
               TrackerSingleRecHit const * hit= dynamic_cast<TrackerSingleRecHit const *>(*recHit);
@@ -642,7 +642,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
 
 
             }
-            std::cout << "hits" << std::endl;
+            // std::cout << "hits" << std::endl;
             for(int i = 0; i<10;i++)
             {
                 if(theHits.find(i) != theHits.end())
@@ -701,7 +701,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
                 }
             }
 
-            std::cout << "pads" << std::endl;
+            // std::cout << "pads" << std::endl;
 
             theData.push_back(float(tt)); //instead of trackPdg : track number in the collection
             theData.push_back(float(seqNumber_)); //instead of sF: seqNumber in the collection
