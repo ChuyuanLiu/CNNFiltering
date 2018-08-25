@@ -422,7 +422,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
        ditrak_eta   = TTCand.eta();
        ditrak_phi   = TTCand.phi();
 
-       if(ditrak_vProb>0.0)
+       if(ditrak_vProb>0.05)
        {
 
           outPhiFile << (float)run << "\t";
@@ -744,7 +744,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
           outPhiFile << 542.1369 << std::endl;
 
 
-        }
+        } //if vProb > 0.0
 
            } // loop over second track
          }   // loop on track candidates
