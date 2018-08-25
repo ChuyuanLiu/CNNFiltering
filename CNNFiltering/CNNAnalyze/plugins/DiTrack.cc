@@ -329,6 +329,8 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
   fileName = fileName + std::to_string(seqNumber_);
   fileName = fileName + ".txt";
 
+  std::ofstream outPhiFile(fileName, std::ofstream::app);
+  
   // fileName = "generalTracksCNN_" + std::to_string(lumNumber) + "_" ;
   // fileName = fileName + std::to_string(runNumber) + "_" ;
   // fileName = fileName + std::to_string(eveNumber) + "_" ;
@@ -422,8 +424,6 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
 
        if(ditrak_vProb>0.05)
        {
-
-          std::ofstream outPhiFile(fileName, std::ofstream::app);
 
           outPhiFile << (float)run << "\t";
           outPhiFile << (float)event << "\t";
