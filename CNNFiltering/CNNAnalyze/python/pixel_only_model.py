@@ -107,7 +107,7 @@ X_val_hit, y_val = val_data.first_layer_map_data()
 X_test_hit, y_test = test_data.first_layer_map_data()
 X_hit, y = train_data.first_layer_map_data()
 
-model = pixel_only_model(args,X_hit.shape[0])
+model = pixel_only_model(args,X_hit.shape[1])
 
 with open(fname + ".json", "w") as outfile:
     json.dump(model.to_json(), outfile)

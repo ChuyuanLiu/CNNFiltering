@@ -186,7 +186,7 @@ def conv_model(args, n_channels):
 
 
 def pixel_only_model(args, n_channels):
-    hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='hit_shape_input')
+    hit_shapes = Input(shape=(n_channels, IMAGE_SIZE, IMAGE_SIZE), name='hit_shape_input')
 
     drop = Dropout(args.dropout)(hit_shapes)
     conv = Conv2D(64, (3, 3), activation='relu', padding='same', data_format="channels_first", name='conv1')(drop)
