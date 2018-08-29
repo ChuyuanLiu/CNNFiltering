@@ -13,7 +13,7 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
 from model_architectures import *
 import sys
 import numpy as np
-import panas as pd
+import pandas as pd
 import itertools
 import pickle
 from random import shuffle
@@ -91,6 +91,9 @@ main_files  = [remote_data + el for el in os.listdir(remote_data) if ".h5" in el
 debug_files = main_files[:3]
 shuffle(main_files)
 
+if args.limit >0 and args.limit > len(main_files):
+    main_files = main_files[:args.limit]
+
 train_files = main_files[:int(len(main_files)*0.8)] if not args.debug else debug_files #[remote_data + '/train/' +
                #el for el in os.listdir(remote_data + 'train/')] if not args.debug else debug_files
 
@@ -100,6 +103,7 @@ test_files = [remote_data + '/test/' +
              el for el in os.listdir(remote_data + 'test/')] if not args.debug else debug_files
 
 shuffle(test_files)
+test_files = test_files[:min(len(test_files),50)]
 
 val_data = Dataset(val_files)#,balance=args.balance)
 test_data = Dataset(test_files)
@@ -109,8 +113,11 @@ X_val_hit, y_val = val_data.first_layer_map_data()
 X_test_hit, y_test = test_data.first_layer_map_data()
 X_hit, y = train_data.first_layer_map_data()
 
-flat_hit = np.matrix(X_hit.reshape(X_hit.shape[0],-1))
-flat_df = pd.DataFrame(,columns=allLayerPixels)
+fflat_hit = np.matrix(X_val_hit.reshape(X_val_hit.shape[0],-1))
+flat_df = pd.DataFrame(flat_hit,columns=allLayerPixels)
+flat_df["y"] = y_val[:,0]
+flat_df.to_hdf("pixel_only_dataAndLabels.h5","data",append=False)
+
 model = pixel_only_model(args,X_hit.shape[1])
 
 with open(fname + ".json", "w") as outfile:
