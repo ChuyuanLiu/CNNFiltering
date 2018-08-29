@@ -19,7 +19,7 @@ from random import shuffle
 from sklearn.model_selection import StratifiedKFold
 
 from keras import backend as K
-
+import tensorflow as tf
 DEBUG = os.name == 'nt'  # DEBUG on laptop
 
 pdg = [-211., 211., 321., -321., 2212., -2212., 11., -11., 13., -13.]
