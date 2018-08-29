@@ -13,7 +13,7 @@ from keras.models import model_from_json
 import json
 from sklearn.metrics import roc_curve, roc_auc_score, accuracy_score
 from dataset import *
-
+import tensorflow as tf
 layer_ids = [0, 1, 2, 3, 14, 15, 16, 29, 30, 31]
 
 
@@ -47,18 +47,18 @@ with open(log_dir + '' + best_name + ".json") as f:
         model.load_weights(log_dir + '/' + best_name + '_last.h5')
     else:
         model.load_weights(log_dir + '/' + best_name + '_final.h5')
-        
+
     model.summary()
     lastshape = model.layers[0].input.shape[-1]
     print(" . . . loaded ")
-    
+
     for basedir in dirs:
         plots_files = [remote_data  + "/" + basedir + "/" + el for el in os.listdir(remote_data  + "/" + basedir + "/")]
         if args.debug is not None:
             plots_files = plots_files[:2]
-              
+
         print("loadind files from :" + remote_data + basedir + " . . .")
-        
+
         for chunk in  range(offset,int(((len(plots_files) + chunksize))/chunksize) + 1):
 
             if(min(len(plots_files),chunk*chunksize)==min(len(plots_files),chunksize*(chunk+1)) and chunk!=0):
@@ -72,14 +72,14 @@ with open(log_dir + '' + best_name + ".json") as f:
             print("loading plot data...")
             plot_data = Dataset(p)
             print("processing plot data...")
-            
+
             if lastshape == 24:
                 X_hit, X_info, y = plot_data.get_layer_map_data(theta=True)
             if lastshape == 20:
                 X_hit, X_info, y = plot_data.get_layer_map_data()
             if lastshape == 8:
                 X_hit, X_info, y = plot_data.get_data()
-             
+
             model.summary()
             y_pred = model.predict([X_hit, X_info])
             auc = roc_auc_score(y[:, 1], y_pred[:, 1])
@@ -92,9 +92,9 @@ with open(log_dir + '' + best_name + ".json") as f:
             outdata = pd.DataFrame()
             outdata = plot_data.data
             outdata.columns = dataLab
-            
+
             print outdata["inX"].values.shape
-	    
+
             outdata.drop(inPixels,axis=1)
             outdata.drop(outPixels,axis=1)
             outdata['labels'] = pd.Series(labels, index=outdata.index)
@@ -102,18 +102,17 @@ with open(log_dir + '' + best_name + ".json") as f:
             outdata['probfk'] = pd.Series(probfk, index=outdata.index)
             outdata['chunks'] = pd.Series(chunks, index=outdata.index)
             outdata['aucs']   = pd.Series(aucs, index=outdata.index)
-            
+
             print("AUC, just for the sake of curiosity, is . . . " + str(aucs[0]))
-            
+
             outplotdata = remote_data  + "/" + basedir  + "/" + best_name +  "/plots/"
-            
+
             if not os.path.exists(outplotdata):
                 os.makedirs(outplotdata)
-            
+
             outdata.to_hdf(outplotdata + "/dataPlots_" + str(chunk) + "_" + str(basedir) + ".h5",'data', mode='w')
                     #outdata.head()
             #outdata[["detCounterIn","detCounterOut"] + inXYZ + outXYZ + ["probfk"]].to_csv(outplotdata + "/inferedOut.txt", header=None, index=None, sep='\t', mode='a')
-            
+
             #with open(outplotdata + "/inferedOut.txt", "w") as text_file:
             #    np.savetxt(outplotdata + "/inferedOut.txt", outdata[["detCounterIn","detCounterOut"] + inXYZ + outXYZ + ["probfk"]].values, fmt='%f',delimiter='\t')
-            
