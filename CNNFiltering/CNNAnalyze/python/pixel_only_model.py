@@ -13,6 +13,7 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
 from model_architectures import *
 import sys
 import numpy as np
+import panas as pd
 import itertools
 import pickle
 from random import shuffle
@@ -108,6 +109,8 @@ X_val_hit, y_val = val_data.first_layer_map_data()
 X_test_hit, y_test = test_data.first_layer_map_data()
 X_hit, y = train_data.first_layer_map_data()
 
+flat_hit = np.matrix(X_hit.reshape(X_hit.shape[0],-1))
+flat_df = pd.DataFrame(,columns=allLayerPixels)
 model = pixel_only_model(args,X_hit.shape[1])
 
 with open(fname + ".json", "w") as outfile:

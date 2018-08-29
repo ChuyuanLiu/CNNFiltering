@@ -89,6 +89,15 @@ particle_ids = [-1.,11.,13.,15.,22.,111.,211.,311.,321.,2212.,2112.,3122.,223.]
 
 main_pdgs = [11.,13.,211.,321.,2212.]
 
+allLayerPixels = []
+
+for i in range(10):
+    thisPixels = [ h + "_in_" + str(i) for h in hitPixel]
+    allLayerPixels = allLayerPixels + thisPixels
+for i in range(10):
+    thisPixels = [ h + "_out_" + str(i) for h in hitPixel]
+    allLayerPixels = allLayerPixels + thisPixels
+
 def balance_data_by_pdg(dataSet, pdgIds):
     """ Balancing datasets by particles. """
 
