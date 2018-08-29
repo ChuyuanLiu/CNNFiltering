@@ -18,6 +18,8 @@ import pickle
 from random import shuffle
 from sklearn.model_selection import StratifiedKFold
 
+from keras import backend as K
+
 DEBUG = os.name == 'nt'  # DEBUG on laptop
 
 pdg = [-211., 211., 321., -321., 2212., -2212., 11., -11., 13., -13.]
@@ -124,7 +126,6 @@ callbacks = [
 
 history = model.fit(X_hit, y, batch_size=args.batch_size, epochs=args.n_epochs, shuffle=True,validation_data=(X_val_hit,y_val), callbacks=callbacks, verbose=args.verbose)
 
-
 loss, acc = model.evaluate(X_test_hit, y_test, batch_size=args.batch_size)
 test_pred = model.predict(X_test_hit)
 test_roc = roc_auc_score(y_test, test_pred)
@@ -143,6 +144,10 @@ print('Train acc /  acc max (@t)   = {:.4f} / {:.4f} ({:.3f})'.format(acc,train_
 
 print("saving model " + fname)
 model.save_weights(fname + "pixelonly_weight.h5", overwrite=True)
+
+frozen_graph = freeze_session(K.get_session(),
+                              output_names=[out.op.name for out in model.outputs])
+tf.train.write_graph(frozen_graph, "./", fname + "_frozen.pb", as_text=False)
 
 with open( fname + "pixelonly_hist.pkl", 'wb') as file_hist:
     pickle.dump(history.history, file_hist)

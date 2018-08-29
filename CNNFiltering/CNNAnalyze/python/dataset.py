@@ -7,6 +7,7 @@
 import numpy as np
 import pandas as pd
 import gzip
+
 #from keras.utils.np_utils import to_categorical
 
 def to_categorical(y, num_classes=None):
@@ -390,7 +391,7 @@ class Dataset:
         a_out = (a_out - mean) / std
 
         l = []
-        
+
         for hits, ids in [(a_in, self.data.detSeqIn), (a_out, self.data.detSeqOut)]:
 
             for id_layer in layer_ids:
@@ -401,7 +402,7 @@ class Dataset:
 
         data = np.array(l)  # (channels, batch_size, hit_size)
         data = data.reshape((len(data), -1, padshape, padshape))
-        X_hit = np.transpose(data, (2, 3, 1, 0))
+        X_hit = np.transpose(data, (1, 0, 2, 3))
 
         #print(X_hit[0,:,:,0])
         y,_= to_categorical(self.get_labels())
