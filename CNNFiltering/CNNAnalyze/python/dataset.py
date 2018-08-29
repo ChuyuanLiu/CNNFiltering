@@ -389,6 +389,8 @@ class Dataset:
         a_in = (a_in - mean) / std
         a_out = (a_out - mean) / std
 
+        l = []
+        
         for hits, ids in [(a_in, self.data.detSeqIn), (a_out, self.data.detSeqOut)]:
 
             for id_layer in layer_ids:

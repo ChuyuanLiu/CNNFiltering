@@ -79,7 +79,7 @@ if not os.path.exists(log_dir_tf):
 
 fname = args.log_dir + "/" + str(t_now) + "/" + args.name
 
-remote_data = args.path + "/" + args.step + "/"
+remote_data = args.path #+ "/" + args.step + "/"
 debug_data = remote_data + "/debug/"
 
 print("Loading data...")
