@@ -13,6 +13,7 @@ from keras.callbacks import Callback
 from keras.regularizers import l1,l2
 from keras import backend as K
 import numpy as np
+import tensorflow as tf
 from tensorflow import float64 as f64
 from tensorflow import cond, greater,cast
 IMAGE_SIZE = dataset.padshape
@@ -56,7 +57,7 @@ def freeze_session(session, keep_var_names=None, output_names=None, clear_device
         frozen_graph = convert_variables_to_constants(session, input_graph_def,
                                                       output_names, freeze_var_names)
         return frozen_graph
-        
+
 def adam_small_doublet_model(args, n_channels,n_labels=2):
     hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='hit_shape_input')
     infos = Input(shape=(len(dataset.featureLabs),), name='info_input')
