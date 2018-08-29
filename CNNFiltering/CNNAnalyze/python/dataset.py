@@ -376,6 +376,36 @@ class Dataset:
 
         return X_hit, X_info, y
 
+    def first_layer_map_data(self):
+
+        self.recolumn()
+
+        a_in = self.data[inPixels].as_matrix().astype(np.float16)
+        a_out = self.data[outPixels].as_matrix().astype(np.float16)
+
+        # mean, std precomputed for data NOPU
+#         mean, std = (668.25684, 3919.5576)
+        mean, std = (13382.0011321,10525.1252954) #on 2.5M doublets
+        a_in = (a_in - mean) / std
+        a_out = (a_out - mean) / std
+
+        for hits, ids in [(a_in, self.data.detSeqIn), (a_out, self.data.detSeqOut)]:
+
+            for id_layer in layer_ids:
+                layer_hits = np.zeros(hits.shape)
+                bool_mask = ids == id_layer
+                layer_hits[bool_mask, :] = hits[bool_mask, :]
+                l.append(layer_hits)
+
+        data = np.array(l)  # (channels, batch_size, hit_size)
+        data = data.reshape((len(data), -1, padshape, padshape))
+        X_hit = np.transpose(data, (2, 3, 1, 0))
+
+        #print(X_hit[0,:,:,0])
+        y,_= to_categorical(self.get_labels())
+
+        return X_hit, y
+
     def get_layer_map_data_multiclass(self):
         a_in = self.data[inPixels].as_matrix().astype(np.float16)
         a_out = self.data[outPixels].as_matrix().astype(np.float16)

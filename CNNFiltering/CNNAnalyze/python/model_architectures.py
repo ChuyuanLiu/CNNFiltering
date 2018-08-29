@@ -184,6 +184,33 @@ def conv_model(args, n_channels):
     model.compile(optimizer=my_sgd, loss='categorical_crossentropy', metrics=['accuracy'])
     return model
 
+
+def pixel_only_model(args, n_channels):
+    hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='hit_shape_input')
+
+    drop = Dropout(args.dropout)(hit_shapes)
+    conv = Conv2D(64, (3, 3), activation='relu', padding='same', data_format="channels_first", name='conv1')(drop)
+    conv = Conv2D(64, (3, 3), activation='relu', padding='same', data_format="channels_first", name='conv2')(conv)
+    pool = MaxPooling2D(pool_size=(2, 2), padding='same', data_format="channels_first", name='pool1')(conv)
+
+    conv = Conv2D(128, (3, 3), activation='relu', padding='same', data_format="channels_first", name='conv3')(pool)
+    conv = Conv2D(128, (3, 3), activation='relu', padding='same', data_format="channels_first", name='conv4')(conv)
+    pool = MaxPooling2D(pool_size=(2, 2), padding='same', data_format="channels_first", name='pool2')(conv)
+
+    flat = Flatten()(pool)
+
+    drop = Dropout(args.dropout)(flat)
+    dense = Dense(128, activation='relu', kernel_constraint=max_norm(args.maxnorm), name='dense1')(drop)
+    drop = Dropout(args.dropout)(dense)
+    dense = Dense(64, activation='relu', kernel_constraint=max_norm(args.maxnorm), name='dense2')(drop)
+    drop = Dropout(args.dropout)(dense)
+    pred = Dense(2, activation='softmax', kernel_constraint=max_norm(args.maxnorm), name='output')(drop)
+
+    model = Model(inputs=hit_shapes, outputs=pred)
+    my_sgd = optimizers.SGD(lr=args.lr, decay=1e-4, momentum=args.momentum, nesterov=True)
+    model.compile(optimizer=my_sgd, loss='categorical_crossentropy', metrics=['accuracy'])
+    return model
+
 def separate_conv_doublet_model(args, n_channels):
     in_hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='in_hit_shape_input')
     out_hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='out_hit_shape_input')
@@ -243,7 +270,7 @@ class roc_callback(Callback):
         return
 
     def on_epoch_end(self, epoch, logs={}):
-        
+
 	start = time.time()
 	y_pred = self.model.predict(self.x)
         roc = roc_auc_score(self.y, y_pred)
