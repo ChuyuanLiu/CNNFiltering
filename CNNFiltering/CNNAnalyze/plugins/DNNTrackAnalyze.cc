@@ -433,17 +433,17 @@ DNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       std::cout << (double)hit->globalState().r <<  "\t";
       std::cout << (double)hit->globalState().position.z() << "\t";
 
-      auto clust = hit->cluster();
+      // auto clust = hit->cluster();
 
-      std::cout <<  (double)clust->x() << "\t";
-      std::cout << (double)clust->y() << "\t";
-      std::cout << (double)clust->size() << "\t";
-      std::cout << (double)clust->sizeX() << "\t";
-      std::cout << (double)clust->sizeY() << "\t";
-      std::cout << (double)clust->charge() << "\t";
-      std::cout << (double)clust->sizeX() > padSize << "\t";
-      std::cout << (double)clust->sizeY() > padSize << "\t";
-      std::cout << (double)(clust->sizeY()) / (double)(clust->sizeX()) << std::endl;
+      // std::cout <<  (double)clust->x() << "\t";
+      // std::cout << (double)clust->y() << "\t";
+      // std::cout << (double)clust->size() << "\t";
+      // std::cout << (double)clust->sizeX() << "\t";
+      // std::cout << (double)clust->sizeY() << "\t";
+      // std::cout << (double)clust->charge() << "\t";
+      // std::cout << (double)clust->sizeX() > padSize << "\t";
+      // std::cout << (double)clust->sizeY() > padSize << "\t";
+      // std::cout << (double)(clust->sizeY()) / (double)(clust->sizeX()) << std::endl;
 
       continue;
 
@@ -547,15 +547,15 @@ DNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     //       z[i] = (double)h->globalState().position.z();
     //       phi_hit[i] = (double)h->globalState().phi;
     //       r[i] = (double)h->globalState().r;
-    //       c_x[i] =(double)clust->x();
-    //       c_y[i] =(double)clust->y();
-    //       size[i] =(double)clust->size();
-    //       sizex[i] =(double)clust->sizeX();
-    //       sizey[i] =(double)clust->sizeY();
-    //       charge[i] =(double)clust->charge();
-    //       ovfx[i] =(double)clust->sizeX() > padSize;
-    //       ovfy[i] =(double)clust->sizeY() > padSize;
-    //       ratio[i] =(double)(clust->sizeY()) / (double)(clust->sizeX());
+    //       c_x[i] =(double)clust->x(); barycenter()
+    //       c_y[i] =(double)clust->y(); 1.0
+    //       size[i] =(double)clust->size(); amplitudes().size
+    //       sizex[i] =(double)clust->sizeX(); amplitudes().size
+    //       sizey[i] =(double)clust->sizeY(); 1.0
+    //       charge[i] =(double)clust->charge(); charge()
+    //       ovfx[i] = amplitudes().size > padSize;
+    //       ovfy[i] = amplitudes().size > padSize;
+    //       ratio[i] = 1.0 / amplitudes().size
     //
     //       auto rangeIn = tpClust->equal_range(h->firstClusterRef());
     //
