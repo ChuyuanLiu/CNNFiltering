@@ -428,12 +428,22 @@ DNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
       if(detId.det() != DetId::Tracker) continue;
 
-      std::cout << "--- Detector" << std::endl;
-      std::cout << detId.rawId() << std::endl;
-      std::cout << subdetid << std::endl;
-      std::cout << (double)hit->globalState().r << std::endl;
-      std::cout << (double)hit->globalState().position.z() << std::endl;
+      std::cout << detId.rawId() <<  "\t";
+      std::cout << subdetid <<  "\t";
+      std::cout << (double)hit->globalState().r <<  "\t";
+      std::cout << (double)hit->globalState().position.z() << "\t";
 
+      auto clust = hit->cluster();
+
+      std::cout <<  (double)clust->x() << "\t";
+      std::cout << (double)clust->y() << "\t";
+      std::cout << (double)clust->size() << "\t";
+      std::cout << (double)clust->sizeX() << "\t";
+      std::cout << (double)clust->sizeY() << "\t";
+      std::cout << (double)clust->charge() << "\t";
+      std::cout << (double)clust->sizeX() > padSize << "\t";
+      std::cout << (double)clust->sizeY() > padSize << "\t";
+      std::cout << (double)(clust->sizeY()) / (double)(clust->sizeX()) << std::endl;
 
       continue;
 
