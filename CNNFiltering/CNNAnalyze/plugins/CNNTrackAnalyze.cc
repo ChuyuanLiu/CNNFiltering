@@ -674,7 +674,8 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
               // std::cout << pdgId[i] << std::endl;
 
               if((*rangeIn.first->second).genParticle_begin()!=(*rangeIn.first->second).genParticle_end())
-                motherPdgId[i] = (double)((*(*rangeIn.first->second).genParticle_begin())->mother()->pdgId());
+                if((*(*rangeIn.first->second).genParticle_begin())->mother()!=nullptr)
+                  motherPdgId[i] = (double)((*(*rangeIn.first->second).genParticle_begin())->mother()->pdgId());
 
               if(pdgMomMap.find(motherPdgId[i]) != pdgMomMap.end())
                 ++pdgMomMap[motherPdgId[i]];
