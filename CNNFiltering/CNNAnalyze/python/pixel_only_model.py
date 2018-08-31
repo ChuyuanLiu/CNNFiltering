@@ -113,7 +113,7 @@ X_val_hit, y_val = val_data.first_layer_map_data()
 X_test_hit, y_test = test_data.first_layer_map_data()
 X_hit, y = train_data.first_layer_map_data()
 
-fflat_hit = np.matrix(X_val_hit.reshape(X_val_hit.shape[0],-1))
+flat_hit = np.matrix(X_val_hit.reshape(X_val_hit.shape[0],-1))
 flat_df = pd.DataFrame(flat_hit,columns=allLayerPixels)
 flat_df["y"] = y_val[:,0]
 flat_df.to_hdf("pixel_only_dataAndLabels.h5","data",append=False)
