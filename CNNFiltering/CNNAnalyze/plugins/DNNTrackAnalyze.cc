@@ -600,8 +600,6 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
       }
 
-      const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(hit);
-
 
     }
 
