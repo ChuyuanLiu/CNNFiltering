@@ -104,6 +104,4 @@ CNNDoubletsSequence = cms.Sequence(detachedQuadStepCNN *
                                    lowPtQuadStepCNN *
                                    mixedTripletStepACNN *
                                    mixedTripletStepBCNN *
-                                   pixelLessStepCNN *
-                                   tobTecStepCNN *
                                    tripletElectronCNN)
