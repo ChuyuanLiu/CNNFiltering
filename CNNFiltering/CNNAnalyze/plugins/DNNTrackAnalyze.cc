@@ -518,10 +518,11 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       std::cout << subdetid << std::endl;
       std::cout << (double)hit->globalState().r << std::endl;
       std::cout << (double)hit->globalState().position.z() << std::endl;
-      //const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(hit);
+
 
       continue;
 
+      const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(hit);
       int hitLayer = -1;
 
       if (!((subdetid==1) || (subdetid==2)))
