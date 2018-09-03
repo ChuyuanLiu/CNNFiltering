@@ -23,6 +23,24 @@ import FWCore.ParameterSet.Config as cms
 # ++IntermediateHitDoublets "pixelLessStepHitDoublets" "" "RECO" (productId = 3:318)
 # ++IntermediateHitDoublets "tobTecStepHitDoubletsTripl" "" "RECO" (productId = 3:319)
 # ++IntermediateHitDoublets "tripletElectronHitDoublets" "" "RECO" (productId = 3:320)
+#pixelPairStepHitDoublets
+#jetCoreRegionalStepHitDoublets
+
+pixelPairStepCNN = cms.EDAnalyzer('CNNAnalyze',
+        processName = cms.string( "pixelPairStepHitDoublets"),
+        doublets    = cms.InputTag( "pixelPairStepHitDoublets" ),
+        tpMap       = cms.InputTag( "tpClusterProducer" ),
+        beamSpot    = cms.InputTag("offlineBeamSpot"),
+        infoPileUp  = cms.InputTag("addPileupInfo")
+)
+
+jetCoreRegionalStepCNN = cms.EDAnalyzer('CNNAnalyze',
+        processName = cms.string( "pixelPairStepHitDoublets"),
+        doublets    = cms.InputTag( "pixelPairStepHitDoublets" ),
+        tpMap       = cms.InputTag( "tpClusterProducer" ),
+        beamSpot    = cms.InputTag("offlineBeamSpot"),
+        infoPileUp  = cms.InputTag("addPileupInfo")
+)
 
 detachedQuadStepCNN = cms.EDAnalyzer('CNNAnalyze',
         processName = cms.string( "detachedQuadStepHitDoublets"),
@@ -131,4 +149,6 @@ CNNDoubletsSequence = cms.Sequence(detachedQuadStepCNN *
                                    lowPtTripletStepCNN *
                                    mixedTripletStepACNN *
                                    mixedTripletStepBCNN *
-                                   tripletElectronCNN)
+                                   tripletElectronCNN *
+                                   pixelPairStepCNN *
+                                   jetCoreRegionalStepCNN)
