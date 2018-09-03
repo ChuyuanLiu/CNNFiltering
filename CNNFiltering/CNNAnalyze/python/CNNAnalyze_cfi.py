@@ -72,6 +72,14 @@ lowPtQuadStepCNN = cms.EDAnalyzer('CNNAnalyze',
         infoPileUp  = cms.InputTag("addPileupInfo")
 )
 
+lowPtTripletStepCNN = cms.EDAnalyzer('CNNAnalyze',
+        processName = cms.string( "lowPtTripletStepHitDoublets" ),
+        doublets    = cms.InputTag( "lowPtTripletStepHitDoublets" ),
+        tpMap       = cms.InputTag( "tpClusterProducer" ),
+        beamSpot    = cms.InputTag("offlineBeamSpot"),
+        infoPileUp  = cms.InputTag("addPileupInfo")
+)
+
 mixedTripletStepACNN = cms.EDAnalyzer('CNNAnalyze',
         processName = cms.string( "mixedTripletStepHitDoubletsA"),
         doublets    = cms.InputTag( "mixedTripletStepHitDoubletsA" ),
@@ -120,6 +128,7 @@ CNNDoubletsSequence = cms.Sequence(detachedQuadStepCNN *
                                    initialStepPreSplittingCNN *
                                    initialStepCNN *
                                    lowPtQuadStepCNN *
+                                   lowPtTripletStepCNN *
                                    mixedTripletStepACNN *
                                    mixedTripletStepBCNN *
                                    tripletElectronCNN)
