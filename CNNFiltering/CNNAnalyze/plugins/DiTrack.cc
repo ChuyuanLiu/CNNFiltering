@@ -369,7 +369,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
 
            posPixHits = hitPattern.numberOfValidPixelHits();
            // std::cout << "- No Pixel Hits :" << pixHits << std::endl;
-           if(posPixHits < 4)
+           if(posPixHits < 3)
              continue;
 
            tI = (UInt_t)(k);
@@ -378,7 +378,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
              continue;
 
            if(posTrack->charge() <= 0 ) continue;
-           if(posTrack->pt()<0.9) continue;
+           if(posTrack->pt()<0.7) continue;
      for(edm::View<reco::Track>::size_type j=0; j<trackCollection->size(); ++j)
      {
 
@@ -392,7 +392,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
        auto negTrack = trackCollection->refAt(j);
 
        negPixHits = negTrack->hitPattern().numberOfValidPixelHits();
-       if(negPixHits < 4)
+       if(negPixHits < 3)
          continue;
 
        tJ = (UInt_t)(j);
@@ -401,7 +401,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
          continue;
 
        if(negTrack->charge() <= 0 ) continue;
-       if(negTrack->pt()<0.9) continue;
+       if(negTrack->pt()<0.7) continue;
        pat::CompositeCandidate TTCand = makeTTCandidate(*posTrack,*negTrack);
 
        if ( !(TTCand.mass() < TrakTrakMassMax_ && TTCand.mass() > TrakTrakMassMin_) )
