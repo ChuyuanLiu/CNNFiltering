@@ -360,7 +360,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
 
 
   // for (std::vector<pat::PackedCandidate>::const_iterator posTrack = filteredTracks.begin(), trakend=filteredTracks.end(); posTrack!= trakend; ++posTrack)
-  if(trigger>0)
+  
   for(edm::View<reco::Track>::size_type k=0; k<trackCollection->size(); ++k)
   {
            auto posTrack = trackCollection->refAt(k);
