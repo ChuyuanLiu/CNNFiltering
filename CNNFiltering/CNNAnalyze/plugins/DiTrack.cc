@@ -187,12 +187,13 @@ const pat::CompositeCandidate DiTrack::makeTTCandidate(
 DiTrack::DiTrack(const edm::ParameterSet & iConfig):
 seqNumber_(iConfig.getParameter<int>("seqNumber")),
 alltracks_(consumes<edm::View<reco::Track> >(iConfig.getParameter<edm::InputTag>("tracks"))),
-//triggerResults_Label(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("TriggerResults"))),
+triggerResults_Label(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("TriggerResults","","RECO"))),
 ditrakMassCuts_(iConfig.getParameter<std::vector<double>>("TrakTrakMassCuts")),
 MassTraks_(iConfig.getParameter<std::vector<double>>("MassTraks"))
 //HLTs_(iConfig.getParameter<std::vector<std::string>>("HLTs")),
 //HLTFilters_(iConfig.getParameter<std::vector<std::string>>("Filters"))
 {
+  edm::TriggerResults                   "TriggerResults"            ""                "RECO"
   // edm::Service < TFileService > fs;
   // ditrak_tree = fs->make < TTree > ("DiTrakDiTrigTree", "Tree of ditrakditrig");
   //
@@ -343,13 +344,13 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
   numPrimaryVertices = 0;
   // if (primaryVertices_handle.isValid()) numPrimaryVertices = (int) primaryVertices_handle->size();
   //
-  // edm::Handle< edm::TriggerResults > triggerResults_handle;
-  // iEvent.getByToken( triggerResults_Label , triggerResults_handle);
+  edm::Handle< edm::TriggerResults > triggerResults_handle;
+  iEvent.getByToken( triggerResults_Label , triggerResults_handle);
 
   trigger = 0;
   //
-  // if (triggerResults_handle.isValid())
-  //   trigger = getTriggerBits(iEvent,triggerResults_handle);
+  if (triggerResults_handle.isValid())
+    trigger = getTriggerBits(iEvent,triggerResults_handle);
   // else std::cout << "*** NO triggerResults found " << iEvent.id().run() << "," << iEvent.id().event() << std::endl;
 
   nditrak  = 0;
@@ -360,7 +361,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
 
 
   // for (std::vector<pat::PackedCandidate>::const_iterator posTrack = filteredTracks.begin(), trakend=filteredTracks.end(); posTrack!= trakend; ++posTrack)
-
+  if(trigger>0)
   for(edm::View<reco::Track>::size_type k=0; k<trackCollection->size(); ++k)
   {
            auto posTrack = trackCollection->refAt(k);
