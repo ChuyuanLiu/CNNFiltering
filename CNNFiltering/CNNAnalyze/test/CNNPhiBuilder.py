@@ -122,18 +122,18 @@ process.triggerSelection = cms.EDFilter("TriggerResultsFilter",
 # )
 
 
-process.tracksCNN = cms.EDAnalyzer('CNNTrackDump',
-        seqNumber       = cms.int32(options.i),
-        processName     = cms.string( "generalTracksCNN"),
-        tracks          = cms.InputTag( "generalTracks" ),
-        tpMap           = cms.InputTag( "tpClusterProducer" ),
-        trMap           = cms.InputTag("trackingParticleRecoTrackAsssociation"),
-        genMap          = cms.InputTag("TrackAssociatorByChi2"),
-        genParticles    = cms.InputTag("genParticles"),
-        traParticles    = cms.InputTag("mix","MergedTrackTruth"),
-        beamSpot        = cms.InputTag("offlineBeamSpot"),
-        infoPileUp      = cms.InputTag("addPileupInfo")
-)
+# process.tracksCNN = cms.EDAnalyzer('CNNTrackDump',
+#         seqNumber       = cms.int32(options.i),
+#         processName     = cms.string( "generalTracksCNN"),
+#         tracks          = cms.InputTag( "generalTracks" ),
+#         tpMap           = cms.InputTag( "tpClusterProducer" ),
+#         trMap           = cms.InputTag("trackingParticleRecoTrackAsssociation"),
+#         genMap          = cms.InputTag("TrackAssociatorByChi2"),
+#         genParticles    = cms.InputTag("genParticles"),
+#         traParticles    = cms.InputTag("mix","MergedTrackTruth"),
+#         beamSpot        = cms.InputTag("offlineBeamSpot"),
+#         infoPileUp      = cms.InputTag("addPileupInfo")
+# )
 
 # process.kaonTracks = cms.EDProducer("MCTruthDeltaRMatcher",
 #     pdgId = cms.vint32(321),
@@ -156,7 +156,8 @@ process.tracksCNN = cms.EDAnalyzer('CNNTrackDump',
 
 process.phitokk = cms.EDAnalyzer('DiTrack',
          seqNumber          = cms.int32(options.i),
-         tracks             = cms.InputTag( "generalTracks"),
+         Tracks             = cms.InputTag( "generalTracks"),
+		 Trigger 		 	= cns.InputTag("TriggerResults","","RECO")
          TrakTrakMassCuts   = cms.vdouble(1.0,1.04),
          MassTraks          = cms.vdouble(kaonmass,kaonmass)
          )
