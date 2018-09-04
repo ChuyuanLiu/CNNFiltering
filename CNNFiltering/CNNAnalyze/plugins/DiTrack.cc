@@ -189,8 +189,8 @@ seqNumber_(iConfig.getParameter<int>("seqNumber")),
 alltracks_(consumes<edm::View<reco::Track> >(iConfig.getParameter<edm::InputTag>("Tracks"))),
 triggerResults_Label(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("Trigger"))),
 ditrakMassCuts_(iConfig.getParameter<std::vector<double>>("TrakTrakMassCuts")),
-MassTraks_(iConfig.getParameter<std::vector<double>>("MassTraks"))
-HLTs_(iConfig.getParameter<std::vector<std::string>>("HLTs")),
+MassTraks_(iConfig.getParameter<std::vector<double>>("MassTraks")),
+HLTs_(iConfig.getParameter<std::vector<std::string>>("HLTs"))
 //HLTFilters_(iConfig.getParameter<std::vector<std::string>>("Filters"))
 {
   // edm::Service < TFileService > fs;
