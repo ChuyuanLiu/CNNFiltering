@@ -323,11 +323,11 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
   event     = iEvent.id().event();
   lumiblock = iEvent.id().luminosityBlock();
 
-  std::string fileName = "phicandsCNN_" + std::to_string(lumiblock) + "_" ;
-  fileName = fileName + std::to_string(run) + "_" ;
-  fileName = fileName + std::to_string(event) + "_" ;
-  fileName = fileName + std::to_string(seqNumber_);
-  fileName = fileName + ".txt";
+  std::string fileName = "phicandsCNN.txt"// + std::to_string(lumiblock) + "_" ;
+  //fileName = fileName + std::to_string(run) + "_" ;
+  //fileName = fileName + std::to_string(event) + "_" ;
+  //fileName = fileName + std::to_string(seqNumber_);
+  //fileName = fileName + ".txt";
 
   std::ofstream outPhiFile(fileName, std::ofstream::app);
 
@@ -360,7 +360,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
 
 
   // for (std::vector<pat::PackedCandidate>::const_iterator posTrack = filteredTracks.begin(), trakend=filteredTracks.end(); posTrack!= trakend; ++posTrack)
-  
+
   for(edm::View<reco::Track>::size_type k=0; k<trackCollection->size(); ++k)
   {
            auto posTrack = trackCollection->refAt(k);
