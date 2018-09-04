@@ -350,7 +350,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
   //
   if (triggerResults_handle.isValid())
     trigger = getTriggerBits(iEvent,triggerResults_handle);
-  // else std::cout << "*** NO triggerResults found " << iEvent.id().run() << "," << iEvent.id().event() << std::endl;
+  else std::cout << "*** NO triggerResults found " << iEvent.id().run() << "," << iEvent.id().event() << std::endl;
 
   nditrak  = 0;
   ntraks = 0;

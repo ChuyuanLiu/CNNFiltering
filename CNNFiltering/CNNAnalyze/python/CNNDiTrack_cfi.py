@@ -18,18 +18,18 @@ hltpaths = cms.vstring(hltList)
 
 hltpathsV = cms.vstring([h + '_v*' for h in hltList])
 
-
+kaonmass = 0.493677
 
 phitokk = cms.EDAnalyzer('DiTrack',
-         seqNumber          = cms.int32(options.i),
+         seqNumber          = cms.int32(0),
          Tracks             = cms.InputTag( "generalTracks"),
-		 Trigger 		 	= cns.InputTag("TriggerResults","","RECO"),
+		 Trigger 		 	= cms.InputTag("TriggerResults","","RECO"),
          TrakTrakMassCuts   = cms.vdouble(1.0,1.04),
          MassTraks          = cms.vdouble(kaonmass,kaonmass),
          HLTs               = hltpaths
          )
 
-CNNDoubletsSequence = cms.Sequence(phitokk)
+CNNDiTrackSequence = cms.Sequence(phitokk)
 
 
 #CNNTrackSequence = cms.Sequence(tracksCNN)
