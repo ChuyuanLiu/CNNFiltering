@@ -83,6 +83,7 @@ class DiTrack:public edm::EDAnalyzer {
   int seqNumber_;
 	// edm::EDGetTokenT<pat::CompositeCandidateCollection> diTrak_label;
   edm::EDGetTokenT<edm::View<reco::Track>> alltracks_;
+  edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
   edm::EDGetTokenT<edm::TriggerResults> triggerResults_Label;
   std::vector<double> ditrakMassCuts_;
   std::vector<double> MassTraks_;
@@ -187,6 +188,7 @@ const pat::CompositeCandidate DiTrack::makeTTCandidate(
 DiTrack::DiTrack(const edm::ParameterSet & iConfig):
 seqNumber_(iConfig.getParameter<int>("seqNumber")),
 alltracks_(consumes<edm::View<reco::Track> >(iConfig.getParameter<edm::InputTag>("Tracks"))),
+tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap"))),
 triggerResults_Label(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("Trigger"))),
 ditrakMassCuts_(iConfig.getParameter<std::vector<double>>("TrakTrakMassCuts")),
 MassTraks_(iConfig.getParameter<std::vector<double>>("MassTraks")),
@@ -316,6 +318,9 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
 
   edm::Handle<edm::View<reco::Track> >  trackCollection;
   iEvent.getByToken(alltracks_, trackCollection);
+
+  edm::Handle<ClusterTPAssociation> tpClust;
+  iEvent.getByToken(tpMap_,tpClust);
 
   edm::ESHandle<TransientTrackBuilder> theTTBuilder;
   iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theTTBuilder);
@@ -459,6 +464,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
             std::map<int,const TrackerSingleRecHit*> theHits;
             std::map<int,bool> isBad,isEdge,isBig;
             std::map<int,double> hitSize,pdgIds,flagHit;
+            std::map<double,int> pdgMap,pdgMomMap;
 
             auto track = trackCollection->refAt(tt);
             auto hitPattern = track->hitPattern();
@@ -680,6 +686,33 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
                   padSize,
                   clust->y()-padHalfSize,
                   clust->y()+padHalfSize);
+
+                  auto rangeIn = tpClust->equal_range(h->firstClusterRef());
+
+                  //for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
+                  //kPdgs.push_back((*ip->second).pdgId());
+
+                  if(rangeIn.first!=rangeIn.second)
+                    {
+                      pdgId[i] = (double)((*rangeIn.first->second).pdgId());
+                      pdgIds[i] = (double)((*rangeIn.first->second).pdgId());
+                      // std::cout << pdgId[i] << std::endl;
+
+                      if((*rangeIn.first->second).genParticle_begin()!=(*rangeIn.first->second).genParticle_end())
+                        if((*(*rangeIn.first->second).genParticle_begin())->mother()!=nullptr)
+                          motherPdgId[i] = (double)((*(*rangeIn.first->second).genParticle_begin())->mother()->pdgId());
+
+                      if(pdgMomMap.find(motherPdgId[i]) != pdgMomMap.end())
+                        ++pdgMomMap[motherPdgId[i]];
+                      else
+                        pdgMomMap[motherPdgId[i]] = 1;
+
+                      if(pdgMap.find(pdgId[i]) != pdgMap.end())
+                        ++pdgMap[pdgId[i]];
+                      else
+                        pdgMap[pdgId[i]] = 1;
+
+                    }
 
                   //Initialization
                   for (int nx = 0; nx < padSize; ++nx)

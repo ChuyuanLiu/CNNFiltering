@@ -22,6 +22,7 @@ kaonmass = 0.493677
 
 phitokk = cms.EDAnalyzer('DiTrack',
          seqNumber          = cms.int32(0),
+         tpMap              = cms.InputTag( "tpClusterProducer" ),
          Tracks             = cms.InputTag( "generalTracks"),
 		 Trigger 		 	= cms.InputTag("TriggerResults","","RECO"),
          TrakTrakMassCuts   = cms.vdouble(1.0,1.04),
