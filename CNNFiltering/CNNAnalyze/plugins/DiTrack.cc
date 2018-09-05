@@ -822,11 +822,6 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
               }
           }
 
-          theData.push_back(float(tt)); //instead of trackPdg : track number in the collection
-          theData.push_back(float(seqNumber_)); //instead of sF: seqNumber in the collection
-          theData.push_back(float(trigger));
-          theData.push_back(0.0);
-
           outPhiFile << 542.1369 << std::endl;
 
 
