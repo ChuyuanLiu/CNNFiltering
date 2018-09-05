@@ -48,6 +48,8 @@
 #include "TLorentzVector.h"
 #include "TTree.h"
 
+#include "SimTracker/TrackerHitAssociation/interface/ClusterTPAssociation.h"
+
 #include <iostream>
 #include <string>
 #include <fstream>
