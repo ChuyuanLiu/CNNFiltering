@@ -242,6 +242,9 @@ HLTs_(iConfig.getParameter<std::vector<std::string>>("HLTs"))
     for(int j =0;j<padSize*padSize;j++)
       hitPixels[i].push_back(0.0);
 
+  padHalfSize = 7.5;
+  padSize = 15;
+  
   for(int i = 0; i<10;i++)
   {
     x.push_back(0.0);
