@@ -759,6 +759,23 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
               std::cout << tt << " - UnMatched " << std::endl;
             }
 
+            if(pdgMomMap.size()>0)
+            {
+              auto modePdg = std::max_element(pdgMomMap.begin(), pdgMomMap.end(),[](const std::pair<int, int>& p1, const std::pair<int, int>& p2) {return p1.second < p2.second; });
+              for (auto const& p : pdgIds)
+                  if(p.second==modePdg->first)
+                    ++allMatched;
+              sharedMomFraction = (float)(float(allMatched)/float(nHits));
+              std::cout << tt << " - " << modePdg->first << " - " << sharedFraction << std::endl;
+              trackMomPdg = modePdg->first;
+            }
+            else
+            {
+              trackMomPdg = 0.0;
+              sharedMomFraction = 0.0;
+              std::cout << tt << " - UnMatched " << std::endl;
+            }
+
             // std::cout << "pads" << std::endl;
             theData.push_back((double)trackPdg);
             theData.push_back((double)sharedFraction);
