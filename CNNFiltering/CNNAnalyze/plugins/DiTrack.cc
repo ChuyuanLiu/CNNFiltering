@@ -244,7 +244,7 @@ HLTs_(iConfig.getParameter<std::vector<std::string>>("HLTs"))
 
   padHalfSize = 7.5;
   padSize = 15;
-  
+
   for(int i = 0; i<10;i++)
     for(int j =0;j<padSize*padSize;j++)
       hitPixels[i].push_back(0.0);
@@ -749,14 +749,14 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
                   if(p.second==modePdg->first)
                     ++allMatched;
               sharedFraction = (float)(float(allMatched)/float(nHits));
-              std::cout << tt << " - " << modePdg->first << " - " << sharedFraction << std::endl;
+              // std::cout << tt << " - " << modePdg->first << " - " << sharedFraction << std::endl;
               trackPdg = modePdg->first;
             }
             else
             {
               trackPdg = 0.0;
               sharedFraction = 0.0;
-              std::cout << tt << " - UnMatched " << std::endl;
+              // std::cout << tt << " - UnMatched " << std::endl;
             }
 
             if(pdgMomMap.size()>0)
@@ -766,14 +766,14 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
                   if(p.second==modePdg->first)
                     ++allMatched;
               sharedMomFraction = (float)(float(allMatched)/float(nHits));
-              std::cout << tt << " - " << modePdg->first << " - " << sharedFraction << std::endl;
+              // std::cout << tt << " - " << modePdg->first << " - " << sharedFraction << std::endl;
               trackMomPdg = modePdg->first;
             }
             else
             {
               trackMomPdg = 0.0;
               sharedMomFraction = 0.0;
-              std::cout << tt << " - UnMatched " << std::endl;
+              // std::cout << tt << " - UnMatched " << std::endl;
             }
 
             // std::cout << "pads" << std::endl;
