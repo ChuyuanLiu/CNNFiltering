@@ -242,12 +242,12 @@ HLTs_(iConfig.getParameter<std::vector<std::string>>("HLTs"))
   hitPixels.push_back(hitPixel8);
   hitPixels.push_back(hitPixel9);
 
+  padHalfSize = 7.5;
+  padSize = 15;
+  
   for(int i = 0; i<10;i++)
     for(int j =0;j<padSize*padSize;j++)
       hitPixels[i].push_back(0.0);
-
-  padHalfSize = 7.5;
-  padSize = 15;
 
   for(int i = 0; i<10;i++)
   {
@@ -698,7 +698,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
                     {
                       pdgId[i] = (double)((*rangeIn.first->second).pdgId());
                       pdgIds[i] = (double)((*rangeIn.first->second).pdgId());
-                      // std::cout << pdgId[i] << std::endl;
+                      std::cout << pdgId[i] << std::endl;
 
                       if((*rangeIn.first->second).genParticle_begin()!=(*rangeIn.first->second).genParticle_end())
                         if((*(*rangeIn.first->second).genParticle_begin())->mother()!=nullptr)
@@ -749,31 +749,14 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
                   if(p.second==modePdg->first)
                     ++allMatched;
               sharedFraction = (float)(float(allMatched)/float(nHits));
-              // std::cout << tt << " - " << modePdg->first << " - " << sharedFraction << std::endl;
+              std::cout << tt << " - " << modePdg->first << " - " << sharedFraction << std::endl;
               trackPdg = modePdg->first;
             }
             else
             {
               trackPdg = 0.0;
               sharedFraction = 0.0;
-              // std::cout << tt << " - UnMatched " << std::endl;
-            }
-
-            if(pdgMomMap.size()>0)
-            {
-              auto modePdg = std::max_element(pdgMomMap.begin(), pdgMomMap.end(),[](const std::pair<int, int>& p1, const std::pair<int, int>& p2) {return p1.second < p2.second; });
-              for (auto const& p : pdgIds)
-                  if(p.second==modePdg->first)
-                    ++allMatched;
-              sharedMomFraction = (float)(float(allMatched)/float(nHits));
-              // std::cout << tt << " - " << modePdg->first << " - " << sharedFraction << std::endl;
-              trackMomPdg = modePdg->first;
-            }
-            else
-            {
-              trackMomPdg = 0.0;
-              sharedMomFraction = 0.0;
-              // std::cout << tt << " - UnMatched " << std::endl;
+              std::cout << tt << " - UnMatched " << std::endl;
             }
 
             // std::cout << "pads" << std::endl;
