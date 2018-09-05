@@ -244,7 +244,7 @@ HLTs_(iConfig.getParameter<std::vector<std::string>>("HLTs"))
 
   padHalfSize = 7.5;
   padSize = 15;
-  
+
   for(int i = 0; i<10;i++)
   {
     x.push_back(0.0);
@@ -372,7 +372,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
 
            posPixHits = hitPattern.numberOfValidPixelHits();
            // std::cout << "- No Pixel Hits :" << pixHits << std::endl;
-           if(posPixHits < 3)
+           if(posPixHits < 4)
              continue;
 
            tI = (UInt_t)(k);
@@ -395,7 +395,7 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
        auto negTrack = trackCollection->refAt(j);
 
        negPixHits = negTrack->hitPattern().numberOfValidPixelHits();
-       if(negPixHits < 3)
+       if(negPixHits < 4)
          continue;
 
        tJ = (UInt_t)(j);
@@ -506,13 +506,13 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
             // else
             //   std::cout<< "Bad Track"<<std::endl;
 
-            if(!trkQual)
-              continue;
+            //if(!trkQual)
+              //continue;
             // std::cout << "- Track Quality " <<std::endl;
-            int pixHits = hitPattern.numberOfValidPixelHits();
+            //int pixHits = hitPattern.numberOfValidPixelHits();
             // std::cout << "- No Pixel Hits :" << pixHits << std::endl;
-            if(pixHits < 4)
-              continue;
+            //if(pixHits < 4)
+            //  continue;
 
             // pt    = (double)track->pt();
             // eta   = (double)track->eta();
@@ -704,12 +704,48 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
                 }
             }
 
-            // std::cout << "pads" << std::endl;
+            int allMatched = 0;
+            trackPdg = 0.0;
 
-            theData.push_back(float(tt)); //instead of trackPdg : track number in the collection
-            theData.push_back(float(seqNumber_)); //instead of sF: seqNumber in the collection
-            theData.push_back(float(trigger));
-            theData.push_back(0.0);
+            if(pdgMap.size()>0)
+            {
+              auto modePdg = std::max_element(pdgMap.begin(), pdgMap.end(),[](const std::pair<int, int>& p1, const std::pair<int, int>& p2) {return p1.second < p2.second; });
+              for (auto const& p : pdgIds)
+                  if(p.second==modePdg->first)
+                    ++allMatched;
+              sharedFraction = (float)(float(allMatched)/float(nHits));
+              // std::cout << tt << " - " << modePdg->first << " - " << sharedFraction << std::endl;
+              trackPdg = modePdg->first;
+            }
+            else
+            {
+              trackPdg = 0.0;
+              sharedFraction = 0.0;
+              // std::cout << tt << " - UnMatched " << std::endl;
+            }
+
+            if(pdgMomMap.size()>0)
+            {
+              auto modePdg = std::max_element(pdgMomMap.begin(), pdgMomMap.end(),[](const std::pair<int, int>& p1, const std::pair<int, int>& p2) {return p1.second < p2.second; });
+              for (auto const& p : pdgIds)
+                  if(p.second==modePdg->first)
+                    ++allMatched;
+              sharedMomFraction = (float)(float(allMatched)/float(nHits));
+              // std::cout << tt << " - " << modePdg->first << " - " << sharedFraction << std::endl;
+              trackMomPdg = modePdg->first;
+            }
+            else
+            {
+              trackMomPdg = 0.0;
+              sharedMomFraction = 0.0;
+              // std::cout << tt << " - UnMatched " << std::endl;
+            }
+
+            // std::cout << "pads" << std::endl;
+            theData.push_back((double)trackPdg);
+            theData.push_back((double)sharedFraction);
+            theData.push_back((double)trackMomPdg);
+            theData.push_back((double)sharedMomFraction);
 
             for(int i = 0; i<10;i++)
             {
@@ -743,10 +779,21 @@ void DiTrack::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup)
               for(int j =0;j<padSize*padSize;j++)
                 theData.push_back((double)(hitPixels[i][j]));
 
-              for (size_t i = 0; i < theData.size(); i++) {
+            theData.push_back(float(tt)); //instead of trackPdg : track number in the collection
+            theData.push_back(float(seqNumber_)); //instead of sF: seqNumber in the collection
+            theData.push_back(float(trigger));
+            theData.push_back(0.0);
+
+            for (size_t i = 0; i < theData.size(); i++) {
                 outPhiFile << theData[i] << "\t";
               }
           }
+
+          theData.push_back(float(tt)); //instead of trackPdg : track number in the collection
+          theData.push_back(float(seqNumber_)); //instead of sF: seqNumber in the collection
+          theData.push_back(float(trigger));
+          theData.push_back(0.0);
+
           outPhiFile << 542.1369 << std::endl;
 
 
