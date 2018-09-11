@@ -140,7 +140,7 @@ tripletElectronCNN = cms.EDAnalyzer('CNN_TF_Test',
 
 
 
-CNNDoubletsSequence = cms.Sequence(detachedQuadStepCNN *
+CNNTestSequence = cms.Sequence(detachedQuadStepCNN *
                                    highPtTripletStepCNN *
                                    detachedTripletStepCNN *
                                    initialStepPreSplittingCNN *
