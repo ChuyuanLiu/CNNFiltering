@@ -28,6 +28,9 @@
 <use   name="RecoVertex/PrimaryVertexProducer"/>
 <use   name="PhysicsTools/PatUtils"/>
 <use   name="CommonTools/UtilAlgos"/>
-
+<use name="tensorflow-cc" />
+<use name="FWCore/Framework" />
+<use name="FWCore/Utilities" />
+<use name="FWCore/Concurrency" />
 
 <flags EDM_PLUGIN="1"/>
