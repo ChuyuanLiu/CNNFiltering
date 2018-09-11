@@ -224,14 +224,7 @@ CNN_TF_Test::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     for (size_t i = 0; i < lIt->doublets().size(); i++)
     {
 
-      deltaPhi = 0.0;
-      deltaR = 0.0;
-      deltaA = 0.0;
-      deltaADC = 0.0;
-      deltaS = 0.0;
-      zZero = 0.0;
-
- hitPars.clear();
+      hitPars.clear();
 
       hits.push_back(lIt->doublets().hit(i, HitDoublets::inner)); //TODO CHECK EMPLACEBACK
       hits.push_back(lIt->doublets().hit(i, HitDoublets::outer));
