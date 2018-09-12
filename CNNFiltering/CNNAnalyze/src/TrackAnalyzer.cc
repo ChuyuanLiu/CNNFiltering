@@ -27,7 +27,7 @@
 #include "TMath.h"
 #include "Math/VectorUtil.h"
 #include "TVector3.h"
-#include "../interface/DiMuonVtxReProducer.h"
+
 #include "TLorentzVector.h"
 
 #include "MagneticField/Engine/interface/MagneticField.h"
@@ -87,6 +87,7 @@ TrackAnalyzer::analyze(edm::Event& iEvent, const edm::EventSetup& iSetup)
     auto theTrack = posTrack.bestTrack();
 
     std::cout << theTrack.getTest() << std::endl;
+
   }
 
 }
