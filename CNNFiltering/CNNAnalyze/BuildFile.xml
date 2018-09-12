@@ -32,6 +32,6 @@
 <use   name="PhysicsTools/PatUtils"/>
 <use   name="CommonTools/UtilAlgos"/>
 <use   name="tensorflow-cc" />
-
+<use   name="PhysicsTools/TensorFlow"/>
 
 <flags EDM_PLUGIN="1"/>
