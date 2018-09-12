@@ -50,7 +50,7 @@ class TrackAnalyzer : public edm::EDAnalyzer {
 
  private:
   void beginJob() override ;
-  void produce(edm::Event&, const edm::EventSetup&) override;
+  void analyze(edm::Event&, const edm::EventSetup&) override;
   void endJob() override ;
   bool isAbHadron(int pdgID);
   bool isAMixedbHadron(int pdgID, int momPdgID);
