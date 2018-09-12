@@ -235,8 +235,8 @@ CNN_TF_Test::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       // Load graph
       tensorflow::setLogging("3");
-      edm::FileInPath modelFilePath("/lustre/home/adrianodif/jpsiphi/MCs/QCDtoPhiML/CMSSW_10_2_1/tmp/test_graph_tfadd.pb");
-      tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef(modelFilePath.fullPath());
+      // edm::FileInPath modelFilePath();
+      tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/jpsiphi/MCs/QCDtoPhiML/CMSSW_10_2_1/tmp/test_graph_tfadd.pb");
       tensorflow::Session* session = tensorflow::createSession(graphDef);
 
       tensorflow::Tensor inputX(tensorflow::DT_FLOAT, {});
