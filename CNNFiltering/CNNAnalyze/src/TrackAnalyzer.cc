@@ -1,62 +1,79 @@
-#include "../interface/TrackAnalyzer.h"
+#include <memory>
 
-//Headers for the data items
-#include <DataFormats/TrackReco/interface/TrackFwd.h>
-#include <DataFormats/TrackReco/interface/Track.h>
-#include <DataFormats/MuonReco/interface/MuonFwd.h>
-#include <DataFormats/MuonReco/interface/Muon.h>
-#include <DataFormats/Common/interface/View.h>
-#include <DataFormats/HepMCCandidate/interface/GenParticle.h>
-#include <DataFormats/PatCandidates/interface/Muon.h>
-#include <DataFormats/VertexReco/interface/VertexFwd.h>
-#include "DataFormats/Math/interface/deltaR.h"
+// user include files
+#include "FWCore/Framework/interface/Frameworkfwd.h"
+#include "FWCore/Framework/interface/EDAnalyzer.h"
 
-//Headers for services and tools
-#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
-#include "TrackingTools/Records/interface/TransientTrackRecord.h"
+#include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/MakerMacros.h"
 
-#include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
-#include "RecoVertex/VertexTools/interface/VertexDistanceXY.h"
-#include "RecoVertex/KinematicFit/interface/KinematicParticleVertexFitter.h"
-#include "RecoVertex/KinematicFit/interface/KinematicParticleFitter.h"
-#include "RecoVertex/KinematicFit/interface/MassKinematicConstraint.h"
-#include "RecoVertex/KinematicFitPrimitives/interface/RefCountedKinematicParticle.h"
-#include "RecoVertex/KinematicFitPrimitives/interface/TransientTrackKinematicParticle.h"
-#include "RecoVertex/KinematicFitPrimitives/interface/KinematicParticleFactoryFromTransientTrack.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#include "TMath.h"
-#include "Math/VectorUtil.h"
-#include "TVector3.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
+
+#include "DataFormats/PatCandidates/interface/PackedCandidate.h"
+#include "DataFormats/PatCandidates/interface/CompositeCandidate.h"
+#include "DataFormats/PatCandidates/interface/PackedGenParticle.h"
+#include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+#include "DataFormats/PatCandidates/interface/UserData.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
 
 #include "TLorentzVector.h"
+#include "TTree.h"
+#include <vector>
+#include <sstream>
 
-#include "MagneticField/Engine/interface/MagneticField.h"
-#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
-#include "TrackingTools/PatternTools/interface/TwoTrackMinimumDistance.h"
-#include "TrackingTools/IPTools/interface/IPTools.h"
-#include "TrackingTools/PatternTools/interface/ClosestApproachInRPhi.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
+#include "FWCore/Common/interface/TriggerNames.h"
+
+//
+// class declaration
+//
+
+class TrackAnalyzer : public edm::EDAnalyzer {
+public:
+  explicit TrackAnalyzer(const edm::ParameterSet&);
+  ~TrackAnalyzer() override;
+
+  bool isAncestor(const reco::Candidate* ancestor, const reco::Candidate * particle);
+  static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
+
+private:
+  void beginJob() override ;
+  void analyze(const edm::Event&, const edm::EventSetup&) override;
+  void endJob() override ;
+
+  void beginRun(edm::Run const&, edm::EventSetup const&) override;
+  void endRun(edm::Run const&, edm::EventSetup const&) override;
+  void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
+  void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
+
+  // ----------member data ---------------------------
+  edm::EDGetTokenT<edm::View<pat::PackedCandidate>> TrakCollection_;
+
+};
 
 TrackAnalyzer::TrackAnalyzer(const edm::ParameterSet& iConfig):
-TrakCollection_(consumes<edm::View<pat::PackedCandidate>>(iConfig.getParameter<edm::InputTag>("PFCandidates")))
+TrakCollection_(consumes<edm::View<pat::PackedCandidate>>(iConfig.getParameter<edm::InputTag>("PFCandidates"))),
 {
-
 
 }
 
+TrackAnalyzer::~TrackAnalyzer() {}
+
+//
+// member functions
+//
 
 
-TrackAnalyzer::~TrackAnalyzer()
-{
 
-  // do anything here that needs to be done at desctruction time
-  // (e.g. close files, deallocate resources etc.)
 
-}
-
-// ------------ method called to produce the data  ------------
-
-void TrackAnalyzer::analyze(edm::Event& iEvent, const edm::EventSetup& iSetup)
-{
+// ------------ method called for each event  ------------
+void TrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
+  //  using namespace edm;
   using namespace edm;
   using namespace std;
   using namespace reco;
@@ -78,7 +95,8 @@ void TrackAnalyzer::analyze(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   }
 
-}
+  }
+
 
 // ------------ method called once each job just before starting event loop  ------------
 void TrackAnalyzer::beginJob() {}
@@ -107,6 +125,4 @@ void TrackAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& description
   descriptions.addDefault(desc);
 }
 
-
-//define this as a plug-in
 DEFINE_FWK_MODULE(TrackAnalyzer);
