@@ -229,16 +229,9 @@ CNN_TF_Test::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       hits.push_back(lIt->doublets().hit(i, HitDoublets::inner)); //TODO CHECK EMPLACEBACK
       hits.push_back(lIt->doublets().hit(i, HitDoublets::outer));
 
-      for(int j = 0; j < 2; ++j)
-      {
-
-        //4
-        hitPars[j].push_back((hits[j]->hit()->globalState()).position.x()); //1
-        hitPars[j].push_back((hits[j]->hit()->globalState()).position.y());
-        hitPars[j].push_back((hits[j]->hit()->globalState()).position.z()); //3
-
-      }
-
+      float x = (hits[j]->hit()->globalState()).position.x();
+      float y = (hits[j]->hit()->globalState()).position.y();
+      float z = (hits[j]->hit()->globalState()).position.z();
 
       // Load graph
       tensorflow::setLogging("3");
@@ -249,19 +242,18 @@ CNN_TF_Test::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       tensorflow::Tensor inputX(tensorflow::DT_FLOAT, {});
       tensorflow::Tensor inputY(tensorflow::DT_FLOAT, {});
 
-      for(int j = 0; j < 2; ++j)
-      {
-        inputX.scalar<float>()() = hitPars[j][0];
-        inputX.scalar<float>()() = hitPars[j][1];
 
-        std::vector<tensorflow::Tensor> outputs;
-        tensorflow::run(session, { { "x_const", inputX }, { "y_const", inputY } },
-                      { "x_y_sum" }, &outputs);
+      inputX.scalar<float>()() = hitPars[j][0];
+      inputY.scalar<float>()() = hitPars[j][1];
 
-        std::cout << outputs[0].DebugString() << std::endl;
-        std::cout << hitPars[j][2] << std::endl;
+      std::vector<tensorflow::Tensor> outputs;
+      tensorflow::run(session, { { "x_const", inputX }, { "y_const", inputY } },
+                    { "x_y_sum" }, &outputs);
 
-      }
+      std::cout << outputs[0].DebugString() << std::endl;
+      std::cout << hitPars[j][2] << std::endl;
+
+
       // Create session
 
 
