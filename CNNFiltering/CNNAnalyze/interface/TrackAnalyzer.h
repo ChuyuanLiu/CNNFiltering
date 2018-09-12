@@ -7,18 +7,24 @@
 
 // FW include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/Common/interface/TriggerNames.h"
+
 #include "CommonTools/Utils/interface/PtComparator.h"
 
 // DataFormat includes
-#include <DataFormats/PatCandidates/interface/CompositeCandidate.h>
-#include <DataFormats/PatCandidates/interface/Muon.h>
+
+#include "DataFormats/Math/interface/LorentzVector.h"
+#include "DataFormats/PatCandidates/interface/CompositeCandidate.h"
+#include "DataFormats/PatCandidates/interface/PackedCandidate.h"
+#include "DataFormats/PatCandidates/interface/UserData.h"
+#include "DataFormats/PatCandidates/interface/GenericParticle.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/TriggerObjectStandAlone.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
-#include "FWCore/Common/interface/TriggerNames.h"
 
 #include <CommonTools/UtilAlgos/interface/StringCutObjectSelector.h>
 #include "RecoVertex/VertexTools/interface/InvariantMassFromVertex.h"
@@ -37,7 +43,7 @@ struct GreaterByVProb {
 // class decleration
 //
 
-class TrackAnalyzer : public edm::EDProducer {
+class TrackAnalyzer : public edm::EDAnalyzer {
  public:
   explicit TrackAnalyzer(const edm::ParameterSet&);
   ~TrackAnalyzer() override;
