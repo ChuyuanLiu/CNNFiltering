@@ -38,22 +38,11 @@
 
 TrackAnalyzer::TrackAnalyzer(const edm::ParameterSet& iConfig):
 TrakCollection_(consumes<edm::View<pat::PackedCandidate>>(iConfig.getParameter<edm::InputTag>("PFCandidates")))
-// muons_(consumes<edm::View<pat::Muon>>(iConfig.getParameter<edm::InputTag>("muons"))),
-// muonPtCut_(iConfig.existsAs<double>("MuonPtCut") ? iConfig.getParameter<double>("MuonPtCut") : 0.7),
-// thebeamspot_(consumes<reco::BeamSpot>(iConfig.getParameter<edm::InputTag>("beamSpotTag"))),
-// thePVs_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("primaryVertexTag"))),
-// TriggerCollection_(consumes<std::vector<pat::TriggerObjectStandAlone>>(iConfig.getParameter<edm::InputTag>("TriggerInput"))),
-// triggerResults_Label(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("TriggerResults"))),
-// dimuonSelection_(iConfig.existsAs<std::string>("dimuonSelection") ? iConfig.getParameter<std::string>("dimuonSelection") : ""),
-// addCommonVertex_(iConfig.getParameter<bool>("addCommonVertex")),
-// addMuonlessPrimaryVertex_(iConfig.getParameter<bool>("addMuonlessPrimaryVertex")),
-// resolveAmbiguity_(iConfig.getParameter<bool>("resolvePileUpAmbiguity")),
-// addMCTruth_(iConfig.getParameter<bool>("addMCTruth")),
-// HLTFilters_(iConfig.getParameter<std::vector<std::string>>("HLTFilters"))
 {
 
 
 }
+
 
 
 TrackAnalyzer::~TrackAnalyzer()
@@ -66,8 +55,7 @@ TrackAnalyzer::~TrackAnalyzer()
 
 // ------------ method called to produce the data  ------------
 
-void
-TrackAnalyzer::analyze(edm::Event& iEvent, const edm::EventSetup& iSetup)
+void TrackAnalyzer::analyze(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
   using namespace std;
@@ -86,10 +74,37 @@ TrackAnalyzer::analyze(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     auto theTrack = posTrack.bestTrack();
 
-    std::cout << theTrack.getTest() << std::endl;
+    std::cout << theTrack->getTest() << std::endl;
 
   }
 
+}
+
+// ------------ method called once each job just before starting event loop  ------------
+void TrackAnalyzer::beginJob() {}
+
+// ------------ method called once each job just after ending the event loop  ------------
+void TrackAnalyzer::endJob() {}
+
+// ------------ method called when starting to processes a run  ------------
+void TrackAnalyzer::beginRun(edm::Run const&, edm::EventSetup const&) {}
+
+// ------------ method called when ending the processing of a run  ------------
+void TrackAnalyzer::endRun(edm::Run const&, edm::EventSetup const&) {}
+
+// ------------ method called when starting to processes a luminosity block  ------------
+void TrackAnalyzer::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) {}
+
+// ------------ method called when ending the processing of a luminosity block  ------------
+void TrackAnalyzer::endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) {}
+
+// ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
+void TrackAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+  //The following says we do not know what parameters are allowed so do no validation
+  // Please change this to state exactly what you do use, even if it is no parameters
+  edm::ParameterSetDescription desc;
+  desc.setUnknown();
+  descriptions.addDefault(desc);
 }
 
 

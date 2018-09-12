@@ -48,20 +48,16 @@ class TrackAnalyzer : public edm::EDAnalyzer {
   explicit TrackAnalyzer(const edm::ParameterSet&);
   ~TrackAnalyzer() override;
 
+  static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
  private:
-  void beginJob() override ;
-  void analyze(edm::Event&, const edm::EventSetup&) override;
-  void endJob() override ;
-  bool isAbHadron(int pdgID);
-  bool isAMixedbHadron(int pdgID, int momPdgID);
-  UInt_t isTriggerMatched(pat::CompositeCandidate *diMuon_cand);
-  const pat::TriggerObjectStandAlone BestTriggerMuon(const pat::Muon& m);
-  bool MatchByDRDPt(const pat::Muon t1, const pat::TriggerObjectStandAlone t2);
-  UInt_t isTriggerMatched(const pat::Muon& m);
-  float DeltaR(const pat::Muon t1, const pat::TriggerObjectStandAlone t2);
-  float DeltaPt(const pat::Muon t1, const pat::TriggerObjectStandAlone t2);
-  const pat::CompositeCandidate makeMuMuTriggerCand(const pat::TriggerObjectStandAlone& muonP, const pat::TriggerObjectStandAlone& muonN);
-  std::pair<int, float> findJpsiMCInfo(reco::GenParticleRef genJpsi);
+   void beginJob() override ;
+   void analyze(const edm::Event&, const edm::EventSetup&) override;
+   void endJob() override ;
+
+   void beginRun(edm::Run const&, edm::EventSetup const&) override;
+   void endRun(edm::Run const&, edm::EventSetup const&) override;
+   void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
+   void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
 
   // ----------member data ---------------------------
  private:
