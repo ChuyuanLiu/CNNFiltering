@@ -254,9 +254,6 @@ CNN_TF_Test::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       std::cout << hitPars[j][2] << std::endl;
 
 
-      // Create session
-
-
       }
 
 
