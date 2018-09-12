@@ -235,7 +235,7 @@ CNN_TF_Test::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       // Load graph
       tensorflow::setLogging("3");
-      edm::FileInPath modelFilePath("CMSSW/PhysicsTools/TensorFlow/test/test_graph_tfadd.pb");
+      edm::FileInPath modelFilePath("/lustre/home/adrianodif/jpsiphi/MCs/QCDtoPhiML/CMSSW_10_2_1/tmp/test_graph_tfadd.pb");
       tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef(modelFilePath.fullPath());
       tensorflow::Session* session = tensorflow::createSession(graphDef);
 
