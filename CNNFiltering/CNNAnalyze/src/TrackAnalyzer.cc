@@ -57,7 +57,7 @@ private:
 };
 
 TrackAnalyzer::TrackAnalyzer(const edm::ParameterSet& iConfig):
-TrakCollection_(consumes<edm::View<pat::PackedCandidate>>(iConfig.getParameter<edm::InputTag>("PFCandidates"))),
+TrakCollection_(consumes<edm::View<pat::PackedCandidate>>(iConfig.getParameter<edm::InputTag>("PFCandidates")))
 {
 
 }
