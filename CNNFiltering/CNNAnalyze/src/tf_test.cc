@@ -239,19 +239,20 @@ CNN_TF_Test::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/jpsiphi/MCs/QCDtoPhiML/CMSSW_10_2_1/tmp/test_graph_tfadd.pb");
       tensorflow::Session* session = tensorflow::createSession(graphDef);
 
-      tensorflow::Tensor inputX(tensorflow::DT_FLOAT, {});
-      tensorflow::Tensor inputY(tensorflow::DT_FLOAT, {});
+      tensorflow::Tensor inputX(tensorflow::DT_INT32, {});
+      tensorflow::Tensor inputY(tensorflow::DT_INT32, {});
 
 
-      inputX.scalar<float>()() = x;
-      inputY.scalar<float>()() = y;
+      inputX.scalar<int>()() = (int)x;
+      inputY.scalar<int>()() = (int)y;
 
       std::vector<tensorflow::Tensor> outputs;
       tensorflow::run(session, { { "x_const", inputX }, { "y_const", inputY } },
                     { "x_y_sum" }, &outputs);
 
       std::cout << outputs[0].DebugString() << std::endl;
-      std::cout << z << std::endl;
+      std::cout << x << std::endl;
+      std::cout << y << std::endl;
 
 
       }
