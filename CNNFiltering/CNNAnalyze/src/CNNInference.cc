@@ -274,11 +274,6 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     int outerLayerId = find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum()) - pixelDets.begin();
 
 
-    for (int nx = 0; nx < padSize; ++nx)
-    for (int ny = 0; ny < padSize; ++ny)
-    hClust.SetBinContent(nx,ny,0.0);
-
-
     //     HitDoublets lDoublets = std::move(lIt->doublets());
     // std::cout << "Size: " << lIt->doublets().size() << std::endl;
     for (size_t i = 0; i < lIt->doublets().size(); i++)
@@ -449,9 +444,9 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
 
       for (int nx = 0; nx < padSize*padSize; ++nx)
-          inHitPads[innerLayerId][nx] = hitPads[0][nx]
+          inHitPads[innerLayerId][nx] = hitPads[0][nx];
       for (int nx = 0; nx < padSize*padSize; ++nx)
-          outHitPads[outerLayerId][nx] = hitPads[1][nx]
+          outHitPads[outerLayerId][nx] = hitPads[1][nx];
 
       std::cout << "Inner hit layer : " << innerLayer->seqNum() << " - " << innerLayerId<< std::endl;
 
@@ -480,7 +475,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             std::cout << thisOne[nx + ny*padSize] << " ";
           }
           std::cout << std::endl;
-          
+
       }
 
 
