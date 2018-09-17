@@ -269,6 +269,10 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {padSize,padSize,cnnLayers*2});
   tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {67});
+  std::vector<tensorflow::Tensor> outputs;
+
+
+  std::cout << outputs[0].DebugString() << std::endl;
 
   float ax1, ax2, deltaADC = 0.0, deltaPhi = 0.0, deltaR = 0.0, deltaA = 0.0, deltaS = 0.0, deltaZ = 0.0, zZero = 0.0;
 
@@ -596,6 +600,12 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       for (size_t i = 0; i < 2*hitPars[0].size() + 8; i++)
         std::cout << vLab [i] << " ";
       std::cout << std::endl;
+
+      tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputY } },
+                    { "output/Softmax" }, &outputs);
+      std::cout << outputs[0].DebugString() << std::endl;
+      std::cout << outputs[1].DebugString() << std::endl;
+
       if (i > 0)
         continue;
 
