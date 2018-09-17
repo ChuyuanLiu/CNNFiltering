@@ -586,7 +586,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       for (int j = 0; j < 2; j++)
       for (size_t i = 0; i < hitLabs[j].size(); i++)
-        vLab[i + j * hitLabs[j].size()] = hitPars[j][i];
+        vLab[i + j * hitLabs[j].size()] = hitLabs[j][i];
 
       vLab[ 2 * hitPars[0].size() + 0 ] = deltaA   ;
       vLab[ 2 * hitPars[0].size() + 1 ] = deltaA   ;
