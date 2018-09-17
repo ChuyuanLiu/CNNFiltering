@@ -451,8 +451,6 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       std::cout << "Num elem: " << inputPads.NumElements() << std::endl;
 
-      int offSet = j*10*padSize*padSize;
-
       for (int jc = 0; jc < 10; ++jc)
       {
         for (int nx = 0; nx < padSize*padSize; nx++,dIn++)
@@ -461,7 +459,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         }
       }
 
-      for (int jc = 10; jc < 20; ++jc)
+      for (int jc = 0; jc < 10; ++jc)
       {
         for (int nx = 0; nx < padSize*padSize; nx++,dIn++)
         {
@@ -506,7 +504,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         for (int nx = 0; nx < padSize; ++nx)
           for (int ny = 0; ny < padSize; ++ny)
           {
-            std::cout << d[(ny + nx*padSize) + theOffset] << " ";
+            std::cout << dIn[(ny + nx*padSize) + theOffset] << " ";
           }
           std::cout << std::endl;
 
