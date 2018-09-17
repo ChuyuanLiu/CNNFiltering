@@ -432,9 +432,9 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         hitPars[j].push_back(ax1); //Module orientation y
         hitPars[j].push_back(ax2); //Module orientation x
 
-        hitPads[j].push_back(float(ax1<ax2)); //isFlipped
-        hitPads[j].push_back(ax1); //Module orientation y
-        hitPads[j].push_back(ax2); //Module orientation x
+        hitLabs[j].push_back(float(ax1<ax2)); //isFlipped
+        hitLabs[j].push_back(ax1); //Module orientation y
+        hitLabs[j].push_back(ax2); //Module orientation x
 
         //TODO check CLusterRef & OmniClusterRef
 
