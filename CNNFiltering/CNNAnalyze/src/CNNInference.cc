@@ -264,7 +264,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   // edm::FileInPath modelFilePath();
   //tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/jpsiphi/MCs/QCDtoPhiML/CMSSW_10_2_1/tmp/test_graph_tfadd.pb");
   //tensorflow::Session* session = tensorflow::createSession(graphDef);
-  tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/CMSSW/CMSSW_10_2_0_pre5/src/CNNFiltering/CNNAnalyze/python/models/cnn_doublet/2018-09-17_17-10-17/layer_map_model_final.pb");
+  tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/CMSSW/CMSSW_10_3_0_pre4/test.pb");
   tensorflow::Session* session = tensorflow::createSession(graphDef);
 
   tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {padSize,padSize,cnnLayers*2});
@@ -602,7 +602,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       std::cout << std::endl;
 
       tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
-                    { "output/Softmax" }, &outputs);
+                    { "output" }, &outputs);
       std::cout << outputs[0].DebugString() << std::endl;
       std::cout << outputs[1].DebugString() << std::endl;
 
