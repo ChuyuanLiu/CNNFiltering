@@ -57,7 +57,7 @@ Implementation:
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
-#include "RecoTracker/TkHitPairs/interface/RecHitsSortedInPhi.h"
+#include "RecoTracker/TkHitPairs/interface/RecHitsSortevPadPhi.h"
 #include "RecoTracker/TkHitPairs/interface/IntermediateHitDoublets.h"
 
 #include <iostream>
@@ -163,6 +163,16 @@ CNNInference::~CNNInference()
 }
 
 
+//featuresLab = ['inX', 'inY', 'inZ', 'inPhi', 'inR', 'inDetSeq', 'inIsBarrel',
+//'inLayer', 'inLadder', 'inSide', 'inDisk', 'inPanel', 'inModule', 'inIsFlipped',
+//'inClustX', 'inClustY', 'inClustSize', 'inClustSizeX', 'inClustSizeY', 'inPixelZero',
+//'inAvgCharge', 'inOverFlowX', 'inOverFlowY', 'inSkew', 'inIsBig', 'inIsBad', 'inIsEdge',
+//'inAx1', 'inAx2', 'inSumADC', 'outX', 'outY', 'outZ', 'outPhi', 'outR', 'outDetSeq',
+//'outIsBarrel', 'outLayer', 'outLadder', 'outSide', 'outDisk', 'outPanel', 'outModule',
+//'outIsFlipped', 'outClustX', 'outClustY', 'outClustSize', 'outClustSizeX',
+//'outClustSizeY', 'outPixelZero', 'outAvgCharge', 'outOverFlowX', 'outOverFlowY',
+//'outSkew', 'outIsBig', 'outIsBad', 'outIsEdge', 'outAx1', 'outAx2', 'outSumADC',
+//'deltaA', 'deltaADC', 'deltaS', 'deltaR', 'deltaPhi', 'deltaZ', 'ZZero']
 //
 // member functions
 //
@@ -233,7 +243,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::ofstream outCNNFile(fileName, std::ofstream::app);
 
 
-  std::vector< RecHitsSortedInPhi::Hit> hits;
+  std::vector< RecHitsSortevPadPhi::Hit> hits;
   std::vector< const SiPixelRecHit*> siHits;
   std::vector< SiPixelRecHit::ClusterRef> clusters;
   std::vector< DetId> detIds;
@@ -335,6 +345,9 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       hitPads.push_back(outPad);
 
       HitDoublets::layer layers[2] = {HitDoublets::inner, HitDoublets::outer};
+
+      float* vPad = inputPads.flat<float>().data();
+      float* vLab = inputFeat.flat<float>().data();
 
       for(int j = 0; j < 2; ++j)
       {
@@ -447,7 +460,6 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       for (int nx = 0; nx < padSize*padSize; ++nx)
           outHitPads[outerLayerId][nx] = hitPads[1][nx];
 
-      float* dIn = inputPads.flat<float>().data();
 
       std::cout << "Num elem: " << inputPads.NumElements() << std::endl;
 
@@ -455,18 +467,18 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       for (int jc = 0; jc < 10; ++jc)
       {
         thisOffset = jc * padSize*padSize;
-        for (int nx = 0; nx < padSize*padSize; nx++,dIn++)
+        for (int nx = 0; nx < padSize*padSize; nx++)
         {
-          dIn[thisOffset + nx] = inHitPads[jc][nx];
+          vPad[thisOffset + nx] = inHitPads[jc][nx];
         }
       }
 
       for (int jc = 0; jc < 10; ++jc)
       {
         thisOffset = jc * padSize*padSize + 10 * padSize*padSize;
-        for (int nx = 0; nx < padSize*padSize; nx++,dIn++)
+        for (int nx = 0; nx < padSize*padSize; nx++)
         {
-          dIn[thisOffset + nx] = outHitPads[jc][nx];
+          vPad[thisOffset + nx] = outHitPads[jc][nx];
         }
       }
 
@@ -507,12 +519,29 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         for (int nx = 0; nx < padSize; ++nx)
           for (int ny = 0; ny < padSize; ++ny)
           {
-            std::cout << dIn[(ny + nx*padSize) + theOffset] << " ";
+            std::cout << vPad[(ny + nx*padSize) + theOffset] << " ";
           }
           std::cout << std::endl;
 
       }
 
+
+      for (int j = 0; j < 2; j++)
+      for (size_t i = 0; i < hitPars[j].size(); i++)
+        vLab[i + j * hitPars[j].size()] = hitPars[j][i];
+
+      vLab[ 2 * hitPars[0].size() + 0 ] = deltaA   ;
+      vLab[ 2 * hitPars[0].size() + 1 ] = deltaA   ;
+      vLab[ 2 * hitPars[0].size() + 2 ] = deltaADC ;
+      vLab[ 2 * hitPars[0].size() + 3 ] = deltaS   ;
+      vLab[ 2 * hitPars[0].size() + 4 ] = deltaR   ;
+      vLab[ 2 * hitPars[0].size() + 5 ] = deltaPhi ;
+      vLab[ 2 * hitPars[0].size() + 6 ] = deltaZ   ;
+      vLab[ 2 * hitPars[0].size() + 7 ] = zZero    ;
+
+      for (size_t i = 0; i < 2*hitPars[0].size() + 8; i++)
+        std::cout << vLab [i] << " "
+      std::endl;
       if (i > 0)
         continue;
 
@@ -766,7 +795,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       outCNNFile <<innerLayer->seqNum() << "\t" << outerLayer->seqNum() << "\t";
       outCNNFile << bs.x0() << "\t" << bs.y0() << "\t" << bs.z0() << "\t" << bs.sigmaZ() << "\t";
 
-
+vLab[i] =
       for (int j = 0; j < 2; j++)
       for (size_t i = 0; i < hitPars[j].size(); i++)
       outCNNFile << hitPars[j][i] << "\t";
