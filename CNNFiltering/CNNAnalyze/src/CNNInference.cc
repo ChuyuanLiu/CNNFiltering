@@ -543,7 +543,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       for (size_t i = 0; i < 2*hitPars[0].size() + 8; i++)
         std::cout << vLab [i] << " ";
-      std::endl;
+      std::cout << std::endl;
       if (i > 0)
         continue;
 
