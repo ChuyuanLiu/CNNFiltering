@@ -451,19 +451,22 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       std::cout << "Num elem: " << inputPads.NumElements() << std::endl;
 
+      int thisOffset = 0;
       for (int jc = 0; jc < 10; ++jc)
       {
+        thisOffset = jc * padSize*padSize;
         for (int nx = 0; nx < padSize*padSize; nx++,dIn++)
         {
-          *dIn = inHitPads[jc][nx];
+          dIn[thisOffset + nx] = inHitPads[jc][nx];
         }
       }
 
       for (int jc = 0; jc < 10; ++jc)
       {
+        thisOffset = jc * padSize*padSize + 10 * padSize*padSize;
         for (int nx = 0; nx < padSize*padSize; nx++,dIn++)
         {
-          *dIn = outHitPads[jc][nx];
+          dIn[thisOffset + nx] = outHitPads[jc][nx];
         }
       }
 
@@ -497,7 +500,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
 
       std::cout << "TF Translation" << std::endl;
-      for(int i = 0; i < cnnLayers; ++i)
+      for(int i = 0; i < cnnLayers*2; ++i)
       {
         std::cout << i << std::endl;
         int theOffset = i*padSize*padSize;
@@ -509,6 +512,9 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
           std::cout << std::endl;
 
       }
+
+      if (i > 0)
+        continue;
 
       deltaPhi *= deltaPhi > M_PI ? 2*M_PI - fabs(deltaPhi) : 1.0;
 
