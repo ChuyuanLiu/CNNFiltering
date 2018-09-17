@@ -252,8 +252,8 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   //tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/jpsiphi/MCs/QCDtoPhiML/CMSSW_10_2_1/tmp/test_graph_tfadd.pb");
   //tensorflow::Session* session = tensorflow::createSession(graphDef);
 
-  tensorflow::Tensor inputPads(tensorflow::DT_INT32, {padSize,padSize,cnnLayers*2});
-  tensorflow::Tensor inputFeat(tensorflow::DT_INT32, {67});
+  tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {padSize,padSize,cnnLayers*2});
+  tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {67});
 
   float ax1, ax2, deltaADC = 0.0, deltaPhi = 0.0, deltaR = 0.0, deltaA = 0.0, deltaS = 0.0, deltaZ = 0.0, zZero = 0.0;
 
