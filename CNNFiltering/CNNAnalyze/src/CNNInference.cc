@@ -542,7 +542,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       vLab[ 2 * hitPars[0].size() + 7 ] = zZero    ;
 
       for (size_t i = 0; i < 2*hitPars[0].size() + 8; i++)
-        std::cout << vLab [i] << " "
+        std::cout << vLab [i] << " ";
       std::endl;
       if (i > 0)
         continue;
@@ -797,10 +797,9 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       outCNNFile <<innerLayer->seqNum() << "\t" << outerLayer->seqNum() << "\t";
       outCNNFile << bs.x0() << "\t" << bs.y0() << "\t" << bs.z0() << "\t" << bs.sigmaZ() << "\t";
 
-vLab[i] =
       for (int j = 0; j < 2; j++)
-      for (size_t i = 0; i < hitPars[j].size(); i++)
-      outCNNFile << hitPars[j][i] << "\t";
+        for (size_t i = 0; i < hitPars[j].size(); i++)
+        outCNNFile << hitPars[j][i] << "\t";
 
       outCNNFile << deltaA   << "\t";
       outCNNFile << deltaADC << "\t";
