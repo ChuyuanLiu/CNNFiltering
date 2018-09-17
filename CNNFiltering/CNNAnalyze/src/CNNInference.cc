@@ -272,8 +272,6 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::vector<tensorflow::Tensor> outputs;
 
 
-  std::cout << outputs[0].DebugString() << std::endl;
-
   float ax1, ax2, deltaADC = 0.0, deltaPhi = 0.0, deltaR = 0.0, deltaA = 0.0, deltaS = 0.0, deltaZ = 0.0, zZero = 0.0;
 
   std::vector < float > zeroPad;
@@ -588,16 +586,16 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       for (size_t i = 0; i < hitLabs[j].size(); i++)
         vLab[i + j * hitLabs[j].size()] = hitLabs[j][i];
 
-      vLab[ 2 * hitPars[0].size() + 0 ] = deltaA   ;
-      vLab[ 2 * hitPars[0].size() + 1 ] = deltaA   ;
-      vLab[ 2 * hitPars[0].size() + 2 ] = deltaADC ;
-      vLab[ 2 * hitPars[0].size() + 3 ] = deltaS   ;
-      vLab[ 2 * hitPars[0].size() + 4 ] = deltaR   ;
-      vLab[ 2 * hitPars[0].size() + 5 ] = deltaPhi ;
-      vLab[ 2 * hitPars[0].size() + 6 ] = deltaZ   ;
-      vLab[ 2 * hitPars[0].size() + 7 ] = zZero    ;
+      vLab[ 2 * hitLabs[0].size() + 0 ] = deltaA   ;
+      vLab[ 2 * hitLabs[0].size() + 1 ] = deltaA   ;
+      vLab[ 2 * hitLabs[0].size() + 2 ] = deltaADC ;
+      vLab[ 2 * hitLabs[0].size() + 3 ] = deltaS   ;
+      vLab[ 2 * hitLabs[0].size() + 4 ] = deltaR   ;
+      vLab[ 2 * hitLabs[0].size() + 5 ] = deltaPhi ;
+      vLab[ 2 * hitLabs[0].size() + 6 ] = deltaZ   ;
+      vLab[ 2 * hitLabs[0].size() + 7 ] = zZero    ;
 
-      for (size_t i = 0; i < 2*hitPars[0].size() + 8; i++)
+      for (size_t i = 0; i < 2*hitLabs[0].size() + 8; i++)
         std::cout << vLab [i] << " ";
       std::cout << std::endl;
 
