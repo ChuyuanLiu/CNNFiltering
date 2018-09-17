@@ -183,6 +183,8 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
 
+  float padMean = 13382.0011321, padSigma = 10525.1252954;
+
   // int detOnArr[10] = {0,1,2,3,14,15,16,29,30,31};
   // std::vector<int> detOn(detOnArr,detOnArr+sizeof(detOnArr)/sizeof(int));
 
@@ -243,7 +245,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::ofstream outCNNFile(fileName, std::ofstream::app);
 
 
-  std::vector< RecHitsSortevPadPhi::Hit> hits;
+  std::vector< RecHitsSortedInPhi::Hit> hits;
   std::vector< const SiPixelRecHit*> siHits;
   std::vector< SiPixelRecHit::ClusterRef> clusters;
   std::vector< DetId> detIds;
