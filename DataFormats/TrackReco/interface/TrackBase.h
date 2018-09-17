@@ -170,10 +170,8 @@ public:
     TrackBase(double chi2, double ndof, const Point &vertex,
               const Vector &momentum, int charge, const CovarianceMatrix &cov,
               TrackAlgorithm = undefAlgorithm, TrackQuality quality = undefQuality,
-              signed char nloops = 0, uint8_t stopReason = 0)
-              {
-                initializeIds();
-              };
+              signed char nloops = 0, uint8_t stopReason = 0);
+
 
     /// virtual destructor
     virtual ~TrackBase();
