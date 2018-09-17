@@ -108,7 +108,7 @@ private:
   // edm::GetterOfProducts<IntermediateHitDoublets> getterOfProducts_;
 
   float padHalfSize;
-  int padSize, tParams;
+  int padSize, tParams, cnnLayers;
 
   TTree* cnntree;
 
@@ -149,6 +149,7 @@ tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap
   padHalfSize = 8;
   padSize = (int)(padHalfSize*2);
   tParams = 26;
+  cnnLayers = 10;
 
 }
 
@@ -241,7 +242,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::vector <unsigned int> hitIds, subDetIds, detSeqs;
 
   std::vector< std::vector< float>> hitPars;
-  std::vector< std::vector< float>> hitPads;
+  std::vector< std::vector< float>> hitPads,inHitPads,outHitPads;
   std::vector< float > inHitPars, outHitPars, inPad, outPad;
   std::vector< float > inTP, outTP, theTP;
 
@@ -256,21 +257,42 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   float ax1, ax2, deltaADC = 0.0, deltaPhi = 0.0, deltaR = 0.0, deltaA = 0.0, deltaS = 0.0, deltaZ = 0.0, zZero = 0.0;
 
+  std::vector < float > zeroPad;
+  for (int nx = 0; nx < padSize; ++nx)
+    for (int ny = 0; ny < padSize; ++ny)
+      zeroPad.push_back(0.0);
+
   for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt = iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
   {
     DetLayer const * innerLayer = lIt->doublets().detLayer(HitDoublets::inner);
     if(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum())==pixelDets.end()) continue;   //TODO change to std::map ?
 
-    std::cout << innerLayer->seqNum() << " - pos: " << find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum()) - pixelDets.begin() << std::endl;
     DetLayer const * outerLayer = lIt->doublets().detLayer(HitDoublets::outer);
     if(find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum())==pixelDets.end()) continue;
 
+    int innerLayerId = find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum()) - pixelDets.begin();
+    int outerLayerId = find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum()) - pixelDets.begin();
+
+
+    for (int nx = 0; nx < padSize; ++nx)
+    for (int ny = 0; ny < padSize; ++ny)
+    hClust.SetBinContent(nx,ny,0.0);
 
 
     //     HitDoublets lDoublets = std::move(lIt->doublets());
     // std::cout << "Size: " << lIt->doublets().size() << std::endl;
     for (size_t i = 0; i < lIt->doublets().size(); i++)
     {
+
+      inHitPads.clear();
+      outHitPads.clear();
+
+      for(int i = 0; i < cnnLayers; ++i)
+      {
+        inHitPads.push_back(zeroPad);
+        outHitPads.push_back(zeroPad);
+      }
+
 
       deltaPhi = 0.0;
       deltaR = 0.0;
@@ -414,6 +436,8 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         }
 
 
+
+
         //ADC sum
         hitPars[j].push_back(float(clusters[j]->charge()));
 
@@ -423,6 +447,42 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         deltaR   -= lIt->doublets().r(i,layers[j]); deltaR *= -1.0;
         deltaPhi -= phi; deltaPhi *= -1.0;
       }
+
+      for (int nx = 0; nx < padSize*padSize; ++nx)
+          inHitPads[innerLayerId][nx] = hitPads[0][nx]
+      for (int nx = 0; nx < padSize*padSize; ++nx)
+          outHitPads[outerLayerId][nx] = hitPads[1][nx]
+
+      std::cout << "Inner hit layer : " << innerLayer->seqNum() << " - " << innerLayerId<< std::endl;
+
+      for(int i = 0; i < cnnLayers; ++i)
+      {
+        std::cout << i << std::endl;
+        auto thisOne = inHitPads[i];
+        for (int nx = 0; nx < padSize; ++nx)
+          for (int ny = 0; ny < padSize; ++ny)
+          {
+            std::cout << thisOne[nx + ny*padSize] << " ";
+          }
+          std::cout << std::endl;
+
+        outHitPads.push_back(zeroPad);
+      }
+
+      std::cout << "Outer hit layer : " << outerLayer->seqNum() << " - " << outerLayerId<< std::endl;
+      for(int i = 0; i < cnnLayers; ++i)
+      {
+        std::cout << i << std::endl;
+        auto thisOne = outHitPads[i];
+        for (int nx = 0; nx < padSize; ++nx)
+          for (int ny = 0; ny < padSize; ++ny)
+          {
+            std::cout << thisOne[nx + ny*padSize] << " ";
+          }
+          std::cout << std::endl;
+          
+      }
+
 
       deltaPhi *= deltaPhi > M_PI ? 2*M_PI - fabs(deltaPhi) : 1.0;
 
