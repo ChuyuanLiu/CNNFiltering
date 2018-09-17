@@ -89,8 +89,6 @@ void TrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
     if(!(posTrack.hasTrackDetails())) continue;
 
-    auto theTrack = posTrack.bestTrack();
-
     std::cout << theTrack->getTest() << std::endl;
 
   }

@@ -18,7 +18,7 @@ options.parseArguments()
 
 input_file = options.file
 
-process.PsiPhiProducer = cms.EDProducer('TrackAnalyzer',
+process.tracks = cms.EDProducer('TrackAnalyzer',
     PFCandidates        = cms.InputTag('packedPFCandidates')
 )
 
@@ -30,5 +30,5 @@ process.dump=cms.EDAnalyzer('EventContentAnalyzer')
 
 process.p = cms.Path(
                      process.tracks *
-                     process.dump *
+                     process.dump
                      )# * process.Phi2KKPAT * process.patSelectedTracks *process.rootupleKK

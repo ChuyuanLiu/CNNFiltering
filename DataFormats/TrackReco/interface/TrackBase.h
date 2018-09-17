@@ -97,7 +97,7 @@ public:
 
     /// track algorithm
     enum TrackAlgorithm {
-        undefAlgorithm = 0, ctf = 1, 
+        undefAlgorithm = 0, ctf = 1,
         duplicateMerge = 2, cosmics = 3,
         initialStep = 4,
         lowPtTripletStep = 5,
@@ -170,7 +170,10 @@ public:
     TrackBase(double chi2, double ndof, const Point &vertex,
               const Vector &momentum, int charge, const CovarianceMatrix &cov,
               TrackAlgorithm = undefAlgorithm, TrackQuality quality = undefQuality,
-              signed char nloops = 0, uint8_t stopReason = 0);
+              signed char nloops = 0, uint8_t stopReason = 0)
+              {
+                initializeIds();
+              };
 
     /// virtual destructor
     virtual ~TrackBase();
@@ -268,7 +271,7 @@ public:
 
     /// i-th parameter ( i = 0, ... 4 )
     double parameter(int i) const;
-    
+
     /// (i,j)-th element of covariance matrix (i, j = 0, ... 4)
     double covariance(int i, int j) const;
 
@@ -356,7 +359,7 @@ public:
 
     ///Track algorithm
     void setAlgorithm(const TrackAlgorithm a);
-   
+
     void setOriginalAlgorithm(const TrackAlgorithm a);
 
     void setAlgoMask(AlgoMask a) { algoMask_ = a;}
@@ -399,9 +402,32 @@ public:
 
     uint8_t stopReason() const { return stopReason_; }
 
-    void setTest(float value) { test_ = value; }
-    
-    float getTest() const { return test_; }
+
+    //CNN pId flags
+    //Setters
+    void setKaonId(float value) { kaonId_ = value; }
+    void setElecId(float value) { elecId_ = value; }
+    void setMuonId(float value) { muonId_ = value; }
+    void setPionId(float value) { pionId_ = value; }
+    void setElseId(float value) { elseId_ = value; }
+
+    //Initializers
+    void initializeIds()
+    {
+      kaonId_ = value;
+      elecId_ = value;
+      elseId_ = value;
+      pionId_ = value;
+      elseId_ = value;
+    }
+
+    //Getters
+    float getKaonId() const { return kaonId_; }
+    float getElecId() const { return elecId_; }
+    float getMuonId() const { return muonId_; }
+    float getPionId() const { return pionId_; }
+    float getElseId() const { return elseId_; }
+
 private:
     /// hit pattern
     HitPattern hitPattern_;
@@ -433,8 +459,8 @@ private:
     /// track algorithm
     uint8_t originalAlgorithm_;
 
-    //testId
-    float test_;
+    //pIds
+    float kaonId_, pionId_, elseId_, muonId_, electId_;
 
     /// track quality
     uint8_t quality_;
@@ -891,4 +917,3 @@ inline signed char TrackBase::nLoops() const
 } // namespace reco
 
 #endif
-
