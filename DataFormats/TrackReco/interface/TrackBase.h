@@ -414,11 +414,11 @@ public:
     //Initializers
     void initializeIds()
     {
-      kaonId_ = value;
-      elecId_ = value;
-      elseId_ = value;
-      pionId_ = value;
-      elseId_ = value;
+      kaonId_ = 0.0;
+      elecId_ = 0.0;
+      elseId_ = 0.0;
+      pionId_ = 0.0;
+      elseId_ = 0.0;
     }
 
     //Getters
@@ -460,7 +460,7 @@ private:
     uint8_t originalAlgorithm_;
 
     //pIds
-    float kaonId_, pionId_, elseId_, muonId_, electId_;
+    float kaonId_, pionId_, elseId_, muonId_, elecId_;
 
     /// track quality
     uint8_t quality_;

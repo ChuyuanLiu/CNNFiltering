@@ -9,7 +9,7 @@
 #include "DataFormats/Common/interface/Association.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
-#include "DataFormats/Math/interface/deltaPhi.h" 
+#include "DataFormats/Math/interface/deltaPhi.h"
 #include "FWCore/Utilities/interface/thread_safety_macros.h"
 #include "DataFormats/PatCandidates/interface/CovarianceParameterization.h"
 
@@ -21,20 +21,20 @@ class testPackedCandidate;
 namespace pat {
   class PackedCandidate : public reco::Candidate {
   public:
-    /// collection of daughter candidates                                                 
+    /// collection of daughter candidates
     typedef reco::CandidateCollection daughters;
-    /// Lorentz vector                                                                    
+    /// Lorentz vector
     typedef math::XYZTLorentzVector LorentzVector;
-    /// Lorentz vector                                                                    
+    /// Lorentz vector
     typedef math::PtEtaPhiMLorentzVector PolarLorentzVector;
-    /// point in the space                                                                
+    /// point in the space
     typedef math::XYZPoint Point;
-    /// point in the space                                                                
+    /// point in the space
     typedef math::XYZVector Vector;
 
     typedef unsigned int index;
     /// default constructor
-    PackedCandidate() : 
+    PackedCandidate() :
       test_(0),packedPt_(0), packedEta_(0),
       packedPhi_(0), packedM_(0),
       packedDxy_(0), packedDz_(0), packedDPhi_(0), packedDEta_(0),packedDTrkPt_(0),
@@ -46,7 +46,7 @@ namespace pat {
       packedTime_(0),
       packedTimeError_(0),
       isIsolatedChargedHadron_(false),
-      p4_(new PolarLorentzVector(0,0,0,0)), p4c_( new LorentzVector(0,0,0,0)), 
+      p4_(new PolarLorentzVector(0,0,0,0)), p4c_( new LorentzVector(0,0,0,0)),
       vertex_(new Point(0,0,0)), dphi_(0), deta_(0), dtrkpt_(0),track_(nullptr), pdgId_(0),
       qualityFlags_(0), pvRefKey_(reco::VertexRef::invalidKey()),
       m_(nullptr), packedHits_(0), packedLayers_(0), normalizedChi2_(0),covarianceVersion_(0),covarianceSchema_(0),firstHit_(0) { }
@@ -56,8 +56,8 @@ namespace pat {
                               reco::VertexRef::key_type pvRefKey) :
       test_(0),packedPuppiweight_(0), packedPuppiweightNoLepDiff_(0), rawCaloFraction_(0), hcalFraction_(0),
       packedTime_(0), packedTimeError_(0), isIsolatedChargedHadron_(false),
-      p4_( new PolarLorentzVector(c.pt(), c.eta(), c.phi(), c.mass())), 
-      p4c_( new LorentzVector(*p4_)), vertex_( new Point(c.vertex())), 
+      p4_( new PolarLorentzVector(c.pt(), c.eta(), c.phi(), c.mass())),
+      p4c_( new LorentzVector(*p4_)), vertex_( new Point(c.vertex())),
       dphi_(0), deta_(0), dtrkpt_(0),
       track_(nullptr), pdgId_(c.pdgId()), qualityFlags_(0), pvRefProd_(pvRefProd),
       pvRefKey_(pvRefKey),m_(nullptr), packedHits_(0), packedLayers_(0),
@@ -71,10 +71,10 @@ namespace pat {
                               reco::VertexRef::key_type pvRefKey) :
       test_(0),packedPuppiweight_(0), packedPuppiweightNoLepDiff_(0), rawCaloFraction_(0), hcalFraction_(0),
       packedTime_(0), packedTimeError_(0), isIsolatedChargedHadron_(false),
-      p4_( new PolarLorentzVector(p4) ), p4c_( new LorentzVector(*p4_)), 
-      vertex_( new Point(vtx) ), 
-      dphi_(reco::deltaPhi(phiAtVtx,p4_.load()->phi())), 
-      deta_(std::abs(etaAtVtx-p4_.load()->eta())>=kMinDEtaToStore_ ? etaAtVtx-p4_.load()->eta() : 0.), 
+      p4_( new PolarLorentzVector(p4) ), p4c_( new LorentzVector(*p4_)),
+      vertex_( new Point(vtx) ),
+      dphi_(reco::deltaPhi(phiAtVtx,p4_.load()->phi())),
+      deta_(std::abs(etaAtVtx-p4_.load()->eta())>=kMinDEtaToStore_ ? etaAtVtx-p4_.load()->eta() : 0.),
       dtrkpt_(std::abs(trkPt-p4_.load()->pt())>=kMinDTrkPtToStore_ ? trkPt-p4_.load()->pt() : 0.),
       track_(nullptr), pdgId_(pdgId),
       qualityFlags_(0), pvRefProd_(pvRefProd), pvRefKey_(pvRefKey),
@@ -88,10 +88,10 @@ namespace pat {
                               reco::VertexRef::key_type pvRefKey) :
       test_(0),packedPuppiweight_(0), packedPuppiweightNoLepDiff_(0), rawCaloFraction_(0), hcalFraction_(0),
       packedTime_(0), packedTimeError_(0), isIsolatedChargedHadron_(false),
-      p4_(new PolarLorentzVector(p4.Pt(), p4.Eta(), p4.Phi(), p4.M())), 
+      p4_(new PolarLorentzVector(p4.Pt(), p4.Eta(), p4.Phi(), p4.M())),
       p4c_( new LorentzVector(p4)), vertex_( new Point(vtx) ) ,
-      dphi_(reco::deltaPhi(phiAtVtx,p4_.load()->phi())), 
-      deta_(std::abs(etaAtVtx-p4_.load()->eta())>=kMinDEtaToStore_ ? etaAtVtx-p4_.load()->eta() : 0.), 
+      dphi_(reco::deltaPhi(phiAtVtx,p4_.load()->phi())),
+      deta_(std::abs(etaAtVtx-p4_.load()->eta())>=kMinDEtaToStore_ ? etaAtVtx-p4_.load()->eta() : 0.),
       dtrkpt_(std::abs(trkPt-p4_.load()->pt())>=kMinDTrkPtToStore_ ? trkPt-p4_.load()->pt() : 0.),
       track_(nullptr), pdgId_(pdgId), qualityFlags_(0),
       pvRefProd_(pvRefProd), pvRefKey_(pvRefKey),
@@ -103,10 +103,10 @@ namespace pat {
       test_(iOther.test_),
       packedPt_(iOther.packedPt_), packedEta_(iOther.packedEta_),
       packedPhi_(iOther.packedPhi_), packedM_(iOther.packedM_),
-      packedDxy_(iOther.packedDxy_), packedDz_(iOther.packedDz_), 
+      packedDxy_(iOther.packedDxy_), packedDz_(iOther.packedDz_),
       packedDPhi_(iOther.packedDPhi_),packedDEta_(iOther.packedDEta_),packedDTrkPt_(iOther.packedDTrkPt_),
       packedCovariance_(iOther.packedCovariance_),
-      packedPuppiweight_(iOther.packedPuppiweight_), 
+      packedPuppiweight_(iOther.packedPuppiweight_),
       packedPuppiweightNoLepDiff_(iOther.packedPuppiweightNoLepDiff_),
       rawCaloFraction_(iOther.rawCaloFraction_),
       hcalFraction_(iOther.hcalFraction_),
@@ -119,7 +119,7 @@ namespace pat {
       dxy_(iOther.dxy_), dz_(iOther.dz_),
       dphi_(iOther.dphi_), deta_(iOther.deta_), dtrkpt_(iOther.dtrkpt_),
       track_( iOther.track_ ? new reco::Track(*iOther.track_) : nullptr),
-      pdgId_(iOther.pdgId_), qualityFlags_(iOther.qualityFlags_), 
+      pdgId_(iOther.pdgId_), qualityFlags_(iOther.qualityFlags_),
       pvRefProd_(iOther.pvRefProd_),pvRefKey_(iOther.pvRefKey_),
       m_(iOther.m_? new reco::TrackBase::CovarianceMatrix(*iOther.m_) : nullptr),
       packedHits_(iOther.packedHits_),packedLayers_(iOther.packedLayers_),  normalizedChi2_(iOther.normalizedChi2_),
@@ -130,10 +130,10 @@ namespace pat {
       test_(iOther.test_),
       packedPt_(iOther.packedPt_), packedEta_(iOther.packedEta_),
       packedPhi_(iOther.packedPhi_), packedM_(iOther.packedM_),
-      packedDxy_(iOther.packedDxy_), packedDz_(iOther.packedDz_), 
-      packedDPhi_(iOther.packedDPhi_), packedDEta_(iOther.packedDEta_), packedDTrkPt_(iOther.packedDTrkPt_),  
+      packedDxy_(iOther.packedDxy_), packedDz_(iOther.packedDz_),
+      packedDPhi_(iOther.packedDPhi_), packedDEta_(iOther.packedDEta_), packedDTrkPt_(iOther.packedDTrkPt_),
       packedCovariance_(iOther.packedCovariance_),
-      packedPuppiweight_(iOther.packedPuppiweight_), 
+      packedPuppiweight_(iOther.packedPuppiweight_),
       packedPuppiweightNoLepDiff_(iOther.packedPuppiweightNoLepDiff_),
       rawCaloFraction_(iOther.rawCaloFraction_),
       hcalFraction_(iOther.hcalFraction_),
@@ -145,7 +145,7 @@ namespace pat {
       dxy_(iOther.dxy_), dz_(iOther.dz_),
       dphi_(iOther.dphi_), deta_(iOther.deta_), dtrkpt_(iOther.dtrkpt_),
       track_( iOther.track_.exchange(nullptr) ),
-      pdgId_(iOther.pdgId_), qualityFlags_(iOther.qualityFlags_), 
+      pdgId_(iOther.pdgId_), qualityFlags_(iOther.qualityFlags_),
       pvRefProd_(std::move(iOther.pvRefProd_)),pvRefKey_(iOther.pvRefKey_),
       m_( iOther.m_.exchange(nullptr)),
       packedHits_(iOther.packedHits_), packedLayers_(iOther.packedLayers_),normalizedChi2_(iOther.normalizedChi2_),
@@ -160,15 +160,15 @@ namespace pat {
       test_ = iOther.test_;
       packedPt_ =iOther.packedPt_;
       packedEta_=iOther.packedEta_;
-      packedPhi_=iOther.packedPhi_; 
+      packedPhi_=iOther.packedPhi_;
       packedM_=iOther.packedM_;
-      packedDxy_=iOther.packedDxy_; 
-      packedDz_=iOther.packedDz_; 
+      packedDxy_=iOther.packedDxy_;
+      packedDz_=iOther.packedDz_;
       packedDPhi_=iOther.packedDPhi_;
       packedDEta_=iOther.packedDEta_;
       packedDTrkPt_=iOther.packedDTrkPt_;
       packedCovariance_=iOther.packedCovariance_;
-      packedPuppiweight_=iOther.packedPuppiweight_; 
+      packedPuppiweight_=iOther.packedPuppiweight_;
       packedPuppiweightNoLepDiff_=iOther.packedPuppiweightNoLepDiff_;
       rawCaloFraction_=iOther.rawCaloFraction_;
       hcalFraction_=iOther.hcalFraction_;
@@ -193,10 +193,10 @@ namespace pat {
       }
       dxy_=iOther.dxy_;
       dz_ = iOther.dz_;
-      dphi_=iOther.dphi_; 
-      deta_=iOther.deta_; 
-      dtrkpt_=iOther.dtrkpt_; 
-      
+      dphi_=iOther.dphi_;
+      deta_=iOther.deta_;
+      dtrkpt_=iOther.dtrkpt_;
+
       if(!iOther.track_) {
         delete track_.exchange(nullptr);
       } else {
@@ -207,8 +207,8 @@ namespace pat {
         }
       }
 
-      pdgId_=iOther.pdgId_; 
-      qualityFlags_=iOther.qualityFlags_; 
+      pdgId_=iOther.pdgId_;
+      qualityFlags_=iOther.qualityFlags_;
       pvRefProd_=iOther.pvRefProd_;
       pvRefKey_=iOther.pvRefKey_;
       if(!iOther.m_) {
@@ -220,10 +220,10 @@ namespace pat {
           *m_ = *(iOther.m_);
         }
       }
-      
-	
-      packedHits_=iOther.packedHits_; 
-      packedLayers_=iOther.packedLayers_; 
+
+
+      packedHits_=iOther.packedHits_;
+      packedLayers_=iOther.packedLayers_;
       normalizedChi2_=iOther.normalizedChi2_;
       covarianceVersion_=iOther.covarianceVersion_;
       covarianceSchema_=iOther.covarianceSchema_;
@@ -236,19 +236,19 @@ namespace pat {
       if(this == &iOther) {
         return *this;
       }
-      
+
       test_=iOther.test_;
       packedPt_ =iOther.packedPt_;
       packedEta_=iOther.packedEta_;
-      packedPhi_=iOther.packedPhi_; 
+      packedPhi_=iOther.packedPhi_;
       packedM_=iOther.packedM_;
-      packedDxy_=iOther.packedDxy_; 
-      packedDz_=iOther.packedDz_; 
+      packedDxy_=iOther.packedDxy_;
+      packedDz_=iOther.packedDz_;
       packedDPhi_=iOther.packedDPhi_;
       packedDEta_=iOther.packedDEta_;
       packedDTrkPt_=iOther.packedDTrkPt_;
       packedCovariance_=iOther.packedCovariance_;
-      packedPuppiweight_=iOther.packedPuppiweight_; 
+      packedPuppiweight_=iOther.packedPuppiweight_;
       packedPuppiweightNoLepDiff_=iOther.packedPuppiweightNoLepDiff_;
       rawCaloFraction_=iOther.rawCaloFraction_;
       hcalFraction_=iOther.hcalFraction_;
@@ -260,21 +260,21 @@ namespace pat {
       delete vertex_.exchange(iOther.vertex_.exchange(nullptr));
       dxy_=iOther.dxy_;
       dz_ = iOther.dz_;
-      dphi_=iOther.dphi_;      
-      deta_=iOther.deta_; 
+      dphi_=iOther.dphi_;
+      deta_=iOther.deta_;
       dtrkpt_=iOther.dtrkpt_;
       delete track_.exchange(iOther.track_.exchange( nullptr));
-      pdgId_=iOther.pdgId_; 
-      qualityFlags_=iOther.qualityFlags_; 
+      pdgId_=iOther.pdgId_;
+      qualityFlags_=iOther.qualityFlags_;
       pvRefProd_=iOther.pvRefProd_;
       pvRefKey_=iOther.pvRefKey_;
       delete m_.exchange(iOther.m_.exchange(nullptr));
-      packedHits_=iOther.packedHits_; 
-      packedLayers_=iOther.packedLayers_; 
+      packedHits_=iOther.packedHits_;
+      packedLayers_=iOther.packedLayers_;
       normalizedChi2_=iOther.normalizedChi2_;
       covarianceVersion_=iOther.covarianceVersion_;
       covarianceSchema_=iOther.covarianceSchema_;
-    
+
       firstHit_=iOther.firstHit_;
       return *this;
     }
@@ -293,13 +293,13 @@ namespace pat {
     reco::Candidate * daughter( size_type ) override;
     /// return daughter with a specified role name
     reco::Candidate * daughter(const std::string& s ) override;
-    /// return daughter with a specified role name                                        
+    /// return daughter with a specified role name
     const reco::Candidate * daughter(const std::string& s ) const override;
-    /// return the number of source Candidates                                            
-    /// ( the candidates used to construct this Candidate)                                
+    /// return the number of source Candidates
+    /// ( the candidates used to construct this Candidate)
     size_t numberOfSourceCandidatePtrs() const override {return 0;}
-    /// return a Ptr to one of the source Candidates                                      
-    /// ( the candidates used to construct this Candidate)                                
+    /// return a Ptr to one of the source Candidates
+    /// ( the candidates used to construct this Candidate)
     reco::CandidatePtr sourceCandidatePtr( size_type i ) const override {
       return reco::CandidatePtr();
     }
@@ -315,79 +315,79 @@ namespace pat {
       default:  return 0;  //FIXME: charge is not defined
       }
     }
-    /// set electric charge                                                               
+    /// set electric charge
     void setCharge( int charge) override {}
-    /// electric charge                                                                   
+    /// electric charge
     int threeCharge() const override {return charge()*3;}
-    /// set electric charge                                                               
+    /// set electric charge
     void setThreeCharge( int threecharge) override {}
-    /// four-momentum Lorentz vecto r                                                      
-    const LorentzVector & p4() const override { if (!p4c_) unpack(); return *p4c_; }  
-    /// four-momentum Lorentz vector                                                      
+    /// four-momentum Lorentz vecto r
+    const LorentzVector & p4() const override { if (!p4c_) unpack(); return *p4c_; }
+    /// four-momentum Lorentz vector
     const PolarLorentzVector & polarP4() const override { if (!p4c_) unpack(); return *p4_; }
-    /// spatial momentum vector                                                           
+    /// spatial momentum vector
     Vector momentum() const override  { if (!p4c_) unpack(); return p4c_.load()->Vect(); }
-    /// boost vector to boost a Lorentz vector                                            
-    /// to the particle center of mass system                                             
+    /// boost vector to boost a Lorentz vector
+    /// to the particle center of mass system
     Vector boostToCM() const override { if (!p4c_) unpack(); return p4c_.load()->BoostToCM(); }
-    /// magnitude of momentum vector                                                      
+    /// magnitude of momentum vector
     double p() const override { if (!p4c_) unpack(); return p4c_.load()->P(); }
-    /// energy                                                                            
+    /// energy
     double energy() const override { if (!p4c_) unpack(); return p4c_.load()->E(); }
-   /// transverse energy 
-    double et() const override { return (pt()<=0) ? 0 : p4c_.load()->Et(); }  
+   /// transverse energy
+    double et() const override { return (pt()<=0) ? 0 : p4c_.load()->Et(); }
     /// transverse energy squared (use this for cuts)!
-    double et2() const override { return (pt()<=0) ? 0 : p4c_.load()->Et2(); }   
-    /// mass                                                                              
+    double et2() const override { return (pt()<=0) ? 0 : p4c_.load()->Et2(); }
+    /// mass
     double mass() const override { if (!p4c_) unpack(); return p4_.load()->M(); }
-    /// mass squared                                                                      
+    /// mass squared
     double massSqr() const override { if (!p4c_) unpack(); auto m = p4_.load()->M(); return m*m;}
 
-    /// transverse mass                                                                   
+    /// transverse mass
     double mt() const override { if (!p4c_) unpack(); return p4_.load()->Mt(); }
-    /// transverse mass squared                                                           
+    /// transverse mass squared
     double mtSqr() const override { if (!p4c_) unpack(); return p4_.load()->Mt2(); }
-    /// x coordinate of momentum vector                                                   
+    /// x coordinate of momentum vector
     double px() const override { if (!p4c_) unpack(); return p4c_.load()->Px(); }
-    /// y coordinate of momentum vector                                                   
+    /// y coordinate of momentum vector
     double py() const override { if (!p4c_) unpack(); return p4c_.load()->Py(); }
-    /// z coordinate of momentum vector                                                   
+    /// z coordinate of momentum vector
     double pz() const override { if (!p4c_) unpack(); return p4c_.load()->Pz(); }
-    /// transverse momentum                                                               
+    /// transverse momentum
     double pt() const override { if (!p4c_) unpack(); return p4_.load()->Pt();}
-    /// momentum azimuthal angle                                                          
+    /// momentum azimuthal angle
     double phi() const override { if (!p4c_) unpack(); return p4_.load()->Phi(); }
-    
-    double test() const { if (test_<1E10) return test_; else return 0.0; } 
+
+    double test() const { if (test_<1E10) return test_; else return 0.0; }
     /// pt from the track (normally identical to pt())
     virtual double ptTrk() const {
-        maybeUnpackBoth(); 
+        maybeUnpackBoth();
 	return p4_.load()->pt() + dtrkpt_;
     }
     /// momentum azimuthal angle from the track (normally identical to phi())
-    virtual float phiAtVtx() const { 
-        maybeUnpackBoth(); 
-        float ret = p4_.load()->Phi() + dphi_; 
-        while (ret >  float(M_PI)) ret -= 2*float(M_PI); 
-        while (ret < -float(M_PI)) ret += 2*float(M_PI); 
-        return ret; 
-    } 
-    /// eta from the track (normally identical to eta())
-    virtual float etaAtVtx() const { 
-        maybeUnpackBoth(); 
-        return p4_.load()->eta() + deta_; 
+    virtual float phiAtVtx() const {
+        maybeUnpackBoth();
+        float ret = p4_.load()->Phi() + dphi_;
+        while (ret >  float(M_PI)) ret -= 2*float(M_PI);
+        while (ret < -float(M_PI)) ret += 2*float(M_PI);
+        return ret;
     }
-    
-    /// momentum polar angle                                                              
+    /// eta from the track (normally identical to eta())
+    virtual float etaAtVtx() const {
+        maybeUnpackBoth();
+        return p4_.load()->eta() + deta_;
+    }
+
+    /// momentum polar angle
     double theta() const override { if (!p4c_) unpack(); return p4_.load()->Theta(); }
-    /// momentum pseudorapidity                                                           
+    /// momentum pseudorapidity
     double eta() const override { if (!p4c_) unpack(); return p4_.load()->Eta(); }
-    /// rapidity                                                                          
+    /// rapidity
     double rapidity() const override { if (!p4c_) unpack(); return p4_.load()->Rapidity(); }
-    /// rapidity                                                                          
+    /// rapidity
     double y() const override { if (!p4c_) unpack(); return p4_.load()->Rapidity(); }
-    /// set 4-momentum                                                                    
-    void setP4( const LorentzVector & p4 ) override { 
+    /// set 4-momentum
+    void setP4( const LorentzVector & p4 ) override {
         maybeUnpackBoth(); // changing px,py,pz changes also mapping between dxy,dz and x,y,z
 	dphi_+=polarP4().Phi()-p4.Phi();
 	deta_+=polarP4().Eta()-p4.Eta();
@@ -395,19 +395,19 @@ namespace pat {
         *p4_ = PolarLorentzVector(p4.Pt(), p4.Eta(), p4.Phi(), p4.M());
         packBoth();
     }
-    /// set 4-momentum                                                                    
-    void setP4( const PolarLorentzVector & p4 ) override { 
+    /// set 4-momentum
+    void setP4( const PolarLorentzVector & p4 ) override {
         maybeUnpackBoth(); // changing px,py,pz changes also mapping between dxy,dz and x,y,z
 	dphi_+=polarP4().Phi()-p4.Phi();
 	deta_+=polarP4().Eta()-p4.Eta();
 	dtrkpt_+=polarP4().Pt()-p4.Pt();
-        *p4_ = p4; 
+        *p4_ = p4;
         packBoth();
     }
-    /// set particle mass                                                                 
+    /// set particle mass
     void setMass( double m ) override {
-      if (!p4c_) unpack(); 
-      *p4_ = PolarLorentzVector(p4_.load()->Pt(), p4_.load()->Eta(), p4_.load()->Phi(), m); 
+      if (!p4c_) unpack();
+      *p4_ = PolarLorentzVector(p4_.load()->Pt(), p4_.load()->Eta(), p4_.load()->Phi(), m);
       pack();
     }
     void setPz( double pz ) override {
@@ -443,25 +443,25 @@ namespace pat {
 
       packedHits_ = (numberOfPixelHits_&trackPixelHitsMask) | (numberOfStripHits_ << trackStripHitsShift);
     }
-  
+
     virtual void setTrackProperties( const reco::Track & tk, const reco::Track::CovarianceMatrix & covariance,int quality,int covarianceVersion) {
-      test_ = tk.getTest();//0.2;
+      test_ = tk.getKaonId();//0.2;
       if(std::fabs(test_)>1E2) test_=0.0;
       std::cout << test_ << std::endl;
-      std::cout << tk.getTest() << std::endl;
+      std::cout << tk.getKaonId() << std::endl;
       covarianceVersion_ = covarianceVersion ;
       covarianceSchema_ = quality ;
       normalizedChi2_ = tk.normalizedChi2();
       setHits(tk);
       packBoth();
-      packCovariance(covariance,false); 
+      packCovariance(covariance,false);
     }
 
-    // set track properties using quality and covarianceVersion to define the level of details in the cov. matrix	
+    // set track properties using quality and covarianceVersion to define the level of details in the cov. matrix
     virtual void setTrackProperties( const reco::Track & tk,int quality,int covarianceVersion ) {
 	setTrackProperties(tk,tk.covariance(), quality,covarianceVersion );
-    }	
- 
+    }
+
     int numberOfPixelHits() const { return (packedHits_ & trackPixelHitsMask) + pixelLayersWithMeasurement(); }
     int numberOfHits() const { return (packedHits_ >> trackStripHitsShift) + stripLayersWithMeasurement() + numberOfPixelHits(); }
     int pixelLayersWithMeasurement() const { return packedLayers_ & trackPixelHitsMask; }
@@ -471,16 +471,16 @@ namespace pat {
     int covarianceVersion() const { return covarianceVersion_;}
     int covarianceSchema() const { return covarianceSchema_;}
 
-	
+
     /// vertex position
     const Point & vertex() const override { maybeUnpackBoth(); return *vertex_; }//{ if (fromPV_) return Point(0,0,0); else return Point(0,0,100); }
-    /// x coordinate of vertex position                                                   
+    /// x coordinate of vertex position
     double vx() const override  { maybeUnpackBoth(); return vertex_.load()->X(); }//{ return 0; }
-    /// y coordinate of vertex position                                                   
+    /// y coordinate of vertex position
     double vy() const override  { maybeUnpackBoth(); return vertex_.load()->Y(); }//{ return 0; }
-    /// z coordinate of vertex position                                                   
+    /// z coordinate of vertex position
     double vz() const override  { maybeUnpackBoth(); return vertex_.load()->Z(); }//{ if (fromPV_) return 0; else return 100; }
-    /// set vertex                                                                        
+    /// set vertex
     void setVertex( const Point & vertex ) override { maybeUnpackBoth(); *vertex_ = vertex; packVtx(); }
 
     ///This refers to the association to PV=ipv. >=PVLoose corresponds to JME definition, >=PVTight to isolation definition
@@ -513,13 +513,13 @@ namespace pat {
     /// dz  with respect to another point
     virtual float dz(const Point &p)  const ;
 
-    /// uncertainty on dz 
+    /// uncertainty on dz
     float dzError() const override { maybeUnpackCovariance(); return sqrt((*m_.load())(4,4)); }
     /// uncertainty on dxy
     float dxyError() const override { maybeUnpackCovariance(); return sqrt((*m_.load())(3,3)); }
 
 
-    /// Return reference to a pseudo track made with candidate kinematics, parameterized error for eta,phi,pt and full IP covariance	
+    /// Return reference to a pseudo track made with candidate kinematics, parameterized error for eta,phi,pt and full IP covariance
     virtual const reco::Track & pseudoTrack() const { if (!track_) unpackTrk(); return *track_; }
 
     /// return a pointer to the track if present. otherwise, return a null pointer
@@ -533,18 +533,18 @@ namespace pat {
     }
     /// Return true if a bestTrack can be extracted from this Candidate
     bool hasTrackDetails() const {return  (packedHits_!=0 || packedLayers_ !=0); }
-      
+
 
     /// true if the track had the highPurity quality bit
     bool trackHighPurity() const { return (qualityFlags_ & trackHighPurityMask)>>trackHighPurityShift; }
     /// set to true if the track had the highPurity quality bit
     void setTrackHighPurity(bool highPurity) {  qualityFlags_ = (qualityFlags_ & ~trackHighPurityMask) | ((highPurity << trackHighPurityShift) & trackHighPurityMask);  }
 
-    /// Enumerator specifying the 
+    /// Enumerator specifying the
     enum LostInnerHits {
         validHitInFirstPixelBarrelLayer=-1,
         noLostInnerHits=0,   // it could still not have a hit in the first layer, e.g. if it crosses an inactive sensor
-        oneLostInnerHit=1,   
+        oneLostInnerHit=1,
         moreLostInnerHits=2
     };
     LostInnerHits lostInnerHits() const {
@@ -553,7 +553,7 @@ namespace pat {
     void setLostInnerHits(LostInnerHits hits) {
         int lost = hits; if (lost > 2) lost = 2; // protection against misuse
         lost++; // shift so it's 0 .. 3 instead of (-1) .. 2
-        qualityFlags_ = (qualityFlags_ & ~lostInnerHitsMask) | ((lost << lostInnerHitsShift) & lostInnerHitsMask); 
+        qualityFlags_ = (qualityFlags_ & ~lostInnerHitsMask) | ((lost << lostInnerHitsShift) & lostInnerHitsMask);
     }
 
     /// Set first hit from HitPattern
@@ -573,60 +573,60 @@ namespace pat {
         qualityFlags_ = (qualityFlags_& ~egammaFlagsMask) | egFlags;
     }
 
-    /// PDG identifier                                                                    
+    /// PDG identifier
     int pdgId() const override   { return pdgId_; }
-    // set PDG identifier                                                                 
+    // set PDG identifier
     void setPdgId( int pdgId ) override   { pdgId_ = pdgId; }
-    /// status word                                                                       
+    /// status word
     int status() const override   { return qualityFlags_; } /*FIXME*/
-    /// set status word                                                                   
+    /// set status word
     void setStatus( int status ) override {} /*FIXME*/
-    /// long lived flag                                                                   
+    /// long lived flag
     static const unsigned int longLivedTag = 0; /*FIXME*/
-    /// set long lived flag                                                               
+    /// set long lived flag
     void setLongLived() override {} /*FIXME*/
-    /// is long lived?                                                                    
+    /// is long lived?
     bool longLived() const override;
     /// do mass constraint flag
-    static const unsigned int massConstraintTag = 0; /*FIXME*/ 
+    static const unsigned int massConstraintTag = 0; /*FIXME*/
     /// set mass constraint flag
     void setMassConstraint() override {} /*FIXME*/
     /// do mass constraint?
     bool massConstraint() const override;
 
-    /// returns a clone of the Candidate object                                           
+    /// returns a clone of the Candidate object
     PackedCandidate * clone() const override  {
       return new PackedCandidate( *this );
     }
 
-    /// chi-squares                                                                                                    
+    /// chi-squares
     double vertexChi2() const override;
-    /** Number of degrees of freedom                                                                                   
-     *  Meant to be Double32_t for soft-assignment fitters:                                                            
-     *  tracks may contribute to the vertex with fractional weights.                                                   
-     *  The ndof is then = to the sum of the track weights.                                                            
-     *  see e.g. CMS NOTE-2006/032, CMS NOTE-2004/002                                                                  
+    /** Number of degrees of freedom
+     *  Meant to be Double32_t for soft-assignment fitters:
+     *  tracks may contribute to the vertex with fractional weights.
+     *  The ndof is then = to the sum of the track weights.
+     *  see e.g. CMS NOTE-2006/032, CMS NOTE-2004/002
      */
     double vertexNdof() const override;
-    /// chi-squared divided by n.d.o.f.                                                                                
+    /// chi-squared divided by n.d.o.f.
     double vertexNormalizedChi2() const override;
-    /// (i, j)-th element of error matrix, i, j = 0, ... 2                                                             
+    /// (i, j)-th element of error matrix, i, j = 0, ... 2
     double vertexCovariance(int i, int j) const override;
-    /// return SMatrix                                                                                                 
+    /// return SMatrix
     CovarianceMatrix vertexCovariance() const override   { CovarianceMatrix m; fillVertexCovariance(m); return m; }
-    /// fill SMatrix                                                                                                   
+    /// fill SMatrix
     void fillVertexCovariance(CovarianceMatrix & v) const override;
-    /// returns true if this candidate has a reference to a master clone.                                              
-    /// This only happens if the concrete Candidate type is ShallowCloneCandidate                                      
+    /// returns true if this candidate has a reference to a master clone.
+    /// This only happens if the concrete Candidate type is ShallowCloneCandidate
     bool hasMasterClone() const override;
-    /// returns ptr to master clone, if existing.                                                                      
-    /// Throws an exception unless the concrete Candidate type is ShallowCloneCandidate                                
+    /// returns ptr to master clone, if existing.
+    /// Throws an exception unless the concrete Candidate type is ShallowCloneCandidate
     const reco::CandidateBaseRef & masterClone() const override;
-    /// returns true if this candidate has a ptr to a master clone.                                                    
-    /// This only happens if the concrete Candidate type is ShallowClonePtrCandidate                                   
+    /// returns true if this candidate has a ptr to a master clone.
+    /// This only happens if the concrete Candidate type is ShallowClonePtrCandidate
     bool hasMasterClonePtr() const override;
-    /// returns ptr to master clone, if existing.                                                                      
-    /// Throws an exception unless the concrete Candidate type is ShallowClonePtrCandidate                             
+    /// returns ptr to master clone, if existing.
+    /// Throws an exception unless the concrete Candidate type is ShallowClonePtrCandidate
 
     const reco::CandidatePtr & masterClonePtr() const override;
 
@@ -649,7 +649,7 @@ namespace pat {
     void setPuppiWeight(float p, float p_nolep = 0.0);  /// Set both weights at once (with option for only full PUPPI)
     float puppiWeight() const;                          /// Weight from full PUPPI
     float puppiWeightNoLep() const;                     /// Weight from PUPPI removing leptons
-    
+
     // for the neutral fractions
     void setRawCaloFraction(float p);                      /// Set the raw ECAL+HCAL energy over candidate energy for isolated charged hadrons
     float rawCaloFraction() const { return (rawCaloFraction_/100.); }    /// Raw ECAL+HCAL energy over candidate energy for isolated charged hadrons
@@ -704,7 +704,7 @@ namespace pat {
     friend class ::testPackedCandidate;
     static constexpr float kMinDEtaToStore_=0.001;
     static constexpr float kMinDTrkPtToStore_=0.001;
-    
+
     float test_;
 
     uint16_t packedPt_, packedEta_, packedPhi_, packedM_;
@@ -732,27 +732,27 @@ namespace pat {
 
     bool isIsolatedChargedHadron_;
 
-    /// the four vector                                                 
+    /// the four vector
     mutable std::atomic<PolarLorentzVector*> p4_;
     mutable std::atomic<LorentzVector*> p4c_;
-    /// vertex position                                                                   
+    /// vertex position
     mutable std::atomic<Point*> vertex_;
     CMS_THREAD_GUARD(vertex_) mutable float dxy_, dz_, dphi_, deta_, dtrkpt_;
-    /// reco::Track                                                                   
+    /// reco::Track
     mutable std::atomic<reco::Track*> track_;
-    /// PDG identifier                                                                    
+    /// PDG identifier
     int pdgId_;
     uint16_t qualityFlags_;
     /// Use these to build a Ref to primary vertex
     reco::VertexRefProd pvRefProd_;
     reco::VertexRef::key_type pvRefKey_;
 
-    /// IP covariance	
+    /// IP covariance
     mutable std::atomic<reco::TrackBase::CovarianceMatrix *> m_;
     uint8_t packedHits_, packedLayers_; // packedLayers_ -> layers with valid hits; packedHits_ -> extra hits beyond the one-per-layer implied by packedLayers_
-    
+
     /// track quality information
-    uint8_t normalizedChi2_; 
+    uint8_t normalizedChi2_;
     uint16_t covarianceVersion_;
     uint16_t covarianceSchema_;
     CMS_THREAD_SAFE static CovarianceParameterization covarianceParameterization_;
@@ -769,7 +769,7 @@ namespace pat {
         return  covarianceParameterization_;
     }
 
-    /// check overlap with another Candidate                                              
+    /// check overlap with another Candidate
     bool overlap( const reco::Candidate & ) const override;
     template<typename, typename, typename> friend struct component;
     friend class ::OverlapChecker;
@@ -783,7 +783,7 @@ namespace pat {
         muonFlagsMask = 0x0600, muonFlagsShift=9,
 	egammaFlagsMask = 0x0800, egammaFlagsShift=11
     };
-    
+
     /// static to allow unit testing
     static uint8_t packTimeError(float timeError) ;
     static float unpackTimeError(uint8_t timeError) ;
@@ -798,7 +798,7 @@ namespace pat {
     static constexpr int EXPO_TIME_WITHERROR = -6; // power of 2 used in encoding time with timeError
   public:
     uint16_t firstHit_;
-    
+
   };
 
   typedef std::vector<pat::PackedCandidate> PackedCandidateCollection;
