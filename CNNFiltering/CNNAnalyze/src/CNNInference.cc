@@ -57,7 +57,7 @@ Implementation:
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
-#include "RecoTracker/TkHitPairs/interface/RecHitsSortevPadPhi.h"
+#include "RecoTracker/TkHitPairs/interface/RecHitsSortedInPhi.h"
 #include "RecoTracker/TkHitPairs/interface/IntermediateHitDoublets.h"
 
 #include <iostream>
