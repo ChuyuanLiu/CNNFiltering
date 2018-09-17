@@ -253,9 +253,10 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   std::vector <unsigned int> hitIds, subDetIds, detSeqs;
 
-  std::vector< std::vector< float>> hitPars;
+  std::vector< std::vector< float>> hitPars,hitLabs;
   std::vector< std::vector< float>> hitPads,inHitPads,outHitPads;
   std::vector< float > inHitPars, outHitPars, inPad, outPad;
+  std::vector< float > inHitLabs, outHitLabs;
   std::vector< float > inTP, outTP, theTP;
 
   // Load graph
@@ -263,6 +264,8 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   // edm::FileInPath modelFilePath();
   //tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/jpsiphi/MCs/QCDtoPhiML/CMSSW_10_2_1/tmp/test_graph_tfadd.pb");
   //tensorflow::Session* session = tensorflow::createSession(graphDef);
+  tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/CMSSW/CMSSW_10_2_0_pre5/src/CNNFiltering/CNNAnalyze/python/models/cnn_doublet/2018-09-17_17-10-17/layer_map_model_final.pb");
+  tensorflow::Session* session = tensorflow::createSession(graphDef);
 
   tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {padSize,padSize,cnnLayers*2});
   tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {67});
@@ -346,6 +349,9 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       hitPads.push_back(inPad);
       hitPads.push_back(outPad);
 
+      hitLabs.push_back(inHitLabs);
+      hitLabs.push_back(outHitLabs);
+
       HitDoublets::layer layers[2] = {HitDoublets::inner, HitDoublets::outer};
 
       float* vPad = inputPads.flat<float>().data();
@@ -359,6 +365,10 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         hitPars[j].push_back((hits[j]->hit()->globalState()).position.y());
         hitPars[j].push_back((hits[j]->hit()->globalState()).position.z()); //3
 
+        hitLabs[j].push_back((hits[j]->hit()->globalState()).position.x()); //1
+        hitLabs[j].push_back((hits[j]->hit()->globalState()).position.y());
+        hitLabs[j].push_back((hits[j]->hit()->globalState()).position.z()); //3
+
         float phi = lIt->doublets().phi(i,layers[j]) >=0.0 ? lIt->doublets().phi(i,layers[j]) : 2*M_PI + lIt->doublets().phi(i,layers[j]);
 
         hitPars[j].push_back(phi); //Phi //FIXME
@@ -366,16 +376,30 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
         hitPars[j].push_back(detSeqs[j]); //det number //6
 
+        hitLabs[j].push_back(phi); //Phi //FIXME
+        hitLabs[j].push_back(lIt->doublets().r(i,layers[j])); //R //TODO add theta and DR
+
+        hitLabs[j].push_back(detSeqs[j]); //det number //6
+
         //Module labels
         if(subDetIds[j]==1) //barrel
         {
-          hitPars[j].push_back(float(true)); //isBarrel //7
+          hitPars[j].push_back(float(true));  //isBarrel //7
           hitPars[j].push_back(PXBDetId(detIds[j]).layer());
           hitPars[j].push_back(PXBDetId(detIds[j]).ladder());
           hitPars[j].push_back(-1.0);
           hitPars[j].push_back(-1.0);
           hitPars[j].push_back(-1.0);
-          hitPars[j].push_back(PXBDetId(detIds[j]).module()); //14
+          hitPars[j].push_back(PXBDetId(detIds[j]).module());   //14
+
+          hitLabs[j].push_back(float(true)); //isBarrel //7
+          hitLabs[j].push_back(PXBDetId(detIds[j]).layer());
+          hitLabs[j].push_back(PXBDetId(detIds[j]).ladder());
+          hitLabs[j].push_back(-1.0);
+          hitLabs[j].push_back(-1.0);
+          hitLabs[j].push_back(-1.0);
+          hitLabs[j].push_back(PXBDetId(detIds[j]).module()); //14
+
         }
         else
         {
@@ -386,6 +410,14 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
           hitPars[j].push_back(PXFDetId(detIds[j]).disk());
           hitPars[j].push_back(PXFDetId(detIds[j]).panel());
           hitPars[j].push_back(PXFDetId(detIds[j]).module());
+
+          hitLabs[j].push_back(float(false)); //isBarrel
+          hitLabs[j].push_back(-1.0);
+          hitLabs[j].push_back(-1.0);
+          hitLabs[j].push_back(PXFDetId(detIds[j]).side());
+          hitLabs[j].push_back(PXFDetId(detIds[j]).disk());
+          hitLabs[j].push_back(PXFDetId(detIds[j]).panel());
+          hitLabs[j].push_back(PXFDetId(detIds[j]).module());
         }
 
         //Module orientation
@@ -396,6 +428,9 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         hitPars[j].push_back(ax1); //Module orientation y
         hitPars[j].push_back(ax2); //Module orientation x
 
+        hitPads[j].push_back(float(ax1<ax2)); //isFlipped
+        hitPads[j].push_back(ax1); //Module orientation y
+        hitPads[j].push_back(ax2); //Module orientation x
 
         //TODO check CLusterRef & OmniClusterRef
 
@@ -415,6 +450,22 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         hitPars[j].push_back((float)siHits[j]->spansTwoROCs());
         hitPars[j].push_back((float)siHits[j]->hasBadPixels());
         hitPars[j].push_back((float)siHits[j]->isOnEdge()); //31
+
+        hitLabs[j].push_back((float)clusters[j]->x()); //20
+        hitLabs[j].push_back((float)clusters[j]->y());
+        hitLabs[j].push_back((float)clusters[j]->size());
+        hitLabs[j].push_back((float)clusters[j]->sizeX());
+        hitLabs[j].push_back((float)clusters[j]->sizeY());
+        hitLabs[j].push_back((float)clusters[j]->pixel(0).adc); //25
+        hitLabs[j].push_back(float(clusters[j]->charge())/float(clusters[j]->size())); //avg pixel charge
+
+        hitLabs[j].push_back((float)(clusters[j]->sizeX() > padSize));//27
+        hitLabs[j].push_back((float)(clusters[j]->sizeY() > padSize));
+        hitLabs[j].push_back((float)(clusters[j]->sizeY()) / (float)(clusters[j]->sizeX()));
+
+        hitLabs[j].push_back((float)siHits[j]->spansTwoROCs());
+        hitLabs[j].push_back((float)siHits[j]->hasBadPixels());
+        hitLabs[j].push_back((float)siHits[j]->isOnEdge()); //31
 
         //Cluster Pad
         TH2F hClust("hClust","hClust",
@@ -449,6 +500,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
         //ADC sum
         hitPars[j].push_back(float(clusters[j]->charge()));
+        hitLabs[j].push_back(float(clusters[j]->charge()));
 
         deltaA   -= ((float)clusters[j]->size()); deltaA *= -1.0;
         deltaADC -= clusters[j]->charge(); deltaADC *= -1.0; //At the end == Outer Hit ADC - Inner Hit ADC
@@ -529,8 +581,8 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
       for (int j = 0; j < 2; j++)
-      for (size_t i = 0; i < hitPars[j].size(); i++)
-        vLab[i + j * hitPars[j].size()] = hitPars[j][i];
+      for (size_t i = 0; i < hitLabs[j].size(); i++)
+        vLab[i + j * hitLabs[j].size()] = hitPars[j][i];
 
       vLab[ 2 * hitPars[0].size() + 0 ] = deltaA   ;
       vLab[ 2 * hitPars[0].size() + 1 ] = deltaA   ;
