@@ -252,7 +252,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   //tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/jpsiphi/MCs/QCDtoPhiML/CMSSW_10_2_1/tmp/test_graph_tfadd.pb");
   //tensorflow::Session* session = tensorflow::createSession(graphDef);
 
-  tensorflow::Tensor inputPads(tensorflow::DT_INT32, {16,16,20});
+  tensorflow::Tensor inputPads(tensorflow::DT_INT32, {padSize,padSize,cnnLayers*2});
   tensorflow::Tensor inputFeat(tensorflow::DT_INT32, {67});
 
   float ax1, ax2, deltaADC = 0.0, deltaPhi = 0.0, deltaR = 0.0, deltaA = 0.0, deltaS = 0.0, deltaZ = 0.0, zZero = 0.0;
@@ -432,7 +432,6 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
 
-
         //ADC sum
         hitPars[j].push_back(float(clusters[j]->charge()));
 
@@ -448,6 +447,28 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       for (int nx = 0; nx < padSize*padSize; ++nx)
           outHitPads[outerLayerId][nx] = hitPads[1][nx];
 
+      float* dIn = inputPads.flat<float>().data();
+
+      std::cout << "Num elem: " << inputPads.NumElements() << std::endl;
+
+      int offSet = j*10*padSize*padSize;
+
+      for (int jc = 0; jc < 10; ++jc)
+      {
+        for (int nx = 0; nx < padSize*padSize; nx++,dIn++)
+        {
+          *dIn = inHitPads[jc][nx];
+        }
+      }
+
+      for (int jc = 10; jc < 20; ++jc)
+      {
+        for (int nx = 0; nx < padSize*padSize; nx++,dIn++)
+        {
+          *dIn = outHitPads[jc][nx];
+        }
+      }
+
       std::cout << "Inner hit layer : " << innerLayer->seqNum() << " - " << innerLayerId<< std::endl;
 
       for(int i = 0; i < cnnLayers; ++i)
@@ -457,11 +478,10 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         for (int nx = 0; nx < padSize; ++nx)
           for (int ny = 0; ny < padSize; ++ny)
           {
-            std::cout << thisOne[nx + ny*padSize] << " ";
+            std::cout << thisOne[ny + nx*padSize] << " ";
           }
           std::cout << std::endl;
 
-        outHitPads.push_back(zeroPad);
       }
 
       std::cout << "Outer hit layer : " << outerLayer->seqNum() << " - " << outerLayerId<< std::endl;
@@ -472,12 +492,25 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         for (int nx = 0; nx < padSize; ++nx)
           for (int ny = 0; ny < padSize; ++ny)
           {
-            std::cout << thisOne[nx + ny*padSize] << " ";
+            std::cout << thisOne[ny + nx*padSize] << " ";
           }
           std::cout << std::endl;
 
       }
 
+      std::cout << "TF Translation" << std::endl;
+      for(int i = 0; i < cnnLayers; ++i)
+      {
+        std::cout << i << std::endl;
+        int theOffset = i*padSize*padSize;
+        for (int nx = 0; nx < padSize; ++nx)
+          for (int ny = 0; ny < padSize; ++ny)
+          {
+            std::cout << d[(ny + nx*padSize) + theOffset] << " ";
+          }
+          std::cout << std::endl;
+
+      }
 
       deltaPhi *= deltaPhi > M_PI ? 2*M_PI - fabs(deltaPhi) : 1.0;
 
