@@ -7,6 +7,7 @@
 import numpy as np
 import pandas as pd
 import gzip
+
 #from keras.utils.np_utils import to_categorical
 
 def to_categorical(y, num_classes=None):
@@ -87,6 +88,15 @@ layer_ids = [0, 1, 2, 3, 14, 15, 16, 29, 30, 31]
 particle_ids = [-1.,11.,13.,15.,22.,111.,211.,311.,321.,2212.,2112.,3122.,223.]
 
 main_pdgs = [11.,13.,211.,321.,2212.]
+
+allLayerPixels = []
+
+for i in range(10):
+    thisPixels = [ h + "_in_" + str(i) for h in hitPixel]
+    allLayerPixels = allLayerPixels + thisPixels
+for i in range(10):
+    thisPixels = [ h + "_out_" + str(i) for h in hitPixel]
+    allLayerPixels = allLayerPixels + thisPixels
 
 def balance_data_by_pdg(dataSet, pdgIds):
     """ Balancing datasets by particles. """
@@ -375,6 +385,38 @@ class Dataset:
         y,_= to_categorical(self.get_labels())
 
         return X_hit, X_info, y
+
+    def first_layer_map_data(self):
+
+        self.recolumn()
+
+        a_in = self.data[inPixels].as_matrix().astype(np.float16)
+        a_out = self.data[outPixels].as_matrix().astype(np.float16)
+
+        # mean, std precomputed for data NOPU
+#         mean, std = (668.25684, 3919.5576)
+        mean, std = (13382.0011321,10525.1252954) #on 2.5M doublets
+        a_in = (a_in - mean) / std
+        a_out = (a_out - mean) / std
+
+        l = []
+
+        for hits, ids in [(a_in, self.data.detSeqIn), (a_out, self.data.detSeqOut)]:
+
+            for id_layer in layer_ids:
+                layer_hits = np.zeros(hits.shape)
+                bool_mask = ids == id_layer
+                layer_hits[bool_mask, :] = hits[bool_mask, :]
+                l.append(layer_hits)
+
+        data = np.array(l)  # (channels, batch_size, hit_size)
+        data = data.reshape((len(data), -1, padshape, padshape))
+        X_hit = np.transpose(data, (1, 0, 2, 3))
+
+        #print(X_hit[0,:,:,0])
+        y,_= to_categorical(self.get_labels())
+
+        return X_hit, y
 
     def get_layer_map_data_multiclass(self):
         a_in = self.data[inPixels].as_matrix().astype(np.float16)

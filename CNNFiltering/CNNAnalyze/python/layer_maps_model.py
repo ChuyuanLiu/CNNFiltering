@@ -361,14 +361,14 @@ if not args.kfolding:
 
 if args.kfolding:
     while np.sum(donechunks) < len(train_files) * args.gepochs and (donechunks < args.gepochs).any():
-        
+
 	print("Start to k-fold")
         numprobs = len(problematics_y)
         problematics = [problematics_hit,problematics_info]
         thisindices = indices[i*args.fsamp:(i+1)*args.fsamp]
         train_batch_file = np.take(train_files,thisindices)
         sizesamp = args.k
-	#print(len(thisindices)/args.k)	
+	#print(len(thisindices)/args.k)
         #print(len(thisindices))
 	#print(indices)
 	for i in range(0,len(thisindices)/args.k):

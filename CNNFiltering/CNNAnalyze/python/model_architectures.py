@@ -13,6 +13,7 @@ from keras.callbacks import Callback
 from keras.regularizers import l1,l2
 from keras import backend as K
 import numpy as np
+import tensorflow as tf
 from tensorflow import float64 as f64
 from tensorflow import cond, greater,cast
 IMAGE_SIZE = dataset.padshape
@@ -27,6 +28,35 @@ def max_binary_accuracy(y_true, y_pred,n=50):
             tmax = t
             accmax = acc
     return accmax,tmax
+
+def freeze_session(session, keep_var_names=None, output_names=None, clear_devices=True):
+    """
+    Freezes the state of a session into a pruned computation graph.
+
+    Creates a new computation graph where variable nodes are replaced by
+    constants taking their current value in the session. The new graph will be
+    pruned so subgraphs that are not necessary to compute the requested
+    outputs are removed.
+    @param session The TensorFlow session to be frozen.
+    @param keep_var_names A list of variable names that should not be frozen,
+                          or None to freeze all the variables in the graph.
+    @param output_names Names of the relevant graph outputs.
+    @param clear_devices Remove the device directives from the graph for better portability.
+    @return The frozen graph definition.
+    """
+    from tensorflow.python.framework.graph_util import convert_variables_to_constants
+    graph = session.graph
+    with graph.as_default():
+        freeze_var_names = list(set(v.op.name for v in tf.global_variables()).difference(keep_var_names or []))
+        output_names = output_names or []
+        output_names += [v.op.name for v in tf.global_variables()]
+        input_graph_def = graph.as_graph_def()
+        if clear_devices:
+            for node in input_graph_def.node:
+                node.device = ""
+        frozen_graph = convert_variables_to_constants(session, input_graph_def,
+                                                      output_names, freeze_var_names)
+        return frozen_graph
 
 def adam_small_doublet_model(args, n_channels,n_labels=2):
     hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='hit_shape_input')
@@ -184,6 +214,33 @@ def conv_model(args, n_channels):
     model.compile(optimizer=my_sgd, loss='categorical_crossentropy', metrics=['accuracy'])
     return model
 
+
+def pixel_only_model(args, n_channels):
+    hit_shapes = Input(shape=(n_channels, IMAGE_SIZE, IMAGE_SIZE), name='hit_shape_input')
+
+    drop = Dropout(args.dropout)(hit_shapes)
+    conv = Conv2D(64, (3, 3), activation='relu', padding='same', data_format="channels_first", name='conv1')(drop)
+    conv = Conv2D(64, (3, 3), activation='relu', padding='same', data_format="channels_first", name='conv2')(conv)
+    pool = MaxPooling2D(pool_size=(2, 2), padding='same', data_format="channels_first", name='pool1')(conv)
+
+    conv = Conv2D(128, (3, 3), activation='relu', padding='same', data_format="channels_first", name='conv3')(pool)
+    conv = Conv2D(128, (3, 3), activation='relu', padding='same', data_format="channels_first", name='conv4')(conv)
+    pool = MaxPooling2D(pool_size=(2, 2), padding='same', data_format="channels_first", name='pool2')(conv)
+
+    flat = Flatten()(pool)
+
+    drop = Dropout(args.dropout)(flat)
+    dense = Dense(128, activation='relu', kernel_constraint=max_norm(args.maxnorm), name='dense1')(drop)
+    drop = Dropout(args.dropout)(dense)
+    dense = Dense(64, activation='relu', kernel_constraint=max_norm(args.maxnorm), name='dense2')(drop)
+    drop = Dropout(args.dropout)(dense)
+    pred = Dense(2, activation='softmax', kernel_constraint=max_norm(args.maxnorm), name='output')(drop)
+
+    model = Model(inputs=hit_shapes, outputs=pred)
+    my_sgd = optimizers.SGD(lr=args.lr, decay=1e-4, momentum=args.momentum, nesterov=True)
+    model.compile(optimizer=my_sgd, loss='categorical_crossentropy', metrics=['accuracy'])
+    return model
+
 def separate_conv_doublet_model(args, n_channels):
     in_hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='in_hit_shape_input')
     out_hit_shapes = Input(shape=(IMAGE_SIZE, IMAGE_SIZE, n_channels), name='out_hit_shape_input')
@@ -243,7 +300,7 @@ class roc_callback(Callback):
         return
 
     def on_epoch_end(self, epoch, logs={}):
-        
+
 	start = time.time()
 	y_pred = self.model.predict(self.x)
         roc = roc_auc_score(self.y, y_pred)

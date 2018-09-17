@@ -23,10 +23,36 @@ import FWCore.ParameterSet.Config as cms
 # ++IntermediateHitDoublets "pixelLessStepHitDoublets" "" "RECO" (productId = 3:318)
 # ++IntermediateHitDoublets "tobTecStepHitDoubletsTripl" "" "RECO" (productId = 3:319)
 # ++IntermediateHitDoublets "tripletElectronHitDoublets" "" "RECO" (productId = 3:320)
+#pixelPairStepHitDoublets
+#jetCoreRegionalStepHitDoublets
+
+pixelPairStepCNN = cms.EDAnalyzer('CNNAnalyze',
+        processName = cms.string( "pixelPairStepHitDoublets"),
+        doublets    = cms.InputTag( "pixelPairStepHitDoublets" ),
+        tpMap       = cms.InputTag( "tpClusterProducer" ),
+        beamSpot    = cms.InputTag("offlineBeamSpot"),
+        infoPileUp  = cms.InputTag("addPileupInfo")
+)
+
+jetCoreRegionalStepCNN = cms.EDAnalyzer('CNNAnalyze',
+        processName = cms.string( "pixelPairStepHitDoublets"),
+        doublets    = cms.InputTag( "pixelPairStepHitDoublets" ),
+        tpMap       = cms.InputTag( "tpClusterProducer" ),
+        beamSpot    = cms.InputTag("offlineBeamSpot"),
+        infoPileUp  = cms.InputTag("addPileupInfo")
+)
 
 detachedQuadStepCNN = cms.EDAnalyzer('CNNAnalyze',
         processName = cms.string( "detachedQuadStepHitDoublets"),
         doublets    = cms.InputTag( "detachedQuadStepHitDoublets" ),
+        tpMap       = cms.InputTag( "tpClusterProducer" ),
+        beamSpot    = cms.InputTag("offlineBeamSpot"),
+        infoPileUp  = cms.InputTag("addPileupInfo")
+)
+
+highPtTripletStepCNN = cms.EDAnalyzer('CNNAnalyze',
+        processName = cms.string( "highPtTripletStepHitDoublets"),
+        doublets    = cms.InputTag( "highPtTripletStepHitDoublets" ),
         tpMap       = cms.InputTag( "tpClusterProducer" ),
         beamSpot    = cms.InputTag("offlineBeamSpot"),
         infoPileUp  = cms.InputTag("addPileupInfo")
@@ -48,9 +74,25 @@ initialStepPreSplittingCNN = cms.EDAnalyzer('CNNAnalyze',
         infoPileUp  = cms.InputTag("addPileupInfo")
 )
 
+initialStepCNN = cms.EDAnalyzer('CNNAnalyze',
+        processName = cms.string( "initialStepHitDoublets"),
+        doublets    = cms.InputTag( "initialStepHitDoublets" ),
+        tpMap       = cms.InputTag( "tpClusterProducer" ),
+        beamSpot    = cms.InputTag("offlineBeamSpot"),
+        infoPileUp  = cms.InputTag("addPileupInfo")
+)
+
 lowPtQuadStepCNN = cms.EDAnalyzer('CNNAnalyze',
         processName = cms.string( "lowPtQuadStepHitDoublets" ),
         doublets    = cms.InputTag( "lowPtQuadStepHitDoublets" ),
+        tpMap       = cms.InputTag( "tpClusterProducer" ),
+        beamSpot    = cms.InputTag("offlineBeamSpot"),
+        infoPileUp  = cms.InputTag("addPileupInfo")
+)
+
+lowPtTripletStepCNN = cms.EDAnalyzer('CNNAnalyze',
+        processName = cms.string( "lowPtTripletStepHitDoublets" ),
+        doublets    = cms.InputTag( "lowPtTripletStepHitDoublets" ),
         tpMap       = cms.InputTag( "tpClusterProducer" ),
         beamSpot    = cms.InputTag("offlineBeamSpot"),
         infoPileUp  = cms.InputTag("addPileupInfo")
@@ -99,11 +141,14 @@ tripletElectronCNN = cms.EDAnalyzer('CNNAnalyze',
 
 
 CNNDoubletsSequence = cms.Sequence(detachedQuadStepCNN *
+                                   highPtTripletStepCNN *
                                    detachedTripletStepCNN *
                                    initialStepPreSplittingCNN *
+                                   initialStepCNN *
                                    lowPtQuadStepCNN *
+                                   lowPtTripletStepCNN *
                                    mixedTripletStepACNN *
                                    mixedTripletStepBCNN *
-                                   pixelLessStepCNN *
-                                   tobTecStepCNN *
-                                   tripletElectronCNN)
+                                   tripletElectronCNN )
+                                   #pixelPairStepCNN *
+                                   #jetCoreRegionalStepCNN)
