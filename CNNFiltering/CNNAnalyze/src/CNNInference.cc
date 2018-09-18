@@ -927,16 +927,16 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
                   { "output/Softmax" }, &outputs);
 
-    // std::cout << "START" << std::endl;
-    // std::cout << outputs[0].DebugString() << std::endl;
-    // std::cout << outputs.size() << std::endl;
-    // std::cout << labels.size() << std::endl;
+    std::cout << "START" << std::endl;
+    std::cout << outputs[0].DebugString() << std::endl;
+    std::cout << outputs.size() << std::endl;
+    std::cout << labels.size() << std::endl;
 
-    // for (size_t i = 0; i < labels.size(); i++) {
-    //   float outs = outputs[0].matrix<float>()(i,0);
-    //   float outs2 = outputs[0].matrix<float>()(i,1);
-    //   std::cout << outs << " - " << outs2 << " - " << labels[i] << std::endl;
-    // }
+    for (size_t i = 0; i < labels.size(); i++) {
+      float outs = outputs[0].matrix<float>()(i,0);
+      float outs2 = outputs[0].matrix<float>()(i,1);
+      std::cout << outs << " - " << outs2 << " - " << labels[i] << std::endl;
+    }
 
     for (size_t i = 0; i < labels.size(); i++)
     {
