@@ -553,7 +553,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       int thisOffset = 0;
 
-      for (int jc = 0; jc < 10; ++jc)
+      for (int jc = 0; jc < 10; jc++)
       {
         thisOffset = jc * padSize*padSize;
         for (int nx = 0; nx < padSize*padSize; nx++)
@@ -563,7 +563,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         }
       }
 
-      for (int jc = 0; jc < 10; ++jc)
+      for (int jc = 0; jc < 10; jc++)
       {
         thisOffset = jc * padSize*padSize + 10 * padSize*padSize;
         for (int nx = 0; nx < padSize*padSize; nx++)
@@ -921,7 +921,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       outTFFile << innerLayer->seqNum() << "\t" << outerLayer->seqNum() << "\t";
       outTFFile << bs.x0() << "\t" << bs.y0() << "\t" << bs.z0() << "\t" << bs.sigmaZ() << "\t";
 
-      for (int jc = 0; jc < cnnLayers*2*padSize*padSize; ++jc)
+      for (int jc = 0; jc < cnnLayers*2*padSize*padSize; jc++)
         outTFFile << vPad[jc + doubOffset] << "\t";
 
       for (int ji = 0; ji < infoSize; ji++)
