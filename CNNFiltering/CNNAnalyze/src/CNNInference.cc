@@ -881,13 +881,12 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         vLab[i + j * hitLabs[j].size() + infoOffset] = hitLabs[j][i];
 
       vLab[ 2 * hitLabs[0].size() + 0 + infoOffset] = deltaA   ;
-      vLab[ 2 * hitLabs[0].size() + 1 + infoOffset] = deltaA   ;
-      vLab[ 2 * hitLabs[0].size() + 2 + infoOffset] = deltaADC ;
-      vLab[ 2 * hitLabs[0].size() + 3 + infoOffset] = deltaS   ;
-      vLab[ 2 * hitLabs[0].size() + 4 + infoOffset] = deltaR   ;
-      vLab[ 2 * hitLabs[0].size() + 5 + infoOffset] = deltaPhi ;
-      vLab[ 2 * hitLabs[0].size() + 6 + infoOffset] = deltaZ   ;
-      vLab[ 2 * hitLabs[0].size() + 7 + infoOffset] = zZero    ;
+      vLab[ 2 * hitLabs[0].size() + 1 + infoOffset] = deltaADC ;
+      vLab[ 2 * hitLabs[0].size() + 2 + infoOffset] = deltaS   ;
+      vLab[ 2 * hitLabs[0].size() + 3 + infoOffset] = deltaR   ;
+      vLab[ 2 * hitLabs[0].size() + 4 + infoOffset] = deltaPhi ;
+      vLab[ 2 * hitLabs[0].size() + 5 + infoOffset] = deltaZ   ;
+      vLab[ 2 * hitLabs[0].size() + 6 + infoOffset] = zZero    ;
 
       for (int j = 0; j < 2; j++)
         for (size_t i = 0; i < hitPars[j].size(); i++)
