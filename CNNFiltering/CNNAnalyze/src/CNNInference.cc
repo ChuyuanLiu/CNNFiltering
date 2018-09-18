@@ -245,20 +245,6 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::ofstream outCNNFile(fileName, std::ofstream::app);
 
 
-  std::vector< RecHitsSortedInPhi::Hit> hits;
-  std::vector< const SiPixelRecHit*> siHits;
-  std::vector< SiPixelRecHit::ClusterRef> clusters;
-  std::vector< DetId> detIds;
-  std::vector< const GeomDet*> geomDets;
-
-  std::vector <unsigned int> hitIds, subDetIds, detSeqs;
-
-  std::vector< std::vector< float>> hitPars,hitLabs;
-  std::vector< std::vector< float>> hitPads,inHitPads,outHitPads;
-  std::vector< float > inHitPars, outHitPars, inPad, outPad;
-  std::vector< float > inHitLabs, outHitLabs;
-  std::vector< float > inTP, outTP, theTP;
-
   // Load graph
   tensorflow::setLogging("3");
   // edm::FileInPath modelFilePath();
@@ -266,8 +252,6 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   //tensorflow::Session* session = tensorflow::createSession(graphDef);
   tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/CMSSW/CMSSW_10_3_0_pre4/test.pb");
   tensorflow::Session* session = tensorflow::createSession(graphDef);
-
-
 
 
   float ax1, ax2, deltaADC = 0.0, deltaPhi = 0.0, deltaR = 0.0, deltaA = 0.0, deltaS = 0.0, deltaZ = 0.0, zZero = 0.0;
@@ -304,6 +288,31 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     for (size_t i = 0; i < lIt->doublets().size(); i++)
     {
+
+      std::vector <unsigned int> hitIds, subDetIds, detSeqs;
+
+      std::vector< std::vector< float>> hitPars,hitLabs;
+      std::vector< std::vector< float>> hitPads,inHitPads,outHitPads;
+      std::vector< float > inHitPars, outHitPars, inPad, outPad;
+      std::vector< float > inHitLabs, outHitLabs;
+      std::vector< float > inTP, outTP, theTP;
+
+      std::vector< RecHitsSortedInPhi::Hit> hits;
+      std::vector< const SiPixelRecHit*> siHits;
+      std::vector< SiPixelRecHit::ClusterRef> clusters;
+      std::vector< DetId> detIds;
+      std::vector< const GeomDet*> geomDets;
+
+      int doubOffset = (padSize*padSize*cnnLayers*2)*i;
+      int infoOffset = (infoSize)*i;
+
+      std::cout << i << std::endl;
+      std::cout << "Num pads: " << inputPads.NumElements() << std::endl;
+      std::cout << "Num feats: " << inputFeat.NumElements() << std::endl;
+      std::cout <<doubOffset << std::endl;
+      std::cout <<infoOffset << std::endl;
+      std::cout << numOfDoublets << std::endl;
+
 
       inHitPads.clear();
       outHitPads.clear();
@@ -523,12 +532,14 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       for (int nx = 0; nx < padSize*padSize; ++nx)
           outHitPads[outerLayerId][nx] = hitPads[1][nx];
 
+      std::cout << "inHitPads.size()=" << inHitPads.size() <<std::endl;
+      std::cout << "outHitPads.size()=" << outHitPads.size() <<std::endl;
 
-      //std::cout << "Num elem: " << inputPads.NumElements() << std::endl;
+      std::cout << "inHitPads[innerLayerId].size()=" << inHitPads[innerLayerId].size() <<std::endl;
+      std::cout << "outHitPads[outerLayerId].size()=" << outHitPads[outerLayerId].size() <<std::endl;
 
       int thisOffset = 0;
-      int doubOffset = (padSize*padSize*cnnLayers*2)*i;
-      int infoOffset = (infoSize)*i;
+
       for (int jc = 0; jc < 10; ++jc)
       {
         thisOffset = jc * padSize*padSize;
@@ -604,6 +615,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       vLab[ 2 * hitLabs[0].size() + 6 + infoOffset] = deltaZ   ;
       vLab[ 2 * hitLabs[0].size() + 7 + infoOffset] = zZero    ;
 
+      std::cout << "hitLabs[j].size()=" << hitLabs[j].size() <<std::endl;
       // for (size_t i = 0; i < 2*hitLabs[0].size() + 8; i++)
       //   std::cout << vLab [i + doubOffset] << " ";
       // std::cout << std::endl;
