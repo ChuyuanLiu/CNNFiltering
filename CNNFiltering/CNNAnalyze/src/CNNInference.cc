@@ -608,8 +608,11 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
                     { "output/Softmax" }, &outputs);
+
       std::cout << outputs[0].DebugString() << std::endl;
-      std::cout << outputs[1].DebugString() << std::endl;
+
+      std::cout << "Done" << std::endl;
+      //std::cout << outputs[1].DebugString() << std::endl;
 
       if (i > 0)
         continue;
