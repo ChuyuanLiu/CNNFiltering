@@ -893,7 +893,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                   { "output/Softmax" }, &outputs);
 
     std::cout << "Done" << std::endl;
-    float* outs = outputs.flat<float>().data();
+    float* outs = outputs[0].flat<float>().data();
     std::cout << sizeof(outs)/(sizeof(float)) << std:endl;
     std::out << labels.size() << std::endl;
     for (size_t i = 0; i < labels.size(); i++) {
