@@ -615,7 +615,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       vLab[ 2 * hitLabs[0].size() + 6 + infoOffset] = deltaZ   ;
       vLab[ 2 * hitLabs[0].size() + 7 + infoOffset] = zZero    ;
 
-      std::cout << "hitLabs[j].size()=" << hitLabs[j].size() <<std::endl;
+      std::cout << "hitLabs[j].size()=" << hitLabs[0].size() <<std::endl;
       // for (size_t i = 0; i < 2*hitLabs[0].size() + 8; i++)
       //   std::cout << vLab [i + doubOffset] << " ";
       // std::cout << std::endl;
