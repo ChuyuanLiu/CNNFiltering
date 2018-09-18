@@ -531,7 +531,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       int infoOffset = (infoSize)*i;
       for (int jc = 0; jc < 10; ++jc)
       {
-        thisOffset = jc * padSize*padSize + doubOffset;
+        thisOffset = jc * padSize*padSize;
         for (int nx = 0; nx < padSize*padSize; nx++)
         {
           vPad[thisOffset + nx + doubOffset] = (inHitPads[jc][nx] - padMean)/padSigma;
@@ -540,7 +540,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       for (int jc = 0; jc < 10; ++jc)
       {
-        thisOffset = jc * padSize*padSize + 10 * padSize*padSize + doubOffset;
+        thisOffset = jc * padSize*padSize + 10 * padSize*padSize;
         for (int nx = 0; nx < padSize*padSize; nx++)
         {
           vPad[thisOffset + nx + doubOffset ] = (outHitPads[jc][nx] - padMean)/padSigma;
@@ -593,7 +593,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       for (int j = 0; j < 2; j++)
       for (size_t i = 0; i < hitLabs[j].size(); i++)
-        vLab[i + j * hitLabs[j].size() + doubOffset] = hitLabs[j][i];
+        vLab[i + j * hitLabs[j].size() + infoOffset] = hitLabs[j][i];
 
       vLab[ 2 * hitLabs[0].size() + 0 + infoOffset] = deltaA   ;
       vLab[ 2 * hitLabs[0].size() + 1 + infoOffset] = deltaA   ;
@@ -662,6 +662,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
         for (size_t k = 0; k < 2; k++) {
 
+          labels.push_back(1.0);
           theTP.push_back(1.0); // 1
           theTP.push_back(kPar->second.key()); // 2
           theTP.push_back(momTp.x()); // 3
@@ -719,6 +720,8 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
       else
       {
+        labels.push_back(0.0);
+
         theTP.push_back(-1.0);
         theTP.push_back(-1.0);
         theTP.push_back(-1.0);
@@ -732,7 +735,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
           TrackingParticle::Vector momTp = particle.momentum();
           TrackingParticle::Point  verTp  = particle.vertex();
 
-          labels.push_back(1.0);
+
           theTP.push_back(1.0); // 1
           theTP.push_back(inPar->second.key()); // 2
           theTP.push_back(momTp.x()); // 3
@@ -784,10 +787,9 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         }
         else
         {
-        for (int i = 0; i < tParams; i++) {
+        for (int i = 0; i < tParams; i++)
           theTP.push_back(-1.0);
-        }
-        labels.push_back(0.0);
+
         }
 
         auto outPar = rangeOut.first;
@@ -892,17 +894,19 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
                   { "output/Softmax" }, &outputs);
 
-    std::cout << "Done" << std::endl;
-
+    std::cout << "START" << std::endl;
+    std::cout << outputs[0].DebugString() << std::endl;
     std::cout << outputs.size() << std::endl;
     std::cout << labels.size() << std::endl;
+
     for (size_t i = 0; i < labels.size(); i++) {
-      float* outs = outputs[i].flat<float>().data();
-      std::cout << outs[0] << " - " << labels[i]<< std::endl;
+      float outs = outputs[0].matrix<float>()(i,0);
+      float outs2 = outputs[0].matrix<float>()(i,1);
+      std::cout << outs << " - " << outs2 << " - " << labels[i] << std::endl;
     }
 
 
-
+    std::cout << "DONE" << std::endl;
 
   }
   // auto range = clusterToTPMap.equal_range(dynamic_cast<const BaseTrackerRecHit&>(hit).firstClusterRef());
