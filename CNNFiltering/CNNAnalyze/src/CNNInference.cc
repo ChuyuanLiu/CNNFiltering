@@ -244,6 +244,14 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   fileName += "_" + processName_ + "_dnn_doublets.txt";
   std::ofstream outCNNFile(fileName, std::ofstream::app);
 
+  fileName = "doublets/" + std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
+  fileName += "_" + processName_ + "_dnn_doublets_tf.txt";
+  std::ofstream outTFFile(fileName, std::ofstream::app);
+
+  fileName = "doublets/" + std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
+  fileName += "_" + processName_ + "_dnn_doublets_inf.txt";
+  std::ofstream outInference(fileName, std::ofstream::app);
+
 
   // Load graph
   tensorflow::setLogging("3");
@@ -306,12 +314,12 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       int doubOffset = (padSize*padSize*cnnLayers*2)*i;
       int infoOffset = (infoSize)*i;
 
-      std::cout << i << std::endl;
-      std::cout << "Num pads: " << inputPads.NumElements() << std::endl;
-      std::cout << "Num feats: " << inputFeat.NumElements() << std::endl;
-      std::cout <<doubOffset << std::endl;
-      std::cout <<infoOffset << std::endl;
-      std::cout << numOfDoublets << std::endl;
+      // std::cout << i << std::endl;
+      // std::cout << "Num pads: " << inputPads.NumElements() << std::endl;
+      // std::cout << "Num feats: " << inputFeat.NumElements() << std::endl;
+      // std::cout <<doubOffset << std::endl;
+      // std::cout <<infoOffset << std::endl;
+      // std::cout << numOfDoublets << std::endl;
 
 
       inHitPads.clear();
@@ -558,6 +566,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         }
       }
 
+
       // std::cout << "Inner hit layer : " << innerLayer->seqNum() << " - " << innerLayerId<< std::endl;
       //
       // for(int i = 0; i < cnnLayers; ++i)
@@ -600,20 +609,6 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       //     std::cout << std::endl;
       //
       // }
-
-
-      for (int j = 0; j < 2; j++)
-      for (size_t i = 0; i < hitLabs[j].size(); i++)
-        vLab[i + j * hitLabs[j].size() + infoOffset] = hitLabs[j][i];
-
-      vLab[ 2 * hitLabs[0].size() + 0 + infoOffset] = deltaA   ;
-      vLab[ 2 * hitLabs[0].size() + 1 + infoOffset] = deltaA   ;
-      vLab[ 2 * hitLabs[0].size() + 2 + infoOffset] = deltaADC ;
-      vLab[ 2 * hitLabs[0].size() + 3 + infoOffset] = deltaS   ;
-      vLab[ 2 * hitLabs[0].size() + 4 + infoOffset] = deltaR   ;
-      vLab[ 2 * hitLabs[0].size() + 5 + infoOffset] = deltaPhi ;
-      vLab[ 2 * hitLabs[0].size() + 6 + infoOffset] = deltaZ   ;
-      vLab[ 2 * hitLabs[0].size() + 7 + infoOffset] = zZero    ;
 
       std::cout << "hitLabs[j].size()=" << hitLabs[0].size() <<std::endl;
       // for (size_t i = 0; i < 2*hitLabs[0].size() + 8; i++)
@@ -882,6 +877,19 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       outCNNFile << bs.x0() << "\t" << bs.y0() << "\t" << bs.z0() << "\t" << bs.sigmaZ() << "\t";
 
       for (int j = 0; j < 2; j++)
+      for (size_t i = 0; i < hitLabs[j].size(); i++)
+        vLab[i + j * hitLabs[j].size() + infoOffset] = hitLabs[j][i];
+
+      vLab[ 2 * hitLabs[0].size() + 0 + infoOffset] = deltaA   ;
+      vLab[ 2 * hitLabs[0].size() + 1 + infoOffset] = deltaA   ;
+      vLab[ 2 * hitLabs[0].size() + 2 + infoOffset] = deltaADC ;
+      vLab[ 2 * hitLabs[0].size() + 3 + infoOffset] = deltaS   ;
+      vLab[ 2 * hitLabs[0].size() + 4 + infoOffset] = deltaR   ;
+      vLab[ 2 * hitLabs[0].size() + 5 + infoOffset] = deltaPhi ;
+      vLab[ 2 * hitLabs[0].size() + 6 + infoOffset] = deltaZ   ;
+      vLab[ 2 * hitLabs[0].size() + 7 + infoOffset] = zZero    ;
+
+      for (int j = 0; j < 2; j++)
         for (size_t i = 0; i < hitPars[j].size(); i++)
         outCNNFile << hitPars[j][i] << "\t";
 
@@ -901,23 +909,42 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       // outCNNFile << hitPars[0].size() << " -- " <<  hitPars[1].size() << " -- " << theTP.size() << std::endl << std::endl;
       // std::cout << hitPars[0].size() << " " << hitPars[1].size() << " " << theTP.size() << std::endl;
 
+      outTFFile << runNumber << "\t" << eveNumber << "\t" << lumNumber << "\t" << puNumInt << "\t";
+      outTFFile << innerLayer->seqNum() << "\t" << outerLayer->seqNum() << "\t";
+      outTFFile << bs.x0() << "\t" << bs.y0() << "\t" << bs.z0() << "\t" << bs.sigmaZ() << "\t";
+
+      for (int jc = 0; jc < cnnLayers*2*padSize*padSize; ++jc)
+        outTFFile << vPad[jc + doubOffset] << "\t";
+
+      for (int ji = 0; ji < infoSize; ji++)
+        outTFFile << vPad[ji + infoOffset] << "\t";
+
+      outTFFile << 542.1369;
+      outTFFile << std::endl;
+
 
     }//end single doublet
 
     tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
                   { "output/Softmax" }, &outputs);
 
-    std::cout << "START" << std::endl;
-    std::cout << outputs[0].DebugString() << std::endl;
-    std::cout << outputs.size() << std::endl;
-    std::cout << labels.size() << std::endl;
+    // std::cout << "START" << std::endl;
+    // std::cout << outputs[0].DebugString() << std::endl;
+    // std::cout << outputs.size() << std::endl;
+    // std::cout << labels.size() << std::endl;
 
-    for (size_t i = 0; i < labels.size(); i++) {
+    // for (size_t i = 0; i < labels.size(); i++) {
+    //   float outs = outputs[0].matrix<float>()(i,0);
+    //   float outs2 = outputs[0].matrix<float>()(i,1);
+    //   std::cout << outs << " - " << outs2 << " - " << labels[i] << std::endl;
+    // }
+
+    for (size_t i = 0; i < labels.size(); i++)
+    {
       float outs = outputs[0].matrix<float>()(i,0);
       float outs2 = outputs[0].matrix<float>()(i,1);
-      std::cout << outs << " - " << outs2 << " - " << labels[i] << std::endl;
+      outInference << outs << " - " << outs2 << " - " << labels[i] << std::endl;
     }
-
 
     std::cout << "DONE" << std::endl;
 
