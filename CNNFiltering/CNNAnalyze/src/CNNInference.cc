@@ -648,6 +648,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       //Matched :D
       if (kIntersection.size()>0)
       {
+        labels.push_back(1.0);
         // in case of multiple tp matching both hits use the first one for labels
         auto kPar = ((std::find(kPdgIn.begin(), kPdgIn.end(), kIntersection[0]) - kPdgIn.begin()) + rangeIn.first);
 
@@ -674,7 +675,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
         for (size_t k = 0; k < 2; k++) {
 
-          labels.push_back(1.0);
+
           theTP.push_back(1.0); // 1
           theTP.push_back(kPar->second.key()); // 2
           theTP.push_back(momTp.x()); // 3
