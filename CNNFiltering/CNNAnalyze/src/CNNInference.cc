@@ -267,9 +267,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/CMSSW/CMSSW_10_3_0_pre4/test.pb");
   tensorflow::Session* session = tensorflow::createSession(graphDef);
 
-  tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {padSize,padSize,cnnLayers*2});
-  tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {67});
-  std::vector<tensorflow::Tensor> outputs;
+
 
 
   float ax1, ax2, deltaADC = 0.0, deltaPhi = 0.0, deltaR = 0.0, deltaA = 0.0, deltaS = 0.0, deltaZ = 0.0, zZero = 0.0;
@@ -293,6 +291,16 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     //     HitDoublets lDoublets = std::move(lIt->doublets());
     // std::cout << "Size: " << lIt->doublets().size() << std::endl;
+
+    int numOfDoublets = int(lIt->doublets().size());
+
+    tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {numOfDoublets,padSize,padSize,cnnLayers*2});
+    tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {numOfDoublets,67});
+    std::vector<tensorflow::Tensor> outputs;
+
+    float* vPad = inputPads.flat<float>().data();
+    float* vLab = inputFeat.flat<float>().data();
+
     for (size_t i = 0; i < lIt->doublets().size(); i++)
     {
 
@@ -356,8 +364,6 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       HitDoublets::layer layers[2] = {HitDoublets::inner, HitDoublets::outer};
 
-      float* vPad = inputPads.flat<float>().data();
-      float* vLab = inputFeat.flat<float>().data();
 
       for(int j = 0; j < 2; ++j)
       {
@@ -520,9 +526,10 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       std::cout << "Num elem: " << inputPads.NumElements() << std::endl;
 
       int thisOffset = 0;
+      int doubOffset = numOfDoublets*i;
       for (int jc = 0; jc < 10; ++jc)
       {
-        thisOffset = jc * padSize*padSize;
+        thisOffset = jc * padSize*padSize + doubOffset;
         for (int nx = 0; nx < padSize*padSize; nx++)
         {
           vPad[thisOffset + nx] = inHitPads[jc][nx];
@@ -531,7 +538,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       for (int jc = 0; jc < 10; ++jc)
       {
-        thisOffset = jc * padSize*padSize + 10 * padSize*padSize;
+        thisOffset = jc * padSize*padSize + 10 * padSize*padSize + doubOffset;
         for (int nx = 0; nx < padSize*padSize; nx++)
         {
           vPad[thisOffset + nx] = outHitPads[jc][nx];
@@ -561,7 +568,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         for (int nx = 0; nx < padSize; ++nx)
           for (int ny = 0; ny < padSize; ++ny)
           {
-            std::cout << thisOne[ny + nx*padSize] << " ";
+            std::cout << thisOne[ny + nx*padSize + doubOffset] << " ";
           }
           std::cout << std::endl;
 
@@ -575,7 +582,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         for (int nx = 0; nx < padSize; ++nx)
           for (int ny = 0; ny < padSize; ++ny)
           {
-            std::cout << vPad[(ny + nx*padSize) + theOffset] << " ";
+            std::cout << vPad[(ny + nx*padSize) + theOffset + doubOffset] << " ";
           }
           std::cout << std::endl;
 
@@ -584,19 +591,19 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       for (int j = 0; j < 2; j++)
       for (size_t i = 0; i < hitLabs[j].size(); i++)
-        vLab[i + j * hitLabs[j].size()] = hitLabs[j][i];
+        vLab[i + j * hitLabs[j].size() + doubOffset] = hitLabs[j][i];
 
-      vLab[ 2 * hitLabs[0].size() + 0 ] = deltaA   ;
-      vLab[ 2 * hitLabs[0].size() + 1 ] = deltaA   ;
-      vLab[ 2 * hitLabs[0].size() + 2 ] = deltaADC ;
-      vLab[ 2 * hitLabs[0].size() + 3 ] = deltaS   ;
-      vLab[ 2 * hitLabs[0].size() + 4 ] = deltaR   ;
-      vLab[ 2 * hitLabs[0].size() + 5 ] = deltaPhi ;
-      vLab[ 2 * hitLabs[0].size() + 6 ] = deltaZ   ;
-      vLab[ 2 * hitLabs[0].size() + 7 ] = zZero    ;
+      vLab[ 2 * hitLabs[0].size() + 0 + doubOffset] = deltaA   ;
+      vLab[ 2 * hitLabs[0].size() + 1 + doubOffset] = deltaA   ;
+      vLab[ 2 * hitLabs[0].size() + 2 + doubOffset] = deltaADC ;
+      vLab[ 2 * hitLabs[0].size() + 3 + doubOffset] = deltaS   ;
+      vLab[ 2 * hitLabs[0].size() + 4 + doubOffset] = deltaR   ;
+      vLab[ 2 * hitLabs[0].size() + 5 + doubOffset] = deltaPhi ;
+      vLab[ 2 * hitLabs[0].size() + 6 + doubOffset] = deltaZ   ;
+      vLab[ 2 * hitLabs[0].size() + 7 + doubOffset] = zZero    ;
 
       for (size_t i = 0; i < 2*hitLabs[0].size() + 8; i++)
-        std::cout << vLab [i] << " ";
+        std::cout << vLab [i + doubOffset] << " ";
       std::cout << std::endl;
 
       tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
