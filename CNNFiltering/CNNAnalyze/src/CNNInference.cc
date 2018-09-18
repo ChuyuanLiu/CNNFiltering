@@ -167,11 +167,13 @@ CNNInference::~CNNInference()
 //'inLayer', 'inLadder', 'inSide', 'inDisk', 'inPanel', 'inModule', 'inIsFlipped',
 //'inClustX', 'inClustY', 'inClustSize', 'inClustSizeX', 'inClustSizeY', 'inPixelZero',
 //'inAvgCharge', 'inOverFlowX', 'inOverFlowY', 'inSkew', 'inIsBig', 'inIsBad', 'inIsEdge',
-//'inAx1', 'inAx2', 'inSumADC', 'outX', 'outY', 'outZ', 'outPhi', 'outR', 'outDetSeq',
+//'inAx1', 'inAx2', 'inSumADC',
+//'outX', 'outY', 'outZ', 'outPhi', 'outR', 'outDetSeq',
 //'outIsBarrel', 'outLayer', 'outLadder', 'outSide', 'outDisk', 'outPanel', 'outModule',
 //'outIsFlipped', 'outClustX', 'outClustY', 'outClustSize', 'outClustSizeX',
 //'outClustSizeY', 'outPixelZero', 'outAvgCharge', 'outOverFlowX', 'outOverFlowY',
 //'outSkew', 'outIsBig', 'outIsBad', 'outIsEdge', 'outAx1', 'outAx2', 'outSumADC',
+//
 //'deltaA', 'deltaADC', 'deltaS', 'deltaR', 'deltaPhi', 'deltaZ', 'ZZero']
 //
 // member functions
@@ -293,6 +295,9 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     float* vPad = inputPads.flat<float>().data();
     float* vLab = inputFeat.flat<float>().data();
+
+    int padCounter = 0;
+    int infoCounter = 0;
 
     for (size_t i = 0; i < lIt->doublets().size(); i++)
     {
@@ -476,7 +481,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         hitPars[j].push_back((float)siHits[j]->spansTwoROCs());
         hitPars[j].push_back((float)siHits[j]->hasBadPixels());
         hitPars[j].push_back((float)siHits[j]->isOnEdge()); //31
-
+//inX
         hitLabs[j].push_back((float)clusters[j]->x()); //20
         hitLabs[j].push_back((float)clusters[j]->y());
         hitLabs[j].push_back((float)clusters[j]->size());
@@ -539,12 +544,12 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
           inHitPads[innerLayerId][nx] = hitPads[0][nx];
       for (int nx = 0; nx < padSize*padSize; ++nx)
           outHitPads[outerLayerId][nx] = hitPads[1][nx];
-
-      std::cout << "inHitPads.size()=" << inHitPads.size() <<std::endl;
-      std::cout << "outHitPads.size()=" << outHitPads.size() <<std::endl;
-
-      std::cout << "inHitPads[innerLayerId].size()=" << inHitPads[innerLayerId].size() <<std::endl;
-      std::cout << "outHitPads[outerLayerId].size()=" << outHitPads[outerLayerId].size() <<std::endl;
+      //
+      // std::cout << "inHitPads.size()=" << inHitPads.size() <<std::endl;
+      // std::cout << "outHitPads.size()=" << outHitPads.size() <<std::endl;
+      //
+      // std::cout << "inHitPads[innerLayerId].size()=" << inHitPads[innerLayerId].size() <<std::endl;
+      // std::cout << "outHitPads[outerLayerId].size()=" << outHitPads[outerLayerId].size() <<std::endl;
 
       int thisOffset = 0;
 
@@ -554,6 +559,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         for (int nx = 0; nx < padSize*padSize; nx++)
         {
           vPad[thisOffset + nx + doubOffset] = (inHitPads[jc][nx] - padMean)/padSigma;
+          padCounter++;
         }
       }
 
@@ -563,6 +569,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         for (int nx = 0; nx < padSize*padSize; nx++)
         {
           vPad[thisOffset + nx + doubOffset ] = (outHitPads[jc][nx] - padMean)/padSigma;
+          padCounter++;
         }
       }
 
@@ -610,7 +617,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       //
       // }
 
-      std::cout << "hitLabs[j].size()=" << hitLabs[0].size() <<std::endl;
+      // std::cout << "hitLabs[j].size()=" << hitLabs[0].size() <<std::endl;
       // for (size_t i = 0; i < 2*hitLabs[0].size() + 8; i++)
       //   std::cout << vLab [i + doubOffset] << " ";
       // std::cout << std::endl;
@@ -878,15 +885,17 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       for (int j = 0; j < 2; j++)
       for (size_t i = 0; i < hitLabs[j].size(); i++)
-        vLab[i + j * hitLabs[j].size() + infoOffset] = hitLabs[j][i];
-
-      vLab[ 2 * hitLabs[0].size() + 0 + infoOffset] = deltaA   ;
-      vLab[ 2 * hitLabs[0].size() + 1 + infoOffset] = deltaADC ;
-      vLab[ 2 * hitLabs[0].size() + 2 + infoOffset] = deltaS   ;
-      vLab[ 2 * hitLabs[0].size() + 3 + infoOffset] = deltaR   ;
-      vLab[ 2 * hitLabs[0].size() + 4 + infoOffset] = deltaPhi ;
-      vLab[ 2 * hitLabs[0].size() + 5 + infoOffset] = deltaZ   ;
-      vLab[ 2 * hitLabs[0].size() + 6 + infoOffset] = zZero    ;
+        {
+          infoCounter++;
+          vLab[i + j * hitLabs[j].size() + infoOffset] = hitLabs[j][i];
+        }
+      vLab[ 2 * hitLabs[0].size() + 0 + infoOffset] = deltaA   ; infoCounter++;
+      vLab[ 2 * hitLabs[0].size() + 1 + infoOffset] = deltaADC ; infoCounter++;
+      vLab[ 2 * hitLabs[0].size() + 2 + infoOffset] = deltaS   ; infoCounter++;
+      vLab[ 2 * hitLabs[0].size() + 3 + infoOffset] = deltaR   ; infoCounter++;
+      vLab[ 2 * hitLabs[0].size() + 4 + infoOffset] = deltaPhi ; infoCounter++;
+      vLab[ 2 * hitLabs[0].size() + 5 + infoOffset] = deltaZ   ; infoCounter++;
+      vLab[ 2 * hitLabs[0].size() + 6 + infoOffset] = zZero    ; infoCounter++;
 
       for (int j = 0; j < 2; j++)
         for (size_t i = 0; i < hitPars[j].size(); i++)
@@ -931,12 +940,14 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     std::cout << outputs[0].DebugString() << std::endl;
     std::cout << outputs.size() << std::endl;
     std::cout << labels.size() << std::endl;
+    std::cout << infoCounter << " - " << inputFeat.DebugString() << std::endl;
+    std::cout << padCounter  << " - "  << inputPads.DebugString() << std::endl;
 
-    for (size_t i = 0; i < labels.size(); i++) {
-      float outs = outputs[0].matrix<float>()(i,0);
-      float outs2 = outputs[0].matrix<float>()(i,1);
-      std::cout << outs << " - " << outs2 << " - " << labels[i] << std::endl;
-    }
+    // for (size_t i = 0; i < labels.size(); i++) {
+    //   float outs = outputs[0].matrix<float>()(i,0);
+    //   float outs2 = outputs[0].matrix<float>()(i,1);
+    //   std::cout << outs << " - " << outs2 << " - " << labels[i] << std::endl;
+    // }
 
     for (size_t i = 0; i < labels.size(); i++)
     {
