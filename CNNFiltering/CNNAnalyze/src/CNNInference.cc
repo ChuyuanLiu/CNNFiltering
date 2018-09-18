@@ -895,7 +895,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     std::cout << "Done" << std::endl;
     float* outs = outputs[0].flat<float>().data();
     std::cout << sizeof(outs)/(sizeof(float)) << std:endl;
-    std::out << labels.size() << std::endl;
+    std::cout << labels.size() << std::endl;
     for (size_t i = 0; i < labels.size(); i++) {
       std::cout << outs[i*2] << " - " << labels[i]<< std::endl;
     }
