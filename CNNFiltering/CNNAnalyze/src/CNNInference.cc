@@ -925,7 +925,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         outTFFile << vPad[jc + doubOffset] << "\t";
 
       for (int ji = 0; ji < infoSize; ji++)
-        outTFFile << vPad[ji + infoOffset] << "\t";
+        outTFFile << vLab[ji + infoOffset] << "\t";
 
       outTFFile << 542.1369;
       outTFFile << std::endl;
