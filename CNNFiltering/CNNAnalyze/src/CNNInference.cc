@@ -532,7 +532,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         thisOffset = jc * padSize*padSize + doubOffset;
         for (int nx = 0; nx < padSize*padSize; nx++)
         {
-          vPad[thisOffset + nx] = inHitPads[jc][nx];
+          vPad[thisOffset + nx] = (inHitPads[jc][nx] - padMean)/padSigma;
         }
       }
 
@@ -541,52 +541,52 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         thisOffset = jc * padSize*padSize + 10 * padSize*padSize + doubOffset;
         for (int nx = 0; nx < padSize*padSize; nx++)
         {
-          vPad[thisOffset + nx] = outHitPads[jc][nx];
+          vPad[thisOffset + nx] = (outHitPads[jc][nx] - padMean)/padSigma;
         }
       }
 
-      std::cout << "Inner hit layer : " << innerLayer->seqNum() << " - " << innerLayerId<< std::endl;
-
-      for(int i = 0; i < cnnLayers; ++i)
-      {
-        std::cout << i << std::endl;
-        auto thisOne = inHitPads[i];
-        for (int nx = 0; nx < padSize; ++nx)
-          for (int ny = 0; ny < padSize; ++ny)
-          {
-            std::cout << thisOne[ny + nx*padSize] << " ";
-          }
-          std::cout << std::endl;
-
-      }
-
-      std::cout << "Outer hit layer : " << outerLayer->seqNum() << " - " << outerLayerId<< std::endl;
-      for(int i = 0; i < cnnLayers; ++i)
-      {
-        std::cout << i << std::endl;
-        auto thisOne = outHitPads[i];
-        for (int nx = 0; nx < padSize; ++nx)
-          for (int ny = 0; ny < padSize; ++ny)
-          {
-            std::cout << thisOne[ny + nx*padSize + doubOffset] << " ";
-          }
-          std::cout << std::endl;
-
-      }
-
-      std::cout << "TF Translation" << std::endl;
-      for(int i = 0; i < cnnLayers*2; ++i)
-      {
-        std::cout << i << std::endl;
-        int theOffset = i*padSize*padSize;
-        for (int nx = 0; nx < padSize; ++nx)
-          for (int ny = 0; ny < padSize; ++ny)
-          {
-            std::cout << vPad[(ny + nx*padSize) + theOffset + doubOffset] << " ";
-          }
-          std::cout << std::endl;
-
-      }
+      // std::cout << "Inner hit layer : " << innerLayer->seqNum() << " - " << innerLayerId<< std::endl;
+      //
+      // for(int i = 0; i < cnnLayers; ++i)
+      // {
+      //   std::cout << i << std::endl;
+      //   auto thisOne = inHitPads[i];
+      //   for (int nx = 0; nx < padSize; ++nx)
+      //     for (int ny = 0; ny < padSize; ++ny)
+      //     {
+      //       std::cout << thisOne[ny + nx*padSize] << " ";
+      //     }
+      //     std::cout << std::endl;
+      //
+      // }
+      //
+      // std::cout << "Outer hit layer : " << outerLayer->seqNum() << " - " << outerLayerId<< std::endl;
+      // for(int i = 0; i < cnnLayers; ++i)
+      // {
+      //   std::cout << i << std::endl;
+      //   auto thisOne = outHitPads[i];
+      //   for (int nx = 0; nx < padSize; ++nx)
+      //     for (int ny = 0; ny < padSize; ++ny)
+      //     {
+      //       std::cout << thisOne[ny + nx*padSize + doubOffset] << " ";
+      //     }
+      //     std::cout << std::endl;
+      //
+      // }
+      //
+      // std::cout << "TF Translation" << std::endl;
+      // for(int i = 0; i < cnnLayers*2; ++i)
+      // {
+      //   std::cout << i << std::endl;
+      //   int theOffset = i*padSize*padSize;
+      //   for (int nx = 0; nx < padSize; ++nx)
+      //     for (int ny = 0; ny < padSize; ++ny)
+      //     {
+      //       std::cout << vPad[(ny + nx*padSize) + theOffset + doubOffset] << " ";
+      //     }
+      //     std::cout << std::endl;
+      //
+      // }
 
 
       for (int j = 0; j < 2; j++)
@@ -602,20 +602,13 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       vLab[ 2 * hitLabs[0].size() + 6 + doubOffset] = deltaZ   ;
       vLab[ 2 * hitLabs[0].size() + 7 + doubOffset] = zZero    ;
 
-      for (size_t i = 0; i < 2*hitLabs[0].size() + 8; i++)
-        std::cout << vLab [i + doubOffset] << " ";
-      std::cout << std::endl;
+      // for (size_t i = 0; i < 2*hitLabs[0].size() + 8; i++)
+      //   std::cout << vLab [i + doubOffset] << " ";
+      // std::cout << std::endl;
 
-      tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
-                    { "output/Softmax" }, &outputs);
 
-      std::cout << outputs[0].DebugString() << std::endl;
-
-      std::cout << "Done" << std::endl;
       //std::cout << outputs[1].DebugString() << std::endl;
 
-      if (i > 0)
-        continue;
 
       deltaPhi *= deltaPhi > M_PI ? 2*M_PI - fabs(deltaPhi) : 1.0;
 
@@ -888,7 +881,15 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       // std::cout << hitPars[0].size() << " " << hitPars[1].size() << " " << theTP.size() << std::endl;
 
 
-    }
+    }//end single doublet
+
+    tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
+                  { "output/Softmax" }, &outputs);
+
+    std::cout << outputs[0].DebugString() << std::endl;
+
+    std::cout << "Done" << std::endl;
+
   }
   // auto range = clusterToTPMap.equal_range(dynamic_cast<const BaseTrackerRecHit&>(hit).firstClusterRef());
   //      for(auto ip=range.first; ip != range.second; ++ip) {
