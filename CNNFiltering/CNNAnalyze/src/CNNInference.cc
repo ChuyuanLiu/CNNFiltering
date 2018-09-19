@@ -185,7 +185,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
 
-  float padMean = 13382.0011321, padSigma = 10525.1252954;
+  double padMean = 13382.0011321, padSigma = 10525.1252954;
 
   // int detOnArr[10] = {0,1,2,3,14,15,16,29,30,31};
   // std::vector<int> detOn(detOnArr,detOnArr+sizeof(detOnArr)/sizeof(int));
@@ -541,9 +541,9 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
 
       for (int nx = 0; nx < padSize*padSize; ++nx)
-          inHitPads[innerLayerId][nx] = hitPads[0][nx];
+          inHitPads[innerLayerId][nx] = (hitPads[0][nx]- padMean)/padSigma;
       for (int nx = 0; nx < padSize*padSize; ++nx)
-          outHitPads[outerLayerId][nx] = hitPads[1][nx];
+          outHitPads[outerLayerId][nx] = (hitPads[1][nx]- padMean)/padSigma;
       //
       // std::cout << "inHitPads.size()=" << inHitPads.size() <<std::endl;
       // std::cout << "outHitPads.size()=" << outHitPads.size() <<std::endl;
@@ -558,7 +558,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         thisOffset = jc * padSize*padSize;
         for (int nx = 0; nx < padSize*padSize; nx++)
         {
-          vPad[thisOffset + nx + doubOffset] = (inHitPads[jc][nx] - padMean)/padSigma;
+          vPad[thisOffset + nx + doubOffset] = inHitPads[jc][nx];
           padCounter++;
         }
       }
@@ -568,7 +568,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         thisOffset = jc * padSize*padSize + 10 * padSize*padSize;
         for (int nx = 0; nx < padSize*padSize; nx++)
         {
-          vPad[thisOffset + nx + doubOffset ] = (outHitPads[jc][nx] - padMean)/padSigma;
+          vPad[thisOffset + nx + doubOffset ] = outHitPads[jc][nx];
           padCounter++;
         }
       }
