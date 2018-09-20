@@ -108,7 +108,7 @@ namespace {
       HitDoublets copyDoublets = std::move(thisDoublets);
 
       return copyDoublets;
-      
+
       DetLayer const * innerLayer = thisDoublets.detLayer(HitDoublets::inner);
       if(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum())==pixelDets.end()) return copyDoublets;
 
@@ -127,14 +127,20 @@ namespace {
         std::vector< RecHitsSortedInPhi::Hit> hits;
         std::vector< const SiPixelRecHit*> siHits;
 
-        hits.push_back(thisDoublets.hit(i, HitDoublets::inner)); //TODO CHECK EMPLACEBACK
-        hits.push_back(thisDoublets.hit(i, HitDoublets::outer));
+        hits.push_back(thisDoublets.hit(iD, HitDoublets::inner)); //TODO CHECK EMPLACEBACK
+        hits.push_back(thisDoublets.hit(iD, HitDoublets::outer));
 
         siHits.push_back(dynamic_cast<const SiPixelRecHit*>((hits[0])));
         siHits.push_back(dynamic_cast<const SiPixelRecHit*>((hits[1])));
 
-        detIds.push_back(h->hit()->geographicalId());
-        subDetIds.push_back((h->hit()->geographicalId()).subdetId());
+        for (auto h : hits)
+        {
+          detIds.push_back(h->hit()->geographicalId());
+          subDetIds.push_back((h->hit()->geographicalId()).subdetId());
+        }
+        // innerDetId = innerHit->hit()->geographicalId();
+
+        if (! (((subDetIds[0]==1) || (subDetIds[0]==2)) && ((subDetIds[1]==1) || (subDetIds[1]==2)))) continue;
 
       }
 
