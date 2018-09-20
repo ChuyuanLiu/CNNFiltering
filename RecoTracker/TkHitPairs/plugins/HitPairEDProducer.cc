@@ -128,7 +128,7 @@ namespace {
 
       }
 
-      return copyDoublets
+      return copyDoublets;
 
     }
 

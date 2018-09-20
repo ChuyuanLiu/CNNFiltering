@@ -4,7 +4,7 @@
 #include <vector>
 
 /** abstract interface for generators of ordered RecHit pairs
- *  compatible with a TrackingRegion. 
+ *  compatible with a TrackingRegion.
  *  This is used by the HitPairSeedGenerator to produce TrajectorySeeds
  */
 
@@ -28,7 +28,7 @@ public:
   const OrderedHitPairs & run(
     const TrackingRegion& region, const edm::Event & ev, const edm::EventSetup& es) override;
 
-  virtual void hitPairs( const TrackingRegion& reg, OrderedHitPairs & prs, 
+  virtual void hitPairs( const TrackingRegion& reg, OrderedHitPairs & prs,
       const edm::Event & ev,  const edm::EventSetup& es) = 0;
 
   void clear() final;
