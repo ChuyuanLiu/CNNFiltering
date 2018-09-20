@@ -214,7 +214,7 @@ namespace {
           vLab[iLab + infoOffset] = (float)siHits[j]->hasBadPixels(); iLab++;
           vLab[iLab + infoOffset] = (float)siHits[j]->isOnEdge(); iLab++; //31
 
-          vLab[iLab + infoOffset] = (float)(thisCluster->charge()); iLab++
+          vLab[iLab + infoOffset] = (float)(thisCluster->charge()); iLab++;
 
           deltaA   -= ((float)thisCluster->size()); deltaA *= -1.0;
           deltaADC -= thisCluster->charge(); deltaADC *= -1.0; //At the end == Outer Hit ADC - Inner Hit ADC
