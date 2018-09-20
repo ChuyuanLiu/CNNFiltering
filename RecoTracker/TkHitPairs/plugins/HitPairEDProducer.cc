@@ -99,7 +99,7 @@ namespace {
       tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {numOfDoublets,padSize,padSize,cnnLayers*2});
       tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {numOfDoublets,infoSize});
 
-      HitDoublets copyDoublets(thisDoublets);
+      HitDoublets copyDoublets = std::move(thisDoublets);
 
       DetLayer const * innerLayer = thisDoublets.detLayer(HitDoublets::inner);
       if(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum())==pixelDets.end()) return copyDoublets;
