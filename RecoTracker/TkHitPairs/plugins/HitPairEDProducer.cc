@@ -100,8 +100,6 @@ namespace {
 
       int numOfDoublets = thisDoublets.size(), padSize = 16, cnnLayers = 10, infoSize = 67;
 
-      std::vector <unsigned int> hitIds, subDetIds, detIds;
-
       tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {numOfDoublets,padSize,padSize,cnnLayers*2});
       tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {numOfDoublets,infoSize});
 
@@ -118,14 +116,20 @@ namespace {
       DetLayer const * outerLayer = thisDoublets.detLayer(HitDoublets::outer);
       if(find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum())==pixelDets.end()) return copyDoublets;
 
+      detSeqs.push_back(innerLayer->seqNum());
+      detSeqs.push_back(outerLayer->seqNum());
+
       int innerLayerId = find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum()) - pixelDets.begin();
       int outerLayerId = find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum()) - pixelDets.begin();
       std::vector<tensorflow::Tensor> outputs;
 
-
+      HitDoublets::layer layers[2] = {HitDoublets::inner, HitDoublets::outer};
 
       for (size_t iD = 0; iD < thisDoublets.size(); iD++)
       {
+
+        std::vector <unsigned int> hitIds, subDetIds, detIds,detSeqs;
+
         float deltaA = 0.0, deltaADC = 0.0, deltaS = 0.0, deltaR = 0.0;
         float deltaPhi = 0.0, deltaZ = 0.0, zZero = 0.0;
         float buffer = 0.0, bufferprime = 0.0;
@@ -134,23 +138,16 @@ namespace {
         std::vector< RecHitsSortedInPhi::Hit> hits;
         std::vector< const SiPixelRecHit*> siHits;
 
-        hits.push_back(thisDoublets.hit(iD, HitDoublets::inner)); //TODO CHECK EMPLACEBACK
-        hits.push_back(thisDoublets.hit(iD, HitDoublets::outer));
-
         siHits.push_back(dynamic_cast<const SiPixelRecHit*>((hits[0])));
         siHits.push_back(dynamic_cast<const SiPixelRecHit*>((hits[1])));
 
-        for (auto h : hits)
-        {
-          detIds.push_back(h->hit()->geographicalId());
-          subDetIds.push_back((h->hit()->geographicalId()).subdetId());
-        }
-        // innerDetId = innerHit->hit()->geographicalId();
+        detIds.push_back(thisDoublets.hit(iD, HitDoublets::inner)->hit()->geographicalId());
+        subDetIds.push_back((thisDoublets.hit(iD, HitDoublets::inner)->hit()->geographicalId()).subdetId());
+
+        detIds.push_back(thisDoublets.hit(iD, HitDoublets::outer)->hit()->geographicalId());
+        subDetIds.push_back((thisDoublets.hit(iD, HitDoublets::outer)->hit()->geographicalId()).subdetId());
 
         if (! (((subDetIds[0]==1) || (subDetIds[0]==2)) && ((subDetIds[1]==1) || (subDetIds[1]==2)))) continue;
-
-
-        HitDoublets::layer layers[2] = {HitDoublets::inner, HitDoublets::outer};
 
         for(int j = 0; j < 2; ++j)
         {
@@ -159,8 +156,8 @@ namespace {
           vLab[iLab + infoOffset] = (float)(siHits[j]->globalState()).position.y(); iLab++;
           vLab[iLab + infoOffset] = (float)(siHits[j]->globalState()).position.z(); iLab++;
 
-          buffer = thisDoublets.phi(iD,layers[j]) >=0.0 ? thisDoublets.phi(iD,layers[j]) : 2*M_PI + thisDoublets.phi(iD,layers[j]);
-          vLab[iLab + infoOffset] = (float)buffer; iLab++;
+          float phi = thisDoublets.phi(iD,layers[j]) >=0.0 ? thisDoublets.phi(iD,layers[j]) : 2*M_PI + thisDoublets.phi(iD,layers[j]);
+          vLab[iLab + infoOffset] = (float)phi; iLab++;
           vLab[iLab + infoOffset] = (float)thisDoublets.r(iD,layers[j]); iLab++;
 
           vLab[iLab + infoOffset] = (float)detSeqs[j]; iLab++;
@@ -189,34 +186,34 @@ namespace {
           }
 
           //Module orientation
-          buffer      = siHits[j]->det()->surface().toGlobal(Local3DPoint(0.,0.,0.)).perp(); //15
-          bufferprime = siHits[j]->det()->surface().toGlobal(Local3DPoint(0.,0.,1.)).perp();
+          float ax1  = siHits[j]->det()->surface().toGlobal(Local3DPoint(0.,0.,0.)).perp(); //15
+          float ax2  = siHits[j]->det()->surface().toGlobal(Local3DPoint(0.,0.,1.)).perp();
 
-          vLab[iLab + infoOffset] = float(buffer<bufferprime); iLab++; //isFlipped
-          vLab[iLab + infoOffset] = buffer; iLab++; //Module orientation y
-          vLab[iLab + infoOffset] = bufferprime; iLab++; //Module orientation x
+          vLab[iLab + infoOffset] = float(ax1<ax2); iLab++; //isFlipped
+          vLab[iLab + infoOffset] = ax1; iLab++; //Module orientation y
+          vLab[iLab + infoOffset] = ax2; iLab++; //Module orientation x
 
-          auto thisCluter = siHits[j]->cluster();
+          auto thisCluster = siHits[j]->cluster();
           //TODO check CLusterRef & OmniClusterRef
 
   //inX
-          vLab[iLab + infoOffset] = (float)thisCluter->x(); iLab++; //20
-          vLab[iLab + infoOffset] = (float)thisCluter->y(); iLab++;
-          vLab[iLab + infoOffset] = (float)thisCluter->size(); iLab++;
-          vLab[iLab + infoOffset] = (float)thisCluter->sizeX(); iLab++;
-          vLab[iLab + infoOffset] = (float)thisCluter->sizeY(); iLab++;
-          vLab[iLab + infoOffset] = (float)thisCluter->pixel(0).adc; iLab++; //25
-          vLab[iLab + infoOffset] = float(thisCluter->charge())/float(thisCluter->size()); iLab++; //avg pixel charge
+          vLab[iLab + infoOffset] = (float)thisCluster->x(); iLab++; //20
+          vLab[iLab + infoOffset] = (float)thisCluster->y(); iLab++;
+          vLab[iLab + infoOffset] = (float)thisCluster->size(); iLab++;
+          vLab[iLab + infoOffset] = (float)thisCluster->sizeX(); iLab++;
+          vLab[iLab + infoOffset] = (float)thisCluster->sizeY(); iLab++;
+          vLab[iLab + infoOffset] = (float)thisCluster->pixel(0).adc; iLab++; //25
+          vLab[iLab + infoOffset] = float(thisCluster->charge())/float(thisCluster->size()); iLab++; //avg pixel charge
 
-          vLab[iLab + infoOffset] = (float)(thisCluter->sizeX() > padSize); iLab++;//27
-          vLab[iLab + infoOffset] = (float)(thisCluter->sizeY() > padSize); iLab++;
-          vLab[iLab + infoOffset] = (float)(thisCluter->sizeY()) / (float)(thisCluter->sizeX()); iLab++;
+          vLab[iLab + infoOffset] = (float)(thisCluster->sizeX() > padSize); iLab++;//27
+          vLab[iLab + infoOffset] = (float)(thisCluster->sizeY() > padSize); iLab++;
+          vLab[iLab + infoOffset] = (float)(thisCluster->sizeY()) / (float)(thisCluster->sizeX()); iLab++;
 
-          vLab[iLab + infoOffset] = (float)sisiHits[j]->spansTwoROCs(); iLab++;
-          vLab[iLab + infoOffset] = (float)sisiHits[j]->hasBadPixels(); iLab++;
-          vLab[iLab + infoOffset] = (float)sisiHits[j]->isOnEdge(); iLab++; //31
+          vLab[iLab + infoOffset] = (float)siHits[j]->spansTwoROCs(); iLab++;
+          vLab[iLab + infoOffset] = (float)siHits[j]->hasBadPixels(); iLab++;
+          vLab[iLab + infoOffset] = (float)siHits[j]->isOnEdge(); iLab++; //31
 
-          vLab[iLab + infoOffset] = (float)(thisCluter->charge()); iLab++
+          vLab[iLab + infoOffset] = (float)(thisCluster->charge()); iLab++
 
           deltaA   -= ((float)thisCluster->size()); deltaA *= -1.0;
           deltaADC -= thisCluster->charge(); deltaADC *= -1.0; //At the end == Outer Hit ADC - Inner Hit ADC
