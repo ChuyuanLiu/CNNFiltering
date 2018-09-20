@@ -105,6 +105,9 @@ namespace {
       tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {numOfDoublets,padSize,padSize,cnnLayers*2});
       tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {numOfDoublets,infoSize});
 
+      float* vPad = inputPads.flat<float>().data();
+      float* vLab = inputFeat.flat<float>().data();
+
       HitDoublets copyDoublets = std::move(thisDoublets);
 
       //return copyDoublets;
