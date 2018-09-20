@@ -107,7 +107,7 @@ namespace {
 
       HitDoublets copyDoublets = std::move(thisDoublets);
 
-      return copyDoublets;
+      //return copyDoublets;
 
       DetLayer const * innerLayer = thisDoublets.detLayer(HitDoublets::inner);
       if(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum())==pixelDets.end()) return copyDoublets;
@@ -119,10 +119,14 @@ namespace {
       int outerLayerId = find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum()) - pixelDets.begin();
       std::vector<tensorflow::Tensor> outputs;
 
+
+
       for (size_t iD = 0; iD < thisDoublets.size(); iD++)
       {
-        int doubOffset = (padSize*padSize*cnnLayers*2)*iD;
-        int infoOffset = (infoSize)*iD;
+        float deltaA = 0.0, deltaADC = 0.0, deltaS = 0.0, deltaR = 0.0,
+        float deltaPhi = 0.0, deltaZ = 0.0, zZero = 0.0;
+        float buffer = 0.0, bufferprime = 0.0;
+        int iLab = 0, iPad = 0, doubOffset = (padSize*padSize*cnnLayers*2)*iD, infoOffset = (infoSize)*iD;
 
         std::vector< RecHitsSortedInPhi::Hit> hits;
         std::vector< const SiPixelRecHit*> siHits;
@@ -141,6 +145,96 @@ namespace {
         // innerDetId = innerHit->hit()->geographicalId();
 
         if (! (((subDetIds[0]==1) || (subDetIds[0]==2)) && ((subDetIds[1]==1) || (subDetIds[1]==2)))) continue;
+
+
+        HitDoublets::layer layers[2] = {HitDoublets::inner, HitDoublets::outer};
+
+        for(int j = 0; j < 2; ++j)
+        {
+
+          vLab[iLab + infoOffset] = (float)(siHits[j]->globalState()).position.x(); iLab++;
+          vLab[iLab + infoOffset] = (float)(siHits[j]->globalState()).position.y(); iLab++;
+          vLab[iLab + infoOffset] = (float)(siHits[j]->globalState()).position.z(); iLab++;
+
+          buffer = thisDoublets.phi(i,layers[j]) >=0.0 ? thisDoublets.phi(iD,layers[j]) : 2*M_PI + thisDoublets.phi(iD,layers[j]);
+          vLab[iLab + infoOffset] = (float)buffer; iLab++;
+          vLab[iLab + infoOffset] = (float)thisDoublets.r(iD,layers[j]); iLab++;
+
+          vLab[iLab + infoOffset] = (float)detSeqs[j]; iLab++;
+
+          if(subDetIds[j]==1) //barrel
+          {
+
+            vLab[iLab + infoOffset] = float(true); iLab++; //isBarrel //7
+            vLab[iLab + infoOffset] = PXBDetId(detIds[j]).layer(); iLab++;
+            vLab[iLab + infoOffset] = PXBDetId(detIds[j]).ladder(); iLab++;
+            vLab[iLab + infoOffset] = -1.0; iLab++;
+            vLab[iLab + infoOffset] = -1.0; iLab++;
+            vLab[iLab + infoOffset] = -1.0; iLab++;
+            vLab[iLab + infoOffset] = PXBDetId(detIds[j]).module(); iLab++; //14
+
+          }
+          else
+          {
+            vLab[iLab + infoOffset] = float(false); iLab++; //isBarrel
+            vLab[iLab + infoOffset] = -1.0; iLab++;
+            vLab[iLab + infoOffset] = -1.0; iLab++;
+            vLab[iLab + infoOffset] = PXFDetId(detIds[j]).side(); iLab++;
+            vLab[iLab + infoOffset] = PXFDetId(detIds[j]).disk(); iLab++;
+            vLab[iLab + infoOffset] = PXFDetId(detIds[j]).panel(); iLab++;
+            vLab[iLab + infoOffset] = PXFDetId(detIds[j]).module(); iLab++;
+          }
+
+          //Module orientation
+          buffer      = siHits[j]->det()->surface().toGlobal(Local3DPoint(0.,0.,0.)).perp(); //15
+          bufferprime = siHits[j]->det()->surface().toGlobal(Local3DPoint(0.,0.,1.)).perp();
+
+          vLab[iLab + infoOffset] = float(buffer<bufferprime); iLab++; //isFlipped
+          vLab[iLab + infoOffset] = buffer; iLab++; //Module orientation y
+          vLab[iLab + infoOffset] = bufferprime; iLab++; //Module orientation x
+
+          auto thisCluter = siHits[j]->cluster();
+          //TODO check CLusterRef & OmniClusterRef
+
+  //inX
+          vLab[iLab + infoOffset] = (float)thisCluter->x(); iLab++; //20
+          vLab[iLab + infoOffset] = (float)thisCluter->y(); iLab++;
+          vLab[iLab + infoOffset] = (float)thisCluter->size(); iLab++;
+          vLab[iLab + infoOffset] = (float)thisCluter->sizeX(); iLab++;
+          vLab[iLab + infoOffset] = (float)thisCluter->sizeY(); iLab++;
+          vLab[iLab + infoOffset] = (float)thisCluter->pixel(0).adc; iLab++; //25
+          vLab[iLab + infoOffset] = float(thisCluter->charge())/float(thisCluter->size()); iLab++; //avg pixel charge
+
+          vLab[iLab + infoOffset] = (float)(thisCluter->sizeX() > padSize); iLab++;//27
+          vLab[iLab + infoOffset] = (float)(thisCluter->sizeY() > padSize); iLab++;
+          vLab[iLab + infoOffset] = (float)(thisCluter->sizeY()) / (float)(thisCluter->sizeX()); iLab++;
+
+          vLab[iLab + infoOffset] = (float)sisiHits[j]->spansTwoROCs(); iLab++;
+          vLab[iLab + infoOffset] = (float)sisiHits[j]->hasBadPixels(); iLab++;
+          vLab[iLab + infoOffset] = (float)sisiHits[j]->isOnEdge(); iLab++; //31
+
+          vLab[iLab + infoOffset] = (float)(thisCluter->charge()); iLab++
+
+          deltaA   -= ((float)thisCluster->size()); deltaA *= -1.0;
+          deltaADC -= thisCluster->charge(); deltaADC *= -1.0; //At the end == Outer Hit ADC - Inner Hit ADC
+          deltaS   -= ((float)(thisCluster->sizeY()) / (float)(thisCluster->sizeX())); deltaS *= -1.0;
+          deltaR   -= thisDoublets.r(iD,layers[j]); deltaR *= -1.0;
+          deltaPhi -= phi; deltaPhi *= -1.0;
+
+        }
+
+        zZero = (siHits[0]->globalState()).position.z();
+        zZero -= thisDoublets.r(iD,layers[0]) * (deltaZ/deltaR);
+
+        vLab[iLab + infoOffset] = deltaA   ; iLab++;
+        vLab[iLab + infoOffset] = deltaADC ; iLab++;
+        vLab[iLab + infoOffset] = deltaS   ; iLab++;
+        vLab[iLab + infoOffset] = deltaR   ; iLab++;
+        vLab[iLab + infoOffset] = deltaPhi ; iLab++;
+        vLab[iLab + infoOffset] = deltaZ   ; iLab++;
+        vLab[iLab + infoOffset] = zZero    ; iLab++;
+
+        std::cout << "iLab = "<<iLab << std::endl;
 
       }
 
