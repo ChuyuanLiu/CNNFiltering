@@ -17,6 +17,8 @@
 #include "RecoTracker/TkHitPairs/interface/IntermediateHitDoublets.h"
 #include "RecoTracker/TkHitPairs/interface/RegionsSeedingHitSets.h"
 
+#include "PhysicsTools/TensorFlow/interface/TensorFlow.h"
+
 namespace { class ImplBase; }
 
 class HitPairEDProducer: public edm::stream::EDProducer<> {
@@ -48,11 +50,14 @@ namespace {
     edm::RunningAverage localRA_;
     const unsigned int maxElement_;
 
+    bool doInference_;
+
     HitPairGeneratorFromLayerPair generator_;
     std::vector<unsigned> layerPairBegins_;
   };
   ImplBase::ImplBase(const edm::ParameterSet& iConfig):
     maxElement_(iConfig.getParameter<unsigned int>("maxElement")),
+    doInference_(iConfig.existsAs<bool>("doInference") ? iConfig.getParameter<bool>("doInference") : true),
     generator_(0, 1, nullptr, maxElement_), // these indices are dummy, TODO: cleanup HitPairGeneratorFromLayerPair
     layerPairBegins_(iConfig.getParameter<std::vector<unsigned> >("layerPairs"))
   {
@@ -75,6 +80,58 @@ namespace {
       T_SeedingHitSets::produces(producer);
       T_IntermediateHitDoublets::produces(producer);
     }
+
+    HitDoublets cnnInference(const HitDoublets& thisDoublets) const
+    {
+
+      // Load graph
+      tensorflow::setLogging("3");
+
+      std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31};
+
+      tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/CMSSW/CMSSW_10_3_0_pre4/test.pb");
+      tensorflow::Session* session = tensorflow::createSession(graphDef);
+
+      int numOfDoublets = thisDoublets.size(), padSize = 16, cnnLayers = 10;
+
+      tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {numOfDoublets,padSize,padSize,cnnLayers*2});
+      tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {numOfDoublets,infoSize});
+
+      HitDoublets copyDoublets(thisDoublets);
+
+      DetLayer const * innerLayer = thisDoublets.detLayer(HitDoublets::inner);
+      if(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum())==pixelDets.end()) return copyDoublets;
+
+      DetLayer const * outerLayer = thisDoublets.detLayer(HitDoublets::outer);
+      if(find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum())==pixelDets.end()) return copyDoublets;
+
+      int innerLayerId = find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum()) - pixelDets.begin();
+      int outerLayerId = find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum()) - pixelDets.begin();
+      std::vector<tensorflow::Tensor> outputs;
+
+      for (size_t i = 0; i < lIt->doublets().size(); i++)
+      {
+        int doubOffset = (padSize*padSize*cnnLayers*2)*i;
+        int infoOffset = (infoSize)*i;
+
+        std::vector< RecHitsSortedInPhi::Hit> hits;
+        std::vector< const SiPixelRecHit*> siHits;
+
+        hits.push_back(lIt->doublets().hit(i, HitDoublets::inner)); //TODO CHECK EMPLACEBACK
+        hits.push_back(lIt->doublets().hit(i, HitDoublets::outer));
+
+        siHits.push_back(dynamic_cast<const SiPixelRecHit*>((hits[0])));
+        siHits.push_back(dynamic_cast<const SiPixelRecHit*>((hits[1])));
+
+        detIds.push_back(h->hit()->geographicalId());
+        subDetIds.push_back((h->hit()->geographicalId()).subdetId());
+
+      }
+
+      return copyDoublets
+
+    }
+
 
     void produce(const bool clusterCheckOk, edm::Event& iEvent, const edm::EventSetup& iSetup) override {
       auto regionsLayers = regionsLayers_.beginEvent(iEvent);
@@ -101,8 +158,17 @@ namespace {
           auto doublets = generator_.doublets(region, iEvent, iSetup, layerSet, *hitCachePtr);
           LogTrace("HitPairEDProducer") << " created " << doublets.size() << " doublets for layers " << layerSet[0].index() << "," << layerSet[1].index();
           if(doublets.empty()) continue; // don't bother if no pairs from these layers
-          seedingHitSetsProducer.fill(std::get<1>(hitCachePtr_filler_shs), doublets);
-          intermediateHitDoubletsProducer.fill(std::get<1>(hitCachePtr_filler_ihd), layerSet, std::move(doublets));
+          if(doInference_)
+          {
+            auto cleanDoublets = cnnInference(doublets);
+            seedingHitSetsProducer.fill(std::get<1>(hitCachePtr_filler_shs), cleanDoublets);
+            intermediateHitDoubletsProducer.fill(std::get<1>(hitCachePtr_filler_ihd), layerSet, std::move(cleanDoublets));
+          }else
+          {
+            seedingHitSetsProducer.fill(std::get<1>(hitCachePtr_filler_shs), doublets);
+            intermediateHitDoubletsProducer.fill(std::get<1>(hitCachePtr_filler_ihd), layerSet, std::move(doublets));
+          }
+
         }
       }
 

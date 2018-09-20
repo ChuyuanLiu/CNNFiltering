@@ -206,7 +206,7 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   int runNumber = iEvent.id().run();
   int lumNumber = iEvent.id().luminosityBlock();
 
-  std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}; //seqNumbers of pixel detectors 0,1,2,3 barrel 14,15,16, fwd 29,30,31 bkw
+  std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31};
   std::vector<int> partiList{11,13,15,22,111,211,311,321,2212,2112,3122,223};
 
   // reco::Vertex thePrimaryV, theBeamSpotV;
