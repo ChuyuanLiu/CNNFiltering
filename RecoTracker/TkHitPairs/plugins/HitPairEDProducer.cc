@@ -110,15 +110,15 @@ namespace {
       float* vPad = inputPads.flat<float>().data();
       float* vLab = inputFeat.flat<float>().data();
 
-      HitDoublets copyDoublets = std::move(thisDoublets);
+      // HitDoublets copyDoublets = std::move(thisDoublets);
 
       //return copyDoublets;
 
       DetLayer const * innerLayer = thisDoublets.detLayer(HitDoublets::inner);
-      if(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum())==pixelDets.end()) return copyDoublets;
+      if(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum())==pixelDets.end()) return thisDoublets;
 
       DetLayer const * outerLayer = thisDoublets.detLayer(HitDoublets::outer);
-      if(find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum())==pixelDets.end()) return copyDoublets;
+      if(find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum())==pixelDets.end()) return thisDoublets;
 
       std::vector <unsigned int> detSeqs;
       detSeqs.push_back(innerLayer->seqNum());
@@ -135,7 +135,7 @@ namespace {
         for (int ny = 0; ny < padSize; ++ny)
           zeroPad.push_back(0.0);
 
-      for (size_t iD = 0; iD < copyDoublets.size(); iD++)
+      for (size_t iD = 0; iD < thisDoublets.size(); iD++)
       {
 
         std::vector <unsigned int> subDetIds, detIds ;
@@ -354,7 +354,7 @@ namespace {
 
       }
 
-      return copyDoublets;
+      return thisDoublets;
 
     }
 
