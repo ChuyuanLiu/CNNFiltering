@@ -116,6 +116,7 @@ namespace {
       DetLayer const * outerLayer = thisDoublets.detLayer(HitDoublets::outer);
       if(find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum())==pixelDets.end()) return copyDoublets;
 
+      std::vector <unsigned int> detSeqs;
       detSeqs.push_back(innerLayer->seqNum());
       detSeqs.push_back(outerLayer->seqNum());
 
@@ -128,7 +129,7 @@ namespace {
       for (size_t iD = 0; iD < thisDoublets.size(); iD++)
       {
 
-        std::vector <unsigned int> hitIds, subDetIds, detIds,detSeqs;
+        std::vector <unsigned int> subDetIds, detIds ;
 
         float deltaA = 0.0, deltaADC = 0.0, deltaS = 0.0, deltaR = 0.0;
         float deltaPhi = 0.0, deltaZ = 0.0, zZero = 0.0;
@@ -220,6 +221,20 @@ namespace {
           deltaS   -= ((float)(thisCluster->sizeY()) / (float)(thisCluster->sizeX())); deltaS *= -1.0;
           deltaR   -= thisDoublets.r(iD,layers[j]); deltaR *= -1.0;
           deltaPhi -= phi; deltaPhi *= -1.0;
+
+          TH2F hClust("hClust","hClust",
+          padSize,
+          thisCluster->x()-padSize/2,
+          thisCluster->x()+padSize/2,
+          padSize,
+          thisCluster->y()-padSize/2,
+          thisCluster->y()+padSize/2);
+
+          // //Pad Initialization
+          // for (int iP = 0; iP < padSize*padSize*cnnLayers; ++iP)
+          //   vPad[iP + doubOffset] = 0.0;
+          //
+          // for (int k = 0; k < clusters[j]->size(); ++k)
 
         }
 
