@@ -134,12 +134,13 @@ namespace {
         for (int ny = 0; ny < padSize; ++ny)
           zeroPad.push_back(0.0);
 
-      for (size_t iD = 0; iD < thisDoublets.size(); iD++)
+      for (size_t iD = 0; iD < copyDoublets.size(); iD++)
       {
 
         std::vector <unsigned int> subDetIds, detIds ;
 
         std::vector< std::vector< float>> hitPads,inHitPads,outHitPads;
+
         for(int i = 0; i < cnnLayers; ++i)
         {
           inHitPads.push_back(zeroPad);
