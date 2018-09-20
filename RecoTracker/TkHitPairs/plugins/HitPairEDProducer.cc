@@ -123,7 +123,7 @@ namespace {
 
       for (size_t iD = 0; iD < thisDoublets.size(); iD++)
       {
-        float deltaA = 0.0, deltaADC = 0.0, deltaS = 0.0, deltaR = 0.0,
+        float deltaA = 0.0, deltaADC = 0.0, deltaS = 0.0, deltaR = 0.0;
         float deltaPhi = 0.0, deltaZ = 0.0, zZero = 0.0;
         float buffer = 0.0, bufferprime = 0.0;
         int iLab = 0, iPad = 0, doubOffset = (padSize*padSize*cnnLayers*2)*iD, infoOffset = (infoSize)*iD;
@@ -156,7 +156,7 @@ namespace {
           vLab[iLab + infoOffset] = (float)(siHits[j]->globalState()).position.y(); iLab++;
           vLab[iLab + infoOffset] = (float)(siHits[j]->globalState()).position.z(); iLab++;
 
-          buffer = thisDoublets.phi(i,layers[j]) >=0.0 ? thisDoublets.phi(iD,layers[j]) : 2*M_PI + thisDoublets.phi(iD,layers[j]);
+          buffer = thisDoublets.phi(iD,layers[j]) >=0.0 ? thisDoublets.phi(iD,layers[j]) : 2*M_PI + thisDoublets.phi(iD,layers[j]);
           vLab[iLab + infoOffset] = (float)buffer; iLab++;
           vLab[iLab + infoOffset] = (float)thisDoublets.r(iD,layers[j]); iLab++;
 
