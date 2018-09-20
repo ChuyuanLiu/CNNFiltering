@@ -379,7 +379,9 @@ namespace {
         for(SeedingLayerSetsHits::SeedingLayerSet layerSet: regionLayers.layerPairs()) {
           auto doublets = generator_.doublets(region, iEvent, iSetup, layerSet, *hitCachePtr);
           LogTrace("HitPairEDProducer") << " created " << doublets.size() << " doublets for layers " << layerSet[0].index() << "," << layerSet[1].index();
+
           if(doublets.empty()) continue; // don't bother if no pairs from these layers
+          std::ctou << "HitPairEDProducer created " << doublets.size() << " doublets for layers " << layerSet[0].index() << "," << layerSet[1].index();
           if(doInference_)
           {
             auto cleanDoublets = cnnInference(doublets);
