@@ -158,6 +158,8 @@ namespace {
         siHits.push_back(dynamic_cast<const SiPixelRecHit*>((hits[0])));
         siHits.push_back(dynamic_cast<const SiPixelRecHit*>((hits[1])));
 
+        std::cout << "Passed? "<< std::endl;
+
         detIds.push_back(thisDoublets.hit(iD, HitDoublets::inner)->hit()->geographicalId());
         subDetIds.push_back((thisDoublets.hit(iD, HitDoublets::inner)->hit()->geographicalId()).subdetId());
 
@@ -165,7 +167,7 @@ namespace {
         subDetIds.push_back((thisDoublets.hit(iD, HitDoublets::outer)->hit()->geographicalId()).subdetId());
 
         if (! (((subDetIds[0]==1) || (subDetIds[0]==2)) && ((subDetIds[1]==1) || (subDetIds[1]==2)))) continue;
-
+        std::cout << "Passed! "<< std::endl;
 
         hitPads.push_back(inPad);
         hitPads.push_back(outPad);
