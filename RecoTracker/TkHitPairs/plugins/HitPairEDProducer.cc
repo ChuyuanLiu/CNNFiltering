@@ -92,12 +92,12 @@ namespace {
       tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/CMSSW/CMSSW_10_3_0_pre4/test.pb");
       tensorflow::Session* session = tensorflow::createSession(graphDef);
 
-      int numOfDoublets = thisDoublets.size(), padSize = 16, cnnLayers = 10;
+      int numOfDoublets = thisDoublets.size(), padSize = 16, cnnLayers = 10, infoSize = 67;
 
       tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {numOfDoublets,padSize,padSize,cnnLayers*2});
       tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {numOfDoublets,infoSize});
 
-      HitDoublets copyDoublets(thisDoublets);
+      HitDoublets copyDoublets(&thisDoublets);
 
       DetLayer const * innerLayer = thisDoublets.detLayer(HitDoublets::inner);
       if(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum())==pixelDets.end()) return copyDoublets;
