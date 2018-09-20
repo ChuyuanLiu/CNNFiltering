@@ -81,7 +81,7 @@ namespace {
       T_IntermediateHitDoublets::produces(producer);
     }
 
-    HitDoublets cnnInference(const HitDoublets& thisDoublets) const
+    HitDoublets cnnInference(HitDoublets& thisDoublets) const
     {
 
       // Load graph
@@ -97,7 +97,7 @@ namespace {
       tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {numOfDoublets,padSize,padSize,cnnLayers*2});
       tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {numOfDoublets,infoSize});
 
-      HitDoublets copyDoublets(*thisDoublets);
+      HitDoublets copyDoublets(thisDoublets);
 
       DetLayer const * innerLayer = thisDoublets.detLayer(HitDoublets::inner);
       if(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum())==pixelDets.end()) return copyDoublets;
