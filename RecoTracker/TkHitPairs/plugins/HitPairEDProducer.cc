@@ -87,7 +87,7 @@ namespace {
       T_IntermediateHitDoublets::produces(producer);
     }
 
-    HitDoublets cnnInference(HitDoublets thisDoublets) const
+    HitDoublets cnnInference(HitDoublets& thisDoublets) const
     {
       std::cout << "In cnn" << std::endl;
 
