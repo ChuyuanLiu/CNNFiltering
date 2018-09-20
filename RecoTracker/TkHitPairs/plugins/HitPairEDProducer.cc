@@ -19,6 +19,12 @@
 
 #include "PhysicsTools/TensorFlow/interface/TensorFlow.h"
 
+#include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHit.h"
+#include "DataFormats/TrackerRecHit2D/interface/BaseTrackerRecHit.h"
+#include "DataFormats/DetId/interface/DetId.h"
+#include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
+#include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
+
 namespace { class ImplBase; }
 
 class HitPairEDProducer: public edm::stream::EDProducer<> {
@@ -101,6 +107,8 @@ namespace {
 
       HitDoublets copyDoublets = std::move(thisDoublets);
 
+      return copyDoublets;
+      
       DetLayer const * innerLayer = thisDoublets.detLayer(HitDoublets::inner);
       if(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum())==pixelDets.end()) return copyDoublets;
 
@@ -111,16 +119,16 @@ namespace {
       int outerLayerId = find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum()) - pixelDets.begin();
       std::vector<tensorflow::Tensor> outputs;
 
-      for (size_t i = 0; i < lIt->doublets().size(); i++)
+      for (size_t iD = 0; iD < thisDoublets.size(); iD++)
       {
-        int doubOffset = (padSize*padSize*cnnLayers*2)*i;
-        int infoOffset = (infoSize)*i;
+        int doubOffset = (padSize*padSize*cnnLayers*2)*iD;
+        int infoOffset = (infoSize)*iD;
 
         std::vector< RecHitsSortedInPhi::Hit> hits;
         std::vector< const SiPixelRecHit*> siHits;
 
-        hits.push_back(lIt->doublets().hit(i, HitDoublets::inner)); //TODO CHECK EMPLACEBACK
-        hits.push_back(lIt->doublets().hit(i, HitDoublets::outer));
+        hits.push_back(thisDoublets.hit(i, HitDoublets::inner)); //TODO CHECK EMPLACEBACK
+        hits.push_back(thisDoublets.hit(i, HitDoublets::outer));
 
         siHits.push_back(dynamic_cast<const SiPixelRecHit*>((hits[0])));
         siHits.push_back(dynamic_cast<const SiPixelRecHit*>((hits[1])));
