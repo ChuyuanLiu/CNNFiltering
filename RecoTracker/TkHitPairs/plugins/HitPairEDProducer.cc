@@ -24,7 +24,7 @@
 #include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
 #include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
-
+#include "TH2F.h"
 namespace { class ImplBase; }
 
 class HitPairEDProducer: public edm::stream::EDProducer<> {
