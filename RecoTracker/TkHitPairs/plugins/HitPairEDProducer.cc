@@ -90,6 +90,8 @@ namespace {
     HitDoublets cnnInference(HitDoublets& thisDoublets) const
     {
 
+      std::vector< float > inPad, outPad;
+
       // Load graph
       tensorflow::setLogging("3");
 
@@ -147,7 +149,7 @@ namespace {
         float deltaA = 0.0, deltaADC = 0.0, deltaS = 0.0, deltaR = 0.0;
         float deltaPhi = 0.0, deltaZ = 0.0, zZero = 0.0;
         float buffer = 0.0, bufferprime = 0.0;
-        int iLab = 0, iPad = 0, padOffset = layerIds * padSize * padSize;
+        int iLab = 0, iPad = 0;
         int doubOffset = (padSize*padSize*cnnLayers*2)*iD, infoOffset = (infoSize)*iD;
 
         std::vector< RecHitsSortedInPhi::Hit> hits;
@@ -170,6 +172,8 @@ namespace {
 
         for(int j = 0; j < 2; ++j)
         {
+
+          int padOffset = layerIds[j] * padSize * padSize;
 
           vLab[iLab + infoOffset] = (float)(siHits[j]->globalState()).position.x(); iLab++;
           vLab[iLab + infoOffset] = (float)(siHits[j]->globalState()).position.y(); iLab++;
@@ -284,11 +288,11 @@ namespace {
         }
 
         for (int nx = 0; nx < padSize*padSize; ++nx)
-            inHitPads[innerLayerId][nx] = (hitPads[0][nx]- padMean)/padSigma;
+            inHitPads[layerIds[0]][nx] = hitPads[0][nx];
         for (int nx = 0; nx < padSize*padSize; ++nx)
-            outHitPads[outerLayerId][nx] = (hitPads[1][nx]- padMean)/padSigma;
+            outHitPads[layerIds[1]][nx] = hitPads[1][nx];
 
-        std::cout << "Inner hit layer : " << innerLayer->seqNum() << " - " << innerLayerId<< std::endl;
+        std::cout << "Inner hit layer : " << innerLayer->seqNum() << " - " << layerIds[0]<< std::endl;
 
         for(int i = 0; i < cnnLayers; ++i)
         {
@@ -303,7 +307,7 @@ namespace {
 
         }
 
-        std::cout << "Outer hit layer : " << outerLayer->seqNum() << " - " << outerLayerId<< std::endl;
+        std::cout << "Outer hit layer : " << outerLayer->seqNum() << " - " << layerIds[1]<< std::endl;
         for(int i = 0; i < cnnLayers; ++i)
         {
           std::cout << i << std::endl;
