@@ -107,7 +107,7 @@ namespace {
       std::vector< float > inPad, outPad;
 
       // Load graph
-      tensorflow::setLogging("3");
+      tensorflow::setLogging("0");
 
       std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}, layerIds;
 
