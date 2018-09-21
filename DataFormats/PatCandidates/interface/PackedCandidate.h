@@ -465,9 +465,13 @@ elseId_ = iOther.elseId_;
     }
 
     virtual void setTrackProperties( const reco::Track & tk, const reco::Track::CovarianceMatrix & covariance,int quality,int covarianceVersion) {
-      test_ = tk.getKaonId();//0.2;
-      if(std::fabs(test_)>1E2) test_=0.0;
-      std::cout << test_ << std::endl;
+      kaonId_ = tk.getKaonId();//0.2;
+      elecId_ = tk.getElecId();
+      muonId_ = tk.getMuonId();
+      pionId_ = tk.getPionId();
+      elseId_ = tk.getElseId();
+
+      std::cout << kaonId_ << std::endl;
       std::cout << tk.getKaonId() << std::endl;
       covarianceVersion_ = covarianceVersion ;
       covarianceSchema_ = quality ;
