@@ -38,4 +38,4 @@ pidCNN = cms.EDAnalyzer('CNNParticleId',
 
 
 
-CNNPIdSequence = cms.Sequence(tracksCNN)
+CNNPIdSequence = cms.Sequence(pidCNN)
