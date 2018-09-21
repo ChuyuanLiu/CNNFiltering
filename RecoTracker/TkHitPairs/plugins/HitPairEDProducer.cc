@@ -112,7 +112,7 @@ namespace {
 
       int numOfDoublets = thisDoublets.size(), padSize = 16, cnnLayers = 10, infoSize = 67;
       float padHalfSize = 8.0;
-
+      std::cout << "Here" << std::endl;
       tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {numOfDoublets,padSize,padSize,cnnLayers*2});
       tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {numOfDoublets,infoSize});
 
@@ -143,7 +143,7 @@ namespace {
       for (int nx = 0; nx < padSize; ++nx)
         for (int ny = 0; ny < padSize; ++ny)
           zeroPad.push_back(0.0);
-
+      std::cout << "Here" << std::endl;
       for (size_t iD = 0; iD < thisDoublets.size(); iD++)
       {
 
