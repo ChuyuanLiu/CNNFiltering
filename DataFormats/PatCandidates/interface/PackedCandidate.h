@@ -465,7 +465,7 @@ elseId_ = iOther.elseId_;
     }
 
     virtual void setTrackProperties( const reco::Track & tk, const reco::Track::CovarianceMatrix & covariance,int quality,int covarianceVersion) {
-      kaonId_ = tk.getKaonId();//0.2;
+      kaonId_ = tk.getKaonId();
       elecId_ = tk.getElecId();
       muonId_ = tk.getMuonId();
       pionId_ = tk.getPionId();
