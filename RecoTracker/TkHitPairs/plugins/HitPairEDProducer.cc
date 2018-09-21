@@ -123,7 +123,7 @@ namespace {
       std::cout << "copyDoublets.size()=" << copyDoublets.size() << std::endl;
       thisDoublets.clear();
 
-      std::cout << "thisDoublets.size()=" << thisDoublets.size() << std::endl;
+      std::cout << "copyDoublets.size()=" << copyDoublets.size() << std::endl;
 
       //return copyDoublets;
 
