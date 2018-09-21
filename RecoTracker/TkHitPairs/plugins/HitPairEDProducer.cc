@@ -87,8 +87,17 @@ namespace {
       T_IntermediateHitDoublets::produces(producer);
     }
 
-    HitDoublets cnnInference(HitDoublets& thisDoublets) const
+    HitDoublets cnnInference(HitDoublets& thisDoublets,SeedingLayerSetsHits::SeedingLayerSet layerSet, LayerHitMapCache & layerCache) const
     {
+
+      SeedingLayerSetsHits::SeedingLayer innerLayerObj = innerLayer(layers);
+      SeedingLayerSetsHits::SeedingLayer outerLayerObj = outerLayer(layers);
+
+      const RecHitsSortedInPhi & innerHitsMap = layerCache(innerLayer, region, iSetup);
+      const RecHitsSortedInPhi& outerHitsMap = layerCache(outerLayer, region, iSetup);
+
+      HitDoublets result(innerHitsMap,outerHitsMap); result.reserve(std::max(innerHitsMap.size(),outerHitsMap.size()));
+
       std::cout << "In cnn" << std::endl;
 
       std::vector< float > inPad, outPad;
@@ -115,10 +124,10 @@ namespace {
       //return copyDoublets;
 
       DetLayer const * innerLayer = thisDoublets.detLayer(HitDoublets::inner);
-      if(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum())==pixelDets.end()) return thisDoublets;
+      // if(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum())==pixelDets.end()) return thisDoublets;
 
       DetLayer const * outerLayer = thisDoublets.detLayer(HitDoublets::outer);
-      if(find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum())==pixelDets.end()) return thisDoublets;
+      // if(find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum())==pixelDets.end()) return thisDoublets;
 
       std::vector <unsigned int> detSeqs;
       detSeqs.push_back(innerLayer->seqNum());
@@ -385,10 +394,11 @@ namespace {
           LogTrace("HitPairEDProducer") << " created " << doublets.size() << " doublets for layers " << layerSet[0].index() << "," << layerSet[1].index();
 
           if(doublets.empty()) continue; // don't bother if no pairs from these layers
-          if(doInference_)
+
+          if(doInference_ && layerSet[0].index() <10 && layerSet[0].index() > -1 && layerSet[1].index() < 10 && layerSet[1].index() > -1)
           {
             std::cout << "HitPairEDProducer created " << doublets.size() << " doublets for layers " << layerSet[0].index() << "," << layerSet[1].index();
-            auto cleanDoublets = std::move(cnnInference(doublets));
+            auto cleanDoublets = cnnInference(doublets,layerSet, *hitCachePtr);
             seedingHitSetsProducer.fill(std::get<1>(hitCachePtr_filler_shs), cleanDoublets);
             intermediateHitDoubletsProducer.fill(std::get<1>(hitCachePtr_filler_ihd), layerSet, std::move(cleanDoublets));
           }else
