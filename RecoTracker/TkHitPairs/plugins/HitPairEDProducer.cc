@@ -178,8 +178,8 @@ namespace {
         detIds.push_back(thisDoublets.hit(iD, HitDoublets::inner)->hit()->geographicalId());
         subDetIds.push_back((thisDoublets.hit(iD, HitDoublets::inner)->hit()->geographicalId()).subdetId());
 
-        inIndex.push_back(thisDoublets.index(i,HitDoublets::inner));
-        outIndex.push_back(thisDoublets.index(i,HitDoublets::outer));
+        inIndex.push_back(thisDoublets.index(iD,HitDoublets::inner));
+        outIndex.push_back(thisDoublets.index(iD,HitDoublets::outer));
 
         detIds.push_back(thisDoublets.hit(iD, HitDoublets::outer)->hit()->geographicalId());
         subDetIds.push_back((thisDoublets.hit(iD, HitDoublets::outer)->hit()->geographicalId()).subdetId());
