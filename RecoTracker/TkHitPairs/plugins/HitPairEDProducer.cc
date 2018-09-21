@@ -290,7 +290,7 @@ namespace {
 
           // //Pad Initialization
           for (int iP = 0; iP < padSize*padSize*cnnLayers; ++iP)
-            vPad[iP + doubOffset + j*padSize*padSize*cnnLayers] = 0.0;
+            vPad[iP + doubOffset + j*padSize*padSize*cnnLayers + doubOffset] = 0.0;
 
           for (int k = 0; k < thisCluster->size(); ++k)
           {
