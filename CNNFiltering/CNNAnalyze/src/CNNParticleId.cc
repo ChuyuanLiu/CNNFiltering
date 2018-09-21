@@ -437,7 +437,11 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     auto hitPattern = track->hitPattern();
     bool trkQual  = track->quality(trackQuality);
 
-    //track->setTest(0.2);
+    track->setKaonId(0.1);
+    track->setPionId(0.2);
+    track->setMuonId(0.3);
+    track->setElecId(0.4);
+    track->setElseId(0.5);
 
     sharedFraction = 0.0;
     nHits = 0;

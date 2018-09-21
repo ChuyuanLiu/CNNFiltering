@@ -89,6 +89,12 @@ void TrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
     if(!(posTrack.hasTrackDetails())) continue;
 
+    std::cout << posTrack.getKaonId() << std::endl;
+    std::cout << posTrack.getPionId() << std::endl;
+    std::cout << posTrack.getMuonId() << std::endl;
+    std::cout << posTrack.getElecId() << std::endl;
+    std::cout << posTrack.getElseId() << std::endl;
+
     //std::cout << theTrack->getTest() << std::endl;
 
   }
