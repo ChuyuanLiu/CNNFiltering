@@ -91,7 +91,7 @@ namespace {
     //                           const edm::EventSetup& es,
     //                           HitDoublets& copyDoublets,SeedingLayerSetsHits::SeedingLayerSet layerSet,
     //                           LayerHitMapCache & layerCache) const
-    HitDoublets cnnInference(HitDoublets& thisDoublets) const
+    HitDoublets cnnInference(HitDoublets& thisDoublets)
     {
 
       // const RecHitsSortedInPhi & innerHitsMap = layerCache(layerSet[0], region, es);
