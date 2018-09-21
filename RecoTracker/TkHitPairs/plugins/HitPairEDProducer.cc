@@ -109,7 +109,7 @@ namespace {
       tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/freeze_models/layer_map_model_final_nonorm.pb");
       tensorflow::Session* session = tensorflow::createSession(graphDef);
 
-      int numOfDoublets = copyDoublets.size(), padSize = 16, cnnLayers = 10, infoSize = 67;
+      int numOfDoublets = thisDoublets.size(), padSize = 16, cnnLayers = 10, infoSize = 67;
       float padHalfSize = 8.0;
       tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {numOfDoublets,padSize,padSize,cnnLayers*2});
       tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {numOfDoublets,infoSize});
@@ -162,8 +162,8 @@ namespace {
 
         float deltaA = 0.0, deltaADC = 0.0, deltaS = 0.0, deltaR = 0.0;
         float deltaPhi = 0.0, deltaZ = 0.0, zZero = 0.0;
-        float buffer = 0.0, bufferprime = 0.0;
-        int iLab = 0, iPad = 0;
+
+        int iLab = 0;
         int doubOffset = (padSize*padSize*cnnLayers*2)*iD, infoOffset = (infoSize)*iD;
 
         std::vector< RecHitsSortedInPhi::Hit> hits;
