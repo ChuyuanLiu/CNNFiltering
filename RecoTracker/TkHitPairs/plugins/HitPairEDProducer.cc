@@ -294,7 +294,7 @@ namespace {
 
           for (int k = 0; k < thisCluster->size(); ++k)
           {
-            int thisX = int((float)thisCluster->pixel(k).x - xC + padHalfSize);
+            int thisX = int(-(float)thisCluster->pixel(k).x + xC + padHalfSize);
             int thisY = int(-(float)thisCluster->pixel(k).y + yC + padHalfSize);
             std::cout << "thisX = " << thisX << std::endl;
             std::cout << "thisY = " << thisY << std::endl;
