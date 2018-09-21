@@ -188,7 +188,7 @@ namespace {
         for(int j = 0; j < 2; ++j)
         {
 
-          int padOffset = layerIds[j] * padSize * padSize;
+          int padOffset = layerIds[j] * padSize * padSize + j * padSize * padSize *cnnLayers;
 
           vLab[iLab + infoOffset] = (float)(siHits[j]->globalState()).position.x(); iLab++;
           vLab[iLab + infoOffset] = (float)(siHits[j]->globalState()).position.y(); iLab++;
@@ -290,15 +290,15 @@ namespace {
 
           // //Pad Initialization
           for (int iP = 0; iP < padSize*padSize*cnnLayers; ++iP)
-            vPad[iP + doubOffset + j*padSize*padSize*cnnLayers + doubOffset] = 0.0;
+            vPad[iP + doubOffset + j*padSize*padSize*cnnLayers] = 0.0;
 
           for (int k = 0; k < thisCluster->size(); ++k)
           {
             int thisX = int((float)thisCluster->pixel(k).x - xC + padHalfSize);
-            int thisY = int((float)thisCluster->pixel(k).y - yC + padHalfSize);
+            int thisY = int(-(float)thisCluster->pixel(k).y + yC - padHalfSize);
             std::cout << "thisX = " << thisX << std::endl;
             std::cout << "thisY = " << thisY << std::endl;
-            vPad[padOffset + thisX + thisY * padSize] = (float)thisCluster->pixel(k).adc;
+            vPad[padOffset + thisX + thisY * padSize + doubOffset] = (float)thisCluster->pixel(k).adc;
           }
 
 
