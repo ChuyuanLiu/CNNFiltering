@@ -373,7 +373,7 @@ namespace {
                     { "output/Softmax" }, &outputs);
 
       copyDoublets.clear();
-      float* score = outputs[0].flat<float>();
+      float* score = outputs[0].flat<float>().data();
       for (int i = 0; i < numOfDoublets; i++)
         if(score[i*2 + 1]>0.5)
           copyDoublets.add(inIndex[i],outIndex[i]);
