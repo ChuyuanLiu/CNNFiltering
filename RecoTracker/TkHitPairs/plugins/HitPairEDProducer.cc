@@ -87,14 +87,14 @@ namespace {
       T_IntermediateHitDoublets::produces(producer);
     }
 
-    HitDoublets cnnInference(HitDoublets& thisDoublets,SeedingLayerSetsHits::SeedingLayerSet layerSet, LayerHitMapCache & layerCache) const
+    HitDoublets cnnInference( const TrackingRegion& region,
+                              const edm::EventSetup& es,
+                              HitDoublets& thisDoublets,SeedingLayerSetsHits::SeedingLayerSet layerSet,
+                              LayerHitMapCache & layerCache) const
     {
 
-      SeedingLayerSetsHits::SeedingLayer innerLayerObj = innerLayer(layers);
-      SeedingLayerSetsHits::SeedingLayer outerLayerObj = outerLayer(layers);
-
-      const RecHitsSortedInPhi & innerHitsMap = layerCache(innerLayer, region, iSetup);
-      const RecHitsSortedInPhi& outerHitsMap = layerCache(outerLayer, region, iSetup);
+      const RecHitsSortedInPhi & innerHitsMap = layerCache(layers[0], region, es);
+      const RecHitsSortedInPhi& outerHitsMap = layerCache(layers[1], region, es);
 
       HitDoublets result(innerHitsMap,outerHitsMap); result.reserve(std::max(innerHitsMap.size(),outerHitsMap.size()));
 
@@ -363,7 +363,7 @@ namespace {
 
       }
 
-      return thisDoublets;
+      return result;
 
     }
 
@@ -398,7 +398,7 @@ namespace {
           if(doInference_ && layerSet[0].index() <10 && layerSet[0].index() > -1 && layerSet[1].index() < 10 && layerSet[1].index() > -1)
           {
             std::cout << "HitPairEDProducer created " << doublets.size() << " doublets for layers " << layerSet[0].index() << "," << layerSet[1].index();
-            auto cleanDoublets = cnnInference(doublets,layerSet, *hitCachePtr);
+            auto cleanDoublets = cnnInference(region,iSetup, doublets, layerSet, *hitCachePtr);
             seedingHitSetsProducer.fill(std::get<1>(hitCachePtr_filler_shs), cleanDoublets);
             intermediateHitDoubletsProducer.fill(std::get<1>(hitCachePtr_filler_ihd), layerSet, std::move(cleanDoublets));
           }else
