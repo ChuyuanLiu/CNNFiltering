@@ -121,7 +121,7 @@ namespace {
 
       std::cout << "thisDoublets.size()=" << thisDoublets.size() << std::endl;
       std::cout << "copyDoublets.size()=" << copyDoublets.size() << std::endl;
-      copyDoublets.clear();
+      thisDoublets.clear();
 
       std::cout << "thisDoublets.size()=" << thisDoublets.size() << std::endl;
 
@@ -367,7 +367,7 @@ namespace {
       tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
                     { "output/Softmax" }, &outputs);
 
-      return thisDoublets;
+      return copyDoublets;
 
     }
 
