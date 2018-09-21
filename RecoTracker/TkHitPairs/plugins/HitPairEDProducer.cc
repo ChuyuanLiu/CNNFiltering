@@ -150,7 +150,7 @@ namespace {
       for (int iD = 0; iD < numOfDoublets; iD++)
       {
 
-        copyDoublets.add()
+        //copyDoublets.add()
         std::vector <unsigned int> subDetIds, detIds ;
 
         std::vector< std::vector< float>> hitPads,inHitPads,outHitPads;
