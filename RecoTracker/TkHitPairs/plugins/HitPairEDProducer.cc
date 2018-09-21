@@ -109,7 +109,7 @@ namespace {
       tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/freeze_models/layer_map_model_final_nonorm.pb");
       tensorflow::Session* session = tensorflow::createSession(graphDef);
 
-      int numOfDoublets = thisDoublets.size(), padSize = 16, cnnLayers = 10, infoSize = 67;
+      int numOfDoublets = copyDoublets.size(), padSize = 16, cnnLayers = 10, infoSize = 67;
       float padHalfSize = 8.0;
       tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {numOfDoublets,padSize,padSize,cnnLayers*2});
       tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {numOfDoublets,infoSize});
@@ -119,11 +119,8 @@ namespace {
 
       HitDoublets copyDoublets = std::move(thisDoublets);
 
+      std::cout << "copyDoublets.size()=" << copyDoublets.size() << std::endl;
       std::cout << "thisDoublets.size()=" << thisDoublets.size() << std::endl;
-      std::cout << "copyDoublets.size()=" << copyDoublets.size() << std::endl;
-      thisDoublets.clear();
-
-      std::cout << "copyDoublets.size()=" << copyDoublets.size() << std::endl;
 
       //return copyDoublets;
 
@@ -172,17 +169,17 @@ namespace {
         std::vector< RecHitsSortedInPhi::Hit> hits;
         std::vector< const SiPixelRecHit*> siHits;
 
-        siHits.push_back(dynamic_cast<const SiPixelRecHit*>(thisDoublets.hit(iD, HitDoublets::inner)->hit()));
-        siHits.push_back(dynamic_cast<const SiPixelRecHit*>(thisDoublets.hit(iD, HitDoublets::outer)->hit()));
+        siHits.push_back(dynamic_cast<const SiPixelRecHit*>(copyDoublets.hit(iD, HitDoublets::inner)->hit()));
+        siHits.push_back(dynamic_cast<const SiPixelRecHit*>(copyDoublets.hit(iD, HitDoublets::outer)->hit()));
 
-        detIds.push_back(thisDoublets.hit(iD, HitDoublets::inner)->hit()->geographicalId());
-        subDetIds.push_back((thisDoublets.hit(iD, HitDoublets::inner)->hit()->geographicalId()).subdetId());
+        detIds.push_back(copyDoublets.hit(iD, HitDoublets::inner)->hit()->geographicalId());
+        subDetIds.push_back((copyDoublets.hit(iD, HitDoublets::inner)->hit()->geographicalId()).subdetId());
 
-        inIndex.push_back(thisDoublets.index(iD,HitDoublets::inner));
-        outIndex.push_back(thisDoublets.index(iD,HitDoublets::outer));
+        inIndex.push_back(copyDoublets.index(iD,HitDoublets::inner));
+        outIndex.push_back(copyDoublets.index(iD,HitDoublets::outer));
 
-        detIds.push_back(thisDoublets.hit(iD, HitDoublets::outer)->hit()->geographicalId());
-        subDetIds.push_back((thisDoublets.hit(iD, HitDoublets::outer)->hit()->geographicalId()).subdetId());
+        detIds.push_back(copyDoublets.hit(iD, HitDoublets::outer)->hit()->geographicalId());
+        subDetIds.push_back((copyDoublets.hit(iD, HitDoublets::outer)->hit()->geographicalId()).subdetId());
 
         if (! (((subDetIds[0]==1) || (subDetIds[0]==2)) && ((subDetIds[1]==1) || (subDetIds[1]==2)))) continue;
         //
@@ -198,9 +195,9 @@ namespace {
           vLab[iLab + infoOffset] = (float)(siHits[j]->globalState()).position.y(); iLab++;
           vLab[iLab + infoOffset] = (float)(siHits[j]->globalState()).position.z(); iLab++;
 
-          float phi = thisDoublets.phi(iD,layers[j]) >=0.0 ? thisDoublets.phi(iD,layers[j]) : 2*M_PI + thisDoublets.phi(iD,layers[j]);
+          float phi = copyDoublets.phi(iD,layers[j]) >=0.0 ? copyDoublets.phi(iD,layers[j]) : 2*M_PI + copyDoublets.phi(iD,layers[j]);
           vLab[iLab + infoOffset] = (float)phi; iLab++;
-          vLab[iLab + infoOffset] = (float)thisDoublets.r(iD,layers[j]); iLab++;
+          vLab[iLab + infoOffset] = (float)copyDoublets.r(iD,layers[j]); iLab++;
 
           vLab[iLab + infoOffset] = (float)detSeqs[j]; iLab++;
 
@@ -262,7 +259,7 @@ namespace {
           deltaA   -= ((float)thisCluster->size()); deltaA *= -1.0;
           deltaADC -= thisCluster->charge(); deltaADC *= -1.0; //At the end == Outer Hit ADC - Inner Hit ADC
           deltaS   -= ((float)(thisCluster->sizeY()) / (float)(thisCluster->sizeX())); deltaS *= -1.0;
-          deltaR   -= thisDoublets.r(iD,layers[j]); deltaR *= -1.0;
+          deltaR   -= copyDoublets.r(iD,layers[j]); deltaR *= -1.0;
           deltaPhi -= phi; deltaPhi *= -1.0;
 
           // TH2F hClust("hClust","hClust",
@@ -355,7 +352,7 @@ namespace {
         // }
 
         zZero = (siHits[0]->globalState()).position.z();
-        zZero -= thisDoublets.r(iD,layers[0]) * (deltaZ/deltaR);
+        zZero -= copyDoublets.r(iD,layers[0]) * (deltaZ/deltaR);
 
         vLab[iLab + infoOffset] = deltaA   ; iLab++;
         vLab[iLab + infoOffset] = deltaADC ; iLab++;
@@ -368,10 +365,10 @@ namespace {
         std::cout << "iLab = "<<iLab << std::endl;
 
       }
-
+      std::cout << "Making Inference" << std::endl;
       tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
                     { "output/Softmax" }, &outputs);
-
+      std::cout << "Cleaning doublets" << std::endl;
       copyDoublets.clear();
       float* score = outputs[0].flat<float>().data();
       for (int i = 0; i < numOfDoublets; i++)
