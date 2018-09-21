@@ -374,7 +374,7 @@ namespace {
 
       copyDoublets.clear();
       float score = outputs[0].flat<float>();
-      for (size_t i = 0; i < numOfDoublets; i++)
+      for (int i = 0; i < numOfDoublets; i++)
         if(score[i*2 + 1]>0.5)
           copyDoublets.add(inIndex[i],outIndex[i])
 
