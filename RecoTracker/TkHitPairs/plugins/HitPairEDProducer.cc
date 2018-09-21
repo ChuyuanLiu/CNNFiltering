@@ -140,8 +140,8 @@ namespace {
 
       HitDoublets copyDoublets = std::move(thisDoublets);
 
-      std::cout << "copyDoublets.size()=" << copyDoublets.size() << std::endl;
-      std::cout << "thisDoublets.size()=" << thisDoublets.size() << std::endl;
+      // std::cout << "copyDoublets.size()=" << copyDoublets.size() << std::endl;
+      // std::cout << "thisDoublets.size()=" << thisDoublets.size() << std::endl;
 
       //return copyDoublets;
 
@@ -407,12 +407,12 @@ namespace {
       std::chrono::duration<double> elapsedInf  = finishInf - startInf;
       std::chrono::duration<double> elapsedData = finishData - startData;
       std::chrono::duration<double> elapsedPush = finishPush - startPush;
-
-      std::cout << "Staring size       : " << numOfDoublets << std::endl;
-      std::cout << "New size           : " << copyDoublets.size() << std::endl;
-      std::cout << "Elapsed time (data): " << elapsedData.count() << " s\n";
-      std::cout << "Elapsed time (inf) : " << elapsedInf.count() << " s\n";
-      std::cout << "Elapsed time (push): " << elapsedPush.count() << " s\n";
+      //
+      // std::cout << "Staring size       : " << numOfDoublets << std::endl;
+      // std::cout << "New size           : " << copyDoublets.size() << std::endl;
+      // std::cout << "Elapsed time (data): " << elapsedData.count() << " s\n";
+      // std::cout << "Elapsed time (inf) : " << elapsedInf.count() << " s\n";
+      // std::cout << "Elapsed time (push): " << elapsedPush.count() << " s\n";
 
       return copyDoublets;
 
