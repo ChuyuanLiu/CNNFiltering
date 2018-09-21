@@ -106,7 +106,7 @@ namespace {
 
       std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}, layerIds;
 
-      tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/CNNDoublets/freeze_models/layer_map_model_final_nonorm.pb");
+      tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/freeze_models/layer_map_model_final_nonorm.pb");
       tensorflow::Session* session = tensorflow::createSession(graphDef);
 
       int numOfDoublets = thisDoublets.size(), padSize = 16, cnnLayers = 10, infoSize = 67;
@@ -147,19 +147,21 @@ namespace {
       for (int nx = 0; nx < padSize; ++nx)
         for (int ny = 0; ny < padSize; ++ny)
           zeroPad.push_back(0.0);
+
+      std::vector<int> inIndex, outIndex;
       for (int iD = 0; iD < numOfDoublets; iD++)
       {
 
         //copyDoublets.add()
         std::vector <unsigned int> subDetIds, detIds ;
 
-        std::vector< std::vector< float>> hitPads,inHitPads,outHitPads;
+        // std::vector< std::vector< float>> hitPads,inHitPads,outHitPads;
 
-        for(int i = 0; i < cnnLayers; ++i)
-        {
-          inHitPads.push_back(zeroPad);
-          outHitPads.push_back(zeroPad);
-        }
+        // for(int i = 0; i < cnnLayers; ++i)
+        // {
+        //   inHitPads.push_back(zeroPad);
+        //   outHitPads.push_back(zeroPad);
+        // }
 
         float deltaA = 0.0, deltaADC = 0.0, deltaS = 0.0, deltaR = 0.0;
         float deltaPhi = 0.0, deltaZ = 0.0, zZero = 0.0;
@@ -176,13 +178,16 @@ namespace {
         detIds.push_back(thisDoublets.hit(iD, HitDoublets::inner)->hit()->geographicalId());
         subDetIds.push_back((thisDoublets.hit(iD, HitDoublets::inner)->hit()->geographicalId()).subdetId());
 
+        inIndex.push_back(thisDoublets.index(i,HitDoublets::inner));
+        outIndex.push_back(thisDoublets.index(i,HitDoublets::outer));
+
         detIds.push_back(thisDoublets.hit(iD, HitDoublets::outer)->hit()->geographicalId());
         subDetIds.push_back((thisDoublets.hit(iD, HitDoublets::outer)->hit()->geographicalId()).subdetId());
 
         if (! (((subDetIds[0]==1) || (subDetIds[0]==2)) && ((subDetIds[1]==1) || (subDetIds[1]==2)))) continue;
-
-        hitPads.push_back(inPad);
-        hitPads.push_back(outPad);
+        //
+        // hitPads.push_back(inPad);
+        // hitPads.push_back(outPad);
 
         for(int j = 0; j < 2; ++j)
         {
@@ -301,10 +306,10 @@ namespace {
 
         }
 
-        for (int nx = 0; nx < padSize*padSize; ++nx)
-            inHitPads[layerIds[0]][nx] = hitPads[0][nx];
-        for (int nx = 0; nx < padSize*padSize; ++nx)
-            outHitPads[layerIds[1]][nx] = hitPads[1][nx];
+        // for (int nx = 0; nx < padSize*padSize; ++nx)
+        //     inHitPads[layerIds[0]][nx] = hitPads[0][nx];
+        // for (int nx = 0; nx < padSize*padSize; ++nx)
+        //     outHitPads[layerIds[1]][nx] = hitPads[1][nx];
 
         // std::cout << "Inner hit layer : " << innerLayer->seqNum() << " - " << layerIds[0]<< std::endl;
         //
@@ -367,6 +372,14 @@ namespace {
       tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
                     { "output/Softmax" }, &outputs);
 
+      copyDoublets.clear();
+      float score = outputs[0].flat<float>();
+      for (size_t i = 0; i < numOfDoublets; i++)
+        if(score[i*2 + 1]>0.5)
+          copyDoublets.add(inIndex[i],outIndex[i])
+
+      std::cout << "Staring size = " << numOfDoublets << std::endl;
+      std::cout << "New size     = " << copyDoublets.size() << std::endl;
       return copyDoublets;
 
     }
