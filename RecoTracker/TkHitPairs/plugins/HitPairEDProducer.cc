@@ -25,6 +25,9 @@
 #include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
 #include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
 #include "TH2F.h"
+
+#include <chrono>
+
 namespace { class ImplBase; }
 
 class HitPairEDProducer: public edm::stream::EDProducer<> {
@@ -98,6 +101,8 @@ namespace {
       // const RecHitsSortedInPhi& outerHitsMap = layerCache(layerSet[1], region, es);
       //
       // HitDoublets result(innerHitsMap,outerHitsMap); result.reserve(std::max(innerHitsMap.size(),outerHitsMap.size()));
+
+      auto startData = std::chrono::high_resolution_clock::now();
 
       std::vector< float > inPad, outPad;
 
@@ -362,21 +367,37 @@ namespace {
         vLab[iLab + infoOffset] = deltaZ   ; iLab++;
         vLab[iLab + infoOffset] = zZero    ; iLab++;
 
-        std::cout << "iLab = "<<iLab << std::endl;
+        // std::cout << "iLab = "<<iLab << std::endl;
 
       }
-      std::cout << "Making Inference" << std::endl;
+      // std::cout << "Making Inference" << std::endl;
+
+      auto finishData = std::chrono::high_resolution_clock::now();
+
+      auto startInf = std::chrono::high_resolution_clock::now();
       tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
                     { "output/Softmax" }, &outputs);
-      std::cout << "Cleaning doublets" << std::endl;
+      auto finishInf = std::chrono::high_resolution_clock::now();
+      // std::cout << "Cleaning doublets" << std::endl;
+
+      auto startPush = std::chrono::high_resolution_clock::now();
       copyDoublets.clear();
       float* score = outputs[0].flat<float>().data();
       for (int i = 0; i < numOfDoublets; i++)
         if(score[i*2 + 1]>0.5)
           copyDoublets.add(inIndex[i],outIndex[i]);
+      auto finishPush = std::chrono::high_resolution_clock::now();
 
-      std::cout << "Staring size = " << numOfDoublets << std::endl;
-      std::cout << "New size     = " << copyDoublets.size() << std::endl;
+      std::chrono::duration<double> elapsedInf  = finishInf - startInf;
+      std::chrono::duration<double> elapsedData = finishData - startData;
+      std::chrono::duration<double> elapsedPush = finishPush - startPush;
+
+      std::cout << "Staring size       : " << numOfDoublets << std::endl;
+      std::cout << "New size           : " << copyDoublets.size() << std::endl;
+      std::cout << "Elapsed time (data): " << elapsedData.count() << " s\n";
+      std::cout << "Elapsed time (inf) : " << elapsedInf.count() << " s\n";
+      std::cout << "Elapsed time (push): " << elapsedPush.count() << " s\n";
+      
       return copyDoublets;
 
     }
@@ -411,7 +432,7 @@ namespace {
 
           if(doInference_ && layerSet[0].index() <10 && layerSet[0].index() > -1 && layerSet[1].index() < 10 && layerSet[1].index() > -1)
           {
-            std::cout << "HitPairEDProducer created " << doublets.size() << " doublets for layers " << layerSet[0].index() << "," << layerSet[1].index();
+            // std::cout << "HitPairEDProducer created " << doublets.size() << " doublets for layers " << layerSet[0].index() << "," << layerSet[1].index();
             auto cleanDoublets = cnnInference(doublets);
             seedingHitSetsProducer.fill(std::get<1>(hitCachePtr_filler_shs), cleanDoublets);
             intermediateHitDoubletsProducer.fill(std::get<1>(hitCachePtr_filler_ihd), layerSet, std::move(cleanDoublets));
