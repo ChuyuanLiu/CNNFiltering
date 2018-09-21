@@ -148,7 +148,6 @@ namespace {
       for (size_t iD = 0; iD < thisDoublets.size(); iD++)
       {
 
-        result.add(b+i,io);
 
         std::vector <unsigned int> subDetIds, detIds ;
 
