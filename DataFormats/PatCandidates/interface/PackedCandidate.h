@@ -35,7 +35,8 @@ namespace pat {
     typedef unsigned int index;
     /// default constructor
     PackedCandidate() :
-      test_(0),packedPt_(0), packedEta_(0),
+      kaonId_(0),pionId_(0),muonId_(0),elecId_(0),elseId_(0),
+      packedPt_(0), packedEta_(0),
       packedPhi_(0), packedM_(0),
       packedDxy_(0), packedDz_(0), packedDPhi_(0), packedDEta_(0),packedDTrkPt_(0),
       packedCovariance_(),
@@ -54,7 +55,8 @@ namespace pat {
     explicit PackedCandidate( const reco::Candidate & c,
                               const reco::VertexRefProd &pvRefProd,
                               reco::VertexRef::key_type pvRefKey) :
-      test_(0),packedPuppiweight_(0), packedPuppiweightNoLepDiff_(0), rawCaloFraction_(0), hcalFraction_(0),
+      kaonId_(0),pionId_(0),muonId_(0),elecId_(0),elseId_(0),
+      packedPuppiweight_(0), packedPuppiweightNoLepDiff_(0), rawCaloFraction_(0), hcalFraction_(0),
       packedTime_(0), packedTimeError_(0), isIsolatedChargedHadron_(false),
       p4_( new PolarLorentzVector(c.pt(), c.eta(), c.phi(), c.mass())),
       p4c_( new LorentzVector(*p4_)), vertex_( new Point(c.vertex())),
@@ -69,7 +71,7 @@ namespace pat {
                               float trkPt,float etaAtVtx,float phiAtVtx,int pdgId,
                               const reco::VertexRefProd &pvRefProd,
                               reco::VertexRef::key_type pvRefKey) :
-      test_(0),packedPuppiweight_(0), packedPuppiweightNoLepDiff_(0), rawCaloFraction_(0), hcalFraction_(0),
+      kaonId_(0),pionId_(0),muonId_(0),elecId_(0),elseId_(0),packedPuppiweight_(0), packedPuppiweightNoLepDiff_(0), rawCaloFraction_(0), hcalFraction_(0),
       packedTime_(0), packedTimeError_(0), isIsolatedChargedHadron_(false),
       p4_( new PolarLorentzVector(p4) ), p4c_( new LorentzVector(*p4_)),
       vertex_( new Point(vtx) ),
@@ -86,7 +88,7 @@ namespace pat {
                               float trkPt, float etaAtVtx, float phiAtVtx, int pdgId,
                               const reco::VertexRefProd &pvRefProd,
                               reco::VertexRef::key_type pvRefKey) :
-      test_(0),packedPuppiweight_(0), packedPuppiweightNoLepDiff_(0), rawCaloFraction_(0), hcalFraction_(0),
+      kaonId_(0),pionId_(0),muonId_(0),elecId_(0),elseId_(0),packedPuppiweight_(0), packedPuppiweightNoLepDiff_(0), rawCaloFraction_(0), hcalFraction_(0),
       packedTime_(0), packedTimeError_(0), isIsolatedChargedHadron_(false),
       p4_(new PolarLorentzVector(p4.Pt(), p4.Eta(), p4.Phi(), p4.M())),
       p4c_( new LorentzVector(p4)), vertex_( new Point(vtx) ) ,
@@ -100,7 +102,7 @@ namespace pat {
     }
 
     PackedCandidate( const PackedCandidate& iOther) :
-      test_(iOther.test_),
+      kaonId_(iOther.kaonId_),pionId_(iOther.pionId_),muonId_(iOther.muonId_),elecId_(iOther.elecId_),elseId_(iOther.elseId_),
       packedPt_(iOther.packedPt_), packedEta_(iOther.packedEta_),
       packedPhi_(iOther.packedPhi_), packedM_(iOther.packedM_),
       packedDxy_(iOther.packedDxy_), packedDz_(iOther.packedDz_),
@@ -127,7 +129,7 @@ namespace pat {
       }
 
     PackedCandidate( PackedCandidate&& iOther) :
-      test_(iOther.test_),
+      kaonId_(iOther.kaonId_),pionId_(iOther.pionId_),muonId_(iOther.muonId_),elecId_(iOther.elecId_),elseId_(iOther.elseId_),
       packedPt_(iOther.packedPt_), packedEta_(iOther.packedEta_),
       packedPhi_(iOther.packedPhi_), packedM_(iOther.packedM_),
       packedDxy_(iOther.packedDxy_), packedDz_(iOther.packedDz_),
@@ -157,7 +159,11 @@ namespace pat {
       if(this == &iOther) {
         return *this;
       }
-      test_ = iOther.test_;
+      kaonId_ = iOther.kaonId_;
+      pionId_ = iOther.pionId_;
+      muonId_ = iOther.muonId_;
+      elecId_ = iOther.elecId_;
+      elseId_ = iOther.elseId_;
       packedPt_ =iOther.packedPt_;
       packedEta_=iOther.packedEta_;
       packedPhi_=iOther.packedPhi_;
@@ -227,7 +233,11 @@ namespace pat {
       normalizedChi2_=iOther.normalizedChi2_;
       covarianceVersion_=iOther.covarianceVersion_;
       covarianceSchema_=iOther.covarianceSchema_;
-      test_=iOther.test_;
+      kaonId_ = iOther.kaonId_;
+      pionId_ = iOther.pionId_;
+      muonId_ = iOther.muonId_;
+      elecId_ = iOther.elecId_;
+      elseId_ = iOther.elseId_;
       firstHit_=iOther.firstHit_;
       return *this;
     }
@@ -237,7 +247,11 @@ namespace pat {
         return *this;
       }
 
-      test_=iOther.test_;
+      kaonId_ = iOther.kaonId_;
+pionId_ = iOther.pionId_;
+muonId_ = iOther.muonId_;
+elecId_ = iOther.elecId_;
+elseId_ = iOther.elseId_;
       packedPt_ =iOther.packedPt_;
       packedEta_=iOther.packedEta_;
       packedPhi_=iOther.packedPhi_;
@@ -358,7 +372,13 @@ namespace pat {
     /// momentum azimuthal angle
     double phi() const override { if (!p4c_) unpack(); return p4_.load()->Phi(); }
 
-    double test() const { if (test_<1E10) return test_; else return 0.0; }
+    //pIds
+    double  kaonId() const { if (fabs(kaonId_)<2.0) return kaonId_; else return 0.0; }
+    double  pionId() const { if (fabs(pionId_)<2.0) return pionId_; else return 0.0; }
+    double  muonId() const { if (fabs(muonId_)<2.0) return muonId_; else return 0.0; }
+    double  elecId() const { if (fabs(elecId_)<2.0) return elecId_; else return 0.0; }
+    double  elseId() const { if (fabs(elseId_)<2.0) return elseId_; else return 0.0; }
+
     /// pt from the track (normally identical to pt())
     virtual double ptTrk() const {
         maybeUnpackBoth();
@@ -705,7 +725,7 @@ namespace pat {
     static constexpr float kMinDEtaToStore_=0.001;
     static constexpr float kMinDTrkPtToStore_=0.001;
 
-    float test_;
+    float kaonId_,pionId_,muonId_,elecId_,elseId_;
 
     uint16_t packedPt_, packedEta_, packedPhi_, packedM_;
     uint16_t packedDxy_, packedDz_, packedDPhi_, packedDEta_, packedDTrkPt_;
