@@ -112,7 +112,7 @@ namespace {
       std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}, layerIds;
 
       tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/freeze_models/layer_map_model_final_nonorm.pb");
-      tensorflow::Session* session = tensorflow::createSession(graphDef);
+      tensorflow::Session* session = tensorflow::createSession(graphDef,16);
 
       int numOfDoublets = thisDoublets.size(), padSize = 16, cnnLayers = 10, infoSize = 67;
       float padHalfSize = 8.0;
@@ -397,7 +397,7 @@ namespace {
       std::cout << "Elapsed time (data): " << elapsedData.count() << " s\n";
       std::cout << "Elapsed time (inf) : " << elapsedInf.count() << " s\n";
       std::cout << "Elapsed time (push): " << elapsedPush.count() << " s\n";
-      
+
       return copyDoublets;
 
     }
