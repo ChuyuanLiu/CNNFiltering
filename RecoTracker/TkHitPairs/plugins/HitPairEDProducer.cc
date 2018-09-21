@@ -93,8 +93,8 @@ namespace {
                               LayerHitMapCache & layerCache) const
     {
 
-      const RecHitsSortedInPhi & innerHitsMap = layerCache(layers[0], region, es);
-      const RecHitsSortedInPhi& outerHitsMap = layerCache(layers[1], region, es);
+      const RecHitsSortedInPhi & innerHitsMap = layerCache(layerSet[0], region, es);
+      const RecHitsSortedInPhi& outerHitsMap = layerCache(layerSet[1], region, es);
 
       HitDoublets result(innerHitsMap,outerHitsMap); result.reserve(std::max(innerHitsMap.size(),outerHitsMap.size()));
 
