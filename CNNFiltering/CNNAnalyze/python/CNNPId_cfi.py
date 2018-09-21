@@ -24,7 +24,7 @@ import FWCore.ParameterSet.Config as cms
 # ++IntermediateHitDoublets "tobTecStepHitDoubletsTripl" "" "RECO" (productId = 3:319)
 # ++IntermediateHitDoublets "tripletElectronHitDoublets" "" "RECO" (productId = 3:320)
 
-tracksCNN = cms.EDAnalyzer('CNNParticleId',
+pidCNN = cms.EDAnalyzer('CNNParticleId',
         processName     = cms.string( "generalTracks_CNN"),
         tracks          = cms.InputTag( "generalTracks" ),
         tpMap           = cms.InputTag( "tpClusterProducer" ),
