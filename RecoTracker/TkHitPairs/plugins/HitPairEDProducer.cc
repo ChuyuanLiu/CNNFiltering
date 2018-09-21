@@ -290,12 +290,14 @@ namespace {
 
           // //Pad Initialization
           for (int iP = 0; iP < padSize*padSize*cnnLayers; ++iP)
-            vPad[iP + doubOffset] = 0.0;
+            vPad[iP + doubOffset + j*padSize*padSize*cnnLayers] = 0.0;
 
           for (int k = 0; k < thisCluster->size(); ++k)
           {
             int thisX = int((float)thisCluster->pixel(k).x - xC + padHalfSize);
             int thisY = int((float)thisCluster->pixel(k).y - yC + padHalfSize);
+            std::cout << "thisX = " << thisX << std::endl;
+            std::cout << "thisY = " << thisY << std::endl;
             vPad[padOffset + thisX + thisY * padSize] = (float)thisCluster->pixel(k).adc;
           }
 
