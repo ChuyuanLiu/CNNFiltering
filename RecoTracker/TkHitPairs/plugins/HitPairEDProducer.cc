@@ -91,7 +91,7 @@ namespace {
     //                           const edm::EventSetup& es,
     //                           HitDoublets& copyDoublets,SeedingLayerSetsHits::SeedingLayerSet layerSet,
     //                           LayerHitMapCache & layerCache) const
-    HitDoublets cnnInference(HitDoublets& copyDoublets) const
+    HitDoublets cnnInference(HitDoublets& thisDoublets) const
     {
 
       // const RecHitsSortedInPhi & innerHitsMap = layerCache(layerSet[0], region, es);
@@ -120,7 +120,7 @@ namespace {
       float* vPad = inputPads.flat<float>().data();
       float* vLab = inputFeat.flat<float>().data();
 
-      HitDoublets copyDoublets = std::move(copyDoublets);
+      HitDoublets copyDoublets = std::move(thisDoublets);
 
       //return copyDoublets;
 
