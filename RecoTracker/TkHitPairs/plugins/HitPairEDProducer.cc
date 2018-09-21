@@ -376,7 +376,7 @@ namespace {
       float* score = outputs[0].flat<float>();
       for (int i = 0; i < numOfDoublets; i++)
         if(score[i*2 + 1]>0.5)
-          copyDoublets.add(inIndex[i],outIndex[i])
+          copyDoublets.add(inIndex[i],outIndex[i]);
 
       std::cout << "Staring size = " << numOfDoublets << std::endl;
       std::cout << "New size     = " << copyDoublets.size() << std::endl;
