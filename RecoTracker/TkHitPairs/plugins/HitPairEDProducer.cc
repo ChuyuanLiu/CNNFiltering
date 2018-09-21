@@ -87,16 +87,17 @@ namespace {
       T_IntermediateHitDoublets::produces(producer);
     }
 
-    HitDoublets cnnInference( const TrackingRegion& region,
-                              const edm::EventSetup& es,
-                              HitDoublets& thisDoublets,SeedingLayerSetsHits::SeedingLayerSet layerSet,
-                              LayerHitMapCache & layerCache) const
+    // HitDoublets cnnInference( const TrackingRegion& region,
+    //                           const edm::EventSetup& es,
+    //                           HitDoublets& thisDoublets,SeedingLayerSetsHits::SeedingLayerSet layerSet,
+    //                           LayerHitMapCache & layerCache) const
+    HitDoublets cnnInference(HitDoublets& thisDoublets) const
     {
 
-      const RecHitsSortedInPhi & innerHitsMap = layerCache(layerSet[0], region, es);
-      const RecHitsSortedInPhi& outerHitsMap = layerCache(layerSet[1], region, es);
-
-      HitDoublets result(innerHitsMap,outerHitsMap); result.reserve(std::max(innerHitsMap.size(),outerHitsMap.size()));
+      // const RecHitsSortedInPhi & innerHitsMap = layerCache(layerSet[0], region, es);
+      // const RecHitsSortedInPhi& outerHitsMap = layerCache(layerSet[1], region, es);
+      //
+      // HitDoublets result(innerHitsMap,outerHitsMap); result.reserve(std::max(innerHitsMap.size(),outerHitsMap.size()));
 
       std::cout << "In cnn" << std::endl;
 
@@ -119,7 +120,7 @@ namespace {
       float* vPad = inputPads.flat<float>().data();
       float* vLab = inputFeat.flat<float>().data();
 
-      // HitDoublets copyDoublets = std::move(thisDoublets);
+      HitDoublets copyDoublets = std::move(thisDoublets);
 
       //return copyDoublets;
 
@@ -147,6 +148,8 @@ namespace {
       for (size_t iD = 0; iD < thisDoublets.size(); iD++)
       {
 
+        result.add(b+i,io);
+
         std::vector <unsigned int> subDetIds, detIds ;
 
         std::vector< std::vector< float>> hitPads,inHitPads,outHitPads;
@@ -166,8 +169,8 @@ namespace {
         std::vector< RecHitsSortedInPhi::Hit> hits;
         std::vector< const SiPixelRecHit*> siHits;
 
-        siHits.push_back(dynamic_cast<const SiPixelRecHit*>((hits[0])));
-        siHits.push_back(dynamic_cast<const SiPixelRecHit*>((hits[1])));
+        siHits.push_back(dynamic_cast<const SiPixelRecHit*>(thisDoublets.hit(iD, HitDoublets::inner)->hit()));
+        siHits.push_back(dynamic_cast<const SiPixelRecHit*>(thisDoublets.hit(iD, HitDoublets::outer)->hit()));
 
         std::cout << "Passed? "<< std::endl;
 
@@ -363,7 +366,7 @@ namespace {
 
       }
 
-      return result;
+      return copyDoublets;
 
     }
 
@@ -398,7 +401,7 @@ namespace {
           if(doInference_ && layerSet[0].index() <10 && layerSet[0].index() > -1 && layerSet[1].index() < 10 && layerSet[1].index() > -1)
           {
             std::cout << "HitPairEDProducer created " << doublets.size() << " doublets for layers " << layerSet[0].index() << "," << layerSet[1].index();
-            auto cleanDoublets = cnnInference(region,iSetup, doublets, layerSet, *hitCachePtr);
+            auto cleanDoublets = cnnInference(doublets);
             seedingHitSetsProducer.fill(std::get<1>(hitCachePtr_filler_shs), cleanDoublets);
             intermediateHitDoubletsProducer.fill(std::get<1>(hitCachePtr_filler_ihd), layerSet, std::move(cleanDoublets));
           }else
