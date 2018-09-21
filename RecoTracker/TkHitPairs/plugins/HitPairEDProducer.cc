@@ -145,7 +145,7 @@ namespace {
         for (int ny = 0; ny < padSize; ++ny)
           zeroPad.push_back(0.0);
       std::cout << "Here" << std::endl;
-      for (size_t iD = 0; iD < thisDoublets.size(); iD++)
+      for (size_t iD = 0; iD < copyDoublets.size(); iD++)
       {
 
 
