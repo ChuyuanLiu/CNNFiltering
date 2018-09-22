@@ -426,7 +426,7 @@ void HitPairGeneratorFromLayerPair::doublets(const TrackingRegion& region,
 	}
         if(doInference)
         {
-          bool doit = makeInference(innerHitsMap.theHits[b+i].hit(),outerHitsMap.theHits[io].hit(),session,inSeq,outSeq,inLay,outLay,t_);
+          bool doit = HitPairGeneratorFromLayerPair::makeInference(innerHitsMap.theHits[b+i].hit(),outerHitsMap.theHits[io].hit(),session,inSeq,outSeq,inLay,outLay,t_);
           if(doit)
             result.add(b+i,io);
         }
