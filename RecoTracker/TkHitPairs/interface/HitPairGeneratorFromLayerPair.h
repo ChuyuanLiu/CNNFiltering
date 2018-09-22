@@ -60,7 +60,7 @@ public:
                      const BaseTrackerRecHit& outerHit,
                      tensorflow::Session& session,
                      int inSeq, int outSeq,
-                     int inLay, int outLay
+                     int inLay, int outLay,
                      float t);
 
   Layer innerLayer(const Layers& layers) const { return layers[theInnerLayer]; }
