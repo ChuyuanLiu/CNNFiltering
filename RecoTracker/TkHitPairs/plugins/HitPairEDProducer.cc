@@ -113,7 +113,6 @@ namespace {
     //                           LayerHitMapCache & layerCache) const
     HitDoublets cnnInference(HitDoublets& thisDoublets)
     {
-      using namespace graph;
       // const RecHitsSortedInPhi & innerHitsMap = layerCache(layerSet[0], region, es);
       // const RecHitsSortedInPhi& outerHitsMap = layerCache(layerSet[1], region, es);
       //
