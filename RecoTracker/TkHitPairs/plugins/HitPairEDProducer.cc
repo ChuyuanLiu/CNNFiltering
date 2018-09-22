@@ -124,7 +124,7 @@ namespace {
 
       // Load graph
       tensorflow::setLogging("0");
-
+      std::cout << "GPU" << std::endl;
       std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}, layerIds;
 
       tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/freeze_models/layer_map_model_final_nonorm.pb");
