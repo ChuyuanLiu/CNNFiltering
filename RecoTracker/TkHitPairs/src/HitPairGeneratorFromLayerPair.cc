@@ -96,7 +96,7 @@ bool makeInference(BaseTrackerRecHit const *innerHit,
   float* vPad = inputPads.flat<float>().data();
   float* vLab = inputFeat.flat<float>().data();
 
-  std::vector <int> detSeqs, layerIds, subDetIds;
+  std::vector <int> detSeqs, layerIds, subDetIds, detIds;
 
   detSeqs.push_back(inSeq);
   detSeqs.push_back(outSeq);
@@ -308,10 +308,13 @@ bool makeInference(BaseTrackerRecHit const *innerHit,
   // std::cout << "iLab = "<<iLab << std::endl;
 
   std::vector<tensorflow::Tensor> outputs;
+  tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
+                { "output/Softmax" }, &outputs);
 
-
-
+  return (outputs[0].flat<float>().data()[1]>t);
 }
+
+
 void HitPairGeneratorFromLayerPair::hitPairs(
 					     const TrackingRegion & region, OrderedHitPairs & result,
 					     const edm::Event& iEvent, const edm::EventSetup& iSetup, Layers layers) {
