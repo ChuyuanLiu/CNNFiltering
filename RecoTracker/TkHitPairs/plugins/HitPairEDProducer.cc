@@ -18,7 +18,7 @@
 #include "RecoTracker/TkHitPairs/interface/RegionsSeedingHitSets.h"
 
 #include "PhysicsTools/TensorFlow/interface/TensorFlow.h"
-#include "tensorflow/tensorflow/core/graph/default_device.h"
+#include "tensorflow/core/graph/default_device.h"
 
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHit.h"
 #include "DataFormats/TrackerRecHit2D/interface/BaseTrackerRecHit.h"
