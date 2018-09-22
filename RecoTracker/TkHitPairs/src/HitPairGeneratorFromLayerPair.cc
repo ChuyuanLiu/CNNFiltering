@@ -80,8 +80,9 @@ namespace {
 }
 
 
-bool makeInference(BaseTrackerRecHit const *innerHit,
+bool HitPairGeneratorFromLayerPair::makeInference(BaseTrackerRecHit const *innerHit,
                    BaseTrackerRecHit const *outerHit,
+                   tensorflow::Session* session,
                    int inSeq, int outSeq,
                    int inLay, int outLay,
                    float t)
