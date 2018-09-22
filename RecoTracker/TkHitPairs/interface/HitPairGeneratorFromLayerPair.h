@@ -56,12 +56,12 @@ public:
 						      const unsigned int theMaxElement,
 						      HitDoublets & result);
 
-  bool makeInference(const BaseTrackerRecHit* innerHit,
-                     const BaseTrackerRecHit* outerHit,
-                     tensorflow::Session* session,
-                     int inSeq, int outSeq,
-                     int inLay, int outLay,
-                     float t);
+  // bool makeInference(const BaseTrackerRecHit* innerHit,
+  //                    const BaseTrackerRecHit* outerHit,
+  //                    tensorflow::Session* session,
+  //                    int inSeq, int outSeq,
+  //                    int inLay, int outLay,
+  //                    float t);
 
   Layer innerLayer(const Layers& layers) const { return layers[theInnerLayer]; }
   Layer outerLayer(const Layers& layers) const { return layers[theOuterLayer]; }

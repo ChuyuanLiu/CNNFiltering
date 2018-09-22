@@ -80,7 +80,7 @@ namespace {
 }
 
 
-bool HitPairGeneratorFromLayerPair::makeInference(BaseTrackerRecHit const *innerHit,
+bool makeInference(BaseTrackerRecHit const *innerHit,
                    BaseTrackerRecHit const *outerHit,
                    tensorflow::Session* session,
                    int inSeq, int outSeq,
@@ -426,7 +426,7 @@ void HitPairGeneratorFromLayerPair::doublets(const TrackingRegion& region,
 	}
         if(doInference)
         {
-          bool doit = HitPairGeneratorFromLayerPair::makeInference(innerHitsMap.theHits[b+i].hit(),outerHitsMap.theHits[io].hit(),session,inSeq,outSeq,inLay,outLay,t_);
+          bool doit = makeInference(innerHitsMap.theHits[b+i].hit(),outerHitsMap.theHits[io].hit(),session,inSeq,outSeq,inLay,outLay,t_);
           if(doit)
             result.add(b+i,io);
         }
