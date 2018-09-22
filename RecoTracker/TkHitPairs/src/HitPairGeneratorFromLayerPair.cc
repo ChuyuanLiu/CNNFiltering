@@ -83,11 +83,12 @@ namespace {
 bool makeInference(BaseTrackerRecHit const *innerHit,
                    BaseTrackerRecHit const *outerHit,
                    int inSeq, int outSeq,
-                   int inLay, int outLay
+                   int inLay, int outLay,
                    float t)
 {
 
   int numOfDoublets = 1, padSize = 16, cnnLayers = 10, infoSize = 67;
+  float padHalfSize = 8.0;
 
   tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {numOfDoublets,padSize,padSize,cnnLayers*2});
   tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {numOfDoublets,infoSize});
@@ -95,7 +96,7 @@ bool makeInference(BaseTrackerRecHit const *innerHit,
   float* vPad = inputPads.flat<float>().data();
   float* vLab = inputFeat.flat<float>().data();
 
-  std::vector <int> detSeqs, layerIds;
+  std::vector <int> detSeqs, layerIds, float padHalfSize = 8.0;;
 
   detSeqs.push_back(inSeq);
   detSeqs.push_back(outSeq);
@@ -421,7 +422,7 @@ void HitPairGeneratorFromLayerPair::doublets(const TrackingRegion& region,
 	}
         if(doInference)
         {
-          if(makeInference(innerHitsMap.theHits[b+i].hit(),outerHitsMap.theHits[io].hit(),t_))
+          if(makeInference(innerHitsMap.theHits[b+i].hit(),outerHitsMap.theHits[io].hit(),session,inSeq,outSeq,inLay,outLay,t_))
             result.add(b+i,io);
         }
         else
