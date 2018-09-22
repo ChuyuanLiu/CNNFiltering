@@ -5,6 +5,8 @@
 #include "RecoTracker/TkHitPairs/interface/LayerHitMapCache.h"
 #include "TrackingTools/TransientTrackingRecHit/interface/SeedingLayerSetsHits.h"
 
+#include "PhysicsTools/TensorFlow/interface/TensorFlow.h"
+
 class DetLayer;
 class TrackingRegion;
 
@@ -41,7 +43,7 @@ public:
   }
   HitDoublets doublets( const TrackingRegion& reg,
                         const edm::Event & ev,  const edm::EventSetup& es, const Layer& innerLayer, const Layer& outerLayer, LayerCacheType& layerCache);
-  
+
   void hitPairs( const TrackingRegion& reg, OrderedHitPairs & prs,
                  const edm::Event & ev,  const edm::EventSetup& es, Layers layers);
   static void doublets(
@@ -54,8 +56,13 @@ public:
 						      const unsigned int theMaxElement,
 						      HitDoublets & result);
 
-  
-  
+  bool makeInference(const BaseTrackerRecHit& innerHit,
+                     const BaseTrackerRecHit& outerHit,
+                     tensorflow::Session& session,
+                     int inSeq, int outSeq,
+                     int inLay, int outLay
+                     float t);
+
   Layer innerLayer(const Layers& layers) const { return layers[theInnerLayer]; }
   Layer outerLayer(const Layers& layers) const { return layers[theOuterLayer]; }
 
