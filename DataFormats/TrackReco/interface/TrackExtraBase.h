@@ -85,11 +85,10 @@ private:
     edm::RefCore m_hitCollection;
     unsigned int m_firstHit;
     unsigned int m_nHits;
-    TrajParams m_trajParams; 
+    TrajParams m_trajParams;
     Chi2sFive m_chi2sX5;  // chi2 * 5  chopped at 255  (max chi2 is 51)
 };
 
 }// namespace reco
 
 #endif
-

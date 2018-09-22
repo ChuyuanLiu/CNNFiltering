@@ -409,15 +409,15 @@ public:
     void setPionId(float value) { pionId_ = value; }
     void setElseId(float value) { elseId_ = value; }
 
-    //Initializers
-    void initializeIds()
-    {
-      kaonId_ = 0.0;
-      elecId_ = 0.0;
-      elseId_ = 0.0;
-      pionId_ = 0.0;
-      elseId_ = 0.0;
-    }
+    // //Initializers
+    // void initializeIds()
+    // {
+    //   kaonId_ = 0.0;
+    //   elecId_ = 0.0;
+    //   elseId_ = 0.0;
+    //   pionId_ = 0.0;
+    //   elseId_ = 0.0;
+    // }
 
     //Getters
     float getKaonId() const { return kaonId_; }
@@ -457,9 +457,6 @@ private:
     /// track algorithm
     uint8_t originalAlgorithm_;
 
-    //pIds
-    float kaonId_, pionId_, elseId_, muonId_, elecId_;
-
     /// track quality
     uint8_t quality_;
 
@@ -468,6 +465,9 @@ private:
 
     /// Stop Reason
     uint8_t stopReason_;
+
+    //pIds
+    float kaonId_, pionId_, elseId_, muonId_, elecId_;
 };
 
 //  Access the hit pattern, indicating in which Tracker layers the track has hits.
