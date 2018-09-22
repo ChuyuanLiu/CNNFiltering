@@ -76,12 +76,7 @@ TrackBase::TrackBase() :
     originalAlgorithm_(undefAlgorithm),
     quality_(0),
     nLoops_(0),
-    stopReason_(0),
-    kaonId_(0),
-    pionId_(0),
-    elseId_(0),
-    muonId_(0),
-    elecId_(0)
+    stopReason_(0)
 {
     algoMask_.set(algorithm_);
     index idx = 0;
@@ -105,12 +100,7 @@ TrackBase::TrackBase(double chi2, double ndof, const Point &vertex, const Vector
     originalAlgorithm_(algorithm),
     quality_(0),
     nLoops_(nloops),
-    stopReason_(stopReason),
-    kaonId_(0),
-    pionId_(0),
-    elseId_(0),
-    muonId_(0),
-    elecId_(0)
+    stopReason_(stopReason)
 {
     algoMask_.set(algorithm_);
 
