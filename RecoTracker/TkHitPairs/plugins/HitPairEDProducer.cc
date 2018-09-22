@@ -18,6 +18,7 @@
 #include "RecoTracker/TkHitPairs/interface/RegionsSeedingHitSets.h"
 
 #include "PhysicsTools/TensorFlow/interface/TensorFlow.h"
+#include "tensorflow/tensorflow/core/graph/default_device.h"
 
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHit.h"
 #include "DataFormats/TrackerRecHit2D/interface/BaseTrackerRecHit.h"
@@ -129,7 +130,7 @@ namespace {
 
       tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/freeze_models/layer_map_model_final_nonorm.pb");
       tensorflow::Session* session = tensorflow::createSession(graphDef,16);
-
+      graph::SetDefaultDevice("/device:GPU:0");
       int numOfDoublets = thisDoublets.size(), padSize = 16, cnnLayers = 10, infoSize = 67;
       float padHalfSize = 8.0;
       tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {numOfDoublets,padSize,padSize,cnnLayers*2});
