@@ -56,9 +56,9 @@ public:
 						      const unsigned int theMaxElement,
 						      HitDoublets & result);
 
-  bool makeInference(const BaseTrackerRecHit& innerHit,
-                     const BaseTrackerRecHit& outerHit,
-                     tensorflow::Session& session,
+  bool makeInference(const BaseTrackerRecHit* innerHit,
+                     const BaseTrackerRecHit* outerHit,
+                     tensorflow::Session* session,
                      int inSeq, int outSeq,
                      int inLay, int outLay,
                      float t);
