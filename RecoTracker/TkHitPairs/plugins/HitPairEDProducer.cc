@@ -130,7 +130,14 @@ namespace {
 
       tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/freeze_models/layer_map_model_final_nonorm.pb");
       tensorflow::Session* session = tensorflow::createSession(graphDef,16);
-      SetDefaultDevice("/device:GPU:0");
+
+      for (int i = 0; i < graphDef->node_size(); ++i)
+      {
+        auto node = graphDef->mutable_node(i);
+        if (node->device().empty()) {
+          node->set_device("/device:GPU:0");
+        }
+      }
 
       int numOfDoublets = thisDoublets.size(), padSize = 16, cnnLayers = 10, infoSize = 67;
       float padHalfSize = 8.0;
