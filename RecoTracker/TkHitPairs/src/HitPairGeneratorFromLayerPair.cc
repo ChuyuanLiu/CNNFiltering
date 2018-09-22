@@ -363,7 +363,8 @@ void HitPairGeneratorFromLayerPair::doublets(const TrackingRegion& region,
   std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31};
 
   int inSeq = innerHitDetLayer.seqNum(), outSeq = outerHitDetLayer.seqNum();
-  int inLay = inLay, outLay = outLay;
+  int inLay  = find(pixelDets.begin(),pixelDets.end(),innerHitDetLayer.seqNum()) - pixelDets.begin());
+  int outLay = find(pixelDets.begin(),pixelDets.end(),outerHitDetLayer.seqNum()) - pixelDets.begin());
   bool doInference = (inLay < 10 && inLay > -1 && outLay < 10 && outLay > -1);
   float t_ = 0.5;
 
