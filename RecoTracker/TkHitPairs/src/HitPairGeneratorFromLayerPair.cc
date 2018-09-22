@@ -96,7 +96,7 @@ bool makeInference(BaseTrackerRecHit const *innerHit,
   float* vPad = inputPads.flat<float>().data();
   float* vLab = inputFeat.flat<float>().data();
 
-  std::vector <int> detSeqs, layerIds, float padHalfSize = 8.0;;
+  std::vector <int> detSeqs, layerIds, subDetIds;
 
   detSeqs.push_back(inSeq);
   detSeqs.push_back(outSeq);
@@ -122,7 +122,7 @@ bool makeInference(BaseTrackerRecHit const *innerHit,
   detIds.push_back(outerHit->geographicalId());
   subDetIds.push_back((outerHit->geographicalId()).subdetId());
 
-  if (! (((subDetIds[0]==1) || (subDetIds[0]==2)) && ((subDetIds[1]==1) || (subDetIds[1]==2)))) continue;
+  if (! (((subDetIds[0]==1) || (subDetIds[0]==2)) && ((subDetIds[1]==1) || (subDetIds[1]==2)))) return true;
   //
   // hitPads.push_back(inPad);
   // hitPads.push_back(outPad);
@@ -137,8 +137,8 @@ bool makeInference(BaseTrackerRecHit const *innerHit,
     vLab[iLab + infoOffset] = (float)(siHits[j]->globalState()).position.z(); iLab++;
 
     float p = (float)(siHits[j]->globalPosition().barePhi());
-    //float phi = p >=0.0 ? p : 2*M_PI + p;
-    vLab[iLab + infoOffset] = (float)p >=0.0 ? p : 2*M_PI + p; iLab++;
+    float phi = p >=0.0 ? p : 2*M_PI + p;
+    vLab[iLab + infoOffset] = phi; iLab++;
     float r = (float)(siHits[j]->globalPosition().perp());
     vLab[iLab + infoOffset] = r;//(float)(siHits[j]->globalPosition().perp());//(float)copyDoublets.r(iD,layers[j]); iLab++;
 
@@ -295,7 +295,7 @@ bool makeInference(BaseTrackerRecHit const *innerHit,
   // }
 
   zZero = (siHits[0]->globalState()).position.z();
-  zZero -= r * (deltaZ/deltaR); //copyDoublets.r(iD,layers[0])
+  zZero -= (float)(siHits[0]->globalPosition().perp()) * (deltaZ/deltaR); //copyDoublets.r(iD,layers[0])
 
   vLab[iLab + infoOffset] = deltaA   ; iLab++;
   vLab[iLab + infoOffset] = deltaADC ; iLab++;
@@ -356,7 +356,7 @@ void HitPairGeneratorFromLayerPair::doublets(const TrackingRegion& region,
   tensorflow::setLogging("0");
   tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/freeze_models/layer_map_model_final_nonorm.pb");
   tensorflow::Session* session = tensorflow::createSession(graphDef,16);
-  std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}
+  std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31};
 
   int inSeq = innerHitDetLayer.seqNum(), outSeq = outerHitDetLayer.seqNum();
   int inLay = inLay, outLay = outLay;
