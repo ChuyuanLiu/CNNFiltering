@@ -28,7 +28,7 @@ pidCNN = cms.EDAnalyzer('CNNParticleId',
         processName     = cms.string( "generalTracks_CNN"),
         tracks          = cms.InputTag( "generalTracks" ),
         minPix          = cms.int32(4),
-
+        infoPileUp      = cms.InputTag("addPileupInfo")
 )
 
 
