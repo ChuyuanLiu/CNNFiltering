@@ -35,7 +35,7 @@ namespace pat {
     typedef unsigned int index;
     /// default constructor
     PackedCandidate() :
-      kaonId_(0),
+      kaonId_(0),pionId_(0),
       packedPt_(0), packedEta_(0),
       packedPhi_(0), packedM_(0),
       packedDxy_(0), packedDz_(0), packedDPhi_(0), packedDEta_(0),packedDTrkPt_(0),
@@ -70,7 +70,7 @@ namespace pat {
                               float trkPt,float etaAtVtx,float phiAtVtx,int pdgId,
                               const reco::VertexRefProd &pvRefProd,
                               reco::VertexRef::key_type pvRefKey) :
-      kaonId_(0),
+      kaonId_(0),pionId_(0),
       packedPuppiweight_(0), packedPuppiweightNoLepDiff_(0), rawCaloFraction_(0), hcalFraction_(0),
       packedTime_(0), packedTimeError_(0), isIsolatedChargedHadron_(false),
       p4_( new PolarLorentzVector(p4) ), p4c_( new LorentzVector(*p4_)),
@@ -88,7 +88,7 @@ namespace pat {
                               float trkPt, float etaAtVtx, float phiAtVtx, int pdgId,
                               const reco::VertexRefProd &pvRefProd,
                               reco::VertexRef::key_type pvRefKey) :
-      kaonId_(0),
+      kaonId_(0),pionId_(0),
       packedPuppiweight_(0), packedPuppiweightNoLepDiff_(0), rawCaloFraction_(0), hcalFraction_(0),
       packedTime_(0), packedTimeError_(0), isIsolatedChargedHadron_(false),
       p4_(new PolarLorentzVector(p4.Pt(), p4.Eta(), p4.Phi(), p4.M())),
@@ -104,6 +104,7 @@ namespace pat {
 
     PackedCandidate( const PackedCandidate& iOther) :
       kaonId_(iOther.kaonId_),
+      pionId_(iOther.pionId_),
       packedPt_(iOther.packedPt_), packedEta_(iOther.packedEta_),
       packedPhi_(iOther.packedPhi_), packedM_(iOther.packedM_),
       packedDxy_(iOther.packedDxy_), packedDz_(iOther.packedDz_),
@@ -131,6 +132,7 @@ namespace pat {
 
     PackedCandidate( PackedCandidate&& iOther) :
       kaonId_(iOther.kaonId_),
+      pionId_(iOther.pionId_),
       packedPt_(iOther.packedPt_), packedEta_(iOther.packedEta_),
       packedPhi_(iOther.packedPhi_), packedM_(iOther.packedM_),
       packedDxy_(iOther.packedDxy_), packedDz_(iOther.packedDz_),
@@ -161,6 +163,7 @@ namespace pat {
         return *this;
       }
       kaonId_ = iOther.kaonId_;
+      pionId_ = iOther.pionId_;
       packedPt_ =iOther.packedPt_;
       packedEta_=iOther.packedEta_;
       packedPhi_=iOther.packedPhi_;
@@ -239,6 +242,7 @@ namespace pat {
         return *this;
       }
       kaonId_ = iOther.kaonId_;
+      pionId_ = iOther.pionId_;
       packedPt_ =iOther.packedPt_;
       packedEta_=iOther.packedEta_;
       packedPhi_=iOther.packedPhi_;
@@ -445,6 +449,7 @@ namespace pat {
 
     virtual void setTrackProperties( const reco::Track & tk, const reco::Track::CovarianceMatrix & covariance,int quality,int covarianceVersion) {
       kaonId_ = tk.getKaonId();
+      pionId_ = tk.getPionId();
       covarianceVersion_ = covarianceVersion ;
       covarianceSchema_ = quality ;
       normalizedChi2_ = tk.normalizedChi2();
@@ -689,6 +694,7 @@ namespace pat {
     void setTime(float aTime, float aTimeError=0) { setDTimeAssociatedPV(aTime - vertexRef()->t(), aTimeError); }
 
     float kaonId() const{ return kaonId_;}
+    float pionId() const{ return pionId_;}
   private:
     void unpackCovarianceElement(reco::TrackBase::CovarianceMatrix & m, uint16_t packed, int i,int j) const {
       m(i,j)= covarianceParameterization().unpack(packed,covarianceSchema_,i,j,pt(),eta(),numberOfHits(), numberOfPixelHits());
@@ -702,7 +708,7 @@ namespace pat {
     static constexpr float kMinDEtaToStore_=0.001;
     static constexpr float kMinDTrkPtToStore_=0.001;
 
-    float kaonId_;
+    float kaonId_,pionId_;
     uint16_t packedPt_, packedEta_, packedPhi_, packedM_;
     uint16_t packedDxy_, packedDz_, packedDPhi_, packedDEta_, packedDTrkPt_;
     PackedCovariance packedCovariance_;
