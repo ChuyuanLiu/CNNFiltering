@@ -151,7 +151,7 @@ namespace {
       std::cout << "*** IMPORTING THE UFF MODEL ***" << std::endl;
 
       // Create the builder and the network
-      IBuilder* builder = createInferBuilder(gLogger);
+      nvinfer1::IBuilder* builder = nvinfer1::createInferBuilder(gLogger);
       INetworkDefinition* network = builder->createNetwork();
 
       // Create the UFF parser
