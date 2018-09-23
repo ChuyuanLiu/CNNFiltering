@@ -222,8 +222,6 @@ minPix_(iConfig.getParameter<int>("minPix"))
 
 
 
-  edm::InputTag beamSpotTag = iConfig.getParameter<edm::InputTag>("beamSpot");
-  bsSrc_ = consumes<reco::BeamSpot>(beamSpotTag);
 
   infoPileUp_ = consumes<std::vector<PileupSummaryInfo> >(iConfig.getParameter< edm::InputTag >("infoPileUp"));
 
@@ -276,11 +274,11 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   // reco::Vertex thePrimaryV, theBeamSpotV;
 
-  //The Beamspot
-  edm::Handle<reco::BeamSpot> recoBeamSpotHandle;
-  iEvent.getByToken(bsSrc_,recoBeamSpotHandle);
-  reco::BeamSpot const & bs = *recoBeamSpotHandle;
-  // reco::Vertex theBeamSpotV(bs.position(), bs.covariance3D());
+  // //The Beamspot
+  // edm::Handle<reco::BeamSpot> recoBeamSpotHandle;
+  // iEvent.getByToken(bsSrc_,recoBeamSpotHandle);
+  // reco::BeamSpot const & bs = *recoBeamSpotHandle;
+  // // reco::Vertex theBeamSpotV(bs.position(), bs.covariance3D());
 
   edm::Handle< std::vector<PileupSummaryInfo> > puinfoH;
   iEvent.getByToken(infoPileUp_,puinfoH);
