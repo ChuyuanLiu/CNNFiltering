@@ -27,13 +27,8 @@ import FWCore.ParameterSet.Config as cms
 pidCNN = cms.EDAnalyzer('CNNParticleId',
         processName     = cms.string( "generalTracks_CNN"),
         tracks          = cms.InputTag( "generalTracks" ),
-        tpMap           = cms.InputTag( "tpClusterProducer" ),
-        trMap           = cms.InputTag("trackingParticleRecoTrackAsssociation"),
-        genMap          = cms.InputTag("TrackAssociatorByChi2"),
-        genParticles    = cms.InputTag("genParticles"),
-        traParticles    = cms.InputTag("mix","MergedTrackTruth"),
-        beamSpot        = cms.InputTag("offlineBeamSpot"),
-        infoPileUp      = cms.InputTag("addPileupInfo")
+        minPix          = cms.int32(4),
+
 )
 
 
