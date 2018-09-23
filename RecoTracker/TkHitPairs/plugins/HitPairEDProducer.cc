@@ -20,6 +20,8 @@
 #include "PhysicsTools/TensorFlow/interface/TensorFlow.h"
 #include "tensorflow/core/graph/default_device.h"
 #include "tensorflow/core/util/port.h"
+#include "tensorflow/tensorflow/core/public/session.h"
+#include "tensorflow/tensorflow/core/framework/device_base.h"
 
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHit.h"
 #include "DataFormats/TrackerRecHit2D/interface/BaseTrackerRecHit.h"
@@ -124,7 +126,7 @@ namespace {
       // const RecHitsSortedInPhi& outerHitsMap = layerCache(layerSet[1], region, es);
       //
       // HitDoublets result(innerHitsMap,outerHitsMap); result.reserve(std::max(innerHitsMap.size(),outerHitsMap.size()));
-std::cout << tensorflow::IsGoogleCudaEnabled() << std::endl;
+
 
       auto startData = std::chrono::high_resolution_clock::now();
 
@@ -164,7 +166,15 @@ std::cout << tensorflow::IsGoogleCudaEnabled() << std::endl;
       std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}, layerIds;
 
       tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/freeze_models/layer_map_model_final_nonorm.pb");
-      tensorflow::Session* session = tensorflow::createSession(graphDef,16);
+      tensorflow::Session* session = tensorflow::createSession(graphDef);
+
+      std::vector<DeviceAttributes>* response;
+
+      session->ListDevices(response);
+
+      for (size_t i = 0; i < response.size(); i++) {
+        std::cout <<  response[i] << std::endl;
+      }
 
       for (int i = 0; i < graphDef->node_size(); ++i)
       {
