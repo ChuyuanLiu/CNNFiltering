@@ -97,7 +97,7 @@ public:
 
     /// track algorithm
     enum TrackAlgorithm {
-        undefAlgorithm = 0, ctf = 1, 
+        undefAlgorithm = 0, ctf = 1,
         duplicateMerge = 2, cosmics = 3,
         initialStep = 4,
         lowPtTripletStep = 5,
@@ -268,7 +268,7 @@ public:
 
     /// i-th parameter ( i = 0, ... 4 )
     double parameter(int i) const;
-    
+
     /// (i,j)-th element of covariance matrix (i, j = 0, ... 4)
     double covariance(int i, int j) const;
 
@@ -356,7 +356,7 @@ public:
 
     ///Track algorithm
     void setAlgorithm(const TrackAlgorithm a);
-   
+
     void setOriginalAlgorithm(const TrackAlgorithm a);
 
     void setAlgoMask(AlgoMask a) { algoMask_ = a;}
@@ -442,7 +442,7 @@ private:
 
     /// Stop Reason
     uint8_t stopReason_;
-    
+
     //kaonId
     float kaonId_;
 };
@@ -892,4 +892,3 @@ inline signed char TrackBase::nLoops() const
 } // namespace reco
 
 #endif
-
