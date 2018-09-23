@@ -27,7 +27,7 @@ using namespace std;
 using namespace nvinfer1;
 using namespace plugin;
 
-#define CHECK(status)                             \
+#define CHECK_RT(status)                             \
     do                                            \
     {                                             \
         auto ret = (status);                      \
@@ -157,7 +157,7 @@ namespace samplesCommon
 inline void* safeCudaMalloc(size_t memSize)
 {
     void* deviceMem;
-    CHECK(cudaMalloc(&deviceMem, memSize));
+    CHECK_RT(cudaMalloc(&deviceMem, memSize));
     if (deviceMem == nullptr)
     {
         std::cerr << "Out of memory" << std::endl;
@@ -420,21 +420,21 @@ public:
     GpuTimer(cudaStream_t stream)
         : mStream(stream)
     {
-        CHECK(cudaEventCreate(&mStart));
-        CHECK(cudaEventCreate(&mStop));
+        CHECK_RT(cudaEventCreate(&mStart));
+        CHECK_RT(cudaEventCreate(&mStop));
     }
     ~GpuTimer()
     {
-        CHECK(cudaEventDestroy(mStart));
-        CHECK(cudaEventDestroy(mStop));
+        CHECK_RT(cudaEventDestroy(mStart));
+        CHECK_RT(cudaEventDestroy(mStop));
     }
-    void start() { CHECK(cudaEventRecord(mStart, mStream)); }
+    void start() { CHECK_RT(cudaEventRecord(mStart, mStream)); }
     void stop()
     {
-        CHECK(cudaEventRecord(mStop, mStream));
+        CHECK_RT(cudaEventRecord(mStop, mStream));
         float ms{0.0f};
-        CHECK(cudaEventSynchronize(mStop));
-        CHECK(cudaEventElapsedTime(&ms, mStart, mStop));
+        CHECK_RT(cudaEventSynchronize(mStop));
+        CHECK_RT(cudaEventElapsedTime(&ms, mStart, mStop));
         mMs += ms;
     }
 
