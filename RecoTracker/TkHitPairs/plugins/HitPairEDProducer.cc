@@ -20,8 +20,8 @@
 #include "PhysicsTools/TensorFlow/interface/TensorFlow.h"
 #include "tensorflow/core/graph/default_device.h"
 #include "tensorflow/core/util/port.h"
-#include "tensorflow/tensorflow/core/public/session.h"
-#include "tensorflow/tensorflow/core/framework/device_base.h"
+#include "tensorflow/core/public/session.h"
+#include "tensorflow/core/framework/device_base.h"
 
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHit.h"
 #include "DataFormats/TrackerRecHit2D/interface/BaseTrackerRecHit.h"
