@@ -177,7 +177,7 @@ private:
 CNNParticleId::CNNParticleId(const edm::ParameterSet& iConfig):
 processName_(iConfig.getParameter<std::string>("processName")),
 alltracks_(consumes<edm::View<reco::Track> >(iConfig.getParameter<edm::InputTag>("tracks"))),
-minPix_(iConfig.getParameter<int>("minPix")
+minPix_(iConfig.getParameter<int>("minPix"))
 {
 
   padHalfSize = 7.5;
