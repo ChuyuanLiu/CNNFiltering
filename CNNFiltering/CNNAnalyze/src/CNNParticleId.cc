@@ -296,9 +296,9 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     auto track = trackCollection->refAt(tt);
     auto hitPattern = track->hitPattern();
     bool trkQual  = track->quality(trackQuality);
-    
+
     float pId = hashId(0.1,0.2,0.3,0.4,0.5);
-    track->setParticleId(pId);std::cout << ".";
+
     // track->setPionId(0.2);
     // track->setMuonId(0.3);
     // track->setElecId(0.4);
@@ -353,16 +353,15 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     // std::cout << "- No Pixel Hits :" << pixHits << std::endl;
     if(pixHits < minPix_)
     {
-      track->setKaonId(0.0);
-      track->setPionId(0.0);
+      track->setParticleId(pId);std::cout << ".";
+
       // track->setMuonId(0.0);
       // track->setElecId(0.0);
       // track->setElseId(0.0);
       continue;
     }
 
-    track->setKaonId(0.1);
-    track->setPionId(0.1);
+    track->setParticleId(0.0);std::cout << ".";
 
 
   }
