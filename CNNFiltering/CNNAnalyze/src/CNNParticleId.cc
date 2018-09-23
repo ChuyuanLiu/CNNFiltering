@@ -127,6 +127,8 @@ private:
   virtual void beginJob() override;
   virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
   virtual void endJob() override;
+
+  float hashId(float kId, float pId, float mId, float eId, float elseId);
   int particleBit();
 
   // ----------member data ---------------------------
@@ -223,10 +225,6 @@ minPix_(iConfig.getParameter<int>("minPix"))
 
 
 
-  infoPileUp_ = consumes<std::vector<PileupSummaryInfo> >(iConfig.getParameter< edm::InputTag >("infoPileUp"));
-
-
-
 }
 
 
@@ -243,6 +241,18 @@ CNNParticleId::~CNNParticleId()
 // member functions
 //
 
+float CNNParticleId::hashId(float kId, float pId, float mId, float eId, float elseId)
+{
+
+  int p1 = int(kId*1E3);
+  int p2 = int(pId*1E6);
+  int p3 = int(mId*1E9);
+  int p4 = int(eId*1E12);
+  int p5 = int(elseId*1E15);
+
+  return float(p1+p2+p3+p4+p5)/1E16;
+
+}
 // ------------ method called for each event  ------------
 void
 CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
@@ -272,26 +282,6 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}; //seqNumbers of pixel detectors 0,1,2,3 barrel 14,15,16, fwd 29,30,31 bkw
   std::vector<int> partiList{11,13,15,22,111,211,311,321,2212,2112,3122,223};
 
-  // reco::Vertex thePrimaryV, theBeamSpotV;
-
-  // //The Beamspot
-  // edm::Handle<reco::BeamSpot> recoBeamSpotHandle;
-  // iEvent.getByToken(bsSrc_,recoBeamSpotHandle);
-  // reco::BeamSpot const & bs = *recoBeamSpotHandle;
-  // // reco::Vertex theBeamSpotV(bs.position(), bs.covariance3D());
-
-  edm::Handle< std::vector<PileupSummaryInfo> > puinfoH;
-  iEvent.getByToken(infoPileUp_,puinfoH);
-  PileupSummaryInfo puinfo;
-
-  for (unsigned int puinfo_ite=0;puinfo_ite<(*puinfoH).size();++puinfo_ite){
-    if ((*puinfoH)[puinfo_ite].getBunchCrossing()==0){
-      puinfo=(*puinfoH)[puinfo_ite];
-      break;
-    }
-  }
-
-  int puNumInt = puinfo.getPU_NumInteractions();
 
   for(edm::View<reco::Track>::size_type tt=0; tt<trackCollection->size(); ++tt)
   {
@@ -306,8 +296,9 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     auto track = trackCollection->refAt(tt);
     auto hitPattern = track->hitPattern();
     bool trkQual  = track->quality(trackQuality);
-
-    track->setKaonId(0.1); std::cout << ".";
+    
+    float pId = hashId(0.1,0.2,0.3,0.4,0.5);
+    track->setParticleId(pId);std::cout << ".";
     // track->setPionId(0.2);
     // track->setMuonId(0.3);
     // track->setElecId(0.4);
