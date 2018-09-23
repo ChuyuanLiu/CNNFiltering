@@ -437,8 +437,6 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     auto hitPattern = track->hitPattern();
     bool trkQual  = track->quality(trackQuality);
 
-    track->setKaonId(0.2);
-
     sharedFraction = 0.0;
     nHits = 0;
 
