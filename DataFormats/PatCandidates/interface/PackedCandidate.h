@@ -55,7 +55,7 @@ namespace pat {
     explicit PackedCandidate( const reco::Candidate & c,
                               const reco::VertexRefProd &pvRefProd,
                               reco::VertexRef::key_type pvRefKey) :
-      packedPuppiweight_(0), packedPuppiweightNoLepDiff_(0), rawCaloFraction_(0), hcalFraction_(0),
+      particleId_(0), packedPuppiweight_(0), packedPuppiweightNoLepDiff_(0), rawCaloFraction_(0), hcalFraction_(0),
       packedTime_(0), packedTimeError_(0), isIsolatedChargedHadron_(false),
       p4_( new PolarLorentzVector(c.pt(), c.eta(), c.phi(), c.mass())),
       p4c_( new LorentzVector(*p4_)), vertex_( new Point(c.vertex())),
@@ -70,7 +70,7 @@ namespace pat {
                               float trkPt,float etaAtVtx,float phiAtVtx,int pdgId,
                               const reco::VertexRefProd &pvRefProd,
                               reco::VertexRef::key_type pvRefKey) :
-      particleId_(0)
+      particleId_(0),
       packedPuppiweight_(0), packedPuppiweightNoLepDiff_(0), rawCaloFraction_(0), hcalFraction_(0),
       packedTime_(0), packedTimeError_(0), isIsolatedChargedHadron_(false),
       p4_( new PolarLorentzVector(p4) ), p4c_( new LorentzVector(*p4_)),
@@ -88,7 +88,7 @@ namespace pat {
                               float trkPt, float etaAtVtx, float phiAtVtx, int pdgId,
                               const reco::VertexRefProd &pvRefProd,
                               reco::VertexRef::key_type pvRefKey) :
-      particleId_(0)
+      particleId_(0),
       packedPuppiweight_(0), packedPuppiweightNoLepDiff_(0), rawCaloFraction_(0), hcalFraction_(0),
       packedTime_(0), packedTimeError_(0), isIsolatedChargedHadron_(false),
       p4_(new PolarLorentzVector(p4.Pt(), p4.Eta(), p4.Phi(), p4.M())),
