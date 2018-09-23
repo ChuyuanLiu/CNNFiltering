@@ -1,1 +1,5 @@
-<flags EDM_PLUGIN="1"/>
+<library name="TensorRT" file="*.h">
+  <use name="cuda"/>
+  <use name="FWCore/Framework"/>
+  <flags EDM_PLUGIN="1"/>
+</library>
