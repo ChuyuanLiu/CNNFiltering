@@ -142,7 +142,7 @@ namespace {
       const char* INPUT_TENSOR_NAME = "X";
       const char* OUTPUT_TENSOR_NAME = "Softmax/Softmax";
 
-      std::cout << "*** FILE TO PROCESS: " << fileName << std::endl;
+      std::cout << "*** FILE TO PROCESS: " << std::endl;
 
       int batchSize = 1;
       float ms;
