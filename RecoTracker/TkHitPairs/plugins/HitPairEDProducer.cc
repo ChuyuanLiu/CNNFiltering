@@ -27,10 +27,10 @@
 #include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
 #include "TH2F.h"
 
-#include "TensorRT/TensorRT/interface/NvInfer.h"
-#include "TensorRT/TensorRT/interface/NvUffParser.h"
-#include "TensorRT/TensorRT/interface/NvUtils.h"
-#include "TensorRT/TensorRT/interface/common.h"
+#include "NvInfer.h"
+#include "NvUffParser.h"
+#include "NvUtils.h"
+#include "common.h"
 
 #include <chrono>
 
