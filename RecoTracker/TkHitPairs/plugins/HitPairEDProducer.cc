@@ -27,23 +27,29 @@
 #include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
 #include "TH2F.h"
 
+#include "TensorRT/TensorRT/include/NvInfer.h"
+#include "TensorRT/TensorRT/include/NvUffParser.h"
+#include "TensorRT/TensorRT/include/NvUtils.h"
+#include "TensorRT/TensorRT/include/common.h"
+
 #include <chrono>
 
-// #include <algorithm>
-// #include <chrono>
-// #include <cstdlib>
-// #include <cuda_runtime_api.h>
-// #include <fstream>
-// #include <iostream>
-// #include <string>
-// #include <sys/stat.h>
-// #include <unordered_map>
-// #include <cassert>
-// #include <vector>
-// #include "NvInfer.h"
-// #include "NvUffParser.h"
-//
-// #include "NvUtils.h"
+
+using namespace nvuffparser;
+using namespace nvinfer1;
+
+#include <algorithm>
+#include <chrono>
+#include <cstdlib>
+#include <cuda_runtime_api.h>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <sys/stat.h>
+#include <unordered_map>
+#include <cassert>
+#include <vector>
+
 
 namespace { class ImplBase; }
 
@@ -125,6 +131,33 @@ namespace {
       // Load graph
       tensorflow::setLogging("0");
       std::cout << "GPU" << std::endl;
+
+      const int maxBatchSize = 1;
+      static Logger gLogger; // object for warning and error reports
+
+      // Attributes of the model
+      static const int INPUT_H = 28;
+      static const int INPUT_W = 28;
+      static const int OUTPUT_SIZE = 10;
+      const char* INPUT_TENSOR_NAME = "X";
+      const char* OUTPUT_TENSOR_NAME = "Softmax/Softmax";
+
+      std::cout << "*** FILE TO PROCESS: " << fileName << std::endl;
+
+      int batchSize = 1;
+      float ms;
+
+      // *** IMPORTING THE MODEL ***
+      std::cout << "*** IMPORTING THE UFF MODEL ***" << std::endl;
+
+      // Create the builder and the network
+      IBuilder* builder = createInferBuilder(gLogger);
+      INetworkDefinition* network = builder->createNetwork();
+
+      // Create the UFF parser
+      IUffParser* parser = createUffParser();
+      assert(parser);
+
       std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}, layerIds;
 
       tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/freeze_models/layer_map_model_final_nonorm.pb");
