@@ -133,7 +133,7 @@ namespace {
       tensorflow::setLogging("0");
       std::cout << "GPU" << std::endl;
 
-      std::cout << IsGoogleCudaEnabled() << std::endl;
+      std::cout << tensorflow::IsGoogleCudaEnabled() << std::endl;
       // const int maxBatchSize = 1;
       // static Logger gLogger; // object for warning and error reports
       //
