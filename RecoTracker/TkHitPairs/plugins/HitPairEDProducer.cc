@@ -19,6 +19,7 @@
 
 #include "PhysicsTools/TensorFlow/interface/TensorFlow.h"
 #include "tensorflow/core/graph/default_device.h"
+#include "tensorflow/core/util/port.h"
 
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHit.h"
 #include "DataFormats/TrackerRecHit2D/interface/BaseTrackerRecHit.h"
@@ -132,31 +133,32 @@ namespace {
       tensorflow::setLogging("0");
       std::cout << "GPU" << std::endl;
 
-      const int maxBatchSize = 1;
-      static Logger gLogger; // object for warning and error reports
-
-      // Attributes of the model
-      static const int INPUT_H = 28;
-      static const int INPUT_W = 28;
-      static const int OUTPUT_SIZE = 10;
-      const char* INPUT_TENSOR_NAME = "X";
-      const char* OUTPUT_TENSOR_NAME = "Softmax/Softmax";
-
-      std::cout << "*** FILE TO PROCESS: " << std::endl;
-
-      int batchSize = 1;
-      float ms;
-
-      // *** IMPORTING THE MODEL ***
-      std::cout << "*** IMPORTING THE UFF MODEL ***" << std::endl;
-
-      // Create the builder and the network
-      nvinfer1::IBuilder* builder = nvinfer1::createInferBuilder(gLogger);
-      INetworkDefinition* network = builder->createNetwork();
-
-      // Create the UFF parser
-      IUffParser* parser = createUffParser();
-      assert(parser);
+      std::cout << IsGoogleCudaEnabled() << std::endl;
+      // const int maxBatchSize = 1;
+      // static Logger gLogger; // object for warning and error reports
+      //
+      // // Attributes of the model
+      // static const int INPUT_H = 28;
+      // static const int INPUT_W = 28;
+      // static const int OUTPUT_SIZE = 10;
+      // const char* INPUT_TENSOR_NAME = "X";
+      // const char* OUTPUT_TENSOR_NAME = "Softmax/Softmax";
+      //
+      // std::cout << "*** FILE TO PROCESS: " << std::endl;
+      //
+      // int batchSize = 1;
+      // float ms;
+      //
+      // // *** IMPORTING THE MODEL ***
+      // std::cout << "*** IMPORTING THE UFF MODEL ***" << std::endl;
+      //
+      // // Create the builder and the network
+      // nvinfer1::IBuilder* builder = nvinfer1::createInferBuilder(gLogger);
+      // INetworkDefinition* network = builder->createNetwork();
+      //
+      // // Create the UFF parser
+      // IUffParser* parser = createUffParser();
+      // assert(parser);
 
       std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}, layerIds;
 
