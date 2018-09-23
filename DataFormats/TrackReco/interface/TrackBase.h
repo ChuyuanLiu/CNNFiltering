@@ -400,8 +400,11 @@ public:
     uint8_t stopReason() const { return stopReason_; }
 
     void setKaonId(float value) { kaonId_ = value; }
+    void setPionId(float value) { pionId_ = value; }
 
-   float getKaonId() const { return kaonId_; }
+    float getKaonId() const { return kaonId_; }
+    float getPionId() const { return pionId_; }
+
 private:
     /// hit pattern
     HitPattern hitPattern_;
@@ -445,6 +448,7 @@ private:
 
     //kaonId
     float kaonId_;
+    float pionId_;
 };
 
 //  Access the hit pattern, indicating in which Tracker layers the track has hits.

@@ -134,11 +134,8 @@ private:
   int doubletSize;
   std::string processName_;
   edm::EDGetTokenT<edm::View<reco::Track>> alltracks_;
-  edm::EDGetTokenT<reco::GenParticleCollection> genParticles_;
-  edm::EDGetTokenT<TrackingParticleCollection> traParticles_;
-  edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
-  edm::EDGetTokenT<reco::TrackToTrackingParticleAssociator> trMap_;
-  edm::EDGetTokenT<reco::TrackToGenParticleAssociator> genMap_;
+  int minPix_;
+
   edm::EDGetTokenT<reco::BeamSpot>  bsSrc_;
   edm::EDGetTokenT<std::vector<PileupSummaryInfo>>  infoPileUp_;
   // edm::GetterOfProducts<IntermediateHitDoublets> getterOfProducts_;
@@ -180,11 +177,7 @@ private:
 CNNParticleId::CNNParticleId(const edm::ParameterSet& iConfig):
 processName_(iConfig.getParameter<std::string>("processName")),
 alltracks_(consumes<edm::View<reco::Track> >(iConfig.getParameter<edm::InputTag>("tracks"))),
-genParticles_(consumes<reco::GenParticleCollection>(iConfig.getParameter<edm::InputTag>("genParticles"))),
-traParticles_(consumes<TrackingParticleCollection>(iConfig.getParameter<edm::InputTag>("traParticles"))),
-tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap"))),
-trMap_(consumes<reco::TrackToTrackingParticleAssociator>(iConfig.getParameter<edm::InputTag>("trMap"))),
-genMap_(consumes<reco::TrackToGenParticleAssociator>(iConfig.getParameter<edm::InputTag>("genMap")))
+minPix_(iConfig.getParameter<int>("minPix")
 {
 
   padHalfSize = 7.5;
@@ -227,89 +220,6 @@ genMap_(consumes<reco::TrackToGenParticleAssociator>(iConfig.getParameter<edm::I
 
   }
 
-  // edm::Service<TFileService> fs;
-  // cnntree = fs->make<TTree>("CNNTree","Doublets Tree");
-  //
-  // cnntree->Branch("eveNumber",      &eveNumber,          "eveNumber/I");
-  // cnntree->Branch("runNumber",      &runNumber,          "runNumber/I");
-  // cnntree->Branch("lumNumber",      &lumNumber,          "lumNumber/I");
-  //
-  // cnntree->Branch("pt",      &pt,          "pt/D");
-  // cnntree->Branch("eta",     &eta,          "eta/D");
-  // cnntree->Branch("phi",     &phi,          "phi/D");
-  // cnntree->Branch("p",       &p,          "p/D");
-  // cnntree->Branch("chi2n",   &chi2n,  "chi2n/D");
-  // cnntree->Branch("d0",      &d0,          "d0/D");
-  // cnntree->Branch("dx",      &dx,          "dx/D");
-  // cnntree->Branch("dz",      &dz,          "dz/D");
-  //
-  // cnntree->Branch("sharedFraction",      &sharedFraction,          "sharedFraction/D");
-  //
-  // cnntree->Branch("nhit",      &nhit,            "nhit/I");
-  // cnntree->Branch("nhpxf",      &nhpxf,          "nhpxf/I");
-  // cnntree->Branch("nhtib",      &nhtib,          "nhtib/I");
-  // cnntree->Branch("nhtob",      &nhtob,          "nhtob/I");
-  // cnntree->Branch("nhtid",      &nhtid,          "nhtid/I");
-  // cnntree->Branch("nhtec",      &nhtec,          "nhtec/I");
-  // cnntree->Branch("nhpxb",      &nhpxb,          "nhpxb/I");
-  // cnntree->Branch("nhpxb",      &nhpxb,          "nhpxb/I");
-  // cnntree->Branch("nHits",      &nHits,          "nHits/I");
-  //
-  // cnntree->Branch("trackPdg",      &trackPdg,          "trackPdg/I");
-  //
-  //
-  // for(int i = 0; i<10;i++)
-  // {
-  //   std::string name,tree;
-  //
-  //   for(int j = 0;j<padSize*padSize;j++)
-  //   {
-  //     name = "hit_" + std::to_string(i) + "_Pix_" + std::to_string(j);
-  //     tree = name + "/D";
-  //     cnntree->Branch(name.c_str(),      &hitPixels[i][j],          tree.c_str());
-  //   }
-  //
-  //   name = "hit_" + std::to_string(i) + "_x"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &x[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_y"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &y[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_z"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &z[i],          tree.c_str());
-  //
-  //   name = "hit_" + std::to_string(i) + "_phi_hit"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &phi_hit[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_r"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &r[i],          tree.c_str());
-  //
-  //   name = "hit_" + std::to_string(i) + "_c_x"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &c_x[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_c_y"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &c_y[i],          tree.c_str());
-  //
-  //   name = "hit_" + std::to_string(i) + "_pdgId"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &pdgId[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_motherPdgId"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &motherPdgId[i],          tree.c_str());
-  //
-  //   name = "hit_" + std::to_string(i) + "_size"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &size[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_sizex"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &sizex[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_sizey"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &sizey[i],          tree.c_str());
-  //
-  //   name = "hit_" + std::to_string(i) + "_charge"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &charge[i],          tree.c_str());
-  //
-  //   name = "hit_" + std::to_string(i) + "_ovfx"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &ovfx[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_ovfy"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &ovfy[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_ratio"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &ratio[i],          tree.c_str());
-  //
-  //
-  // }
 
 
   edm::InputTag beamSpotTag = iConfig.getParameter<edm::InputTag>("beamSpot");
@@ -351,44 +261,6 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   edm::Handle<View<reco::Track> >  trackCollection;
   iEvent.getByToken(alltracks_, trackCollection);
-
-  edm::Handle<ClusterTPAssociation> tpClust;
-  iEvent.getByToken(tpMap_,tpClust);
-
-  edm::Handle<reco::TrackToTrackingParticleAssociator> tpTracks;
-  iEvent.getByToken(trMap_, tpTracks);
-
-  // edm::Handle<reco::GenParticleCollection>  genParticles ;
-  // iEvent.getByToken(genParticles_,genParticles);
-
-  // const reco::TrackToGenParticleAssociator* genTracks =nullptr;
-  // edm::Handle<reco::TrackToGenParticleAssociator> trackGenAssociatorH;
-  // iEvent.getByToken(genMap_,trackGenAssociatorH);
-  // genTracks = trackGenAssociatorH.product();
-
-  //Reco To GEN association
-  // reco::RecoToGenCollection recGenColl;
-  // recGenColl=genTracks->associateRecoToGen(trackCollection,genParticles);
-
-  //Reco To SIM association
-  // edm::RefToBaseVector<reco::Track> trackRefs;
-  // for(edm::View<reco::Track>::size_type i=0; i<trackCollection->size(); ++i) {
-  //   trackRefs.push_back(trackCollection->refAt(i));
-  // }
-  //
-  // TrackingParticleRefVector tparVec;
-  // const TrackingParticleRefVector *tparPtr = nullptr;
-  // edm::Handle<TrackingParticleCollection> tparCollection;
-  // iEvent.getByToken(traParticles_,tparCollection);
-  // for(size_t i=0, size=tparCollection->size(); i<size; ++i) {
-  //   tparVec.push_back(TrackingParticleRef(tparCollection, i));
-  // }
-  // tparPtr = &tparVec;
-  // TrackingParticleRefVector const & tPartVector = *tparPtr;
-  //
-  // reco::RecoToSimCollection recSimCollL = std::move(tpTracks->associateRecoToSim(trackRefs, tPartVector));
-  // reco::RecoToSimCollection const * recSimCollP = &recSimCollL;
-  // reco::RecoToSimCollection const & recSimColl  = *recSimCollP;
 
   eveNumber = iEvent.id().event();
   runNumber = iEvent.id().run();
@@ -490,8 +362,18 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     // std::cout << "- Track Quality " <<std::endl;
     int pixHits = hitPattern.numberOfValidPixelHits();
     // std::cout << "- No Pixel Hits :" << pixHits << std::endl;
-    if(pixHits < 3)
+    if(pixHits < minPix_)
+    {
+      track->setKaonId(0.0);
+      track->setPionId(0.0);
+      // track->setMuonId(0.0);
+      // track->setElecId(0.0);
+      // track->setElseId(0.0);
       continue;
+    }
+
+    track->setKaonId(0.1);
+    track->setPionId(0.1);
 
     // pt    = (double)track->pt();
     // eta   = (double)track->eta();
