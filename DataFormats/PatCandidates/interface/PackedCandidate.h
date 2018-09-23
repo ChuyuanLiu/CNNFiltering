@@ -688,7 +688,7 @@ namespace pat {
     /// set time measurement
     void setTime(float aTime, float aTimeError=0) { setDTimeAssociatedPV(aTime - vertexRef()->t(), aTimeError); }
 
-    float kaonId() const{ return particleId_;}
+    float particleId() const{ return particleId_;}
 
   private:
     void unpackCovarianceElement(reco::TrackBase::CovarianceMatrix & m, uint16_t packed, int i,int j) const {
