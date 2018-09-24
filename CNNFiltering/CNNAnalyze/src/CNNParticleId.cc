@@ -279,7 +279,7 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   int numFeats = 154;
   int numTracks = trackCollection->size();
   tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNTracks/model_tracks_final.pb");
-  tensorflow::Session* session = tensorflow::createSession(graphDef,32);
+  tensorflow::Session* session = tensorflow::createSession(graphDef,8);
 
   tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {numTracks,numFeats});
   float* vLab = inputFeat.flat<float>().data();
@@ -606,8 +606,8 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   auto startInf = std::chrono::high_resolution_clock::now();
   // tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
                 // { "output/Softmax" }, &outputs);
-  tensorflow::run(session, { { "info_input_2", inputFeat } },
-                { "output_2/Softmax" }, &outputs);
+  tensorflow::run(session, { { "info_input", inputFeat } },
+                { "output/Softmax" }, &outputs);
   auto finishInf = std::chrono::high_resolution_clock::now();
 
   std::chrono::duration<double> elapsedInf  = finishInf - startInf;
