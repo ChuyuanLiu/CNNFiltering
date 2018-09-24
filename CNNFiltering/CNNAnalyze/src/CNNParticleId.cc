@@ -279,7 +279,7 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   int numFeats = 154;
   int numTracks = trackCollection->size();
   tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNTracks/model_tracks_final.pb");
-  tensorflow::Session* session = tensorflow::createSession(graphDef,16);
+  tensorflow::Session* session = tensorflow::createSession(graphDef,32);
 
   tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {numTracks,numFeats});
   float* vLab = inputFeat.flat<float>().data();
