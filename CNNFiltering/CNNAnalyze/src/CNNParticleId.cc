@@ -48,7 +48,7 @@ Implementation:
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
 #include "RecoTracker/TkHitPairs/interface/HitPairGeneratorFromLayerPair.h"
-#include "RecoTracker/TkHitPairs/interface/IntermediateHitfloatts.h"
+#include "RecoTracker/TkHitPairs/interface/IntermediateHitDoublets.h"
 
 #include "DataFormats/Provenance/interface/ProductID.h"
 #include "DataFormats/Common/interface/Handle.h"
@@ -58,7 +58,7 @@ Implementation:
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
 #include "RecoTracker/TkHitPairs/interface/RecHitsSortedInPhi.h"
-#include "RecoTracker/TkHitPairs/interface/IntermediateHitfloatts.h"
+#include "RecoTracker/TkHitPairs/interface/IntermediateHitDoublets.h"
 
 #include <iostream>
 #include <string>
