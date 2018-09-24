@@ -106,6 +106,11 @@ Implementation:
 #include <type_traits>
 
 //
+#include "PhysicsTools/TensorFlow/interface/TensorFlow.h"
+#include "tensorflow/core/graph/default_device.h"
+#include "tensorflow/core/util/port.h"
+#include "tensorflow/core/public/session.h"
+#include "tensorflow/core/framework/device_base.h"
 // class declaration
 //
 
