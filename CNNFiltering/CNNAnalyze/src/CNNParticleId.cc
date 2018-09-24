@@ -276,7 +276,7 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}; //seqNumbers of pixel detectors 0,1,2,3 barrel 14,15,16, fwd 29,30,31 bkw
   std::vector<int> partiList{11,13,15,22,111,211,311,321,2212,2112,3122,223};
 
-  int numFeats = 188;
+  int numFeats = 154;
   int numTracks = trackCollection->size();
   tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNTracks/model_tracks_final.pb");
   tensorflow::Session* session = tensorflow::createSession(graphDef,16);
@@ -284,10 +284,11 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {numTracks,numFeats});
   float* vLab = inputFeat.flat<float>().data();
   std::vector<tensorflow::Tensor> outputs;
-  int iLab = 0;
+
 
   for(edm::View<reco::Track>::size_type tt=0; tt<trackCollection->size(); ++tt)
   {
+    int iLab = 0;
     int trackOffset = numFeats * tt;
 
     std::vector<float> theData;
@@ -597,19 +598,20 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     }
 
-    std::cout << "iLab = "<< iLab << std::endl;
-
-    auto startInf = std::chrono::high_resolution_clock::now();
-    // tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
-                  // { "output/Softmax" }, &outputs);
-    tensorflow::run(session, { { "info_input_2", inputFeat } },
-                  { "output_2/Softmax" }, &outputs);
-    auto finishInf = std::chrono::high_resolution_clock::now();
-
-    std::chrono::duration<double> elapsedInf  = finishInf - startInf;
-    std::cout << "Elapsed time (inf) : " << elapsedInf.count() << " s\n";
 
   }
+
+  std::cout << "numTracks = "<< numTracks << std::endl;
+
+  auto startInf = std::chrono::high_resolution_clock::now();
+  // tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
+                // { "output/Softmax" }, &outputs);
+  tensorflow::run(session, { { "info_input_2", inputFeat } },
+                { "output_2/Softmax" }, &outputs);
+  auto finishInf = std::chrono::high_resolution_clock::now();
+
+  std::chrono::duration<double> elapsedInf  = finishInf - startInf;
+  std::cout << "Elapsed time (inf) : " << elapsedInf.count() << " s\n";
 
 // std::cout << "Closing" << std::endl;
 
