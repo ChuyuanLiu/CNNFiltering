@@ -603,7 +603,7 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     // tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
                   // { "output/Softmax" }, &outputs);
     tensorflow::run(session, { { "info_input", inputFeat } },
-                  { "output/Softmax" }, &outputs);
+                  { "output" }, &outputs);
     auto finishInf = std::chrono::high_resolution_clock::now();
 
     std::chrono::duration<double> elapsedInf  = finishInf - startInf;
