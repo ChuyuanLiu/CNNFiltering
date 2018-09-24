@@ -284,7 +284,7 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {numTracks,numFeats});
   float* vLab = inputFeat.flat<float>().data();
   std::vector<tensorflow::Tensor> outputs;
-  std::std::vector<float> tracksPdgs;
+  std::vector<float> tracksPdgs;
 
   for(edm::View<reco::Track>::size_type tt=0; tt<trackCollection->size(); ++tt)
   {
@@ -614,7 +614,7 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::cout << "Elapsed time (inf) : " << elapsedInf.count() << " s\n";
   float* score = outputs[0].flat<float>().data();
 
-  for (size_t i = 0; i < numTracks; i++) {
+  for (int i = 0; i < numTracks; i++) {
     std::cout << i << " - " << tracksPdgs[i] << " - ";
     std::cout << score[i*6 + 0] << " - ";
     std::cout << score[i*6 + 1] << " - ";
