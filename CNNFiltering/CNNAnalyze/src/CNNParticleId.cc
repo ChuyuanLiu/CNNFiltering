@@ -48,7 +48,7 @@ Implementation:
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
 #include "RecoTracker/TkHitPairs/interface/HitPairGeneratorFromLayerPair.h"
-#include "RecoTracker/TkHitPairs/interface/IntermediateHitDoublets.h"
+#include "RecoTracker/TkHitPairs/interface/IntermediateHitfloatts.h"
 
 #include "DataFormats/Provenance/interface/ProductID.h"
 #include "DataFormats/Common/interface/Handle.h"
@@ -58,7 +58,7 @@ Implementation:
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
 #include "RecoTracker/TkHitPairs/interface/RecHitsSortedInPhi.h"
-#include "RecoTracker/TkHitPairs/interface/IntermediateHitDoublets.h"
+#include "RecoTracker/TkHitPairs/interface/IntermediateHitfloatts.h"
 
 #include <iostream>
 #include <string>
@@ -133,14 +133,14 @@ private:
 
   // ----------member data ---------------------------
 
-  int doubletSize;
+  int floattSize;
   std::string processName_;
   edm::EDGetTokenT<edm::View<reco::Track>> alltracks_;
   int minPix_;
 
   edm::EDGetTokenT<reco::BeamSpot>  bsSrc_;
   edm::EDGetTokenT<std::vector<PileupSummaryInfo>>  infoPileUp_;
-  // edm::GetterOfProducts<IntermediateHitDoublets> getterOfProducts_;
+  // edm::GetterOfProducts<IntermediateHitfloatts> getterOfProducts_;
 
   float padHalfSize;
   int padSize, tParams;
@@ -153,10 +153,6 @@ private:
   std::vector<float> ratio, pdgId, motherPdgId, size, sizex, sizey;
   //std::vector<TH2> hitClust;
 
-  std::vector<float> hitPixel0, hitPixel1, hitPixel2, hitPixel3, hitPixel4;
-  std::vector<float> hitPixel5, hitPixel6, hitPixel7, hitPixel8, hitPixel9;
-
-  std::vector< std::vector<float> > hitPixels;
 
   // TTree* cnntree;
 
@@ -186,20 +182,6 @@ minPix_(iConfig.getParameter<int>("minPix"))
   padSize = (int)(padHalfSize*2);
   tParams = 26;
 
-  hitPixels.push_back(hitPixel0);
-  hitPixels.push_back(hitPixel1);
-  hitPixels.push_back(hitPixel2);
-  hitPixels.push_back(hitPixel3);
-  hitPixels.push_back(hitPixel4);
-  hitPixels.push_back(hitPixel5);
-  hitPixels.push_back(hitPixel6);
-  hitPixels.push_back(hitPixel7);
-  hitPixels.push_back(hitPixel8);
-  hitPixels.push_back(hitPixel9);
-
-  for(int i = 0; i<10;i++)
-    for(int j =0;j<padSize*padSize;j++)
-      hitPixels[i].push_back(0.0);
 
   for(int i = 0; i<10;i++)
   {
@@ -262,7 +244,7 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   // int detOnArr[10] = {0,1,2,3,14,15,16,29,30,31};
   // std::vector<int> detOn(detOnArr,detOnArr+sizeof(detOnArr)/sizeof(int));
 
-  // std::cout<<"CNNDoublets Analyzer"<<std::endl;
+  // std::cout<<"CNNfloatts Analyzer"<<std::endl;
 
   std::string theTrackQuality = "highPurity";
   reco::TrackBase::TrackQuality trackQuality= reco::TrackBase::qualityByName(theTrackQuality);
@@ -276,22 +258,30 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   std::string fileName = processName_ + ".txt";
   //std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
-  //fileName += "_" + processName_ + "_dnn_doublets.txt";
-  std::ofstream outCNNFile(fileName, std::ofstream::app);
+  //fileName += "_" + processName_ + "_dnn_floatts.txt";
+  // std::ofstream outCNNFile(fileName, std::ofstream::app);
 
   std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}; //seqNumbers of pixel detectors 0,1,2,3 barrel 14,15,16, fwd 29,30,31 bkw
   std::vector<int> partiList{11,13,15,22,111,211,311,321,2212,2112,3122,223};
 
+  int numFeats = 188;
+  int numTracks = trackCollection->size();
+
+  tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {numTracks,numFeats});
+  float* vLab = inputFeat.flat<float>().data();
+  std::vector<tensorflow::Tensor> outputs;
 
   for(edm::View<reco::Track>::size_type tt=0; tt<trackCollection->size(); ++tt)
   {
-    std::vector<double> theData;
+    int trackOffset = numFeats * tt;
+
+    std::vector<float> theData;
     // std::cout << "Track ------------------- "<< std::endl;
     // std::cout << std::endl;
     std::map<int,const TrackerSingleRecHit*> theHits;
     std::map<int,bool> isBad,isEdge,isBig;
-    std::map<int,double> hitSize,pdgIds,flagHit;
-    std::map<double,int> pdgMap,pdgMomMap;
+    std::map<int,float> hitSize,pdgIds,flagHit;
+    std::map<float,int> pdgMap,pdgMomMap;
 
     auto track = trackCollection->refAt(tt);
     auto hitPattern = track->hitPattern();
@@ -307,9 +297,6 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     sharedFraction = 0.0;
     nHits = 0;
 
-    for(int i = 0; i<10;i++)
-      for(int j =0;j<padSize*padSize;j++)
-        hitPixels[i][j] = 0.0;
 
     for(int i = 0; i<10;i++)
     {
@@ -353,7 +340,8 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     // std::cout << "- No Pixel Hits :" << pixHits << std::endl;
     if(pixHits < minPix_)
     {
-      track->setParticleId(pId);std::cout << ".";
+
+          track->setParticleId(0.0);std::cout << ".";
 
       // track->setMuonId(0.0);
       // track->setElecId(0.0);
@@ -361,7 +349,240 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       continue;
     }
 
-    track->setParticleId(0.0);std::cout << ".";
+    track->setParticleId(pId);std::cout << ".";
+
+    vLab[iLab + trackOffset] =(float)track->pt();iLab++;
+    vLab[iLab + trackOffset] =(float)track->eta();iLab++;
+    vLab[iLab + trackOffset] =(float)track->phi();iLab++;
+    vLab[iLab + trackOffset] =(float)track->p();iLab++;
+    vLab[iLab + trackOffset] =(float)track->normalizedChi2();iLab++;
+    vLab[iLab + trackOffset] =(float)track->numberOfValidHits();iLab++;
+    vLab[iLab + trackOffset] =(float)track->d0();iLab++;
+    vLab[iLab + trackOffset] =(float)track->dz();iLab++;
+
+    vLab[iLab + trackOffset] =(float)hitPattern.numberOfValidPixelBarrelHits();iLab++;
+    vLab[iLab + trackOffset] =(float)hitPattern.numberOfValidPixelEndcapHits();iLab++;
+    vLab[iLab + trackOffset] =(float)hitPattern.numberOfValidStripTIBHits();iLab++;
+    vLab[iLab + trackOffset] =(float)hitPattern.numberOfValidStripTOBHits();iLab++;
+    vLab[iLab + trackOffset] =(float)hitPattern.numberOfValidStripTIDHits();iLab++;
+    vLab[iLab + trackOffset] =(float)hitPattern.numberOfValidStripTECHits();iLab++;
+
+    for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
+    {
+      TrackerSingleRecHit const * hit= dynamic_cast<TrackerSingleRecHit const *>(*recHit);
+
+      if(!hit)
+        continue;
+
+      DetId detId = (*recHit)->geographicalId();
+      unsigned int subdetid = detId.subdetId();
+
+      if(detId.det() != DetId::Tracker) continue;
+      if (!((subdetid==1) || (subdetid==2))) continue;
+
+      const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(hit);
+
+      int hitLayer = -1;
+
+      if(subdetid==1) //barrel
+        hitLayer = PXBDetId(detId).layer();
+      else
+      {
+        int side = PXFDetId(detId).side();
+        float z = (hit->globalState()).position.z();
+
+        if(fabs(z)>28.0) hitLayer = 4;
+        if(fabs(z)>36.0) hitLayer = 5;
+        if(fabs(z)>44.0) hitLayer = 6;
+
+        if(side==2.0) hitLayer +=3;
+      }
+
+      if (pixHit && hitLayer >= 0)
+      {
+        bool thisBad,thisEdge,thisBig;
+
+        auto thisClust = pixHit->cluster();
+        int thisSize   = thisClust->size();
+
+        thisBig  = pixHit->spansTwoROCs();
+        thisBad  = pixHit->hasBadPixels();
+        thisEdge = pixHit->isOnEdge();
+
+        bool keepThis = false;
+
+        if(flagHit.find(hitLayer) != flagHit.end())
+        {
+          //Keeping the good,not on edge,not big, with higher charge
+          if(isBad[hitLayer] || isEdge[hitLayer] || isBig[hitLayer])
+          {
+              if(!(thisBig || thisBad || thisEdge))
+                keepThis = true;
+              else
+              {
+                if(thisSize > hitSize[hitLayer])
+                keepThis = true;
+              }
+          }
+          else
+          {
+            if(!(thisBig || thisBad || thisEdge))
+            {
+              if(thisSize > hitSize[hitLayer])
+              keepThis = true;
+            }
+          }
+
+        }else
+          keepThis = true;
+
+        if(keepThis)
+          {
+            theHits[hitLayer] = hit;
+            hitSize[hitLayer] = (float)thisSize;
+            isBad[hitLayer] = thisBad;
+            isEdge[hitLayer] = thisEdge;
+            isBig[hitLayer] = thisBad;
+          }
+        flagHit[hitLayer] = 1.0;
+
+      }
+
+
+    }
+
+    for(int i = 0; i<10;i++)
+    {
+        if(theHits.find(i) != theHits.end())
+        {
+          ++nHits;
+          auto h = theHits[i];
+
+          // std::cout << h->geographicalId().subdetId() << '\n';
+
+          const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(h);
+
+          //auto rangeIn = tpClust->equal_range(bhit->firstClusterRef());
+          auto clust = pixHit->cluster();
+
+          x[i] = (float)h->globalState().position.y();
+          y[i] = (float)h->globalState().position.y();
+          z[i] = (float)h->globalState().position.z();
+          phi_hit[i] = (float)h->globalState().phi;
+          r[i] = (float)h->globalState().r;
+          c_x[i] =(float)clust->x();
+          c_y[i] =(float)clust->y();
+          size[i] =(float)clust->size();
+          sizex[i] =(float)clust->sizeX();
+          sizey[i] =(float)clust->sizeY();
+          charge[i] =(float)clust->charge();
+          ovfx[i] =(float)clust->sizeX() > padSize;
+          ovfy[i] =(float)clust->sizeY() > padSize;
+          ratio[i] =(float)(clust->sizeY()) / (float)(clust->sizeX());
+
+
+          auto rangeIn = tpClust->equal_range(h->firstClusterRef());
+
+          //for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
+          //kPdgs.push_back((*ip->second).pdgId());
+
+          if(rangeIn.first!=rangeIn.second)
+            {
+              pdgId[i] = (float)((*rangeIn.first->second).pdgId());
+              pdgIds[i] = (float)((*rangeIn.first->second).pdgId());
+              // std::cout << pdgId[i] << std::endl;
+
+              if((*rangeIn.first->second).genParticle_begin()!=(*rangeIn.first->second).genParticle_end())
+                if((*(*rangeIn.first->second).genParticle_begin())->mother()!=nullptr)
+                  motherPdgId[i] = (float)((*(*rangeIn.first->second).genParticle_begin())->mother()->pdgId());
+
+              if(pdgMomMap.find(motherPdgId[i]) != pdgMomMap.end())
+                ++pdgMomMap[motherPdgId[i]];
+              else
+                pdgMomMap[motherPdgId[i]] = 1;
+
+              if(pdgMap.find(pdgId[i]) != pdgMap.end())
+                ++pdgMap[pdgId[i]];
+              else
+                pdgMap[pdgId[i]] = 1;
+
+            }
+
+
+        }
+    }
+
+    int allMatched = 0;
+    trackPdg = 0.0;
+
+    if(pdgMap.size()>0)
+    {
+      auto modePdg = std::max_element(pdgMap.begin(), pdgMap.end(),[](const std::pair<int, int>& p1, const std::pair<int, int>& p2) {return p1.second < p2.second; });
+      for (auto const& p : pdgIds)
+          if(p.second==modePdg->first)
+            ++allMatched;
+      sharedFraction = (float)(float(allMatched)/float(nHits));
+      // std::cout << tt << " - " << modePdg->first << " - " << sharedFraction << std::endl;
+      trackPdg = modePdg->first;
+    }
+    else
+    {
+      trackPdg = 0.0;
+      sharedFraction = 0.0;
+      // std::cout << tt << " - UnMatched " << std::endl;
+    }
+
+    if(pdgMomMap.size()>0)
+    {
+      auto modePdg = std::max_element(pdgMomMap.begin(), pdgMomMap.end(),[](const std::pair<int, int>& p1, const std::pair<int, int>& p2) {return p1.second < p2.second; });
+      for (auto const& p : pdgIds)
+          if(p.second==modePdg->first)
+            ++allMatched;
+      sharedMomFraction = (float)(float(allMatched)/float(nHits));
+      // std::cout << tt << " - " << modePdg->first << " - " << sharedFraction << std::endl;
+      trackMomPdg = modePdg->first;
+    }
+    else
+    {
+      trackMomPdg = 0.0;
+      sharedMomFraction = 0.0;
+      // std::cout << tt << " - UnMatched " << std::endl;
+    }
+
+    vLab[iLab + trackOffset] =(float)trackPdg); iLab++;
+    vLab[iLab + trackOffset] =(float)sharedFraction);iLab++;
+    vLab[iLab + trackOffset] =(float)trackMomPdg);iLab++;
+    vLab[iLab + trackOffset] =(float)sharedMomFraction);iLab++;
+
+    for(int i = 0; i<10;i++)
+    {
+
+      vLab[iLab + trackOffset] =(float)x[i]; iLab++;
+      vLab[iLab + trackOffset] =(float)y[i]; iLab++;
+      vLab[iLab + trackOffset] =(float)z[i]; iLab++;
+
+      vLab[iLab + trackOffset] =(float)phi_hit[i]; iLab++;
+      vLab[iLab + trackOffset] =(float)r[i]; iLab++;
+
+      vLab[iLab + trackOffset] =(float)c_x[i]; iLab++;
+      vLab[iLab + trackOffset] =(float)c_y[i]; iLab++;
+      vLab[iLab + trackOffset] =(float)size[i]; iLab++;
+      vLab[iLab + trackOffset] =(float)sizex[i]; iLab++;
+      vLab[iLab + trackOffset] =(float)sizey[i]; iLab++;
+
+      vLab[iLab + trackOffset] =(float)charge[i]; iLab++;
+
+      vLab[iLab + trackOffset] =(float)ovfx[i]; iLab++;
+      vLab[iLab + trackOffset] =(float)ovfy[i]; iLab++;
+
+      vLab[iLab + trackOffset] =(float)ratio[i]; iLab++;
+
+      vLab[iLab + trackOffset] =(float)motherPdgId[i]; iLab++;
+      vLab[iLab + trackOffset] =(float)pdgId[i]); iLab++;
+
+    }
+
+    std::cout << "iLab = "<< iLab << std::endl;
 
 
   }
