@@ -143,7 +143,7 @@ private:
   edm::EDGetTokenT<edm::View<reco::Track>> alltracks_;
   int minPix_;
   edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
-  
+
   edm::EDGetTokenT<reco::BeamSpot>  bsSrc_;
   edm::EDGetTokenT<std::vector<PileupSummaryInfo>>  infoPileUp_;
   // edm::GetterOfProducts<IntermediateHitfloatts> getterOfProducts_;
@@ -560,10 +560,10 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       // std::cout << tt << " - UnMatched " << std::endl;
     }
 
-    vLab[iLab + trackOffset] =(float)trackPdg); iLab++;
-    vLab[iLab + trackOffset] =(float)sharedFraction);iLab++;
-    vLab[iLab + trackOffset] =(float)trackMomPdg);iLab++;
-    vLab[iLab + trackOffset] =(float)sharedMomFraction);iLab++;
+    vLab[iLab + trackOffset] =(float)trackPdg; iLab++;
+    vLab[iLab + trackOffset] =(float)sharedFraction;iLab++;
+    vLab[iLab + trackOffset] =(float)trackMomPdg;iLab++;
+    vLab[iLab + trackOffset] =(float)sharedMomFraction;iLab++;
 
     for(int i = 0; i<10;i++)
     {
