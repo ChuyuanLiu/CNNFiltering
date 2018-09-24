@@ -284,7 +284,7 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {numTracks,numFeats});
   float* vLab = inputFeat.flat<float>().data();
   std::vector<tensorflow::Tensor> outputs;
-
+  std::std::vector<float> tracksPdgs;
 
   for(edm::View<reco::Track>::size_type tt=0; tt<trackCollection->size(); ++tt)
   {
@@ -565,7 +565,7 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       // std::cout << tt << " - UnMatched " << std::endl;
     }
 
-    // vLab[iLab + trackOffset] =(float)trackPdg; iLab++;
+    tracksPdgs.push_back((float)trackPdg);
     // vLab[iLab + trackOffset] =(float)sharedFraction;iLab++;
     // vLab[iLab + trackOffset] =(float)trackMomPdg;iLab++;
     // vLab[iLab + trackOffset] =(float)sharedMomFraction;iLab++;
@@ -612,7 +612,17 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   std::chrono::duration<double> elapsedInf  = finishInf - startInf;
   std::cout << "Elapsed time (inf) : " << elapsedInf.count() << " s\n";
+  float* score = outputs[0].flat<float>().data();
 
+  for (size_t i = 0; i < numTracks; i++) {
+    std::cout << i << " - " << tracksPdgs[i] << " - ";
+    std::cout << score[i*6 + 0] << " - ";
+    std::cout << score[i*6 + 1] << " - ";
+    std::cout << score[i*6 + 2] << " - ";
+    std::cout << score[i*6 + 3] << " - ";
+    std::cout << score[i*6 + 4] << " - ";
+    std::cout << score[i*6 + 5] << std::endl;
+  }
 // std::cout << "Closing" << std::endl;
 
 }
