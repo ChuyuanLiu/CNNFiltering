@@ -114,6 +114,8 @@ Implementation:
 // class declaration
 //
 
+#include <chrono>
+
 // If the analyzer does not use TFileService, please remove
 // the template argument to the base class so the class inherits
 // from  edm::one::EDAnalyzer<> and also remove the line from
@@ -276,6 +278,8 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   int numFeats = 188;
   int numTracks = trackCollection->size();
+  tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNTracks/model_tracks_final.pb");
+  tensorflow::Session* session = tensorflow::createSession(graphDef,16);
 
   tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {numTracks,numFeats});
   float* vLab = inputFeat.flat<float>().data();
@@ -560,10 +564,10 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       // std::cout << tt << " - UnMatched " << std::endl;
     }
 
-    vLab[iLab + trackOffset] =(float)trackPdg; iLab++;
-    vLab[iLab + trackOffset] =(float)sharedFraction;iLab++;
-    vLab[iLab + trackOffset] =(float)trackMomPdg;iLab++;
-    vLab[iLab + trackOffset] =(float)sharedMomFraction;iLab++;
+    // vLab[iLab + trackOffset] =(float)trackPdg; iLab++;
+    // vLab[iLab + trackOffset] =(float)sharedFraction;iLab++;
+    // vLab[iLab + trackOffset] =(float)trackMomPdg;iLab++;
+    // vLab[iLab + trackOffset] =(float)sharedMomFraction;iLab++;
 
     for(int i = 0; i<10;i++)
     {
@@ -588,13 +592,15 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       vLab[iLab + trackOffset] =(float)ratio[i]; iLab++;
 
-      vLab[iLab + trackOffset] =(float)motherPdgId[i]; iLab++;
-      vLab[iLab + trackOffset] =(float)pdgId[i]); iLab++;
+      // vLab[iLab + trackOffset] =(float)motherPdgId[i]; iLab++;
+      // vLab[iLab + trackOffset] =(float)pdgId[i]); iLab++;
 
     }
 
     std::cout << "iLab = "<< iLab << std::endl;
 
+    auto startInf = std::chrono::high_resolution_clock::now();
+    auto finishInf = std::chrono::high_resolution_clock::now();
 
   }
 
