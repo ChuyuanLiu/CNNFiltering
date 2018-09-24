@@ -142,7 +142,8 @@ private:
   std::string processName_;
   edm::EDGetTokenT<edm::View<reco::Track>> alltracks_;
   int minPix_;
-
+  edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
+  
   edm::EDGetTokenT<reco::BeamSpot>  bsSrc_;
   edm::EDGetTokenT<std::vector<PileupSummaryInfo>>  infoPileUp_;
   // edm::GetterOfProducts<IntermediateHitfloatts> getterOfProducts_;
@@ -180,7 +181,8 @@ private:
 CNNParticleId::CNNParticleId(const edm::ParameterSet& iConfig):
 processName_(iConfig.getParameter<std::string>("processName")),
 alltracks_(consumes<edm::View<reco::Track> >(iConfig.getParameter<edm::InputTag>("tracks"))),
-minPix_(iConfig.getParameter<int>("minPix"))
+minPix_(iConfig.getParameter<int>("minPix")),
+tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap")))
 {
 
   padHalfSize = 7.5;
@@ -251,6 +253,9 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   // std::cout<<"CNNfloatts Analyzer"<<std::endl;
 
+  edm::Handle<ClusterTPAssociation> tpClust;
+  iEvent.getByToken(tpMap_,tpClust);
+
   std::string theTrackQuality = "highPurity";
   reco::TrackBase::TrackQuality trackQuality= reco::TrackBase::qualityByName(theTrackQuality);
 
@@ -276,7 +281,7 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   float* vLab = inputFeat.flat<float>().data();
   std::vector<tensorflow::Tensor> outputs;
   int iLab = 0;
-  
+
   for(edm::View<reco::Track>::size_type tt=0; tt<trackCollection->size(); ++tt)
   {
     int trackOffset = numFeats * tt;
