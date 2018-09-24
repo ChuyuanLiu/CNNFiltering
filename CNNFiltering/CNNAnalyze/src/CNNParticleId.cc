@@ -276,18 +276,19 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}; //seqNumbers of pixel detectors 0,1,2,3 barrel 14,15,16, fwd 29,30,31 bkw
   std::vector<int> partiList{11,13,15,22,111,211,311,321,2212,2112,3122,223};
 
-  int numFeats = 188;
+  int numFeats = 154;
   int numTracks = trackCollection->size();
   tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNTracks/model_tracks_final.pb");
-  tensorflow::Session* session = tensorflow::createSession(graphDef,16);
+  tensorflow::Session* session = tensorflow::createSession(graphDef,8);
 
   tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {numTracks,numFeats});
   float* vLab = inputFeat.flat<float>().data();
   std::vector<tensorflow::Tensor> outputs;
-  int iLab = 0;
+  std::std::vector<float> tracksPdgs;
 
   for(edm::View<reco::Track>::size_type tt=0; tt<trackCollection->size(); ++tt)
   {
+    int iLab = 0;
     int trackOffset = numFeats * tt;
 
     std::vector<float> theData;
@@ -564,7 +565,7 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       // std::cout << tt << " - UnMatched " << std::endl;
     }
 
-    // vLab[iLab + trackOffset] =(float)trackPdg; iLab++;
+    tracksPdgs.push_back((float)trackPdg);
     // vLab[iLab + trackOffset] =(float)sharedFraction;iLab++;
     // vLab[iLab + trackOffset] =(float)trackMomPdg;iLab++;
     // vLab[iLab + trackOffset] =(float)sharedMomFraction;iLab++;
@@ -597,20 +598,31 @@ CNNParticleId::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     }
 
-    std::cout << "iLab = "<< iLab << std::endl;
-
-    auto startInf = std::chrono::high_resolution_clock::now();
-    // tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
-                  // { "output/Softmax" }, &outputs);
-    tensorflow::run(session, { "info_input", inputFeat } ,
-                  { "output/Softmax" }, &outputs);
-    auto finishInf = std::chrono::high_resolution_clock::now();
-
-    std::chrono::duration<double> elapsedInf  = finishInf - startInf;
-    std::cout << "Elapsed time (inf) : " << elapsedInf.count() << " s\n";
 
   }
 
+  std::cout << "numTracks = "<< numTracks << std::endl;
+
+  auto startInf = std::chrono::high_resolution_clock::now();
+  // tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
+                // { "output/Softmax" }, &outputs);
+  tensorflow::run(session, { { "info_input", inputFeat } },
+                { "output/Softmax" }, &outputs);
+  auto finishInf = std::chrono::high_resolution_clock::now();
+
+  std::chrono::duration<double> elapsedInf  = finishInf - startInf;
+  std::cout << "Elapsed time (inf) : " << elapsedInf.count() << " s\n";
+  float* score = outputs[0].flat<float>().data();
+
+  for (size_t i = 0; i < numTracks; i++) {
+    std::cout << i << " - " << tracksPdgs[i] << " - ";
+    std::cout << score[i*6 + 0] << " - ";
+    std::cout << score[i*6 + 1] << " - ";
+    std::cout << score[i*6 + 2] << " - ";
+    std::cout << score[i*6 + 3] << " - ";
+    std::cout << score[i*6 + 4] << " - ";
+    std::cout << score[i*6 + 5] << std::endl;
+  }
 // std::cout << "Closing" << std::endl;
 
 }
