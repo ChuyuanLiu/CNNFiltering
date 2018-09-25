@@ -169,21 +169,21 @@ namespace {
       tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/freeze_models/dense_model_nopix_debug.pb");
       tensorflow::Session* session = tensorflow::createSession(graphDef);
 
-      std::vector<DeviceAttributes>* response;
-
-      session->ListDevices(response);
-
-      for (size_t i = 0; i < response.size(); i++) {
-        std::cout <<  response[i] << std::endl;
-      }
-
-      for (int i = 0; i < graphDef->node_size(); ++i)
-      {
-        auto node = graphDef->mutable_node(i);
-        if (node->device().empty()) {
-          node->set_device("/device:GPU:0");
-        }
-      }
+      // std::vector<DeviceAttributes>* response;
+      //
+      // session->ListDevices(response);
+      //
+      // for (size_t i = 0; i < response.size(); i++) {
+      //   std::cout <<  response[i] << std::endl;
+      // }
+      //
+      // for (int i = 0; i < graphDef->node_size(); ++i)
+      // {
+      //   auto node = graphDef->mutable_node(i);
+      //   if (node->device().empty()) {
+      //     node->set_device("/device:GPU:0");
+      //   }
+      // }
 
       int numOfDoublets = thisDoublets.size(), padSize = 16, cnnLayers = 10, infoSize = 67;
       float padHalfSize = 8.0;
