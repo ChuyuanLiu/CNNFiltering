@@ -146,7 +146,7 @@ namespace {
 
       //tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/freeze_models/layer_map_model_final_nonorm.pb");
       tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/freeze_models/dense_model_nopix_debug.pb");
-      tensorflow::Session* session = tensorflow::createSession(graphDef);
+      tensorflow::Session* session = tensorflow::createSession(graphDef,12);
 
       // std::vector<DeviceAttributes>* response;
       //
