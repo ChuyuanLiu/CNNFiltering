@@ -30,28 +30,7 @@
 #include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
 #include "TH2F.h"
 
-#include "NvInfer.h"
-#include "NvUffParser.h"
-#include "NvUtils.h"
-#include "common.h"
-
 #include <chrono>
-
-
-using namespace nvuffparser;
-using namespace nvinfer1;
-
-#include <algorithm>
-#include <chrono>
-#include <cstdlib>
-#include <cuda_runtime_api.h>
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <sys/stat.h>
-#include <unordered_map>
-#include <cassert>
-#include <vector>
 
 
 namespace { class ImplBase; }
