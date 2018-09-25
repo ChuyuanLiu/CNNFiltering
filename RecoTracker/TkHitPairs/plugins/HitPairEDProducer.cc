@@ -165,7 +165,8 @@ namespace {
 
       std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}, layerIds;
 
-      tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/freeze_models/layer_map_model_final_nonorm.pb");
+      //tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/freeze_models/layer_map_model_final_nonorm.pb");
+      tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/freeze_models/dense_model_nopix_debug.pb");
       tensorflow::Session* session = tensorflow::createSession(graphDef);
 
       std::vector<DeviceAttributes>* response;
@@ -445,8 +446,10 @@ namespace {
       auto finishData = std::chrono::high_resolution_clock::now();
 
       auto startInf = std::chrono::high_resolution_clock::now();
-      tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
-                    { "output/Softmax" }, &outputs);
+      // tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
+      //               { "output/Softmax" }, &outputs);
+      tensorflow::run(session, { { "info_input", inputFeat } },
+                     { "output/Softmax" }, &outputs);
       auto finishInf = std::chrono::high_resolution_clock::now();
       // std::cout << "Cleaning doublets" << std::endl;
 
@@ -454,19 +457,19 @@ namespace {
       copyDoublets.clear();
       float* score = outputs[0].flat<float>().data();
       for (int i = 0; i < numOfDoublets; i++)
-        if(score[i*2 + 1]>0.5)
+        //if(score[i*2 + 1]>0.5)
           copyDoublets.add(inIndex[i],outIndex[i]);
       auto finishPush = std::chrono::high_resolution_clock::now();
 
       std::chrono::duration<double> elapsedInf  = finishInf - startInf;
       std::chrono::duration<double> elapsedData = finishData - startData;
       std::chrono::duration<double> elapsedPush = finishPush - startPush;
-      //
-      // std::cout << "Staring size       : " << numOfDoublets << std::endl;
-      // std::cout << "New size           : " << copyDoublets.size() << std::endl;
-      // std::cout << "Elapsed time (data): " << elapsedData.count() << " s\n";
-      // std::cout << "Elapsed time (inf) : " << elapsedInf.count() << " s\n";
-      // std::cout << "Elapsed time (push): " << elapsedPush.count() << " s\n";
+
+      std::cout << "Staring size       : " << numOfDoublets << std::endl;
+      std::cout << "New size           : " << copyDoublets.size() << std::endl;
+      std::cout << "Elapsed time (data): " << elapsedData.count() << " s\n";
+      std::cout << "Elapsed time (inf) : " << elapsedInf.count() << " s\n";
+      std::cout << "Elapsed time (push): " << elapsedPush.count() << " s\n";
 
       return copyDoublets;
 
