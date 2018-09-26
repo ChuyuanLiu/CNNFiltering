@@ -105,7 +105,7 @@ namespace {
       // const RecHitsSortedInPhi& outerHitsMap = layerCache(layerSet[1], region, es);
       //
       // HitDoublets result(innerHitsMap,outerHitsMap); result.reserve(std::max(innerHitsMap.size(),outerHitsMap.size()));
-
+      auto thisDoublets = doublets[0];
 
       auto startData = std::chrono::high_resolution_clock::now();
 
@@ -176,7 +176,7 @@ namespace {
       //   auto thisDoublets = doublets[i]
       // }
 
-      auto thisDoublets = doublets[0];
+
       HitDoublets copyDoublets = std::move(thisDoublets);
 
       // std::cout << "copyDoublets.size()=" << copyDoublets.size() << std::endl;
