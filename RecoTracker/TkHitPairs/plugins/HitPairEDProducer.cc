@@ -109,23 +109,28 @@ namespace {
 
       auto startData = std::chrono::high_resolution_clock::now();
 
-      std::vector< bool > doThis;
+      std::vector < bool > doThis;
       //std::vector< HitDoublets* > resultDoublets;
       int totDoublets = 0;
 
-      std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31};
+      std::vector < int > pixelDets{0,1,2,3,14,15,16,29,30,31};
+      std::vector < int > sizes;
+
+      std::vector < std::vector < int > > inIndexAll,outIndexAll;
+      HitDoublets::layer layers[2] = {HitDoublets::inner, HitDoublets::outer};
+
 
       for (size_t i = 0; i < doublets.size(); i++)
       {
 
         resultDoublets.push_back(doublets[i]);
-        if(find(pixelDets.begin(),pixelDets.end(),doublets[i].detLayer(HitDoublets::inner)->seqNum()) == pixelDets.begin())
+        if(find(pixelDets.begin(),pixelDets.end(),doublets[i]->detLayer(HitDoublets::inner)->seqNum()) == pixelDets.begin())
         {
           doThis.push_back(false);
           sizes.push_back(0);
           continue;
         }
-        if(find(pixelDets.begin(),pixelDets.end(),doublets[i].detLayer(HitDoublets::innter)->seqNum()) == pixelDets.begin())
+        if(find(pixelDets.begin(),pixelDets.end(),doublets[i]->detLayer(HitDoublets::innter)->seqNum()) == pixelDets.begin())
         {
           doThis.push_back(false);
           sizes.push_back(0);
@@ -151,9 +156,6 @@ namespace {
       tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/freeze_models/dense_model_nopix_debug.pb");
       tensorflow::Session* session = tensorflow::createSession(graphDef,12);
 
-      std::vector < int > sizes;
-      std::vector < std::vector > inIndexAll,outIndexAll;
-      HitDoublets::layer layers[2] = {HitDoublets::inner, HitDoublets::outer};
 
 
       int iLab = 0;
