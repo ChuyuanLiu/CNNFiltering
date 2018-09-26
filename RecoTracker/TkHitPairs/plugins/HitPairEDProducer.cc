@@ -201,6 +201,9 @@ namespace {
           zeroPad.push_back(0.0);
 
       std::vector<int> inIndex, outIndex;
+
+      int iLab = 0;
+
       for (int iD = 0; iD < numOfDoublets; iD++)
       {
 
@@ -218,7 +221,7 @@ namespace {
         float deltaA = 0.0, deltaADC = 0.0, deltaS = 0.0, deltaR = 0.0;
         float deltaPhi = 0.0, deltaZ = 0.0, zZero = 0.0;
 
-        int iLab = 0;
+
         int doubOffset = (padSize*padSize*cnnLayers*2)*iD, infoOffset = (infoSize)*iD;
 
         std::vector< RecHitsSortedInPhi::Hit> hits;
@@ -246,46 +249,46 @@ namespace {
 
           int padOffset = layerIds[j] * padSize * padSize + j * padSize * padSize * cnnLayers;
 
-          vLab[iLab + infoOffset] = (float)(siHits[j]->globalState()).position.x(); iLab++;
-          vLab[iLab + infoOffset] = (float)(siHits[j]->globalState()).position.y(); iLab++;
-          vLab[iLab + infoOffset] = (float)(siHits[j]->globalState()).position.z(); iLab++;
+          vLab[iLab] = (float)(siHits[j]->globalState()).position.x(); iLab++;
+          vLab[iLab] = (float)(siHits[j]->globalState()).position.y(); iLab++;
+          vLab[iLab] = (float)(siHits[j]->globalState()).position.z(); iLab++;
 
           float phi = copyDoublets.phi(iD,layers[j]) >=0.0 ? copyDoublets.phi(iD,layers[j]) : 2*M_PI + copyDoublets.phi(iD,layers[j]);
-          vLab[iLab + infoOffset] = (float)phi; iLab++;
-          vLab[iLab + infoOffset] = (float)copyDoublets.r(iD,layers[j]); iLab++;
+          vLab[iLab] = (float)phi; iLab++;
+          vLab[iLab] = (float)copyDoublets.r(iD,layers[j]); iLab++;
 
-          vLab[iLab + infoOffset] = (float)detSeqs[j]; iLab++;
+          vLab[iLab] = (float)detSeqs[j]; iLab++;
 
           if(subDetIds[j]==1) //barrel
           {
 
-            vLab[iLab + infoOffset] = float(true); iLab++; //isBarrel //7
-            vLab[iLab + infoOffset] = PXBDetId(detIds[j]).layer(); iLab++;
-            vLab[iLab + infoOffset] = PXBDetId(detIds[j]).ladder(); iLab++;
-            vLab[iLab + infoOffset] = -1.0; iLab++;
-            vLab[iLab + infoOffset] = -1.0; iLab++;
-            vLab[iLab + infoOffset] = -1.0; iLab++;
-            vLab[iLab + infoOffset] = PXBDetId(detIds[j]).module(); iLab++; //14
+            vLab[iLab] = float(true); iLab++; //isBarrel //7
+            vLab[iLab] = PXBDetId(detIds[j]).layer(); iLab++;
+            vLab[iLab] = PXBDetId(detIds[j]).ladder(); iLab++;
+            vLab[iLab] = -1.0; iLab++;
+            vLab[iLab] = -1.0; iLab++;
+            vLab[iLab] = -1.0; iLab++;
+            vLab[iLab] = PXBDetId(detIds[j]).module(); iLab++; //14
 
           }
           else
           {
-            vLab[iLab + infoOffset] = float(false); iLab++; //isBarrel
-            vLab[iLab + infoOffset] = -1.0; iLab++;
-            vLab[iLab + infoOffset] = -1.0; iLab++;
-            vLab[iLab + infoOffset] = PXFDetId(detIds[j]).side(); iLab++;
-            vLab[iLab + infoOffset] = PXFDetId(detIds[j]).disk(); iLab++;
-            vLab[iLab + infoOffset] = PXFDetId(detIds[j]).panel(); iLab++;
-            vLab[iLab + infoOffset] = PXFDetId(detIds[j]).module(); iLab++;
+            vLab[iLab] = float(false); iLab++; //isBarrel
+            vLab[iLab] = -1.0; iLab++;
+            vLab[iLab] = -1.0; iLab++;
+            vLab[iLab] = PXFDetId(detIds[j]).side(); iLab++;
+            vLab[iLab] = PXFDetId(detIds[j]).disk(); iLab++;
+            vLab[iLab] = PXFDetId(detIds[j]).panel(); iLab++;
+            vLab[iLab] = PXFDetId(detIds[j]).module(); iLab++;
           }
 
           //Module orientation
           float ax1  = siHits[j]->det()->surface().toGlobal(Local3DPoint(0.,0.,0.)).perp(); //15
           float ax2  = siHits[j]->det()->surface().toGlobal(Local3DPoint(0.,0.,1.)).perp();
 
-          vLab[iLab + infoOffset] = float(ax1<ax2); iLab++; //isFlipped
-          vLab[iLab + infoOffset] = ax1; iLab++; //Module orientation y
-          vLab[iLab + infoOffset] = ax2; iLab++; //Module orientation x
+          vLab[iLab] = float(ax1<ax2); iLab++; //isFlipped
+          vLab[iLab] = ax1; iLab++; //Module orientation y
+          vLab[iLab] = ax2; iLab++; //Module orientation x
 
           auto thisCluster = siHits[j]->cluster();
           //TODO check CLusterRef & OmniClusterRef
@@ -293,23 +296,23 @@ namespace {
           float xC = (float) thisCluster->x(), yC = (float) thisCluster->y();
 
   //inX
-          vLab[iLab + infoOffset] = (float)xC; iLab++; //20
-          vLab[iLab + infoOffset] = (float)yC; iLab++;
-          vLab[iLab + infoOffset] = (float)thisCluster->size(); iLab++;
-          vLab[iLab + infoOffset] = (float)thisCluster->sizeX(); iLab++;
-          vLab[iLab + infoOffset] = (float)thisCluster->sizeY(); iLab++;
-          vLab[iLab + infoOffset] = (float)thisCluster->pixel(0).adc; iLab++; //25
-          vLab[iLab + infoOffset] = float(thisCluster->charge())/float(thisCluster->size()); iLab++; //avg pixel charge
+          vLab[iLab] = (float)xC; iLab++; //20
+          vLab[iLab] = (float)yC; iLab++;
+          vLab[iLab] = (float)thisCluster->size(); iLab++;
+          vLab[iLab] = (float)thisCluster->sizeX(); iLab++;
+          vLab[iLab] = (float)thisCluster->sizeY(); iLab++;
+          vLab[iLab] = (float)thisCluster->pixel(0).adc; iLab++; //25
+          vLab[iLab] = float(thisCluster->charge())/float(thisCluster->size()); iLab++; //avg pixel charge
 
-          vLab[iLab + infoOffset] = (float)(thisCluster->sizeX() > padSize); iLab++;//27
-          vLab[iLab + infoOffset] = (float)(thisCluster->sizeY() > padSize); iLab++;
-          vLab[iLab + infoOffset] = (float)(thisCluster->sizeY()) / (float)(thisCluster->sizeX()); iLab++;
+          vLab[iLab] = (float)(thisCluster->sizeX() > padSize); iLab++;//27
+          vLab[iLab] = (float)(thisCluster->sizeY() > padSize); iLab++;
+          vLab[iLab] = (float)(thisCluster->sizeY()) / (float)(thisCluster->sizeX()); iLab++;
 
-          vLab[iLab + infoOffset] = (float)siHits[j]->spansTwoROCs(); iLab++;
-          vLab[iLab + infoOffset] = (float)siHits[j]->hasBadPixels(); iLab++;
-          vLab[iLab + infoOffset] = (float)siHits[j]->isOnEdge(); iLab++; //31
+          vLab[iLab] = (float)siHits[j]->spansTwoROCs(); iLab++;
+          vLab[iLab] = (float)siHits[j]->hasBadPixels(); iLab++;
+          vLab[iLab] = (float)siHits[j]->isOnEdge(); iLab++; //31
 
-          vLab[iLab + infoOffset] = (float)(thisCluster->charge()); iLab++;
+          vLab[iLab] = (float)(thisCluster->charge()); iLab++;
 
           deltaA   -= ((float)thisCluster->size()); deltaA *= -1.0;
           deltaADC -= thisCluster->charge(); deltaADC *= -1.0; //At the end == Outer Hit ADC - Inner Hit ADC
@@ -409,13 +412,13 @@ namespace {
         zZero = (siHits[0]->globalState()).position.z();
         zZero -= copyDoublets.r(iD,layers[0]) * (deltaZ/deltaR);
 
-        vLab[iLab + infoOffset] = deltaA   ; iLab++;
-        vLab[iLab + infoOffset] = deltaADC ; iLab++;
-        vLab[iLab + infoOffset] = deltaS   ; iLab++;
-        vLab[iLab + infoOffset] = deltaR   ; iLab++;
-        vLab[iLab + infoOffset] = deltaPhi ; iLab++;
-        vLab[iLab + infoOffset] = deltaZ   ; iLab++;
-        vLab[iLab + infoOffset] = zZero    ; iLab++;
+        vLab[iLab] = deltaA   ; iLab++;
+        vLab[iLab] = deltaADC ; iLab++;
+        vLab[iLab] = deltaS   ; iLab++;
+        vLab[iLab] = deltaR   ; iLab++;
+        vLab[iLab] = deltaPhi ; iLab++;
+        vLab[iLab] = deltaZ   ; iLab++;
+        vLab[iLab] = zZero    ; iLab++;
 
         // std::cout << "iLab = "<<iLab << std::endl;
 
@@ -490,8 +493,8 @@ namespace {
             // std::cout << "HitPairEDProducer created " << doublets.size() << " doublets for layers " << layerSet[0].index() << "," << layerSet[1].index();
             // auto cleanDoublets = cnnInference(doublets);
             theDoublets.push_back(doublets);
-            innerId.push_back(layerSet[0]);
-            outerId.push_back(layerSet[1]);
+            innerId.push_back(layerSet[0].index());
+            outerId.push_back(layerSet[1].index());
             // seedingHitSetsProducer.fill(std::get<1>(hitCachePtr_filler_shs), cleanDoublets);
             // intermediateHitDoubletsProducer.fill(std::get<1>(hitCachePtr_filler_ihd), layerSet, std::move(cleanDoublets));
           }else
