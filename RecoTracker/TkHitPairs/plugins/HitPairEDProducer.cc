@@ -470,7 +470,7 @@ namespace {
       seedingHitSetsProducer.reserve(regionsLayers.regionsSize());
       intermediateHitDoubletsProducer.reserve(regionsLayers.regionsSize());
 
-      std::vector <HitDoublets> = theDoublets;
+      std::vector <HitDoublets> theDoublets;
       std::vector <int> innerId, outerId;
       for(const auto& regionLayers: regionsLayers) {
         const TrackingRegion& region = regionLayers.region();
