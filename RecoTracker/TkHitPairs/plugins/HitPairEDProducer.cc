@@ -106,17 +106,17 @@ namespace {
       //
       // HitDoublets result(innerHitsMap,outerHitsMap); result.reserve(std::max(innerHitsMap.size(),outerHitsMap.size()));
 
-      auto thisDoublets = doublets[0];
+
       auto startData = std::chrono::high_resolution_clock::now();
 
       std::vector< float > inPad, outPad;
 
       // Load graph
       tensorflow::setLogging("0");
-      std::cout << "GPU" << std::endl;
-
-      std::cout << tensorflow::IsGoogleCudaEnabled() << std::endl;
-      // const int maxBatchSize = 1;
+      // std::cout << "GPU" << std::endl;
+      //
+      // std::cout << tensorflow::IsGoogleCudaEnabled() << std::endl;
+      // // const int maxBatchSize = 1;
       // static Logger gLogger; // object for warning and error reports
       //
       // // Attributes of the model
@@ -166,11 +166,14 @@ namespace {
 
       int numOfDoublets = thisDoublets.size(), padSize = 16, cnnLayers = 10, infoSize = 67;
       float padHalfSize = 8.0;
-      tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {numOfDoublets,padSize,padSize,cnnLayers*2});
+      // tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {numOfDoublets,padSize,padSize,cnnLayers*2});
       tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {numOfDoublets,infoSize});
 
-      float* vPad = inputPads.flat<float>().data();
+      // float* vPad = inputPads.flat<float>().data();
       float* vLab = inputFeat.flat<float>().data();
+
+      for (size_t i = 0; i < doublets.size(); i++) {
+        auto thisDoublets = doublets[i]
 
       HitDoublets copyDoublets = std::move(thisDoublets);
 
@@ -347,16 +350,16 @@ namespace {
           // }
 
 
-          // //Pad Initialization
-          for (int iP = 0; iP < padSize*padSize*cnnLayers; ++iP)
-            vPad[iP + doubOffset + j*padSize*padSize*cnnLayers] = 0.0;
-
-          for (int k = 0; k < thisCluster->size(); ++k)
-          {
-            int thisX = int(-(float)thisCluster->pixel(k).x + xC + padHalfSize);
-            int thisY = int(-(float)thisCluster->pixel(k).y + yC + padHalfSize);
-            vPad[padOffset + thisX + thisY * padSize + doubOffset] = (float)thisCluster->pixel(k).adc;
-          }
+          // // //Pad Initialization
+          // for (int iP = 0; iP < padSize*padSize*cnnLayers; ++iP)
+          //   vPad[iP + doubOffset + j*padSize*padSize*cnnLayers] = 0.0;
+          //
+          // for (int k = 0; k < thisCluster->size(); ++k)
+          // {
+          //   int thisX = int(-(float)thisCluster->pixel(k).x + xC + padHalfSize);
+          //   int thisY = int(-(float)thisCluster->pixel(k).y + yC + padHalfSize);
+          //   vPad[padOffset + thisX + thisY * padSize + doubOffset] = (float)thisCluster->pixel(k).adc;
+          // }
 
 
         }
@@ -473,7 +476,7 @@ namespace {
       seedingHitSetsProducer.reserve(regionsLayers.regionsSize());
       intermediateHitDoubletsProducer.reserve(regionsLayers.regionsSize());
 
-      std::vector <HitDoublets> theDoublets;
+      std::vector <HitDoublets*> theDoublets;
       std::vector <int> innerId, outerId;
       for(const auto& regionLayers: regionsLayers) {
         const TrackingRegion& region = regionLayers.region();
@@ -492,7 +495,7 @@ namespace {
           {
             // std::cout << "HitPairEDProducer created " << doublets.size() << " doublets for layers " << layerSet[0].index() << "," << layerSet[1].index();
             // auto cleanDoublets = cnnInference(doublets);
-            theDoublets.push_back(doublets);
+            theDoublets.push_back(&doublets);
             innerId.push_back(layerSet[0].index());
             outerId.push_back(layerSet[1].index());
             // seedingHitSetsProducer.fill(std::get<1>(hitCachePtr_filler_shs), cleanDoublets);
@@ -517,10 +520,10 @@ namespace {
         auto hitCachePtr = std::get<0>(hitCachePtr_filler_ihd);
         for(SeedingLayerSetsHits::SeedingLayerSet layerSet: regionLayers.layerPairs())
         {
-          if(theDoublets[dCounter].empty()) continue;
+          if(theDoublets[dCounter]->empty()) continue;
 
-          seedingHitSetsProducer.fill(std::get<1>(hitCachePtr_filler_shs), theDoublets[dCounter]);
-          intermediateHitDoubletsProducer.fill(std::get<1>(hitCachePtr_filler_ihd), layerSet, std::move(theDoublets[dCounter]));
+          seedingHitSetsProducer.fill(std::get<1>(hitCachePtr_filler_shs), *theDoublets[dCounter]);
+          intermediateHitDoubletsProducer.fill(std::get<1>(hitCachePtr_filler_ihd), layerSet, std::move(*theDoublets[dCounter]));
 
           }
 
