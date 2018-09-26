@@ -169,12 +169,11 @@ namespace {
           outIndexAll.push_back(outIndex);
           continue;
         }
-        auto copyDoublets = *resultDoublets[i];
 
         int numOfDoublets = sizes[i];
 
-        DetLayer const * innerLayer = copyDoublets.detLayer(HitDoublets::inner);
-        DetLayer const * outerLayer = copyDoublets.detLayer(HitDoublets::outer);
+        DetLayer const * innerLayer = resultDoublets[i]->detLayer(HitDoublets::inner);
+        DetLayer const * outerLayer = resultDoublets[i]->detLayer(HitDoublets::outer);
 
 
         detSeqs.push_back(innerLayer->seqNum());
@@ -197,17 +196,17 @@ namespace {
             std::vector< RecHitsSortedInPhi::Hit> hits;
             std::vector< const SiPixelRecHit*> siHits;
 
-            siHits.push_back(dynamic_cast<const SiPixelRecHit*>(copyDoublets.hit(iD, HitDoublets::inner)->hit()));
-            siHits.push_back(dynamic_cast<const SiPixelRecHit*>(copyDoublets.hit(iD, HitDoublets::outer)->hit()));
+            siHits.push_back(dynamic_cast<const SiPixelRecHit*>(resultDoublets[i]->hit(iD, HitDoublets::inner)->hit()));
+            siHits.push_back(dynamic_cast<const SiPixelRecHit*>(resultDoublets[i]->hit(iD, HitDoublets::outer)->hit()));
 
-            detIds.push_back(copyDoublets.hit(iD, HitDoublets::inner)->hit()->geographicalId());
-            subDetIds.push_back((copyDoublets.hit(iD, HitDoublets::inner)->hit()->geographicalId()).subdetId());
+            detIds.push_back(resultDoublets[i]->hit(iD, HitDoublets::inner)->hit()->geographicalId());
+            subDetIds.push_back((resultDoublets[i]->hit(iD, HitDoublets::inner)->hit()->geographicalId()).subdetId());
 
-            inIndex.push_back(copyDoublets.index(iD,HitDoublets::inner));
-            outIndex.push_back(copyDoublets.index(iD,HitDoublets::outer));
+            inIndex.push_back(resultDoublets[i]->index(iD,HitDoublets::inner));
+            outIndex.push_back(resultDoublets[i]->index(iD,HitDoublets::outer));
 
-            detIds.push_back(copyDoublets.hit(iD, HitDoublets::outer)->hit()->geographicalId());
-            subDetIds.push_back((copyDoublets.hit(iD, HitDoublets::outer)->hit()->geographicalId()).subdetId());
+            detIds.push_back(resultDoublets[i]->hit(iD, HitDoublets::outer)->hit()->geographicalId());
+            subDetIds.push_back((resultDoublets[i]->hit(iD, HitDoublets::outer)->hit()->geographicalId()).subdetId());
 
             for(int j = 0; j < 2; ++j)
             {
@@ -218,9 +217,9 @@ namespace {
               vLab[iLab] = (float)(siHits[j]->globalState()).position.y(); iLab++;
               vLab[iLab] = (float)(siHits[j]->globalState()).position.z(); iLab++;
 
-              float phi = copyDoublets.phi(iD,layers[j]) >=0.0 ? copyDoublets.phi(iD,layers[j]) : 2*M_PI + copyDoublets.phi(iD,layers[j]);
+              float phi = resultDoublets[i]->phi(iD,layers[j]) >=0.0 ? resultDoublets[i]->phi(iD,layers[j]) : 2*M_PI + resultDoublets[i]->phi(iD,layers[j]);
               vLab[iLab] = (float)phi; iLab++;
-              vLab[iLab] = (float)copyDoublets.r(iD,layers[j]); iLab++;
+              vLab[iLab] = (float)resultDoublets[i]->r(iD,layers[j]); iLab++;
 
               vLab[iLab] = (float)detSeqs[j]; iLab++;
 
@@ -282,12 +281,12 @@ namespace {
               deltaA   -= ((float)thisCluster->size()); deltaA *= -1.0;
               deltaADC -= thisCluster->charge(); deltaADC *= -1.0; //At the end == Outer Hit ADC - Inner Hit ADC
               deltaS   -= ((float)(thisCluster->sizeY()) / (float)(thisCluster->sizeX())); deltaS *= -1.0;
-              deltaR   -= copyDoublets.r(iD,layers[j]); deltaR *= -1.0;
+              deltaR   -= resultDoublets[i]->r(iD,layers[j]); deltaR *= -1.0;
               deltaPhi -= phi; deltaPhi *= -1.0;
             }//inner outer hit
 
             zZero = (siHits[0]->globalState()).position.z();
-            zZero -= copyDoublets.r(iD,layers[0]) * (deltaZ/deltaR);
+            zZero -= resultDoublets[i]->r(iD,layers[0]) * (deltaZ/deltaR);
 
             vLab[iLab] = deltaA   ; iLab++;
             vLab[iLab] = deltaADC ; iLab++;
@@ -319,7 +318,7 @@ namespace {
       auto startPush = std::chrono::high_resolution_clock::now();
 
       float* score = outputs[0].flat<float>().data();
-
+      int newSize = 0;
       for (size_t i = 0; i < doublets.size(); i++)
       {
         if(!doThis[i])
@@ -329,6 +328,7 @@ namespace {
         copyDoublets->clear();
         for (int j = 0; j < sizes[i]; j++)
           copyDoublets->add(inIndex[i][j],outIndex[i][j]);
+        newSize += copyDoublets->size();
       }
 
       auto finishPush = std::chrono::high_resolution_clock::now();
@@ -337,8 +337,8 @@ namespace {
       std::chrono::duration<double> elapsedData = finishData - startData;
       std::chrono::duration<double> elapsedPush = finishPush - startPush;
 
-      std::cout << "Staring size       : " << numOfDoublets << std::endl;
-      std::cout << "New size           : " << copyDoublets.size() << std::endl;
+      std::cout << "Staring size       : " << totDoublets << std::endl;
+      std::cout << "New size           : " << newSize << std::endl;
       std::cout << "Elapsed time (data): " << elapsedData.count() << " s\n";
       std::cout << "Elapsed time (inf) : " << elapsedInf.count() << " s\n";
       std::cout << "Elapsed time (push): " << elapsedPush.count() << " s\n";
