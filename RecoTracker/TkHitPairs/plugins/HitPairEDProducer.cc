@@ -99,14 +99,14 @@ namespace {
     //                           const edm::EventSetup& es,
     //                           HitDoublets& copyDoublets,SeedingLayerSetsHits::SeedingLayerSet layerSet,
     //                           LayerHitMapCache & layerCache) const
-    HitDoublets cnnInference(HitDoublets& thisDoublets)
+    HitDoublets cnnInference(std::vector<HitDoublets>& doublets)
     {
       // const RecHitsSortedInPhi & innerHitsMap = layerCache(layerSet[0], region, es);
       // const RecHitsSortedInPhi& outerHitsMap = layerCache(layerSet[1], region, es);
       //
       // HitDoublets result(innerHitsMap,outerHitsMap); result.reserve(std::max(innerHitsMap.size(),outerHitsMap.size()));
 
-
+      auto thisDoublets = doublets[0];
       auto startData = std::chrono::high_resolution_clock::now();
 
       std::vector< float > inPad, outPad;
@@ -470,26 +470,33 @@ namespace {
       seedingHitSetsProducer.reserve(regionsLayers.regionsSize());
       intermediateHitDoubletsProducer.reserve(regionsLayers.regionsSize());
 
+      std::vector <HitDoublets> = theDoublets;
+      std::vector <int> innerId, outerId;
       for(const auto& regionLayers: regionsLayers) {
         const TrackingRegion& region = regionLayers.region();
         auto hitCachePtr_filler_shs = seedingHitSetsProducer.beginRegion(&region, nullptr);
         auto hitCachePtr_filler_ihd = intermediateHitDoubletsProducer.beginRegion(&region, std::get<0>(hitCachePtr_filler_shs));
         auto hitCachePtr = std::get<0>(hitCachePtr_filler_ihd);
 
+
         for(SeedingLayerSetsHits::SeedingLayerSet layerSet: regionLayers.layerPairs()) {
           auto doublets = generator_.doublets(region, iEvent, iSetup, layerSet, *hitCachePtr);
           LogTrace("HitPairEDProducer") << " created " << doublets.size() << " doublets for layers " << layerSet[0].index() << "," << layerSet[1].index();
 
-          if(doublets.empty()) continue; // don't bother if no pairs from these layers
+           // don't bother if no pairs from these layers
 
-          if(doInference_ && layerSet[0].index() <10 && layerSet[0].index() > -1 && layerSet[1].index() < 10 && layerSet[1].index() > -1)
+          if(doInference_)
           {
             // std::cout << "HitPairEDProducer created " << doublets.size() << " doublets for layers " << layerSet[0].index() << "," << layerSet[1].index();
-            auto cleanDoublets = cnnInference(doublets);
-            seedingHitSetsProducer.fill(std::get<1>(hitCachePtr_filler_shs), cleanDoublets);
-            intermediateHitDoubletsProducer.fill(std::get<1>(hitCachePtr_filler_ihd), layerSet, std::move(cleanDoublets));
+            // auto cleanDoublets = cnnInference(doublets);
+            theDoublets.push_back(doublets);
+            innerId.push_back(layerSet[0]);
+            outerId.push_back(layerSet[1]);
+            // seedingHitSetsProducer.fill(std::get<1>(hitCachePtr_filler_shs), cleanDoublets);
+            // intermediateHitDoubletsProducer.fill(std::get<1>(hitCachePtr_filler_ihd), layerSet, std::move(cleanDoublets));
           }else
           {
+            if(doublets.empty()) continue;
             seedingHitSetsProducer.fill(std::get<1>(hitCachePtr_filler_shs), doublets);
             intermediateHitDoubletsProducer.fill(std::get<1>(hitCachePtr_filler_ihd), layerSet, std::move(doublets));
           }
@@ -497,6 +504,24 @@ namespace {
         }
       }
 
+      int dCounter = 0;
+
+      for(const auto& regionLayers: regionsLayers)
+      {
+        const TrackingRegion& region = regionLayers.region();
+        auto hitCachePtr_filler_shs = seedingHitSetsProducer.beginRegion(&region, nullptr);
+        auto hitCachePtr_filler_ihd = intermediateHitDoubletsProducer.beginRegion(&region, std::get<0>(hitCachePtr_filler_shs));
+        auto hitCachePtr = std::get<0>(hitCachePtr_filler_ihd);
+        for(SeedingLayerSetsHits::SeedingLayerSet layerSet: regionLayers.layerPairs())
+        {
+          if(theDoublets[dCounter].empty()) continue;
+
+          seedingHitSetsProducer.fill(std::get<1>(hitCachePtr_filler_shs), theDoublets[dCounter]);
+          intermediateHitDoubletsProducer.fill(std::get<1>(hitCachePtr_filler_ihd), layerSet, std::move(theDoublets[dCounter]));
+
+          }
+
+      }
       seedingHitSetsProducer.put(iEvent);
       intermediateHitDoubletsProducer.put(iEvent);
     }
