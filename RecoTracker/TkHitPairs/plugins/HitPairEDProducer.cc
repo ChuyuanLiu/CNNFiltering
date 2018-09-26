@@ -99,336 +99,212 @@ namespace {
     //                           const edm::EventSetup& es,
     //                           HitDoublets& copyDoublets,SeedingLayerSetsHits::SeedingLayerSet layerSet,
     //                           LayerHitMapCache & layerCache) const
-    HitDoublets cnnInference(std::vector<HitDoublets*>& doublets, std::vector<HitDoublets*>& result)
+    void cnnInference(std::vector<HitDoublets*>& doublets, std::vector<HitDoublets*>& resultDoublets)
     {
       // const RecHitsSortedInPhi & innerHitsMap = layerCache(layerSet[0], region, es);
       // const RecHitsSortedInPhi& outerHitsMap = layerCache(layerSet[1], region, es);
       //
       // HitDoublets result(innerHitsMap,outerHitsMap); result.reserve(std::max(innerHitsMap.size(),outerHitsMap.size()));
-      auto thisDoublets = *doublets[0];
+
 
       auto startData = std::chrono::high_resolution_clock::now();
 
-      std::vector< float > inPad, outPad;
+      std::vector< bool > doThis;
+      //std::vector< HitDoublets* > resultDoublets;
+      int totDoublets = 0;
 
-      // Load graph
-      tensorflow::setLogging("0");
-      // std::cout << "GPU" << std::endl;
-      //
-      // std::cout << tensorflow::IsGoogleCudaEnabled() << std::endl;
-      // // const int maxBatchSize = 1;
-      // static Logger gLogger; // object for warning and error reports
-      //
-      // // Attributes of the model
-      // static const int INPUT_H = 28;
-      // static const int INPUT_W = 28;
-      // static const int OUTPUT_SIZE = 10;
-      // const char* INPUT_TENSOR_NAME = "X";
-      // const char* OUTPUT_TENSOR_NAME = "Softmax/Softmax";
-      //
-      // std::cout << "*** FILE TO PROCESS: " << std::endl;
-      //
-      // int batchSize = 1;
-      // float ms;
-      //
-      // // *** IMPORTING THE MODEL ***
-      // std::cout << "*** IMPORTING THE UFF MODEL ***" << std::endl;
-      //
-      // // Create the builder and the network
-      // nvinfer1::IBuilder* builder = nvinfer1::createInferBuilder(gLogger);
-      // INetworkDefinition* network = builder->createNetwork();
-      //
-      // // Create the UFF parser
-      // IUffParser* parser = createUffParser();
-      // assert(parser);
+      std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31};
 
-      std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}, layerIds;
+      for (size_t i = 0; i < doublets.size(); i++)
+      {
+
+        resultDoublets.push_back(doublets[i]);
+        if(find(pixelDets.begin(),pixelDets.end(),doublets[i].detLayer(HitDoublets::inner)->seqNum()) == pixelDets.begin())
+        {
+          doThis.push_back(false);
+          sizes.push_back(0);
+          continue;
+        }
+        if(find(pixelDets.begin(),pixelDets.end(),doublets[i].detLayer(HitDoublets::innter)->seqNum()) == pixelDets.begin())
+        {
+          doThis.push_back(false);
+          sizes.push_back(0);
+          continue;
+        }
+
+        doThis.push_back(true);
+        sizes.push_back(doublets[i]->size());
+        totDoublets += (int)doublets[i]->size();
+
+      }
+
+      int padSize = 16, cnnLayers = 10, infoSize = 67;
+      float padHalfSize = 8.0;
+      // tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {numOfDoublets,padSize,padSize,cnnLayers*2});
+      tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {totDoublets,infoSize});
+      float* vLab = inputFeat.flat<float>().data();
+      std::vector<tensorflow::Tensor> outputs;
+
+      tensorflow::setLogging("3");
 
       //tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/freeze_models/layer_map_model_final_nonorm.pb");
       tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/freeze_models/dense_model_nopix_debug.pb");
       tensorflow::Session* session = tensorflow::createSession(graphDef,12);
 
-      // std::vector<DeviceAttributes>* response;
-      //
-      // session->ListDevices(response);
-      //
-      // for (size_t i = 0; i < response.size(); i++) {
-      //   std::cout <<  response[i] << std::endl;
-      // }
-      //
-      // for (int i = 0; i < graphDef->node_size(); ++i)
-      // {
-      //   auto node = graphDef->mutable_node(i);
-      //   if (node->device().empty()) {
-      //     node->set_device("/device:GPU:0");
-      //   }
-      // }
-
-      int numOfDoublets = thisDoublets.size(), padSize = 16, cnnLayers = 10, infoSize = 67;
-      float padHalfSize = 8.0;
-      // tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {numOfDoublets,padSize,padSize,cnnLayers*2});
-      tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {numOfDoublets,infoSize});
-
-      // float* vPad = inputPads.flat<float>().data();
-      float* vLab = inputFeat.flat<float>().data();
-
-      // for (size_t i = 0; i < doublets.size(); i++) {
-      //   auto thisDoublets = doublets[i]
-      // }
-
-
-      HitDoublets copyDoublets = std::move(thisDoublets);
-
-      // std::cout << "copyDoublets.size()=" << copyDoublets.size() << std::endl;
-      // std::cout << "thisDoublets.size()=" << thisDoublets.size() << std::endl;
-
-      //return copyDoublets;
-
-      DetLayer const * innerLayer = copyDoublets.detLayer(HitDoublets::inner);
-      // if(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum())==pixelDets.end()) return copyDoublets;
-
-      DetLayer const * outerLayer = copyDoublets.detLayer(HitDoublets::outer);
-      // if(find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum())==pixelDets.end()) return copyDoublets;
-
-      std::vector <unsigned int> detSeqs;
-      detSeqs.push_back(innerLayer->seqNum());
-      detSeqs.push_back(outerLayer->seqNum());
-
-      layerIds.push_back(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum()) - pixelDets.begin());
-      layerIds.push_back(find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum()) - pixelDets.begin());
-      std::vector<tensorflow::Tensor> outputs;
-
+      std::vector < int > sizes;
+      std::vector < std::vector > inIndexAll,outIndexAll;
       HitDoublets::layer layers[2] = {HitDoublets::inner, HitDoublets::outer};
 
-      std::vector < float > zeroPad;
-      for (int nx = 0; nx < padSize; ++nx)
-        for (int ny = 0; ny < padSize; ++ny)
-          zeroPad.push_back(0.0);
-
-      std::vector<int> inIndex, outIndex;
 
       int iLab = 0;
 
-      for (int iD = 0; iD < numOfDoublets; iD++)
+      for (size_t i = 0; i < doublets.size(); i++)
       {
 
-        //copyDoublets.add()
-        std::vector <unsigned int> subDetIds, detIds ;
+        std::vector <int> detSeqs, layerIds, inIndex, outIndex;
 
-        // std::vector< std::vector< float>> hitPads,inHitPads,outHitPads;
-
-        // for(int i = 0; i < cnnLayers; ++i)
-        // {
-        //   inHitPads.push_back(zeroPad);
-        //   outHitPads.push_back(zeroPad);
-        // }
-
-        float deltaA = 0.0, deltaADC = 0.0, deltaS = 0.0, deltaR = 0.0;
-        float deltaPhi = 0.0, deltaZ = 0.0, zZero = 0.0;
-
-
-        int doubOffset = (padSize*padSize*cnnLayers*2)*iD, infoOffset = (infoSize)*iD;
-
-        std::vector< RecHitsSortedInPhi::Hit> hits;
-        std::vector< const SiPixelRecHit*> siHits;
-
-        siHits.push_back(dynamic_cast<const SiPixelRecHit*>(copyDoublets.hit(iD, HitDoublets::inner)->hit()));
-        siHits.push_back(dynamic_cast<const SiPixelRecHit*>(copyDoublets.hit(iD, HitDoublets::outer)->hit()));
-
-        detIds.push_back(copyDoublets.hit(iD, HitDoublets::inner)->hit()->geographicalId());
-        subDetIds.push_back((copyDoublets.hit(iD, HitDoublets::inner)->hit()->geographicalId()).subdetId());
-
-        inIndex.push_back(copyDoublets.index(iD,HitDoublets::inner));
-        outIndex.push_back(copyDoublets.index(iD,HitDoublets::outer));
-
-        detIds.push_back(copyDoublets.hit(iD, HitDoublets::outer)->hit()->geographicalId());
-        subDetIds.push_back((copyDoublets.hit(iD, HitDoublets::outer)->hit()->geographicalId()).subdetId());
-
-        if (! (((subDetIds[0]==1) || (subDetIds[0]==2)) && ((subDetIds[1]==1) || (subDetIds[1]==2)))) continue;
-        //
-        // hitPads.push_back(inPad);
-        // hitPads.push_back(outPad);
-
-        for(int j = 0; j < 2; ++j)
+        if(!doThis[i])
         {
-
-          int padOffset = layerIds[j] * padSize * padSize + j * padSize * padSize * cnnLayers;
-
-          vLab[iLab] = (float)(siHits[j]->globalState()).position.x(); iLab++;
-          vLab[iLab] = (float)(siHits[j]->globalState()).position.y(); iLab++;
-          vLab[iLab] = (float)(siHits[j]->globalState()).position.z(); iLab++;
-
-          float phi = copyDoublets.phi(iD,layers[j]) >=0.0 ? copyDoublets.phi(iD,layers[j]) : 2*M_PI + copyDoublets.phi(iD,layers[j]);
-          vLab[iLab] = (float)phi; iLab++;
-          vLab[iLab] = (float)copyDoublets.r(iD,layers[j]); iLab++;
-
-          vLab[iLab] = (float)detSeqs[j]; iLab++;
-
-          if(subDetIds[j]==1) //barrel
-          {
-
-            vLab[iLab] = float(true); iLab++; //isBarrel //7
-            vLab[iLab] = PXBDetId(detIds[j]).layer(); iLab++;
-            vLab[iLab] = PXBDetId(detIds[j]).ladder(); iLab++;
-            vLab[iLab] = -1.0; iLab++;
-            vLab[iLab] = -1.0; iLab++;
-            vLab[iLab] = -1.0; iLab++;
-            vLab[iLab] = PXBDetId(detIds[j]).module(); iLab++; //14
-
-          }
-          else
-          {
-            vLab[iLab] = float(false); iLab++; //isBarrel
-            vLab[iLab] = -1.0; iLab++;
-            vLab[iLab] = -1.0; iLab++;
-            vLab[iLab] = PXFDetId(detIds[j]).side(); iLab++;
-            vLab[iLab] = PXFDetId(detIds[j]).disk(); iLab++;
-            vLab[iLab] = PXFDetId(detIds[j]).panel(); iLab++;
-            vLab[iLab] = PXFDetId(detIds[j]).module(); iLab++;
-          }
-
-          //Module orientation
-          float ax1  = siHits[j]->det()->surface().toGlobal(Local3DPoint(0.,0.,0.)).perp(); //15
-          float ax2  = siHits[j]->det()->surface().toGlobal(Local3DPoint(0.,0.,1.)).perp();
-
-          vLab[iLab] = float(ax1<ax2); iLab++; //isFlipped
-          vLab[iLab] = ax1; iLab++; //Module orientation y
-          vLab[iLab] = ax2; iLab++; //Module orientation x
-
-          auto thisCluster = siHits[j]->cluster();
-          //TODO check CLusterRef & OmniClusterRef
-
-          float xC = (float) thisCluster->x(), yC = (float) thisCluster->y();
-
-  //inX
-          vLab[iLab] = (float)xC; iLab++; //20
-          vLab[iLab] = (float)yC; iLab++;
-          vLab[iLab] = (float)thisCluster->size(); iLab++;
-          vLab[iLab] = (float)thisCluster->sizeX(); iLab++;
-          vLab[iLab] = (float)thisCluster->sizeY(); iLab++;
-          vLab[iLab] = (float)thisCluster->pixel(0).adc; iLab++; //25
-          vLab[iLab] = float(thisCluster->charge())/float(thisCluster->size()); iLab++; //avg pixel charge
-
-          vLab[iLab] = (float)(thisCluster->sizeX() > padSize); iLab++;//27
-          vLab[iLab] = (float)(thisCluster->sizeY() > padSize); iLab++;
-          vLab[iLab] = (float)(thisCluster->sizeY()) / (float)(thisCluster->sizeX()); iLab++;
-
-          vLab[iLab] = (float)siHits[j]->spansTwoROCs(); iLab++;
-          vLab[iLab] = (float)siHits[j]->hasBadPixels(); iLab++;
-          vLab[iLab] = (float)siHits[j]->isOnEdge(); iLab++; //31
-
-          vLab[iLab] = (float)(thisCluster->charge()); iLab++;
-
-          deltaA   -= ((float)thisCluster->size()); deltaA *= -1.0;
-          deltaADC -= thisCluster->charge(); deltaADC *= -1.0; //At the end == Outer Hit ADC - Inner Hit ADC
-          deltaS   -= ((float)(thisCluster->sizeY()) / (float)(thisCluster->sizeX())); deltaS *= -1.0;
-          deltaR   -= copyDoublets.r(iD,layers[j]); deltaR *= -1.0;
-          deltaPhi -= phi; deltaPhi *= -1.0;
-
-          // TH2F hClust("hClust","hClust",
-          // padSize,
-          // thisCluster->x()-padSize/2,
-          // thisCluster->x()+padSize/2,
-          // padSize,
-          // thisCluster->y()-padSize/2,
-          // thisCluster->y()+padSize/2);
-          //
-          // //Initialization
-          // for (int nx = 0; nx < padSize; ++nx)
-          // for (int ny = 0; ny < padSize; ++ny)
-          // hClust.SetBinContent(nx,ny,0.0);
-          //
-          // for (int k = 0; k < thisCluster->size(); ++k)
-          // hClust.SetBinContent(hClust.FindBin((float)thisCluster->pixel(k).x, (float)thisCluster->pixel(k).y),(float)thisCluster->pixel(k).adc);
-          //
-          //
-          // for (int ny = padSize; ny>0; --ny)
-          // {
-          //   for(int nx = 0; nx<padSize; nx++)
-          //   {
-          //     int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
-          //     hitPads[j].push_back(hClust.GetBinContent(n));
-          //   }
-          // }
-
-
-          // // //Pad Initialization
-          // for (int iP = 0; iP < padSize*padSize*cnnLayers; ++iP)
-          //   vPad[iP + doubOffset + j*padSize*padSize*cnnLayers] = 0.0;
-          //
-          // for (int k = 0; k < thisCluster->size(); ++k)
-          // {
-          //   int thisX = int(-(float)thisCluster->pixel(k).x + xC + padHalfSize);
-          //   int thisY = int(-(float)thisCluster->pixel(k).y + yC + padHalfSize);
-          //   vPad[padOffset + thisX + thisY * padSize + doubOffset] = (float)thisCluster->pixel(k).adc;
-          // }
-
-
+          inIndexAll.push_back(inIndex);
+          outIndexAll.push_back(outIndex);
+          continue;
         }
+        auto copyDoublets = *resultDoublets[i];
 
-        // for (int nx = 0; nx < padSize*padSize; ++nx)
-        //     inHitPads[layerIds[0]][nx] = hitPads[0][nx];
-        // for (int nx = 0; nx < padSize*padSize; ++nx)
-        //     outHitPads[layerIds[1]][nx] = hitPads[1][nx];
+        int numOfDoublets = sizes[i];
 
-        // std::cout << "Inner hit layer : " << innerLayer->seqNum() << " - " << layerIds[0]<< std::endl;
-        //
-        // for(int i = 0; i < cnnLayers; ++i)
-        // {
-        //   std::cout << i << std::endl;
-        //   auto thisOne = inHitPads[i];
-        //   for (int nx = 0; nx < padSize; ++nx)
-        //     for (int ny = 0; ny < padSize; ++ny)
-        //     {
-        //       std::cout << thisOne[ny + nx*padSize] << " ";
-        //     }
-        //     std::cout << std::endl;
-        //
-        // }
-        //
-        // std::cout << "Outer hit layer : " << outerLayer->seqNum() << " - " << layerIds[1]<< std::endl;
-        // for(int i = 0; i < cnnLayers; ++i)
-        // {
-        //   std::cout << i << std::endl;
-        //   auto thisOne = outHitPads[i];
-        //   for (int nx = 0; nx < padSize; ++nx)
-        //     for (int ny = 0; ny < padSize; ++ny)
-        //     {
-        //       std::cout << thisOne[ny + nx*padSize ] << " ";
-        //     }
-        //     std::cout << std::endl;
-        //
-        // }
-        //
-        // std::cout << "TF Translation" << std::endl;
-        // for(int i = 0; i < cnnLayers*2; ++i)
-        // {
-        //   std::cout << i << std::endl;
-        //   int theOffset = i*padSize*padSize;
-        //   for (int nx = 0; nx < padSize; ++nx)
-        //     for (int ny = 0; ny < padSize; ++ny)
-        //     {
-        //       std::cout << vPad[(ny + nx*padSize) + theOffset + doubOffset] << " ";
-        //     }
-        //     std::cout << std::endl;
-        //
-        // }
+        DetLayer const * innerLayer = copyDoublets.detLayer(HitDoublets::inner);
+        DetLayer const * outerLayer = copyDoublets.detLayer(HitDoublets::outer);
 
-        zZero = (siHits[0]->globalState()).position.z();
-        zZero -= copyDoublets.r(iD,layers[0]) * (deltaZ/deltaR);
 
-        vLab[iLab] = deltaA   ; iLab++;
-        vLab[iLab] = deltaADC ; iLab++;
-        vLab[iLab] = deltaS   ; iLab++;
-        vLab[iLab] = deltaR   ; iLab++;
-        vLab[iLab] = deltaPhi ; iLab++;
-        vLab[iLab] = deltaZ   ; iLab++;
-        vLab[iLab] = zZero    ; iLab++;
+        detSeqs.push_back(innerLayer->seqNum());
+        detSeqs.push_back(outerLayer->seqNum());
 
-        // std::cout << "iLab = "<<iLab << std::endl;
+        layerIds.push_back(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum()) - pixelDets.begin());
+        layerIds.push_back(find(pixelDets.begin(),pixelDets.end(),outerLayer->seqNum()) - pixelDets.begin());
 
-      }
-      // std::cout << "Making Inference" << std::endl;
+
+          for (int iD = 0; iD < numOfDoublets; iD++)
+          {
+            std::vector <unsigned int> subDetIds, detIds ;
+
+            float deltaA = 0.0, deltaADC = 0.0, deltaS = 0.0, deltaR = 0.0;
+            float deltaPhi = 0.0, deltaZ = 0.0, zZero = 0.0;
+
+
+            int doubOffset = (padSize*padSize*cnnLayers*2)*iD, infoOffset = (infoSize)*iD;
+
+            std::vector< RecHitsSortedInPhi::Hit> hits;
+            std::vector< const SiPixelRecHit*> siHits;
+
+            siHits.push_back(dynamic_cast<const SiPixelRecHit*>(copyDoublets.hit(iD, HitDoublets::inner)->hit()));
+            siHits.push_back(dynamic_cast<const SiPixelRecHit*>(copyDoublets.hit(iD, HitDoublets::outer)->hit()));
+
+            detIds.push_back(copyDoublets.hit(iD, HitDoublets::inner)->hit()->geographicalId());
+            subDetIds.push_back((copyDoublets.hit(iD, HitDoublets::inner)->hit()->geographicalId()).subdetId());
+
+            inIndex.push_back(copyDoublets.index(iD,HitDoublets::inner));
+            outIndex.push_back(copyDoublets.index(iD,HitDoublets::outer));
+
+            detIds.push_back(copyDoublets.hit(iD, HitDoublets::outer)->hit()->geographicalId());
+            subDetIds.push_back((copyDoublets.hit(iD, HitDoublets::outer)->hit()->geographicalId()).subdetId());
+
+            for(int j = 0; j < 2; ++j)
+            {
+
+              int padOffset = layerIds[j] * padSize * padSize + j * padSize * padSize * cnnLayers;
+
+              vLab[iLab] = (float)(siHits[j]->globalState()).position.x(); iLab++;
+              vLab[iLab] = (float)(siHits[j]->globalState()).position.y(); iLab++;
+              vLab[iLab] = (float)(siHits[j]->globalState()).position.z(); iLab++;
+
+              float phi = copyDoublets.phi(iD,layers[j]) >=0.0 ? copyDoublets.phi(iD,layers[j]) : 2*M_PI + copyDoublets.phi(iD,layers[j]);
+              vLab[iLab] = (float)phi; iLab++;
+              vLab[iLab] = (float)copyDoublets.r(iD,layers[j]); iLab++;
+
+              vLab[iLab] = (float)detSeqs[j]; iLab++;
+
+              if(subDetIds[j]==1) //barrel
+              {
+
+                vLab[iLab] = float(true); iLab++; //isBarrel //7
+                vLab[iLab] = PXBDetId(detIds[j]).layer(); iLab++;
+                vLab[iLab] = PXBDetId(detIds[j]).ladder(); iLab++;
+                vLab[iLab] = -1.0; iLab++;
+                vLab[iLab] = -1.0; iLab++;
+                vLab[iLab] = -1.0; iLab++;
+                vLab[iLab] = PXBDetId(detIds[j]).module(); iLab++; //14
+
+              }
+              else
+              {
+                vLab[iLab] = float(false); iLab++; //isBarrel
+                vLab[iLab] = -1.0; iLab++;
+                vLab[iLab] = -1.0; iLab++;
+                vLab[iLab] = PXFDetId(detIds[j]).side(); iLab++;
+                vLab[iLab] = PXFDetId(detIds[j]).disk(); iLab++;
+                vLab[iLab] = PXFDetId(detIds[j]).panel(); iLab++;
+                vLab[iLab] = PXFDetId(detIds[j]).module(); iLab++;
+              }
+
+              //Module orientation
+              float ax1  = siHits[j]->det()->surface().toGlobal(Local3DPoint(0.,0.,0.)).perp(); //15
+              float ax2  = siHits[j]->det()->surface().toGlobal(Local3DPoint(0.,0.,1.)).perp();
+
+              vLab[iLab] = float(ax1<ax2); iLab++; //isFlipped
+              vLab[iLab] = ax1; iLab++; //Module orientation y
+              vLab[iLab] = ax2; iLab++; //Module orientation x
+
+              auto thisCluster = siHits[j]->cluster();
+              //TODO check CLusterRef & OmniClusterRef
+
+              float xC = (float) thisCluster->x(), yC = (float) thisCluster->y();
+
+      //inX
+              vLab[iLab] = (float)xC; iLab++; //20
+              vLab[iLab] = (float)yC; iLab++;
+              vLab[iLab] = (float)thisCluster->size(); iLab++;
+              vLab[iLab] = (float)thisCluster->sizeX(); iLab++;
+              vLab[iLab] = (float)thisCluster->sizeY(); iLab++;
+              vLab[iLab] = (float)thisCluster->pixel(0).adc; iLab++; //25
+              vLab[iLab] = float(thisCluster->charge())/float(thisCluster->size()); iLab++; //avg pixel charge
+
+              vLab[iLab] = (float)(thisCluster->sizeX() > padSize); iLab++;//27
+              vLab[iLab] = (float)(thisCluster->sizeY() > padSize); iLab++;
+              vLab[iLab] = (float)(thisCluster->sizeY()) / (float)(thisCluster->sizeX()); iLab++;
+
+              vLab[iLab] = (float)siHits[j]->spansTwoROCs(); iLab++;
+              vLab[iLab] = (float)siHits[j]->hasBadPixels(); iLab++;
+              vLab[iLab] = (float)siHits[j]->isOnEdge(); iLab++; //31
+
+              vLab[iLab] = (float)(thisCluster->charge()); iLab++;
+
+              deltaA   -= ((float)thisCluster->size()); deltaA *= -1.0;
+              deltaADC -= thisCluster->charge(); deltaADC *= -1.0; //At the end == Outer Hit ADC - Inner Hit ADC
+              deltaS   -= ((float)(thisCluster->sizeY()) / (float)(thisCluster->sizeX())); deltaS *= -1.0;
+              deltaR   -= copyDoublets.r(iD,layers[j]); deltaR *= -1.0;
+              deltaPhi -= phi; deltaPhi *= -1.0;
+            }//inner outer hit
+
+            zZero = (siHits[0]->globalState()).position.z();
+            zZero -= copyDoublets.r(iD,layers[0]) * (deltaZ/deltaR);
+
+            vLab[iLab] = deltaA   ; iLab++;
+            vLab[iLab] = deltaADC ; iLab++;
+            vLab[iLab] = deltaS   ; iLab++;
+            vLab[iLab] = deltaR   ; iLab++;
+            vLab[iLab] = deltaPhi ; iLab++;
+            vLab[iLab] = deltaZ   ; iLab++;
+            vLab[iLab] = zZero    ; iLab++;
+
+
+        }//doublets
+
+        inIndexAll.push_back(inIndex);
+        outIndexAll.push_back(outIndex);
+
+      }// vector of doublets
+
 
       auto finishData = std::chrono::high_resolution_clock::now();
 
@@ -441,11 +317,20 @@ namespace {
       // std::cout << "Cleaning doublets" << std::endl;
 
       auto startPush = std::chrono::high_resolution_clock::now();
-      copyDoublets.clear();
+
       float* score = outputs[0].flat<float>().data();
-      for (int i = 0; i < numOfDoublets; i++)
-        //if(score[i*2 + 1]>0.5)
-          copyDoublets.add(inIndex[i],outIndex[i]);
+
+      for (size_t i = 0; i < doublets.size(); i++)
+      {
+        if(!doThis[i])
+          continue;
+
+        auto copyDoublets = resultDoublets[i];
+        copyDoublets->clear();
+        for (int j = 0; j < sizes[i]; j++)
+          copyDoublets->add(inIndex[i][j],outIndex[i][j]);
+      }
+
       auto finishPush = std::chrono::high_resolution_clock::now();
 
       std::chrono::duration<double> elapsedInf  = finishInf - startInf;
@@ -457,8 +342,6 @@ namespace {
       std::cout << "Elapsed time (data): " << elapsedData.count() << " s\n";
       std::cout << "Elapsed time (inf) : " << elapsedInf.count() << " s\n";
       std::cout << "Elapsed time (push): " << elapsedPush.count() << " s\n";
-
-      return copyDoublets;
 
     }
 
@@ -478,7 +361,7 @@ namespace {
       seedingHitSetsProducer.reserve(regionsLayers.regionsSize());
       intermediateHitDoubletsProducer.reserve(regionsLayers.regionsSize());
 
-      std::vector <HitDoublets*> theDoublets, result;
+      std::vector <HitDoublets*> theDoublets, resultDoublets;
       std::vector <int> innerId, outerId;
       for(const auto& regionLayers: regionsLayers) {
         const TrackingRegion& region = regionLayers.region();
@@ -497,9 +380,10 @@ namespace {
           {
             // std::cout << "HitPairEDProducer created " << doublets.size() << " doublets for layers " << layerSet[0].index() << "," << layerSet[1].index();
             // auto cleanDoublets = cnnInference(doublets);
+            if(doublets.empty()) continue;
             theDoublets.push_back(&doublets);
-            innerId.push_back(layerSet[0].index());
-            outerId.push_back(layerSet[1].index());
+            // innerId.push_back(layerSet[0].index());
+            // outerId.push_back(layerSet[1].index());
             // seedingHitSetsProducer.fill(std::get<1>(hitCachePtr_filler_shs), cleanDoublets);
             // intermediateHitDoubletsProducer.fill(std::get<1>(hitCachePtr_filler_ihd), layerSet, std::move(cleanDoublets));
           }else
@@ -512,24 +396,31 @@ namespace {
         }
       }
 
-      int dCounter = 0;
 
-      for(const auto& regionLayers: regionsLayers)
+      if(doInference_)
       {
-        const TrackingRegion& region = regionLayers.region();
-        auto hitCachePtr_filler_shs = seedingHitSetsProducer.beginRegion(&region, nullptr);
-        auto hitCachePtr_filler_ihd = intermediateHitDoubletsProducer.beginRegion(&region, std::get<0>(hitCachePtr_filler_shs));
-        auto hitCachePtr = std::get<0>(hitCachePtr_filler_ihd);
-        for(SeedingLayerSetsHits::SeedingLayerSet layerSet: regionLayers.layerPairs())
+        cnnInference(theDoublets,resultDoublets);
+
+        int dCounter = 0;
+        for(const auto& regionLayers: regionsLayers)
         {
-          if(theDoublets[dCounter]->empty()) continue;
+          const TrackingRegion& region = regionLayers.region();
+          auto hitCachePtr_filler_shs = seedingHitSetsProducer.beginRegion(&region, nullptr);
+          auto hitCachePtr_filler_ihd = intermediateHitDoubletsProducer.beginRegion(&region, std::get<0>(hitCachePtr_filler_shs));
+          auto hitCachePtr = std::get<0>(hitCachePtr_filler_ihd);
+          for(SeedingLayerSetsHits::SeedingLayerSet layerSet: regionLayers.layerPairs())
+          {
+            if(theDoublets[dCounter]->empty()) continue;
+            dCounter++;
+            seedingHitSetsProducer.fill(std::get<1>(hitCachePtr_filler_shs), *resultDoublets[dCounter]);
+            intermediateHitDoubletsProducer.fill(std::get<1>(hitCachePtr_filler_ihd), layerSet, std::move(*resultDoublets[dCounter]));
 
-          seedingHitSetsProducer.fill(std::get<1>(hitCachePtr_filler_shs), *theDoublets[dCounter]);
-          intermediateHitDoubletsProducer.fill(std::get<1>(hitCachePtr_filler_ihd), layerSet, std::move(*theDoublets[dCounter]));
+            }
 
-          }
+        }
 
       }
+
       seedingHitSetsProducer.put(iEvent);
       intermediateHitDoubletsProducer.put(iEvent);
     }
