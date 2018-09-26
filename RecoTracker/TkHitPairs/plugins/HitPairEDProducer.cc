@@ -99,7 +99,7 @@ namespace {
     //                           const edm::EventSetup& es,
     //                           HitDoublets& copyDoublets,SeedingLayerSetsHits::SeedingLayerSet layerSet,
     //                           LayerHitMapCache & layerCache) const
-    HitDoublets cnnInference(std::vector<HitDoublets>& doublets)
+    HitDoublets cnnInference(std::vector<HitDoublets*>& doublets, std::vector<HitDoublets*>& result)
     {
       // const RecHitsSortedInPhi & innerHitsMap = layerCache(layerSet[0], region, es);
       // const RecHitsSortedInPhi& outerHitsMap = layerCache(layerSet[1], region, es);
@@ -172,9 +172,11 @@ namespace {
       // float* vPad = inputPads.flat<float>().data();
       float* vLab = inputFeat.flat<float>().data();
 
-      for (size_t i = 0; i < doublets.size(); i++) {
-        auto thisDoublets = doublets[i]
+      // for (size_t i = 0; i < doublets.size(); i++) {
+      //   auto thisDoublets = doublets[i]
+      // }
 
+      auto thisDoublets = doublets[0];
       HitDoublets copyDoublets = std::move(thisDoublets);
 
       // std::cout << "copyDoublets.size()=" << copyDoublets.size() << std::endl;
@@ -476,7 +478,7 @@ namespace {
       seedingHitSetsProducer.reserve(regionsLayers.regionsSize());
       intermediateHitDoubletsProducer.reserve(regionsLayers.regionsSize());
 
-      std::vector <HitDoublets*> theDoublets;
+      std::vector <HitDoublets*> theDoublets, result;
       std::vector <int> innerId, outerId;
       for(const auto& regionLayers: regionsLayers) {
         const TrackingRegion& region = regionLayers.region();
