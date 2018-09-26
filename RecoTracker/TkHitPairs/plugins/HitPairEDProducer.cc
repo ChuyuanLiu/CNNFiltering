@@ -105,7 +105,7 @@ namespace {
       // const RecHitsSortedInPhi& outerHitsMap = layerCache(layerSet[1], region, es);
       //
       // HitDoublets result(innerHitsMap,outerHitsMap); result.reserve(std::max(innerHitsMap.size(),outerHitsMap.size()));
-      auto thisDoublets = doublets[0];
+      auto thisDoublets = *doublets[0];
 
       auto startData = std::chrono::high_resolution_clock::now();
 
@@ -164,7 +164,7 @@ namespace {
       //   }
       // }
 
-      int numOfDoublets = thisDoublets.size(), padSize = 16, cnnLayers = 10, infoSize = 67;
+      int numOfDoublets = thisDoublets->size(), padSize = 16, cnnLayers = 10, infoSize = 67;
       float padHalfSize = 8.0;
       // tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {numOfDoublets,padSize,padSize,cnnLayers*2});
       tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {numOfDoublets,infoSize});
