@@ -177,7 +177,7 @@ namespace {
       // }
 
 
-      HitDoublets copyDoublets = std::move(*thisDoublets);
+      HitDoublets copyDoublets = std::move(thisDoublets);
 
       // std::cout << "copyDoublets.size()=" << copyDoublets.size() << std::endl;
       // std::cout << "thisDoublets.size()=" << thisDoublets.size() << std::endl;
