@@ -83,7 +83,7 @@ namespace {
   };
   ImplBase::ImplBase(const edm::ParameterSet& iConfig):
     maxElement_(iConfig.getParameter<unsigned int>("maxElement")),
-    doInference_(iConfig.existsAs<bool>("doInference") ? iConfig.getParameter<bool>("doInference") : false),
+    doInference_(iConfig.existsAs<bool>("doInference") ? iConfig.getParameter<bool>("doInference") : true),
     generator_(0, 1, nullptr, maxElement_), // these indices are dummy, TODO: cleanup HitPairGeneratorFromLayerPair
     layerPairBegins_(iConfig.getParameter<std::vector<unsigned> >("layerPairs"))
   {
