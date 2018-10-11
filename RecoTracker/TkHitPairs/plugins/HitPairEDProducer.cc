@@ -77,6 +77,7 @@ namespace {
     const unsigned int maxElement_;
 
     bool doInference_;
+    float t_;
 
     HitPairGeneratorFromLayerPair generator_;
     std::vector<unsigned> layerPairBegins_;
@@ -84,6 +85,7 @@ namespace {
   ImplBase::ImplBase(const edm::ParameterSet& iConfig):
     maxElement_(iConfig.getParameter<unsigned int>("maxElement")),
     doInference_(iConfig.existsAs<bool>("doInference") ? iConfig.getParameter<bool>("doInference") : true),
+    t_(iConfig.existsAs<double>("thresh") ? iConfig.getParameter<bool>("doInference") : 0.1),
     generator_(0, 1, nullptr, maxElement_), // these indices are dummy, TODO: cleanup HitPairGeneratorFromLayerPair
     layerPairBegins_(iConfig.getParameter<std::vector<unsigned> >("layerPairs"))
   {
@@ -410,7 +412,7 @@ namespace {
       copyDoublets.clear();
       float* score = outputs[0].flat<float>().data();
       for (int i = 0; i < numOfDoublets; i++)
-        if(score[i*2 + 1]>0.5)
+        if(score[i*2 + 1]>t_)
           copyDoublets.add(inIndex[i],outIndex[i]);
       auto finishPush = std::chrono::high_resolution_clock::now();
 
