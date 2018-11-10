@@ -540,7 +540,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       {
         std::cout << "============================="<< std::endl;
         std::cout << "Strip hit"<< std::endl;
-        std::cout << (*recHit)->isPixel() << std::endl;
+        // std::cout << (*recHit)->isPixel() << std::endl;
         std::cout << subdetid << std::endl;
         const SiStripRecHit2D* siStripHit2D = dynamic_cast<SiStripRecHit2D const *>(hit);
         const SiStripRecHit1D* siStripHit1D = dynamic_cast<SiStripRecHit1D const *>(hit);
