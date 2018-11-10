@@ -547,21 +547,23 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
         if(siStripHit2D)
         {
+          auto cluster = siStripHit2D->cluster();
           std::cout << "2d"<< std:endl;
-          std::cout << siStripHit2D.amplitudes().size() << std::endl;
-          std::cout << siStripHit2D.amplitudes()[0] << std::endl;
-          std::cout << siStripHit2D.firstStrip() << std::endl;
-          std::cout << siStripHit2D.charge() << std::endl;
-          std::cout << siStripHit2D.barycenter() << std::endl;
+          std::cout << cluster->amplitudes().size() << std::endl;
+          std::cout << cluster->amplitudes()[0] << std::endl;
+          std::cout << cluster->firstStrip() << std::endl;
+          std::cout << cluster->charge() << std::endl;
+          std::cout << cluster->barycenter() << std::endl;
         }
         if(siStripHit1D)
         {
+          auto cluster = siStripHit1D->cluster(); 
           std::cout << "1d"<<std::endl;
-          std::cout << siStripHit1D.amplitudes().size() << std::endl;
-          std::cout << siStripHit1D.amplitudes()[0] << std::endl;
-          std::cout << siStripHit1D.firstStrip() << std::endl;
-          std::cout << siStripHit2D.charge() << std::endl;
-          std::cout << siStripHit1D.barycenter() << std::endl;
+          std::cout << cluster->amplitudes().size() << std::endl;
+          std::cout << cluster->amplitudes()[0] << std::endl;
+          std::cout << cluster->firstStrip() << std::endl;
+          std::cout << cluster->charge() << std::endl;
+          std::cout << cluster->barycenter() << std::endl;
         }
         std::cout << "============================="<< std::endl;
         continue;
