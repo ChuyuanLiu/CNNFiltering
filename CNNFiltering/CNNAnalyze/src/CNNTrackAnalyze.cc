@@ -560,6 +560,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           std::cout << siStripHit1D.amplitudes().size() << std::endl;
           std::cout << siStripHit1D.amplitudes()[0] << std::endl;
           std::cout << siStripHit1D.firstStrip() << std::endl;
+          std::cout << siStripHit2D.charge() << std::endl;
           std::cout << siStripHit1D.barycenter() << std::endl;
         }
         std::cout << "============================="<< std::endl;
