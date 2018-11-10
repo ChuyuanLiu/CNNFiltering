@@ -540,7 +540,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       {
         std::cout << "============================="<< std::endl;
         std::cout << "Strip hit"<< std::endl;
-        std::cout << h.isPixel() << std::endl;
+        std::cout << (*recHit)->isPixel() << std::endl;
         std::cout << subdetid << std::endl;
         const SiStripRecHit2D* siStripHit2D = dynamic_cast<SiStripRecHit2D const *>(hit);
         const SiStripRecHit1D* siStripHit1D = dynamic_cast<SiStripRecHit1D const *>(hit);
@@ -548,7 +548,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
         if(siStripHit2D)
         {
           auto cluster = siStripHit2D->cluster();
-          std::cout << "2d"<< std:endl;
+          std::cout << "2d"<< std::endl;
           std::cout << cluster->amplitudes().size() << std::endl;
           std::cout << cluster->amplitudes()[0] << std::endl;
           std::cout << cluster->firstStrip() << std::endl;
@@ -557,7 +557,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
         }
         if(siStripHit1D)
         {
-          auto cluster = siStripHit1D->cluster(); 
+          auto cluster = siStripHit1D->cluster();
           std::cout << "1d"<<std::endl;
           std::cout << cluster->amplitudes().size() << std::endl;
           std::cout << cluster->amplitudes()[0] << std::endl;
