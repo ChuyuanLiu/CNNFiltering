@@ -151,7 +151,7 @@ private:
   int eveNumber, runNumber, lumNumber;
 
   std::vector<float>  x, y, z, phi_hit, r, c_x, c_y, charge, ovfx, ovfy;
-  std::vector<float> ratio, pdgId, motherPdgId, size, sizex, sizey;
+  std::vector<float> ratio, pdgId, motherPdgId, size, sizex, sizey,rawId;
   //std::vector<TH2> hitClust;
 
   std::vector<float> hitPixel0, hitPixel1, hitPixel2, hitPixel3, hitPixel4;
@@ -206,26 +206,26 @@ genMap_(consumes<reco::TrackToGenParticleAssociator>(iConfig.getParameter<edm::I
     for(int j =0;j<padSize*padSize;j++)
       hitPixels[i].push_back(0.0);
 
-  for(int i = 0; i<10;i++)
-  {
-    x.push_back(0.0);
-    y.push_back(0.0);
-    z.push_back(0.0);
-    phi_hit.push_back(0.0);
-    r.push_back(0.0);
-    c_x.push_back(0.0);
-    c_y.push_back(0.0);
-    pdgId.push_back(0.0);
-    motherPdgId.push_back(0.0);
-    size.push_back(0);
-    sizex.push_back(0);
-    sizey.push_back(0);
-    charge.push_back(0);
-    ovfx.push_back(0.0);
-    ovfy.push_back(0.0);
-    ratio.push_back(0.0);
-
-  }
+  // for(int i = 0; i<30;i++)
+  // {
+  //   x.push_back(0.0);
+  //   y.push_back(0.0);
+  //   z.push_back(0.0);
+  //   phi_hit.push_back(0.0);
+  //   r.push_back(0.0);
+  //   c_x.push_back(0.0);
+  //   c_y.push_back(0.0);
+  //   pdgId.push_back(0.0);
+  //   motherPdgId.push_back(0.0);
+  //   size.push_back(0);
+  //   sizex.push_back(0);
+  //   sizey.push_back(0);
+  //   charge.push_back(0);
+  //   ovfx.push_back(0.0);
+  //   ovfy.push_back(0.0);
+  //   ratio.push_back(0.0);
+  //
+  // }
 
   // edm::Service<TFileService> fs;
   // cnntree = fs->make<TTree>("CNNTree","Doublets Tree");
@@ -462,6 +462,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       ovfx[i] = 0.0;
       ovfy[i] = 0.0;
       ratio[i] = 0.0;
+      rawId[i] = 0.0;
 
     }
     // bool isSimMatched = false;
@@ -535,7 +536,126 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       unsigned int subdetid = detId.subdetId();
 
       if(detId.det() != DetId::Tracker) continue;
-      if (!((subdetid==1) || (subdetid==2))) continue;
+      if (!((subdetid==1) || (subdetid==2)))
+      {
+        std::cout << "============================="<< std::endl;
+        std::cout << "Strip hit"<< std::endl;
+        std::cout << h.isPixel() << std::endl;
+        std::cout << subdetid << std::endl;
+        const SiStripRecHit2D* siStripHit2D = dynamic_cast<SiStripRecHit2D const *>(hit);
+        const SiStripRecHit1D* siStripHit1D = dynamic_cast<SiStripRecHit1D const *>(hit);
+
+        if(siStripHit2D)
+        {
+          std::cout << "2d"<< std:endl;
+          std::cout << siStripHit2D.amplitudes().size() << std::endl;
+          std::cout << siStripHit2D.amplitudes()[0] << std::endl;
+          std::cout << siStripHit2D.firstStrip() << std::endl;
+          std::cout << siStripHit2D.charge() << std::endl;
+          std::cout << siStripHit2D.barycenter() << std::endl;
+        }
+        if(siStripHit1D)
+        {
+          std::cout << "1d"<<std::endl;
+          std::cout << siStripHit1D.amplitudes().size() << std::endl;
+          std::cout << siStripHit1D.amplitudes()[0] << std::endl;
+          std::cout << siStripHit1D.firstStrip() << std::endl;
+          std::cout << siStripHit1D.barycenter() << std::endl;
+        }
+        std::cout << "============================="<< std::endl;
+        continue;
+      }
+      const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(hit);
+
+      int hitLayer = -1;
+
+      if(subdetid==1) //barrel
+        hitLayer = PXBDetId(detId).layer();
+      else
+      {
+        int side = PXFDetId(detId).side();
+        float z = (hit->globalState()).position.z();
+
+        if(fabs(z)>28.0) hitLayer = 4;
+        if(fabs(z)>36.0) hitLayer = 5;
+        if(fabs(z)>44.0) hitLayer = 6;
+
+        if(side==2.0) hitLayer +=3;
+      }
+
+      if (pixHit && hitLayer >= 0)
+      {
+        bool thisBad,thisEdge,thisBig;
+
+        auto thisClust = pixHit->cluster();
+        int thisSize   = thisClust->size();
+
+        thisBig  = pixHit->spansTwoROCs();
+        thisBad  = pixHit->hasBadPixels();
+        thisEdge = pixHit->isOnEdge();
+
+        bool keepThis = false;
+
+        if(flagHit.find(hitLayer) != flagHit.end())
+        {
+          //Keeping the good,not on edge,not big, with higher charge
+          if(isBad[hitLayer] || isEdge[hitLayer] || isBig[hitLayer])
+          {
+              if(!(thisBig || thisBad || thisEdge))
+                keepThis = true;
+              else
+              {
+                if(thisSize > hitSize[hitLayer])
+                keepThis = true;
+              }
+          }
+          else
+          {
+            if(!(thisBig || thisBad || thisEdge))
+            {
+              if(thisSize > hitSize[hitLayer])
+              keepThis = true;
+            }
+          }
+          //   if(!(thisBad || thisEdge || thisBig))
+          //     keepThis = true;
+          // if(isBad[hitLayer] && !thisBad)
+          //     keepThis = true;
+          // if((isBad[hitLayer] && thisBad)||(!(isBad[hitLayer] || thisBad)))
+          //   if(thisSize > hitSize[hitLayer])
+          //     keepThis = true;
+          // if(thisBad && !isBad[hitLayer])
+          //     keepThis = false;
+        }else
+          keepThis = true;
+
+        if(keepThis)
+          {
+            theHits[hitLayer] = hit;
+            hitSize[hitLayer] = (double)thisSize;
+            isBad[hitLayer] = thisBad;
+            isEdge[hitLayer] = thisEdge;
+            isBig[hitLayer] = thisBad;
+          }
+        flagHit[hitLayer] = 1.0;
+
+      }
+
+
+    }
+
+    for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
+    {
+      TrackerSingleRecHit const * hit= dynamic_cast<TrackerSingleRecHit const *>(*recHit);
+
+      if(!hit)
+        continue;
+
+      DetId detId = (*recHit)->geographicalId();
+      unsigned int subdetid = detId.subdetId();
+
+      if(detId.det() != DetId::Tracker) continue;
+      if (((subdetid==1) || (subdetid==2))) continue;
 
       const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(hit);
 
@@ -616,6 +736,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
     }
 
+
     for(int i = 0; i<10;i++)
     {
         if(theHits.find(i) != theHits.end())
@@ -644,6 +765,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           ovfx[i] =(double)clust->sizeX() > padSize;
           ovfy[i] =(double)clust->sizeY() > padSize;
           ratio[i] =(double)(clust->sizeY()) / (double)(clust->sizeX());
+          rawId[i] = h->geographicalId().rawId();
 
           TH2F hClust("hClust","hClust",
           padSize,

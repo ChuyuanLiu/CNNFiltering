@@ -486,7 +486,7 @@
       // std::cout << "- Track Quality " <<std::endl;
       int pixHits = hitPattern.numberOfValidPixelHits();
       // std::cout << "- No Pixel Hits :" << pixHits << std::endl;
-      if(pixHits < 4)
+      if(pixHits < 3)
         continue;
 
       // pt    = (double)track->pt();
