@@ -154,8 +154,13 @@ private:
   std::vector<float> ratio, pdgId, motherPdgId, size, sizex, sizey;
   //std::vector<TH2> hitClust;
 
-  std::vector<float> hitPixel0, hitPixel1, hitPixel2, hitPixel3, hitPixel4;
-  std::vector<float> hitPixel5, hitPixel6, hitPixel7, hitPixel8, hitPixel9;
+  //Hit Pixels
+  std::vector<float> hitPixel0, hitPixel1, hitPixel2, hitPixel3, hitPixel4, hitPixel10;
+  std::vector<float> hitPixel5, hitPixel6, hitPixel7, hitPixel8, hitPixel9, hitPixel11;
+
+  std::vector< std::vector<float> > hiPixels;
+
+  //Hit Strips
 
   // TTree* cnntree;
 
@@ -375,7 +380,7 @@ DNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     // std::cout << "- Track Quality " <<std::endl;
     int pixHits = hitPattern.numberOfValidPixelHits();
     // std::cout << "- No Pixel Hits :" << pixHits << std::endl;
-    if(pixHits < 4)
+    if(pixHits < 3)
       continue;
 
     // pt    = (double)track->pt();
@@ -445,12 +450,28 @@ DNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       // std::cout << (double)clust->sizeY() > padSize << "\t";
       // std::cout << (double)(clust->sizeY()) / (double)(clust->sizeX()) << std::endl;
 
-      continue;
+      //continue;
+      bool isPixBarrel = false, isPixEndcap = false, isTiB = false, isTiD = false;
+      bool isTeC = false, isToC = false;
+      const SiPixelRecHit*   pixHit  = dynamic_cast<SiPixelRecHit const *>(hit);
+      const SiStripRecHit1D* strip1D = dynamic_cast<SiStripRecHit1D const *>(hit);
+      const SiStripRecHit2D* strip2D = dynamic_cast<SiStripRecHit2D const *>(hit);
 
-      const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(hit);
       int hitLayer = -1;
 
-      if (!((subdetid==1) || (subdetid==2)))
+      float z = (hit->globalState()).position.z();
+      float x = (hit->globalState()).position.x();
+      float y = (hit->globalState()).position.y();
+
+      std::cout << subdetid << "\t";
+
+      std::cout << x << "\t";
+      std::cout << y << "\t";
+      std::cout << z << "\t";
+
+      std::cout << hit.isPixel() << "\t";
+
+      if (((subdetid==1) || (subdetid==2)))
       {
         if(subdetid==1) //barrel
           hitLayer = PXBDetId(detId).layer();
@@ -467,6 +488,30 @@ DNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
         }
       }
 
+      if(pixHit)
+      {
+        std::cout << " pixel " << "\t";
+        std::cout << pixHit->cluster().size() << "\t";
+        std::cout << "-1" << "\t";
+      }
+      if(strip1D)
+      {
+
+        std::cout << " strip1d " << "\t";
+        std::cout << strip1D->cluster().amplitudes().size() << "\t";
+        std::cout << strip1D->dimension() << "\t";
+      }
+      if(strip2D)
+      {
+        std::cout << " strip2D " << "\t";
+        std::cout << strip2D->cluster().amplitudes().size() << "\t";
+        std::cout << strip2D->dimension() << "\t";
+
+      }
+
+      std::cout << "\n" << std::endl;
+
+      /*
       if (pixHit && hitLayer >= 0)
       {
         bool thisBad,thisEdge,thisBig;
@@ -524,6 +569,7 @@ DNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
         flagHit[hitLayer] = 1.0;
 
       }
+*/
 
 
     }
