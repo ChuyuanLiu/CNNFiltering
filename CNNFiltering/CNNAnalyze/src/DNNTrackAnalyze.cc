@@ -420,6 +420,8 @@ DNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     theData.push_back((double)hitPattern.numberOfValidStripTIDHits());
     theData.push_back((double)hitPattern.numberOfValidStripTECHits());
 
+    std::vector<float> thePixelsHits;
+
     for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
     {
       TrackerSingleRecHit const * hit= dynamic_cast<TrackerSingleRecHit const *>(*recHit);
@@ -462,14 +464,14 @@ DNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       float z = (hit->globalState()).position.z();
       float x = (hit->globalState()).position.x();
       float y = (hit->globalState()).position.y();
-
+      float r = (double)hit->globalState().r;
       std::cout << subdetid << "\t";
 
       std::cout << x << "\t";
       std::cout << y << "\t";
       std::cout << z << "\t";
 
-      std::cout << hit.isPixel() << "\t";
+      std::cout << hit->isPixel() << "\t";
 
       if (((subdetid==1) || (subdetid==2)))
       {
@@ -486,25 +488,49 @@ DNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
           if(side==2.0) hitLayer +=3;
         }
+
       }
 
       if(pixHit)
       {
+
+        auto clust = pixHit->cluster();
         std::cout << " pixel " << "\t";
         std::cout << pixHit->cluster().size() << "\t";
+
         std::cout << "-1" << "\t";
+
+        thePixelsHits.push_back(nn);
+        thePixelsHits.push_back(0);
+
+        thePixelsHits.push_back(detId.rawId());
+        thePixelsHits.push_back(subdetid);
+
+        thePixelsHits.push_back(x);
+        thePixelsHits.push_back(y);
+        thePixelsHits.push_back(z);
+        thePixelsHits.push_back(r);
+
+        thePixelsHits.push_back(hitLayer);
+
+        for (size_t i = 0; i < clust..size(); i++) {
+          thePixelsHits.push_back(clust.pixelADC()[i]);
+          std::cout<< clust.pixelADC()[i] << "\t";
+          std::cout<< clust.pixelOffset()[i] << "\t";
+        }
+
       }
       if(strip1D)
       {
 
         std::cout << " strip1d " << "\t";
-        std::cout << strip1D->cluster().amplitudes().size() << "\t";
+        std::cout << strip1D->cluster()->amplitudes().size() << "\t";
         std::cout << strip1D->dimension() << "\t";
       }
       if(strip2D)
       {
         std::cout << " strip2D " << "\t";
-        std::cout << strip2D->cluster().amplitudes().size() << "\t";
+        std::cout << strip2D->cluster()->amplitudes().size() << "\t";
         std::cout << strip2D->dimension() << "\t";
 
       }
