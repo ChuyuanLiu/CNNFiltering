@@ -421,6 +421,7 @@ DNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     theData.push_back((double)hitPattern.numberOfValidStripTECHits());
 
     std::vector<float> thePixelsHits;
+    int nn=0
 
     for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
     {
@@ -434,7 +435,8 @@ DNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
 
       if(detId.det() != DetId::Tracker) continue;
-
+      nn++;
+      std::cout << nn << "\t";
       std::cout << detId.rawId() <<  "\t";
       std::cout << subdetid <<  "\t";
       std::cout << (double)hit->globalState().r <<  "\t";
