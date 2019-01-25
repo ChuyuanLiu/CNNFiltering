@@ -515,7 +515,7 @@ DNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
         thePixelsHits.push_back(hitLayer);
 
-        for (size_t i = 0; i < clust->size(); i++) {
+        for (int i = 0; i < clust->size(); i++) {
           thePixelsHits.push_back(clust->pixelADC()[i]);
           std::cout<< clust->pixelADC()[i] << "\t";
           std::cout<< clust->pixelOffset()[i] << "\t";
