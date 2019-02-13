@@ -35,7 +35,6 @@ namespace pat {
     typedef unsigned int index;
     /// default constructor
     PackedCandidate() :
-      kaonId_(0),pionId_(0),muonId_(0),elecId_(0),elseId_(0),
       packedPt_(0), packedEta_(0),
       packedPhi_(0), packedM_(0),
       packedDxy_(0), packedDz_(0), packedDPhi_(0), packedDEta_(0),packedDTrkPt_(0),
@@ -50,12 +49,19 @@ namespace pat {
       p4_(new PolarLorentzVector(0,0,0,0)), p4c_( new LorentzVector(0,0,0,0)),
       vertex_(new Point(0,0,0)), dphi_(0), deta_(0), dtrkpt_(0),track_(nullptr), pdgId_(0),
       qualityFlags_(0), pvRefKey_(reco::VertexRef::invalidKey()),
-      m_(nullptr), packedHits_(0), packedLayers_(0), normalizedChi2_(0),covarianceVersion_(0),covarianceSchema_(0),firstHit_(0) { }
+      m_(nullptr), packedHits_(0), packedLayers_(0), normalizedChi2_(0),covarianceVersion_(0),covarianceSchema_(0),firstHit_(0),
+      hitCoords_(std::vector<std::array<6>>()),
+      pixelInfos_(std::vector < std::array <float,15> >()),
+      pixelADC_(std::vector < std::array <float,20> >()),
+      pixelADCx_(std::vector < std::array <float,20> >()),
+      pixelADCy_(std::vector < std::array <float,20> >()),
+      stripInfos_(std::vector < std::array <float,6> >()),
+      stripADC_(std::vector < std::array <float,20> >())
+       { }
 
     explicit PackedCandidate( const reco::Candidate & c,
                               const reco::VertexRefProd &pvRefProd,
                               reco::VertexRef::key_type pvRefKey) :
-      kaonId_(0),pionId_(0),muonId_(0),elecId_(0),elseId_(0),
       packedPuppiweight_(0), packedPuppiweightNoLepDiff_(0), rawCaloFraction_(0), hcalFraction_(0),
       packedTime_(0), packedTimeError_(0), isIsolatedChargedHadron_(false),
       p4_( new PolarLorentzVector(c.pt(), c.eta(), c.phi(), c.mass())),
@@ -63,7 +69,15 @@ namespace pat {
       dphi_(0), deta_(0), dtrkpt_(0),
       track_(nullptr), pdgId_(c.pdgId()), qualityFlags_(0), pvRefProd_(pvRefProd),
       pvRefKey_(pvRefKey),m_(nullptr), packedHits_(0), packedLayers_(0),
-      normalizedChi2_(0),covarianceVersion_(0), covarianceSchema_(0),firstHit_(0) {
+      normalizedChi2_(0),covarianceVersion_(0), covarianceSchema_(0),firstHit_(0),
+      hitCoords_(std::vector<std::array<6>>()),
+      pixelInfos_(std::vector < std::array <float,15> >()),
+      pixelADC_(std::vector < std::array <float,20> >()),
+      pixelADCx_(std::vector < std::array <float,20> >()),
+      pixelADCy_(std::vector < std::array <float,20> >()),
+      stripInfos_(std::vector < std::array <float,6> >()),
+      stripADC_(std::vector < std::array <float,20> >())
+      {
       packBoth();
     }
 
@@ -71,7 +85,7 @@ namespace pat {
                               float trkPt,float etaAtVtx,float phiAtVtx,int pdgId,
                               const reco::VertexRefProd &pvRefProd,
                               reco::VertexRef::key_type pvRefKey) :
-      kaonId_(0),pionId_(0),muonId_(0),elecId_(0),elseId_(0),packedPuppiweight_(0), packedPuppiweightNoLepDiff_(0), rawCaloFraction_(0), hcalFraction_(0),
+      packedPuppiweight_(0), packedPuppiweightNoLepDiff_(0), rawCaloFraction_(0), hcalFraction_(0),
       packedTime_(0), packedTimeError_(0), isIsolatedChargedHadron_(false),
       p4_( new PolarLorentzVector(p4) ), p4c_( new LorentzVector(*p4_)),
       vertex_( new Point(vtx) ),
@@ -80,7 +94,14 @@ namespace pat {
       dtrkpt_(std::abs(trkPt-p4_.load()->pt())>=kMinDTrkPtToStore_ ? trkPt-p4_.load()->pt() : 0.),
       track_(nullptr), pdgId_(pdgId),
       qualityFlags_(0), pvRefProd_(pvRefProd), pvRefKey_(pvRefKey),
-      m_(nullptr),packedHits_(0), packedLayers_(0),normalizedChi2_(0),covarianceVersion_(0),covarianceSchema_(0),firstHit_(0) {
+      m_(nullptr),packedHits_(0), packedLayers_(0),normalizedChi2_(0),covarianceVersion_(0),covarianceSchema_(0),firstHit_(0),
+      hitCoords_(std::vector<std::array<6>>()),
+      pixelInfos_(std::vector < std::array <float,15> >()),
+      pixelADC_(std::vector < std::array <float,20> >()),
+      pixelADCx_(std::vector < std::array <float,20> >()),
+      pixelADCy_(std::vector < std::array <float,20> >()),
+      stripInfos_(std::vector < std::array <float,6> >()),
+      stripADC_(std::vector < std::array <float,20> >()) {
       packBoth();
     }
 
@@ -88,7 +109,7 @@ namespace pat {
                               float trkPt, float etaAtVtx, float phiAtVtx, int pdgId,
                               const reco::VertexRefProd &pvRefProd,
                               reco::VertexRef::key_type pvRefKey) :
-      kaonId_(0),pionId_(0),muonId_(0),elecId_(0),elseId_(0),packedPuppiweight_(0), packedPuppiweightNoLepDiff_(0), rawCaloFraction_(0), hcalFraction_(0),
+      packedPuppiweight_(0), packedPuppiweightNoLepDiff_(0), rawCaloFraction_(0), hcalFraction_(0),
       packedTime_(0), packedTimeError_(0), isIsolatedChargedHadron_(false),
       p4_(new PolarLorentzVector(p4.Pt(), p4.Eta(), p4.Phi(), p4.M())),
       p4c_( new LorentzVector(p4)), vertex_( new Point(vtx) ) ,
@@ -97,12 +118,19 @@ namespace pat {
       dtrkpt_(std::abs(trkPt-p4_.load()->pt())>=kMinDTrkPtToStore_ ? trkPt-p4_.load()->pt() : 0.),
       track_(nullptr), pdgId_(pdgId), qualityFlags_(0),
       pvRefProd_(pvRefProd), pvRefKey_(pvRefKey),
-      m_(nullptr),packedHits_(0),packedLayers_(0),normalizedChi2_(0),covarianceVersion_(0),covarianceSchema_(0),firstHit_(0)  {
+      m_(nullptr),packedHits_(0),packedLayers_(0),normalizedChi2_(0),covarianceVersion_(0),covarianceSchema_(0),firstHit_(0),
+      hitCoords_(std::vector<std::array<6>>()),
+      pixelInfos_(std::vector < std::array <float,15> >()),
+      pixelADC_(std::vector < std::array <float,20> >()),
+      pixelADCx_(std::vector < std::array <float,20> >()),
+      pixelADCy_(std::vector < std::array <float,20> >()),
+      stripInfos_(std::vector < std::array <float,6> >()),
+      stripADC_(std::vector < std::array <float,20> >())
+    {
       packBoth();
     }
 
     PackedCandidate( const PackedCandidate& iOther) :
-      kaonId_(iOther.kaonId_),pionId_(iOther.pionId_),muonId_(iOther.muonId_),elecId_(iOther.elecId_),elseId_(iOther.elseId_),
       packedPt_(iOther.packedPt_), packedEta_(iOther.packedEta_),
       packedPhi_(iOther.packedPhi_), packedM_(iOther.packedM_),
       packedDxy_(iOther.packedDxy_), packedDz_(iOther.packedDz_),
@@ -125,11 +153,18 @@ namespace pat {
       pvRefProd_(iOther.pvRefProd_),pvRefKey_(iOther.pvRefKey_),
       m_(iOther.m_? new reco::TrackBase::CovarianceMatrix(*iOther.m_) : nullptr),
       packedHits_(iOther.packedHits_),packedLayers_(iOther.packedLayers_),  normalizedChi2_(iOther.normalizedChi2_),
-      covarianceVersion_(iOther.covarianceVersion_), covarianceSchema_(iOther.covarianceSchema_), firstHit_(iOther.firstHit_)  {
+      covarianceVersion_(iOther.covarianceVersion_), covarianceSchema_(iOther.covarianceSchema_), firstHit_(iOther.firstHit_)
+      hitCoords_(iOther.hitCoords_),
+      pixelInfos_(iOther.pixelInfos_),
+      pixelADC_(iOther.pixelADC_),
+      pixelADCx_(iOther.pixelADCx_),
+      pixelADCy_(iOther.pixelADCy_),
+      stripInfos_(iOther.stripInfos_),
+      stripADC_(iOther.stripADC_)
+      {
       }
 
     PackedCandidate( PackedCandidate&& iOther) :
-      kaonId_(iOther.kaonId_),pionId_(iOther.pionId_),muonId_(iOther.muonId_),elecId_(iOther.elecId_),elseId_(iOther.elseId_),
       packedPt_(iOther.packedPt_), packedEta_(iOther.packedEta_),
       packedPhi_(iOther.packedPhi_), packedM_(iOther.packedM_),
       packedDxy_(iOther.packedDxy_), packedDz_(iOther.packedDz_),
@@ -151,7 +186,14 @@ namespace pat {
       pvRefProd_(std::move(iOther.pvRefProd_)),pvRefKey_(iOther.pvRefKey_),
       m_( iOther.m_.exchange(nullptr)),
       packedHits_(iOther.packedHits_), packedLayers_(iOther.packedLayers_),normalizedChi2_(iOther.normalizedChi2_),
-      covarianceVersion_(iOther.covarianceVersion_), covarianceSchema_(iOther.covarianceSchema_), firstHit_(iOther.firstHit_)  {
+      covarianceVersion_(iOther.covarianceVersion_), covarianceSchema_(iOther.covarianceSchema_), firstHit_(iOther.firstHit_),
+      hitCoords_(iOther.hitCoords_),
+      pixelInfos_(iOther.pixelInfos_),
+      pixelADC_(iOther.pixelADC_),
+      pixelADCx_(iOther.pixelADCx_),
+      pixelADCy_(iOther.pixelADCy_),
+      stripInfos_(iOther.stripInfos_),
+      stripADC_(iOther.stripADC_)  {
       }
 
 
@@ -159,11 +201,7 @@ namespace pat {
       if(this == &iOther) {
         return *this;
       }
-      kaonId_ = iOther.kaonId_;
-      pionId_ = iOther.pionId_;
-      muonId_ = iOther.muonId_;
-      elecId_ = iOther.elecId_;
-      elseId_ = iOther.elseId_;
+
       packedPt_ =iOther.packedPt_;
       packedEta_=iOther.packedEta_;
       packedPhi_=iOther.packedPhi_;
@@ -233,12 +271,16 @@ namespace pat {
       normalizedChi2_=iOther.normalizedChi2_;
       covarianceVersion_=iOther.covarianceVersion_;
       covarianceSchema_=iOther.covarianceSchema_;
-      kaonId_ = iOther.kaonId_;
-      pionId_ = iOther.pionId_;
-      muonId_ = iOther.muonId_;
-      elecId_ = iOther.elecId_;
-      elseId_ = iOther.elseId_;
       firstHit_=iOther.firstHit_;
+
+      hitCoords_ = iOther.hitCoords_;
+      pixelInfos_ = iOther.pixelInfos_;
+      pixelADC_ = iOther.pixelADC_;
+      pixelADCx_ = iOther.pixelADCx_;
+      pixelADCy_ = iOther.pixelADCy_;
+      stripInfos_ = iOther.stripInfos_;
+      stripADC_ = iOther.stripADC_;
+
       return *this;
     }
 
@@ -247,11 +289,7 @@ namespace pat {
         return *this;
       }
 
-      kaonId_ = iOther.kaonId_;
-pionId_ = iOther.pionId_;
-muonId_ = iOther.muonId_;
-elecId_ = iOther.elecId_;
-elseId_ = iOther.elseId_;
+
       packedPt_ =iOther.packedPt_;
       packedEta_=iOther.packedEta_;
       packedPhi_=iOther.packedPhi_;
@@ -290,6 +328,15 @@ elseId_ = iOther.elseId_;
       covarianceSchema_=iOther.covarianceSchema_;
 
       firstHit_=iOther.firstHit_;
+
+      hitCoords_ = iOther.hitCoords_;
+      pixelInfos_ = iOther.pixelInfos_;
+      pixelADC_ = iOther.pixelADC_;
+      pixelADCx_ = iOther.pixelADCx_;
+      pixelADCy_ = iOther.pixelADCy_;
+      stripInfos_ = iOther.stripInfos_;
+      stripADC_ = iOther.stripADC_;
+
       return *this;
     }
 
@@ -372,12 +419,6 @@ elseId_ = iOther.elseId_;
     /// momentum azimuthal angle
     double phi() const override { if (!p4c_) unpack(); return p4_.load()->Phi(); }
 
-    //pIds
-    double  kaonId() const { if (fabs(kaonId_)<2.0) return kaonId_; else return 0.0; }
-    double  pionId() const { if (fabs(pionId_)<2.0) return pionId_; else return 0.0; }
-    double  muonId() const { if (fabs(muonId_)<2.0) return muonId_; else return 0.0; }
-    double  elecId() const { if (fabs(elecId_)<2.0) return elecId_; else return 0.0; }
-    double  elseId() const { if (fabs(elseId_)<2.0) return elseId_; else return 0.0; }
 
     /// pt from the track (normally identical to pt())
     virtual double ptTrk() const {
@@ -464,19 +505,147 @@ elseId_ = iOther.elseId_;
       packedHits_ = (numberOfPixelHits_&trackPixelHitsMask) | (numberOfStripHits_ << trackStripHitsShift);
     }
 
-    virtual void setTrackProperties( const reco::Track & tk, const reco::Track::CovarianceMatrix & covariance,int quality,int covarianceVersion) {
-      kaonId_ = tk.getKaonId();
-      elecId_ = tk.getElecId();
-      muonId_ = tk.getMuonId();
-      pionId_ = tk.getPionId();
-      elseId_ = tk.getElseId();
+    virtual void setHitsProperties(const reco::Track &tk)
+{
+    std::cout << "Setting hits" << std::endl;
+    int n = 0;
+    for ( trackingRecHit_iterator recHit = tk.recHitsBegin();recHit != tk.recHitsEnd(); ++recHit )
+    {
+            n++;
+            //if(!((*recHit)->hasPositionAndError())) continue;
+            //std::array<float,3> c{{(*recHit)->globalPosition().x(),(*recHit)->globalPosition().y(),(*recHit)->globalPosition().z()}};
+            //hitCoords_.push_back(c);
 
-      std::cout << kaonId_ << std::endl;
-      std::cout << tk.getKaonId() << std::endl;
+            std::cout << "Hit "<< n;
+            //auto cRecHit = *recHit;
+            TrackerSingleRecHit* hit = dynamic_cast<TrackerSingleRecHit* >((*recHit));
+            if(!hit) continue;
+
+            const GeomDet* gDet = (hit)->det();
+            float x = (hit)->globalState().position.x();
+            float y = (hit)->globalState().position.y();
+            float z = (hit)->globalState().position.z();
+            float phi = (hit)->globalState().position.phi;
+            float r = (hit)->globalState().position.r;
+
+            ax1 = gDet->surface().toGlobal(Local3DPoint(0.,0.,0.)).perp();
+            ax2 = gDet->surface().toGlobal(Local3DPoint(0.,0.,1.)).perp();
+
+            hitCoords_.push_back(std::array<float,8> c{{float(n),x,y,z,phi,r,ax1,ax2}};);
+
+
+
+            SiPixelRecHit *pixHit = dynamic_cast<SiPixelRecHit*>(hit);
+            if(pixHit)
+            {
+
+              std::array<float,13> pixInf;
+              auto clust = pixHit->cluster();
+
+              pixInf[0] = (float) n;
+
+
+              pixInf[1] = (float)clust->x();
+              pixInf[2] = (float)clust->y();
+              pixInf[3] = (float)clust->size();
+              pixInf[4] = (float)clust->sizeX();
+              pixInf[5] = (float)clust->sizeY();
+              pixInf[6] = (float)clust->charge();
+
+              pixInf[7] = (float)clust->sizeX() > 10.;
+              pixInf[8] = (float)clust->sizeY() > 10.;
+              pixInf[9] = (float)clust->sizeY() / (float)clust->sizeX();
+
+              pixInf[10]  = (float)pixHit->spansTwoROCs();
+              pixInf[11] = (float)pixHit->hasBadPixels();
+              pixInf[12] = (float)pixHit->isOnEdge();
+
+              pixelInfos_.push_back(pixInf);
+
+              int minSize = -std::max(-clust->size(),-20);
+              for (int k = 0; k<20; ++k)
+              {
+                pixelADC_[k]  = -1.0;
+                pixelADCx_[k] = -1.0;
+                pixelADCy_[k] = -1.0;
+              }
+              for (int k = 0; k < minSize; ++k)
+              {
+                pixelADC_[k]  = (float)clust->pixel(k).adc;
+                pixelADCx_[k] = (float)clust->pixel(k).x;
+                pixelADCx_[k] = (float)clust->pixel(k).y;
+
+              }
+
+              std::cout << " Si Pixel Rec Hit" << std::endl;
+
+              n++;
+              continue;
+            }
+
+            const SiStripRecHit2D* siStripHit2D = dynamic_cast<SiStripRecHit2D const *>(hit);
+            if(siStripHit2D)
+            {
+              //dimension first ampsize charge merged splitClusterError id
+              std::array<float,7> stripInf;
+
+              auto clust = siStripHit2D->cluster();
+
+              stripInf[0] = float(n);
+              stripInf[1] = 2.0;
+
+              stripInf[2] = clust->charge();
+              stripInf[3] = clust->barycenter();
+              stripInf[4] = clust->firstStrip();
+              stripInf[5] = clust->isMerged();
+              stripInf[6] = clust->amplitudes().size();
+              stripInfos_.push_back(stripInf);
+
+              int minSize = -std::max(-clust->amplitudes().size(),-20);
+
+              for (int k = 0; k<20; ++k)
+                stripADC_[k]  = -1.0;
+              for (int k = 0; k < minSize; ++k)
+                stripADC_[k]  = (float)clust->amplitudes()[k];
+              continue;
+            }
+            const SiStripRecHit1D* siStripHit1D = dynamic_cast<SiStripRecHit1D const *>(hit);
+            if(siStripHit1D)
+            {
+              //dimension first ampsize charge merged splitClusterError id
+              std::array<float,7> stripInf;
+
+              auto clust = siStripHit1D->cluster();
+
+              stripInf[0] = float(n);
+              stripInf[1] = 1.0;
+
+              stripInf[2] = clust->charge();
+              stripInf[3] = clust->barycenter();
+              stripInf[4] = clust->firstStrip();
+              stripInf[5] = clust->isMerged();
+              stripInf[6] = clust->amplitudes().size();
+              stripInfos_.push_back(stripInf);
+
+              int minSize = -std::max(-clust->amplitudes().size(),-20);
+
+              for (int k = 0; k<20; ++k)
+                stripADC_[k]  = -1.0;
+              for (int k = 0; k < minSize; ++k)
+                stripADC_[k]  = (float)clust->amplitudes()[k];
+              continue;
+            }
+    }
+std::cout << pixelhits_.size() << " - " << striphit2d_.size() << " - " << striphit1d_.size() << std::endl;
+}
+
+    virtual void setTrackProperties( const reco::Track & tk, const reco::Track::CovarianceMatrix & covariance,int quality,int covarianceVersion) {
+
       covarianceVersion_ = covarianceVersion ;
       covarianceSchema_ = quality ;
       normalizedChi2_ = tk.normalizedChi2();
       setHits(tk);
+      setHitsProperties(tk);
       packBoth();
       packCovariance(covariance,false);
     }
@@ -729,8 +898,6 @@ elseId_ = iOther.elseId_;
     static constexpr float kMinDEtaToStore_=0.001;
     static constexpr float kMinDTrkPtToStore_=0.001;
 
-    float kaonId_,pionId_,muonId_,elecId_,elseId_;
-
     uint16_t packedPt_, packedEta_, packedPhi_, packedM_;
     uint16_t packedDxy_, packedDz_, packedDPhi_, packedDEta_, packedDTrkPt_;
     PackedCovariance packedCovariance_;
@@ -823,7 +990,18 @@ elseId_ = iOther.elseId_;
   public:
     uint16_t firstHit_;
 
-  };
+
+    std::vector < std::array <float,7> >  hitCoords_;
+    //n x y z r phi ax1 ax2
+    std::vector < std::array <float,13> > pixelInfos_;
+    //c_x c_y size size_x size_y charge ovfx ovfy ratio isBig isBad isOnEdge id
+    std::vector < std::array <float,20> > pixelADC_, pixelADCx_, pixelADCy_;
+
+    std::vector < std::array <float,7> > stripInfos_;
+    //dimension first ampsize charge merged splitClusterError id
+    std::vector < std::array <float,20> > stripADC_;
+
+    };
 
   typedef std::vector<pat::PackedCandidate> PackedCandidateCollection;
   typedef edm::Ref<pat::PackedCandidateCollection> PackedCandidateRef;
