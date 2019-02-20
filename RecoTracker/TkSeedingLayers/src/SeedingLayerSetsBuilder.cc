@@ -237,6 +237,9 @@ SeedingLayerSetsBuilder::SeedingLayerSetsBuilder(const edm::ParameterSet & cfg, 
   theLayerDets.resize(theLayers.size());
   theTTRHBuilders.resize(theLayers.size());
 
+  tpMap_ = cfg.getParameter<edm::InputTag>("tpMap");
+
+
   // debug printout
   // The following should not be set to cout
   //for(const LayerSpec& layer: theLayers) {
@@ -382,9 +385,6 @@ std::unique_ptr<SeedingLayerSetsHits> SeedingLayerSetsBuilder::hits(const edm::E
   int eveNumber = ev.id().event();
   int runNumber = ev.id().run();
   int lumNumber = ev.id().luminosityBlock();
-
-  edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
-  tpMap_ = consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap"));
 
   edm::Handle<ClusterTPAssociation> tpClust;
   iEvent.getByToken(tpMap_,tpClust);

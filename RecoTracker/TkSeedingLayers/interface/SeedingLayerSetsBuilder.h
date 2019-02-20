@@ -42,7 +42,6 @@ public:
 
   const std::vector<SeedingLayerSetsHits::LayerSetIndex>& layerSetIndices() const { return theLayerSetIndices; }
 
-  std::unique_ptr<SeedingLayerSetsHits> hits(const edm::Event& ev, const edm::EventSetup& es);
   //new function for FastSim only
   std::unique_ptr<SeedingLayerSetsHits> makeSeedingLayerSetsHitsforFastSim(const edm::Event& ev, const edm::EventSetup& es);
 
@@ -56,7 +55,9 @@ private:
   edm::ESWatcher<TrackerRecoGeometryRecord> geometryWatcher_;
   edm::ESWatcher<TransientRecHitRecord> trhWatcher_;
   edm::EDGetTokenT<FastTrackerRecHitCollection> fastSimrecHitsToken_;
-  struct LayerSpec { 
+  edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
+
+  struct LayerSpec {
     LayerSpec(unsigned short index, const std::string& layerName, const edm::ParameterSet& cfgLayer, edm::ConsumesCollector& iC);
     ~LayerSpec() = default;
     LayerSpec(const LayerSpec&) = delete;
@@ -74,7 +75,7 @@ private:
     std::unique_ptr<ctfseeding::HitExtractor> extractor;
 
     std::string print(const std::vector<std::string>& names) const;
-  }; 
+  };
   unsigned short theNumberOfLayersInSet;
   std::vector<SeedingLayerSetsHits::LayerSetIndex> theLayerSetIndices; // indices to theLayers to form the layer sets
   std::vector<std::string> theLayerNames;
