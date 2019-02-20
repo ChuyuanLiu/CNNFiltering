@@ -44,7 +44,7 @@ public:
 
   const std::vector<SeedingLayerSetsHits::LayerSetIndex>& layerSetIndices() const { return theLayerSetIndices; }
 
-  std::unique_ptr<SeedingLayerSetsHits> SeedingLayerSetsBuilder::hits(const edm::Event& ev, const edm::EventSetup& es);
+  std::unique_ptr<SeedingLayerSetsHits> hits(const edm::Event& ev, const edm::EventSetup& es);
   //new function for FastSim only
   std::unique_ptr<SeedingLayerSetsHits> makeSeedingLayerSetsHitsforFastSim(const edm::Event& ev, const edm::EventSetup& es);
 

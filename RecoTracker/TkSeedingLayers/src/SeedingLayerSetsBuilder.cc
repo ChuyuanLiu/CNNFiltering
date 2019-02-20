@@ -187,12 +187,12 @@ SeedingLayerSetsBuilder::SeedingLayerSetsBuilder(const edm::ParameterSet & cfg, 
   SeedingLayerSetsBuilder(cfg, iC)
 {
   fastSimrecHitsToken_ = iC.consumes<FastTrackerRecHitCollection>(fastsimHitTag);
-  tpMap_ = iC.consumes<ClusterTPAssociation>(iC.getParameter<edm::InputTag>("tpMap"));
+  tpMap_ = iC.consumes<ClusterTPAssociation>(cfg.getParameter<edm::InputTag>("tpMap"));
 }
 SeedingLayerSetsBuilder::SeedingLayerSetsBuilder(const edm::ParameterSet & cfg, edm::ConsumesCollector&& iC):
   SeedingLayerSetsBuilder(cfg, iC)
 {
-  tpMap_ = iC.consumes<ClusterTPAssociation>(iC.getParameter<edm::InputTag>("tpMap"));
+  tpMap_ = iC.consumes<ClusterTPAssociation>(cfg.getParameter<edm::InputTag>("tpMap"));
 }
 SeedingLayerSetsBuilder::SeedingLayerSetsBuilder(const edm::ParameterSet & cfg, edm::ConsumesCollector& iC)
 {
@@ -273,6 +273,7 @@ edm::ParameterSet SeedingLayerSetsBuilder::layerConfig(const std::string & nameL
   for (string::size_type iEnd=nameLayer.size(); iEnd > 0; --iEnd) {
     string name = nameLayer.substr(0,iEnd);
     if (cfg.exists(name)) return cfg.getParameter<edm::ParameterSet>(name);
+    std::cout << name << std::endl;
   }
   edm::LogError("SeedingLayerSetsBuilder") <<"configuration for layer: "<<nameLayer<<" not found, job will probably crash!";
   return result;
@@ -386,8 +387,8 @@ std::unique_ptr<SeedingLayerSetsHits> SeedingLayerSetsBuilder::hits(const edm::E
   int runNumber = ev.id().run();
   int lumNumber = ev.id().luminosityBlock();
 
-  edm::Handle<ClusterTPAssociation> tpClust;
-  ev.getByToken(tpMap_,tpClust);
+  //edm::Handle<ClusterTPAssociation> tpClust;
+  //ev.getByToken(tpMap_,tpClust);
 
   for(auto& layer: theLayers) {
 
@@ -433,22 +434,22 @@ std::unique_ptr<SeedingLayerSetsHits> SeedingLayerSetsBuilder::hits(const edm::E
           auto clust = pixHit->cluster();
 
           //Tp Matching
-          auto tpRange = tpClust->equal_range(pixHit->firstClusterRef());
+          //auto tpRange = tpClust->equal_range(pixHit->firstClusterRef());
 
           // std::cout << "Doublet no. "  << i << " hit no. " << lIt->doublets().innerHitId(i) << std::endl;
 
-          std::array< std::pair<int,int>,3> tParticle;
-          tParticle[0] = {-1.0,-1.0}; tParticle[1] = {-1.0,-1.0}; tParticle[2] = {-1.0,-1.0};
-
-          int numTP = tpRange.second - tpRange.first;
-          numTP = -std::max(numTP,3);
-
-          int tpCounter = 0;
-          for(auto ip=tpRange.first; ip != tpRange.second; ++ip)
-          {
-            tParticle[tpCounter] = std::pair<float,float>(ip->second.key(),(*ip->second).pdgId());
-            tpCounter++;
-          }
+          //std::array< std::pair<int,int>,3> tParticle;
+          // tParticle[0] = {-1.0,-1.0}; tParticle[1] = {-1.0,-1.0}; tParticle[2] = {-1.0,-1.0};
+          //
+          // int numTP = tpRange.second - tpRange.first;
+          // numTP = -std::max(numTP,3);
+          //
+          // int tpCounter = 0;
+          // for(auto ip=tpRange.first; ip != tpRange.second; ++ip)
+          // {
+          //   tParticle[tpCounter] = std::pair<float,float>(ip->second.key(),(*ip->second).pdgId());
+          //   tpCounter++;
+          // }
 
 
           pixInf[0] = (float) n;
@@ -485,8 +486,8 @@ std::unique_ptr<SeedingLayerSetsHits> SeedingLayerSetsBuilder::hits(const edm::E
           }
 
           outHitFile << eveNumber << "\t" << runNumber << "\t" << lumNumber << "\t";
-          outHitFile << layer.subdet << "\t" << float(layer.side) << "\t" << float(layer.idLayer);
-
+          outHitFile << layer.subdet << "\t" << float(layer.side) << "\t" << float(layer.idLayer) << "\t";
+          outHitFile << x << "\t" << y << "\t" << z << "\t" << phi << "\t" << ax1 << "\t" << ax2;
           for(auto& p: pixInf)
             outHitFile << "\t" << p;
           for(auto& p: pixelADC_)
