@@ -12,7 +12,6 @@
 #include "TrackingTools/TransientTrackingRecHit/interface/TransientTrackingRecHit.h"
 #include "RecoTracker/TransientTrackingRecHit/interface/TkTransientTrackingRecHitBuilder.h"
 
-#include "SimTracker/TrackerHitAssociation/interface/ClusterTPAssociation.h"
 
 #include "TrackingTools/DetLayers/interface/BarrelDetLayer.h"
 #include "TrackingTools/DetLayers/interface/ForwardDetLayer.h"
@@ -188,10 +187,13 @@ SeedingLayerSetsBuilder::SeedingLayerSetsBuilder(const edm::ParameterSet & cfg, 
   SeedingLayerSetsBuilder(cfg, iC)
 {
   fastSimrecHitsToken_ = iC.consumes<FastTrackerRecHitCollection>(fastsimHitTag);
+  tpMap_ = iC.consumes<ClusterTPAssociation>(iC.getParameter<edm::InputTag>("tpMap"));
 }
 SeedingLayerSetsBuilder::SeedingLayerSetsBuilder(const edm::ParameterSet & cfg, edm::ConsumesCollector&& iC):
   SeedingLayerSetsBuilder(cfg, iC)
-{}
+{
+  tpMap_ = iC.consumes<ClusterTPAssociation>(iC.getParameter<edm::InputTag>("tpMap"));
+}
 SeedingLayerSetsBuilder::SeedingLayerSetsBuilder(const edm::ParameterSet & cfg, edm::ConsumesCollector& iC)
 {
   std::vector<std::string> namesPset = cfg.getParameter<std::vector<std::string> >("layerList");
@@ -236,8 +238,6 @@ SeedingLayerSetsBuilder::SeedingLayerSetsBuilder(const edm::ParameterSet & cfg, 
   }
   theLayerDets.resize(theLayers.size());
   theTTRHBuilders.resize(theLayers.size());
-
-  tpMap_ = cfg.getParameter<edm::InputTag>("tpMap");
 
 
   // debug printout
@@ -387,7 +387,7 @@ std::unique_ptr<SeedingLayerSetsHits> SeedingLayerSetsBuilder::hits(const edm::E
   int lumNumber = ev.id().luminosityBlock();
 
   edm::Handle<ClusterTPAssociation> tpClust;
-  iEvent.getByToken(tpMap_,tpClust);
+  ev.getByToken(tpMap_,tpClust);
 
   for(auto& layer: theLayers) {
 
@@ -401,8 +401,8 @@ std::unique_ptr<SeedingLayerSetsHits> SeedingLayerSetsBuilder::hits(const edm::E
     std::cout << "The hits size: " << theHits.size() << std::endl;
 
     const SiPixelRecHit*   theHitPix = dynamic_cast<const SiPixelRecHit* >(&(*theHits[0]));
-    const SiStripRecHit1D* theHitsStrip = dynamic_cast<const SiStripRecHit1D* >(&(*theHits[0]));
-    const SiStripRecHit2D* theHitsStrip = dynamic_cast<const SiStripRecHit2D* >(&(*theHits[0]));
+    const SiStripRecHit1D* theHitsStrip1D = dynamic_cast<const SiStripRecHit1D* >(&(*theHits[0]));
+    const SiStripRecHit2D* theHitsStrip2D = dynamic_cast<const SiStripRecHit2D* >(&(*theHits[0]));
 
     std::array<float,20> pixelADC_,pixelADCx_,pixelADCy_;
 
@@ -410,21 +410,21 @@ std::unique_ptr<SeedingLayerSetsHits> SeedingLayerSetsBuilder::hits(const edm::E
     for(auto& hit: theHits)
     {
        n++;
-       TrackerSingleRecHit* hit = dynamic_cast<TrackerSingleRecHit* >((*recHit));
+       TrackerSingleRecHit* h = dynamic_cast<TrackerSingleRecHit* >((*hit));
 
-       if(!hit) continue;
+       if(!h) continue;
 
-       const GeomDet* gDet = (hit)->det();
-       float x = (hit)->globalState().position.x();
-       float y = (hit)->globalState().position.y();
-       float z = (hit)->globalState().position.z();
-       float phi = (hit)->globalState().position.phi;
-       float r = (hit)->globalState().position.r;
+       const GeomDet* gDet = (h)->det();
+       float x = (h)->globalState().position.x();
+       float y = (h)->globalState().position.y();
+       float z = (h)->globalState().position.z();
+       float phi = (h)->globalState().position.phi;
+       float r = (h)->globalState().position.r;
 
-       ax1 = gDet->surface().toGlobal(Local3DPoint(0.,0.,0.)).perp();
-       ax2 = gDet->surface().toGlobal(Local3DPoint(0.,0.,1.)).perp();
+       float ax1 = gDet->surface().toGlobal(Local3DPoint(0.,0.,0.)).perp();
+       float ax2 = gDet->surface().toGlobal(Local3DPoint(0.,0.,1.)).perp();
 
-       SiPixelRecHit *pixHit = dynamic_cast<SiPixelRecHit*>(hit);
+       SiPixelRecHit *pixHit = dynamic_cast<SiPixelRecHit*>(h);
 
        if(pixHit)
        {
@@ -433,7 +433,7 @@ std::unique_ptr<SeedingLayerSetsHits> SeedingLayerSetsBuilder::hits(const edm::E
           auto clust = pixHit->cluster();
 
           //Tp Matching
-          auto tpRange = tpClust->equal_range(hits[0]->firstClusterRef());
+          auto tpRange = tpClust->equal_range(pixHit->firstClusterRef());
 
           // std::cout << "Doublet no. "  << i << " hit no. " << lIt->doublets().innerHitId(i) << std::endl;
 
@@ -446,7 +446,8 @@ std::unique_ptr<SeedingLayerSetsHits> SeedingLayerSetsBuilder::hits(const edm::E
           int tpCounter = 0;
           for(auto ip=tpRange.first; ip != tpRange.second; ++ip)
           {
-            tParticle[tpCounter] = {ip->second.key(),(*ip->second).pdgId()};
+            tParticle[tpCounter] = std::pair<float,float>(ip->second.key(),(*ip->second).pdgId());
+            tpCounter++;
           }
 
 

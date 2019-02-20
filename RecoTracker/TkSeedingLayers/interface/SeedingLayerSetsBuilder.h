@@ -4,6 +4,8 @@
 #include "TrackingTools/TransientTrackingRecHit/interface/SeedingLayerSetsHits.h"
 #include "TrackingTools/TransientTrackingRecHit/interface/SeedingLayerSetsLooper.h"
 
+#include "SimTracker/TrackerHitAssociation/interface/ClusterTPAssociation.h"
+
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
 #include "FWCore/Utilities/interface/InputTag.h"
@@ -42,6 +44,7 @@ public:
 
   const std::vector<SeedingLayerSetsHits::LayerSetIndex>& layerSetIndices() const { return theLayerSetIndices; }
 
+  std::unique_ptr<SeedingLayerSetsHits> SeedingLayerSetsBuilder::hits(const edm::Event& ev, const edm::EventSetup& es);
   //new function for FastSim only
   std::unique_ptr<SeedingLayerSetsHits> makeSeedingLayerSetsHitsforFastSim(const edm::Event& ev, const edm::EventSetup& es);
 
