@@ -12,6 +12,8 @@
 #include "TrackingTools/TransientTrackingRecHit/interface/TransientTrackingRecHit.h"
 #include "RecoTracker/TransientTrackingRecHit/interface/TkTransientTrackingRecHitBuilder.h"
 
+#include "SimTracker/TrackerHitAssociation/interface/ClusterTPAssociation.h"
+
 #include "TrackingTools/DetLayers/interface/BarrelDetLayer.h"
 #include "TrackingTools/DetLayers/interface/ForwardDetLayer.h"
 
@@ -176,7 +178,7 @@ std::string SeedingLayerSetsBuilder::LayerSpec::print(const std::vector<std::str
   if((ext = dynamic_cast<HitExtractorSTRP *>(extractor.get())) &&
      ext->useRingSelector()) {
     auto minMaxRing = ext->getMinMaxRing();
-    str <<"true,"<<" Rings: ("<< std::get<0>(minMaxRing) <<","<< std::get<1>(minMaxRing) <<")"; 
+    str <<"true,"<<" Rings: ("<< std::get<0>(minMaxRing) <<","<< std::get<1>(minMaxRing) <<")";
   } else  str<<"false";
 
   return str.str();
@@ -185,7 +187,7 @@ std::string SeedingLayerSetsBuilder::LayerSpec::print(const std::vector<std::str
 SeedingLayerSetsBuilder::SeedingLayerSetsBuilder(const edm::ParameterSet & cfg, edm::ConsumesCollector& iC, const edm::InputTag& fastsimHitTag):
   SeedingLayerSetsBuilder(cfg, iC)
 {
-  fastSimrecHitsToken_ = iC.consumes<FastTrackerRecHitCollection>(fastsimHitTag); 
+  fastSimrecHitsToken_ = iC.consumes<FastTrackerRecHitCollection>(fastsimHitTag);
 }
 SeedingLayerSetsBuilder::SeedingLayerSetsBuilder(const edm::ParameterSet & cfg, edm::ConsumesCollector&& iC):
   SeedingLayerSetsBuilder(cfg, iC)
@@ -201,7 +203,7 @@ SeedingLayerSetsBuilder::SeedingLayerSetsBuilder(const edm::ParameterSet & cfg, 
   // The following should not be set to cout
 //  for (IT it = layerNamesInSets.begin(); it != layerNamesInSets.end(); it++) {
 //    str << "SET: ";
-//    for (IS is = it->begin(); is != it->end(); is++)  str << *is <<" ";  
+//    for (IS is = it->begin(); is != it->end(); is++)  str << *is <<" ";
 //    str << std::endl;
 //  }
 //  std::cout << str.str() << std::endl;
@@ -264,18 +266,18 @@ void SeedingLayerSetsBuilder::fillDescriptions(edm::ParameterSetDescription& des
 edm::ParameterSet SeedingLayerSetsBuilder::layerConfig(const std::string & nameLayer,const edm::ParameterSet& cfg) const
 {
   edm::ParameterSet result;
-   
+
   for (string::size_type iEnd=nameLayer.size(); iEnd > 0; --iEnd) {
     string name = nameLayer.substr(0,iEnd);
     if (cfg.exists(name)) return cfg.getParameter<edm::ParameterSet>(name);
-  } 
+  }
   edm::LogError("SeedingLayerSetsBuilder") <<"configuration for layer: "<<nameLayer<<" not found, job will probably crash!";
   return result;
 }
 
 vector<vector<string> > SeedingLayerSetsBuilder::layerNamesInSets( const vector<string> & namesPSet)
 {
-  std::vector<std::vector<std::string> > result; 
+  std::vector<std::vector<std::string> > result;
   for (std::vector<std::string>::const_iterator is=namesPSet.begin(); is < namesPSet.end(); ++is) {
     vector<std::string> layersInSet;
     string line = *is;
@@ -284,7 +286,7 @@ vector<vector<string> > SeedingLayerSetsBuilder::layerNamesInSets( const vector<
       pos=line.find("+");
       string layer = line.substr(0,pos);
       layersInSet.push_back(layer);
-      line=line.substr(pos+1,string::npos); 
+      line=line.substr(pos+1,string::npos);
     }
     result.push_back(layersInSet);
   }
@@ -371,39 +373,199 @@ std::vector<SeedingLayerSetsBuilder::SeedingLayerId> SeedingLayerSetsBuilder::la
 
 std::unique_ptr<SeedingLayerSetsHits> SeedingLayerSetsBuilder::hits(const edm::Event& ev, const edm::EventSetup& es) {
   updateEventSetup(es);
-  
+
   auto ret = std::make_unique<SeedingLayerSetsHits>(theNumberOfLayersInSet,
                                                     &theLayerSetIndices,
                                                     &theLayerNames,
                                                     &theLayerDets);
-  
+
   int eveNumber = ev.id().event();
   int runNumber = ev.id().run();
   int lumNumber = ev.id().luminosityBlock();
- 
+
+  edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
+  tpMap_ = consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap"));
+
+  edm::Handle<ClusterTPAssociation> tpClust;
+  iEvent.getByToken(tpMap_,tpClust);
+
   for(auto& layer: theLayers) {
-    
+
     std::cout << "Layer " << layer.subdet << " - " << int(layer.side) << " - " << layer.idLayer << std::endl;
     std::string fileName = "hits/" + std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
     fileName += "_" + std::to_string(layer.subdet) + "_" + std::to_string(int(layer.side)) + "_" + std::to_string(layer.idLayer) + "_hits.txt";
     std::ofstream outHitFile(fileName, std::ofstream::app);
-    
-    outHitFile << eveNumber << "\t" << runNumber << "\t" << lumNumber << "\t" << std::endl;
+
+
     auto theHits = layer.extractor->hits((const TkTransientTrackingRecHitBuilder &)(*theTTRHBuilders[layer.nameIndex]), ev, es);
     std::cout << "The hits size: " << theHits.size() << std::endl;
-    
+
+    const SiPixelRecHit*   theHitPix = dynamic_cast<const SiPixelRecHit* >(&(*theHits[0]));
+    const SiStripRecHit1D* theHitsStrip = dynamic_cast<const SiStripRecHit1D* >(&(*theHits[0]));
+    const SiStripRecHit2D* theHitsStrip = dynamic_cast<const SiStripRecHit2D* >(&(*theHits[0]));
+
+    std::array<float,20> pixelADC_,pixelADCx_,pixelADCy_;
+
+    int n = 0;
     for(auto& hit: theHits)
     {
-	std::cout << (*hit).globalState().position.x() << std::endl;
-	const SiStripRecHit2D* theHitsStrip = dynamic_cast<const SiStripRecHit2D* >(&(*theHits[0])); 
-	if(theHitsStrip)
-    	std::cout << theHitsStrip->canImproveWithTrack() << std::endl;
+       n++;
+       TrackerSingleRecHit* hit = dynamic_cast<TrackerSingleRecHit* >((*recHit));
+
+       if(!hit) continue;
+
+       const GeomDet* gDet = (hit)->det();
+       float x = (hit)->globalState().position.x();
+       float y = (hit)->globalState().position.y();
+       float z = (hit)->globalState().position.z();
+       float phi = (hit)->globalState().position.phi;
+       float r = (hit)->globalState().position.r;
+
+       ax1 = gDet->surface().toGlobal(Local3DPoint(0.,0.,0.)).perp();
+       ax2 = gDet->surface().toGlobal(Local3DPoint(0.,0.,1.)).perp();
+
+       SiPixelRecHit *pixHit = dynamic_cast<SiPixelRecHit*>(hit);
+
+       if(pixHit)
+       {
+
+          std::array<float,13> pixInf;
+          auto clust = pixHit->cluster();
+
+          //Tp Matching
+          auto tpRange = tpClust->equal_range(hits[0]->firstClusterRef());
+
+          // std::cout << "Doublet no. "  << i << " hit no. " << lIt->doublets().innerHitId(i) << std::endl;
+
+          std::array< std::pair<int,int>,3> tParticle;
+          tParticle[0] = {-1.0,-1.0}; tParticle[1] = {-1.0,-1.0}; tParticle[2] = {-1.0,-1.0};
+
+          int numTP = tpRange.second - tpRange.first;
+          numTP = -std::max(numTP,3);
+
+          int tpCounter = 0;
+          for(auto ip=tpRange.first; ip != tpRange.second; ++ip)
+          {
+            tParticle[tpCounter] = {ip->second.key(),(*ip->second).pdgId()};
+          }
+
+
+          pixInf[0] = (float) n;
+
+
+          pixInf[1] = (float)clust->x();
+          pixInf[2] = (float)clust->y();
+          pixInf[3] = (float)clust->size();
+          pixInf[4] = (float)clust->sizeX();
+          pixInf[5] = (float)clust->sizeY();
+          pixInf[6] = (float)clust->charge();
+
+          pixInf[7] = (float)clust->sizeX() > 10.;
+          pixInf[8] = (float)clust->sizeY() > 10.;
+          pixInf[9] = (float)clust->sizeY() / (float)clust->sizeX();
+
+          pixInf[10]  = (float)pixHit->spansTwoROCs();
+          pixInf[11] = (float)pixHit->hasBadPixels();
+          pixInf[12] = (float)pixHit->isOnEdge();
+
+          int minSize = -std::max(-clust->size(),-20);
+          for (int k = 0; k<20; ++k)
+          {
+            pixelADC_[k]  = -1.0;
+            pixelADCx_[k] = -1.0;
+            pixelADCy_[k] = -1.0;
+          }
+          for (int k = 0; k < minSize; ++k)
+          {
+            pixelADC_[k]  = (float)clust->pixel(k).adc;
+            pixelADCx_[k] = (float)clust->pixel(k).x;
+            pixelADCy_[k] = (float)clust->pixel(k).y;
+
+          }
+
+          outHitFile << eveNumber << "\t" << runNumber << "\t" << lumNumber << "\t";
+          outHitFile << layer.subdet << "\t" << float(layer.side) << "\t" << float(layer.idLayer);
+
+          for(auto& p: pixInf)
+            outHitFile << "\t" << p;
+          for(auto& p: pixelADC_)
+          {
+            std::cout << p;
+            outHitFile << "\t" << p;
+          }
+          std::cout<<std::endl;
+
+          for(auto& p: pixelADCx_)
+            outHitFile << "\t" << p;
+          for(auto& p: pixelADCy_)
+            outHitFile << "\t" << p;
+
+
+          //std::cout << " Si Pixel Rec Hit" << std::endl;
+
+          n++;
+          continue;
+        }
+
+        // const SiStripRecHit2D* siStripHit2D = dynamic_cast<SiStripRecHit2D const *>(hit);
+        // if(siStripHit2D)
+        // {
+        //    //dimension first ampsize charge merged splitClusterError id
+        //    std::array<float,7> stripInf;
+        //
+        //    auto clust = siStripHit2D->cluster();
+        //
+        //    stripInf[0] = float(n);
+        //    stripInf[1] = 2.0;
+        //
+        //    stripInf[2] = clust->charge();
+        //    stripInf[3] = clust->barycenter();
+        //    stripInf[4] = clust->firstStrip();
+        //    stripInf[5] = clust->isMerged();
+        //    stripInf[6] = clust->amplitudes().size();
+        //    stripInfos_.push_back(stripInf);
+        //
+        //    int minSize = -std::max(-clust->amplitudes().size(),-20);
+        //
+        //    for (int k = 0; k<20; ++k)
+        //      stripADC_[k]  = -1.0;
+        //    for (int k = 0; k < minSize; ++k)
+        //      stripADC_[k]  = (float)clust->amplitudes()[k];
+        //    continue;
+        // }
+        // const SiStripRecHit1D* siStripHit1D = dynamic_cast<SiStripRecHit1D const *>(hit);
+        // if(siStripHit1D)
+        //  {
+        //    //dimension first ampsize charge merged splitClusterError id
+        //    std::array<float,7> stripInf;
+        //
+        //    auto clust = siStripHit1D->cluster();
+        //
+        //    stripInf[0] = float(n);
+        //    stripInf[1] = 1.0;
+        //
+        //    stripInf[2] = clust->charge();
+        //    stripInf[3] = clust->barycenter();
+        //    stripInf[4] = clust->firstStrip();
+        //    stripInf[5] = clust->isMerged();
+        //    stripInf[6] = clust->amplitudes().size();
+        //    stripInfos_.push_back(stripInf);
+        //
+        //    int minSize = -std::max(-clust->amplitudes().size(),-20);
+        //
+        //    for (int k = 0; k<20; ++k)
+        //      stripADC_[k]  = -1.0;
+        //    for (int k = 0; k < minSize; ++k)
+        //      stripADC_[k]  = (float)clust->amplitudes()[k];
+        //    continue;
+        //  }
+
     }
 
     ret->addHits(layer.nameIndex, layer.extractor->hits((const TkTransientTrackingRecHitBuilder &)(*theTTRHBuilders[layer.nameIndex]), ev, es));
   }
   ret->shrink_to_fit();
-  
+
   return ret;
 }
 //new function for FastSim only
@@ -441,7 +603,7 @@ std::unique_ptr<SeedingLayerSetsHits> SeedingLayerSetsBuilder::makeSeedingLayerS
 	else
 	  side = TrackerDetSide::PosEndcap;
       }
-      
+
       if(layer.subdet == subdet && layer.side == side && layer.idLayer == idLayer){
 	BaseTrackerRecHit const & b(rh);
 	auto ptrHit = (BaseTrackerRecHit *)(b.clone());
