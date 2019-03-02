@@ -13,6 +13,10 @@
 #include "FWCore/Utilities/interface/thread_safety_macros.h"
 #include "DataFormats/PatCandidates/interface/CovarianceParameterization.h"
 
+#include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit1D.h"
+#include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit2D.h"
+#include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHit.h"
+
 /* #include "DataFormats/Math/interface/PtEtaPhiMass.h" */
 
 //forward declare testing structure
@@ -50,12 +54,12 @@ namespace pat {
       vertex_(new Point(0,0,0)), dphi_(0), deta_(0), dtrkpt_(0),track_(nullptr), pdgId_(0),
       qualityFlags_(0), pvRefKey_(reco::VertexRef::invalidKey()),
       m_(nullptr), packedHits_(0), packedLayers_(0), normalizedChi2_(0),covarianceVersion_(0),covarianceSchema_(0),firstHit_(0),
-      hitCoords_(std::vector<std::array<6>>()),
-      pixelInfos_(std::vector < std::array <float,15> >()),
+      hitCoords_(std::vector<std::array<float,8>>()),
+      pixelInfos_(std::vector < std::array <float,13> >()),
       pixelADC_(std::vector < std::array <float,20> >()),
       pixelADCx_(std::vector < std::array <float,20> >()),
       pixelADCy_(std::vector < std::array <float,20> >()),
-      stripInfos_(std::vector < std::array <float,6> >()),
+      stripInfos_(std::vector < std::array <float,7> >()),
       stripADC_(std::vector < std::array <float,20> >())
        { }
 
@@ -70,12 +74,12 @@ namespace pat {
       track_(nullptr), pdgId_(c.pdgId()), qualityFlags_(0), pvRefProd_(pvRefProd),
       pvRefKey_(pvRefKey),m_(nullptr), packedHits_(0), packedLayers_(0),
       normalizedChi2_(0),covarianceVersion_(0), covarianceSchema_(0),firstHit_(0),
-      hitCoords_(std::vector<std::array<6>>()),
-      pixelInfos_(std::vector < std::array <float,15> >()),
+      hitCoords_(std::vector<std::array<float,8>>()),
+      pixelInfos_(std::vector < std::array <float,13> >()),
       pixelADC_(std::vector < std::array <float,20> >()),
       pixelADCx_(std::vector < std::array <float,20> >()),
       pixelADCy_(std::vector < std::array <float,20> >()),
-      stripInfos_(std::vector < std::array <float,6> >()),
+      stripInfos_(std::vector < std::array <float,7> >()),
       stripADC_(std::vector < std::array <float,20> >())
       {
       packBoth();
@@ -95,12 +99,12 @@ namespace pat {
       track_(nullptr), pdgId_(pdgId),
       qualityFlags_(0), pvRefProd_(pvRefProd), pvRefKey_(pvRefKey),
       m_(nullptr),packedHits_(0), packedLayers_(0),normalizedChi2_(0),covarianceVersion_(0),covarianceSchema_(0),firstHit_(0),
-      hitCoords_(std::vector<std::array<6>>()),
-      pixelInfos_(std::vector < std::array <float,15> >()),
+      hitCoords_(std::vector<std::array<float,8>>()),
+      pixelInfos_(std::vector < std::array <float,13> >()),
       pixelADC_(std::vector < std::array <float,20> >()),
       pixelADCx_(std::vector < std::array <float,20> >()),
       pixelADCy_(std::vector < std::array <float,20> >()),
-      stripInfos_(std::vector < std::array <float,6> >()),
+      stripInfos_(std::vector < std::array <float,7> >()),
       stripADC_(std::vector < std::array <float,20> >()) {
       packBoth();
     }
@@ -119,12 +123,12 @@ namespace pat {
       track_(nullptr), pdgId_(pdgId), qualityFlags_(0),
       pvRefProd_(pvRefProd), pvRefKey_(pvRefKey),
       m_(nullptr),packedHits_(0),packedLayers_(0),normalizedChi2_(0),covarianceVersion_(0),covarianceSchema_(0),firstHit_(0),
-      hitCoords_(std::vector<std::array<6>>()),
-      pixelInfos_(std::vector < std::array <float,15> >()),
+      hitCoords_(std::vector<std::array<float,8>>()),
+      pixelInfos_(std::vector < std::array <float,13> >()),
       pixelADC_(std::vector < std::array <float,20> >()),
       pixelADCx_(std::vector < std::array <float,20> >()),
       pixelADCy_(std::vector < std::array <float,20> >()),
-      stripInfos_(std::vector < std::array <float,6> >()),
+      stripInfos_(std::vector < std::array <float,7> >()),
       stripADC_(std::vector < std::array <float,20> >())
     {
       packBoth();
@@ -153,7 +157,7 @@ namespace pat {
       pvRefProd_(iOther.pvRefProd_),pvRefKey_(iOther.pvRefKey_),
       m_(iOther.m_? new reco::TrackBase::CovarianceMatrix(*iOther.m_) : nullptr),
       packedHits_(iOther.packedHits_),packedLayers_(iOther.packedLayers_),  normalizedChi2_(iOther.normalizedChi2_),
-      covarianceVersion_(iOther.covarianceVersion_), covarianceSchema_(iOther.covarianceSchema_), firstHit_(iOther.firstHit_)
+      covarianceVersion_(iOther.covarianceVersion_), covarianceSchema_(iOther.covarianceSchema_), firstHit_(iOther.firstHit_),
       hitCoords_(iOther.hitCoords_),
       pixelInfos_(iOther.pixelInfos_),
       pixelADC_(iOther.pixelADC_),
@@ -525,14 +529,13 @@ namespace pat {
             float x = (hit)->globalState().position.x();
             float y = (hit)->globalState().position.y();
             float z = (hit)->globalState().position.z();
-            float phi = (hit)->globalState().position.phi;
-            float r = (hit)->globalState().position.r;
+            float phi = (hit)->globalState().phi;
+            float r = (hit)->globalState().r;
 
-            ax1 = gDet->surface().toGlobal(Local3DPoint(0.,0.,0.)).perp();
-            ax2 = gDet->surface().toGlobal(Local3DPoint(0.,0.,1.)).perp();
+            float ax1 = gDet->surface().toGlobal(Local3DPoint(0.,0.,0.)).perp();
+            float ax2 = gDet->surface().toGlobal(Local3DPoint(0.,0.,1.)).perp();
 
-            hitCoords_.push_back(std::array<float,8> c{{float(n),x,y,z,phi,r,ax1,ax2}};);
-
+            hitCoords_.push_back(std::array<float,8> {{float(n),x,y,z,phi,r,ax1,ax2}});
 
 
             SiPixelRecHit *pixHit = dynamic_cast<SiPixelRecHit*>(hit);
@@ -561,21 +564,27 @@ namespace pat {
               pixInf[12] = (float)pixHit->isOnEdge();
 
               pixelInfos_.push_back(pixInf);
+	      
+ 	      std::array <float,20> pixADC, pixADCx, pixADCy;
 
-              int minSize = -std::max(-clust->size(),-20);
+              int minSize = -std::max(int(-clust->size()),-20);
               for (int k = 0; k<20; ++k)
               {
-                pixelADC_[k]  = -1.0;
-                pixelADCx_[k] = -1.0;
-                pixelADCy_[k] = -1.0;
+                pixADC[k]  = -1.0;
+                pixADCx[k] = -1.0;
+                pixADCy[k] = -1.0;
               }
               for (int k = 0; k < minSize; ++k)
               {
-                pixelADC_[k]  = (float)clust->pixel(k).adc;
-                pixelADCx_[k] = (float)clust->pixel(k).x;
-                pixelADCx_[k] = (float)clust->pixel(k).y;
+                pixADC[k]  = (float)clust->pixel(k).adc;
+                pixADCx[k] = (float)clust->pixel(k).x;
+                pixADCy[k] = (float)clust->pixel(k).y;
 
               }
+
+	      pixelADC_.push_back(pixADC);
+	      pixelADCx_.push_back(pixADCx);
+	      pixelADCy_.push_back(pixADCy);
 
               std::cout << " Si Pixel Rec Hit" << std::endl;
 
@@ -601,13 +610,17 @@ namespace pat {
               stripInf[6] = clust->amplitudes().size();
               stripInfos_.push_back(stripInf);
 
-              int minSize = -std::max(-clust->amplitudes().size(),-20);
-
+              int minSize = -std::max(-int(clust->amplitudes().size()),-20);
+       
+              std::array <float,20> stripADC;
+ 
               for (int k = 0; k<20; ++k)
-                stripADC_[k]  = -1.0;
+                stripADC[k]  = -1.0;
               for (int k = 0; k < minSize; ++k)
-                stripADC_[k]  = (float)clust->amplitudes()[k];
-              continue;
+                stripADC[k]  = (float)clust->amplitudes()[k];
+       
+ 	      stripADC_.push_back(stripADC);
+       	      continue;
             }
             const SiStripRecHit1D* siStripHit1D = dynamic_cast<SiStripRecHit1D const *>(hit);
             if(siStripHit1D)
@@ -627,16 +640,20 @@ namespace pat {
               stripInf[6] = clust->amplitudes().size();
               stripInfos_.push_back(stripInf);
 
-              int minSize = -std::max(-clust->amplitudes().size(),-20);
+              int minSize = -std::max(int(-clust->amplitudes().size()),-20);
 
+	      std::array <float,20> stripADC;	
+ 
               for (int k = 0; k<20; ++k)
-                stripADC_[k]  = -1.0;
+                stripADC[k]  = -1.0;
               for (int k = 0; k < minSize; ++k)
-                stripADC_[k]  = (float)clust->amplitudes()[k];
-              continue;
+                stripADC[k]  = (float)clust->amplitudes()[k];
+ 
+  	      stripADC_.push_back(stripADC);
+	      continue;
             }
     }
-std::cout << pixelhits_.size() << " - " << striphit2d_.size() << " - " << striphit1d_.size() << std::endl;
+
 }
 
     virtual void setTrackProperties( const reco::Track & tk, const reco::Track::CovarianceMatrix & covariance,int quality,int covarianceVersion) {
@@ -991,7 +1008,7 @@ std::cout << pixelhits_.size() << " - " << striphit2d_.size() << " - " << striph
     uint16_t firstHit_;
 
 
-    std::vector < std::array <float,7> >  hitCoords_;
+    std::vector < std::array <float,8> >  hitCoords_;
     //n x y z r phi ax1 ax2
     std::vector < std::array <float,13> > pixelInfos_;
     //c_x c_y size size_x size_y charge ovfx ovfy ratio isBig isBad isOnEdge id
@@ -1009,3 +1026,5 @@ std::cout << pixelhits_.size() << " - " << striphit2d_.size() << " - " << striph
 }
 
 #endif
+
+
