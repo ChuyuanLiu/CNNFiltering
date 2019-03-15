@@ -29,7 +29,7 @@ import FWCore.ParameterSet.Config as cms
 pixelPairStepCNN = cms.EDAnalyzer('CNNAnalyze',
         processName = cms.string( "pixelTracksHitDoublets"),
         doublets    = cms.InputTag("pixelTracksHitDoublets" ),
-        tpMap       = cms.InputTag("tpClusterProducer" ),
+        tpMap       = cms.InputTag("tpClusterProducerPixelTrackingOnly" ),
         beamSpot    = cms.InputTag("offlineBeamSpot"),
         infoPileUp  = cms.InputTag("addPileupInfo")
 )
