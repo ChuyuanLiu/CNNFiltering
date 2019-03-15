@@ -110,11 +110,11 @@ TrackProducerPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     int pdgId = -9999, momPdgId = -9999;
     if(theGenMap->contains(refTrack.id()))
     {
-      auto genParticle = ((*theGenMap)[edm::Ref<edm::View<pat::PackedCandidate>>(trak, i)]);
-      pdgId = genParticle.pdgId();
+      auto genParticle = dynamic_cast <const reco::GenParticle *>(((*theGenMap)[edm::Ref<edm::View<pat::PackedCandidate>>(trak, i)]));
+      pdgId = genParticle->pdgId();
       if(genParticle->numberOfMothers()>0)
         if(genParticle->motherRef().isNonnull())
-            momPdgId = genParticle->motherRef().pdgId();
+            momPdgId = genParticle->motherRef()->pdgId();
     }
 
     int noHits = hitCoords_.size();
