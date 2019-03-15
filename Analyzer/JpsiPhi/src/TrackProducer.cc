@@ -84,10 +84,13 @@ TrackProducerPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<edm::Association<reco::GenParticleCollection>> theGenMap;
   iEvent.getByToken(TrackGenMap_,theGenMap);
 
+  int eveNumber = iEvent.id().event();
+  int runNumber = iEvent.id().run();
+  int lumNumber = iEvent.id().luminosityBlock();
 
-          std::string fileName = "doublets/" + std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
-          fileName += "_" + processName_ + "_dnn_doublets.txt";
-          std::ofstream outTrack(fileName, std::ofstream::app);
+    std::string fileName = "tracks/" + std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
+    fileName += "_PF_DNNTracks.txt";
+    std::ofstream outTrack(fileName, std::ofstream::app);
           ///// DATA STRUCTURE
           // std::vector < std::array <float,8> >  hitCoords_;
           // //n x y z r phi ax1 ax2
@@ -120,14 +123,14 @@ TrackProducerPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     int noHits = hitCoords_.size();
     int maxHits = 25;
     int minHits = -std::max(maxHits,noHits);
-    int featureSize = pixelInfos_[0].size() + pixelADC_[0].size() + pixelADCx_[0].size() + pixelADCy_[0].size() + stripInfos_[0].size() + stripADC_[0].size();
+    int featureSize = t.pixelInfos_[0].size() + t.pixelADC_[0].size() + t.pixelADCx_[0].size() + t.pixelADCy_[0].size() + t.stripInfos_[0].size() + t.stripADC_[0].size();
 
-    assert(hitCoords_.size() == pixelInfos_.size());
-    assert(hitCoords_.size() == pixelADC_.size());
-    assert(hitCoords_.size() == pixelADCx_.size());
-    assert(hitCoords_.size() == pixelADCy_.size());
-    assert(hitCoords_.size() == stripInfos_.size());
-    assert(hitCoords_.size() == stripADC_.size());
+    assert(hitCoords_.size() == t.pixelInfos_.size());
+    assert(hitCoords_.size() == t.pixelADC_.size());
+    assert(hitCoords_.size() == t.pixelADCx_.size());
+    assert(hitCoords_.size() == t.pixelADCy_.size());
+    assert(hitCoords_.size() == t.stripInfos_.size());
+    assert(hitCoords_.size() == t.stripADC_.size());
 
     for(int j = 0; j<minHits;j++)
     {
@@ -157,7 +160,7 @@ TrackProducerPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
 
     for(int j = minHits; j<maxHits;j++)
-      for (size_t i = 0; i < featureSize; i++)
+      for (int i = 0; i < featureSize; i++)
         outTrack << -9999.0 << "\t";
 
     outTrack << 5421369 << std::endl;
