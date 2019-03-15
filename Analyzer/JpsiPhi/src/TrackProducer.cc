@@ -85,58 +85,19 @@ TrackProducerPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByToken(TrackGenMap_,theGenMap);
 
 
-  if(IsMC_)
-            {
-              float hasHighGen = -1.0,hasLowGen = -1.0;
-
-              if(theGenMap.isValid())
-              {
-                //posTrack
-                auto refPosTrack = trak->refAt(i);
-                auto refNegTrack = trak->refAt(j);
-
-                if(theGenMap->contains(refPosTrack.id()))
-                {
-                 if(((*theGenMap)[edm::Ref<edm::View<pat::PackedCandidate>>(trak, i)]).isNonnull())
-                 {
-                   auto genP = ((*theGenMap)[edm::Ref<edm::View<pat::PackedCandidate>>(trak, i)]);
-                   if(posTrack.pt()>=negTrack.pt())
-                   {
-                     DiMuonTTCand.addDaughter(*genP,"highKaonGen");
-                     hasHighGen = 1.0;
-                   }
-                   else
-                   {
-                     DiMuonTTCand.addDaughter(*genP,"lowKaonGen");
-                     hasLowGen = 1.0;
-                   }
-                  }
-                }
-                if(theGenMap->contains(refNegTrack.id()))
-                {
-                  if(((*theGenMap)[edm::Ref<edm::View<pat::PackedCandidate>>(trak, j)]).isNonnull())
-                  {
-                    auto genP = ((*theGenMap)[edm::Ref<edm::View<pat::PackedCandidate>>(trak, j)]);
-                    if(posTrack.pt()<negTrack.pt())
-                    {
-                      DiMuonTTCand.addDaughter(*genP,"highKaonGen");
-                      hasHighGen = 1.0;
-                    }
-                    else
-                    {
-                      DiMuonTTCand.addDaughter(*genP,"lowKaonGen");
-                      hasLowGen = 1.0;
-                    }
-                  }
-                }
-              }
-              // if(hasHighGen * hasLowGen >= 0.0)
-              //   std::cout << "Has some gen ref " << std::endl;
-              DiMuonTTCand.addUserFloat("hasHighGen",hasHighGen);
-              DiMuonTTCand.addUserFloat("hasLowGen",hasLowGen);
-
-            }
-
+          std::string fileName = "doublets/" + std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
+          fileName += "_" + processName_ + "_dnn_doublets.txt";
+          std::ofstream outTrack(fileName, std::ofstream::app);
+          ///// DATA STRUCTURE
+          // std::vector < std::array <float,8> >  hitCoords_;
+          // //n x y z r phi ax1 ax2
+          // std::vector < std::array <float,13> > pixelInfos_;
+          // //c_x c_y size size_x size_y charge ovfx ovfy ratio isBig isBad isOnEdge id
+          // std::vector < std::array <float,20> > pixelADC_, pixelADCx_, pixelADCy_;
+          //
+          // std::vector < std::array <float,7> > stripInfos_;
+          // //dimension first ampsize charge merged splitClusterError id
+          // std::vector < std::array <float,20> > stripADC_;
   std::cout << "ptr" << std::endl;
   edm::Handle<edm::View<pat::PackedCandidate> > trak;
   iEvent.getByToken(TrakCollection_,trak);
@@ -155,13 +116,52 @@ TrackProducerPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         if(genParticle->motherRef().isNonnull())
             momPdgId = genParticle->motherRef().pdgId();
     }
-    for(size_t j = 0; j<t.hitCoords_.size();j++)
+
+    int noHits = hitCoords_.size();
+    int maxHits = 25;
+    int minHits = -std::max(maxHits,noHits);
+    int featureSize = pixelInfos_[0].size() + pixelADC_[0].size() + pixelADCx_[0].size() + pixelADCy_[0].size() + stripInfos_[0].size() + stripADC_[0].size();
+
+    assert(hitCoords_.size() == pixelInfos_.size());
+    assert(hitCoords_.size() == pixelADC_.size());
+    assert(hitCoords_.size() == pixelADCx_.size());
+    assert(hitCoords_.size() == pixelADCy_.size());
+    assert(hitCoords_.size() == stripInfos_.size());
+    assert(hitCoords_.size() == stripADC_.size());
+
+    for(int j = 0; j<minHits;j++)
     {
+       auto coords  = t.hitCoords_[j];
+       auto pixinf  = t.pixelInfos_[j];
+       auto pixadc  = t.pixelADC_[j];
+       auto pixadx  = t.pixelADCx_[j];
+       auto pixady  = t.pixelADCy_[j];
+       auto strinf  = t.stripInfos_[j];
+       auto stradc  = t.stripADC_[j];
 
-       auto h = t.hitCoords_[j];
+       for (auto const &x : coords)
+        outTrack << x << "\t";
+       for (auto const &x : pixinf)
+        outTrack << x << "\t";
+       for (auto const &x : pixadc)
+        outTrack << x << "\t";
+       for (auto const &x : pixadx)
+         outTrack << x << "\t";
+       for (auto const &x : pixady)
+        outTrack << x << "\t";
+       for (auto const &x : strinf)
+        outTrack << x << "\t";
+       for (auto const &x : stradc)
+         outTrack << x << "\t";
 
-       std::cout << h[0] << " - " << h[1] << " - " << h[2] << " - " << pdgId << " - " << momPdgId << std::endl;
     }
+
+    for(int j = minHits; j<maxHits;j++)
+      for (size_t i = 0; i < featureSize; i++)
+        outTrack << -9999.0 << "\t";
+
+    outTrack << 5421369 << std::endl;
+
   }
 
 /*
