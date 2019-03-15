@@ -38,6 +38,7 @@
 #include "DataFormats/TrackerRecHit2D/interface/BaseTrackerRecHit.h"
 
 TrackProducerPAT::TrackProducerPAT(const edm::ParameterSet& iConfig):
+TrackGenMap_(consumes<edm::Association<reco::GenParticleCollection>>(iConfig.getParameter<edm::InputTag>("TrackMatcher"))),
 /*muons_(consumes<edm::View<pat::Muon>>(iConfig.getParameter<edm::InputTag>("muons"))),
 muonPtCut_(iConfig.existsAs<double>("MuonPtCut") ? iConfig.getParameter<double>("MuonPtCut") : 0.7),
 thebeamspot_(consumes<reco::BeamSpot>(iConfig.getParameter<edm::InputTag>("beamSpotTag"))),
@@ -76,10 +77,66 @@ TrackProducerPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   using namespace std;
   using namespace reco;
   typedef Candidate::LorentzVector LorentzVector;
-  std::cout<<"TwoMuMu - "<<std::endl;
+  std::cout<<"Track CNN Analyzer - "<<std::endl;
 
   std::unique_ptr<pat::CompositeCandidateCollection> oniaOutput(new pat::CompositeCandidateCollection);
-  
+
+  edm::Handle<edm::Association<reco::GenParticleCollection>> theGenMap;
+  iEvent.getByToken(TrackGenMap_,theGenMap);
+
+
+  if(IsMC_)
+            {
+              float hasHighGen = -1.0,hasLowGen = -1.0;
+
+              if(theGenMap.isValid())
+              {
+                //posTrack
+                auto refPosTrack = trak->refAt(i);
+                auto refNegTrack = trak->refAt(j);
+
+                if(theGenMap->contains(refPosTrack.id()))
+                {
+                 if(((*theGenMap)[edm::Ref<edm::View<pat::PackedCandidate>>(trak, i)]).isNonnull())
+                 {
+                   auto genP = ((*theGenMap)[edm::Ref<edm::View<pat::PackedCandidate>>(trak, i)]);
+                   if(posTrack.pt()>=negTrack.pt())
+                   {
+                     DiMuonTTCand.addDaughter(*genP,"highKaonGen");
+                     hasHighGen = 1.0;
+                   }
+                   else
+                   {
+                     DiMuonTTCand.addDaughter(*genP,"lowKaonGen");
+                     hasLowGen = 1.0;
+                   }
+                  }
+                }
+                if(theGenMap->contains(refNegTrack.id()))
+                {
+                  if(((*theGenMap)[edm::Ref<edm::View<pat::PackedCandidate>>(trak, j)]).isNonnull())
+                  {
+                    auto genP = ((*theGenMap)[edm::Ref<edm::View<pat::PackedCandidate>>(trak, j)]);
+                    if(posTrack.pt()<negTrack.pt())
+                    {
+                      DiMuonTTCand.addDaughter(*genP,"highKaonGen");
+                      hasHighGen = 1.0;
+                    }
+                    else
+                    {
+                      DiMuonTTCand.addDaughter(*genP,"lowKaonGen");
+                      hasLowGen = 1.0;
+                    }
+                  }
+                }
+              }
+              // if(hasHighGen * hasLowGen >= 0.0)
+              //   std::cout << "Has some gen ref " << std::endl;
+              DiMuonTTCand.addUserFloat("hasHighGen",hasHighGen);
+              DiMuonTTCand.addUserFloat("hasLowGen",hasLowGen);
+
+            }
+
   std::cout << "ptr" << std::endl;
   edm::Handle<edm::View<pat::PackedCandidate> > trak;
   iEvent.getByToken(TrakCollection_,trak);
@@ -88,14 +145,25 @@ TrackProducerPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     std::cout << i << " -> ";
     auto t = trak->at(i);
     std::cout << t.pixelInfos_.size() << std::endl;
+    auto refTrack = trak->refAt(i);
+    int pdgId = -9999, momPdgId = -9999;
+    if(theGenMap->contains(refTrack.id()))
+    {
+      auto genParticle = ((*theGenMap)[edm::Ref<edm::View<pat::PackedCandidate>>(trak, i)]);
+      pdgId = genParticle.pdgId();
+      if(genParticle->numberOfMothers()>0)
+        if(genParticle->motherRef().isNonnull())
+            momPdgId = genParticle->motherRef().pdgId();
+    }
     for(size_t j = 0; j<t.hitCoords_.size();j++)
     {
-      
+
        auto h = t.hitCoords_[j];
-      
-       std::cout << h[0] << " - " << h[1] << " - " << h[2] << std::endl; 
+
+       std::cout << h[0] << " - " << h[1] << " - " << h[2] << " - " << pdgId << " - " << momPdgId << std::endl;
     }
   }
+
 /*
   edm::Handle< edm::TriggerResults > triggerResults_handle;
   iEvent.getByToken( triggerResults_Label , triggerResults_handle);

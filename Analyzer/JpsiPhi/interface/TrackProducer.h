@@ -61,8 +61,9 @@ class TrackProducerPAT : public edm::EDProducer {
 
   // ----------member data ---------------------------
  private:
+  edm::EDGetTokenT<edm::Association<reco::GenParticleCollection>> TrackGenMap_;
   edm::EDGetTokenT<edm::View<pat::PackedCandidate>> TrakCollection_;
-  
+
   GreaterByVProb<pat::CompositeCandidate> vPComparator_;
 /*
   edm::EDGetTokenT<edm::View<pat::Muon>> muons_;
