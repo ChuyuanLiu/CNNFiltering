@@ -30,6 +30,10 @@
 #include "../interface/DiMuonVtxReProducer.h"
 #include "TLorentzVector.h"
 
+#include <iostream>
+#include <string>
+#include <fstream>
+
 #include "MagneticField/Engine/interface/MagneticField.h"
 #include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
 #include "TrackingTools/PatternTools/interface/TwoTrackMinimumDistance.h"
@@ -120,7 +124,7 @@ TrackProducerPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
             momPdgId = genParticle->motherRef()->pdgId();
     }
 
-    int noHits = hitCoords_.size();
+    int noHits = t.hitCoords_.size();
     int maxHits = 25;
     int minHits = -std::max(maxHits,noHits);
     int featureSize = t.pixelInfos_[0].size() + t.pixelADC_[0].size() + t.pixelADCx_[0].size() + t.pixelADCy_[0].size() + t.stripInfos_[0].size() + t.stripADC_[0].size();
