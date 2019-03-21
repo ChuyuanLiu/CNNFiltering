@@ -92,6 +92,7 @@ TrackProducerPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   int runNumber = iEvent.id().run();
   int lumNumber = iEvent.id().luminosityBlock();
 
+
   std::string fileName = "tracks/" + std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
   fileName += "_PF_DNNTracks.txt";
   std::ofstream outTrack(fileName, std::ofstream::app);
@@ -110,11 +111,20 @@ TrackProducerPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByToken(TrakCollection_,track);
   std::cout << "tracks" << std::endl;
   for (size_t i = 0; i < track->size(); i++) {
-    std::cout << i << " -> ";
+
     auto t = track->at(i);
-    std::cout << t.pixelInfos_.size() << std::endl;
+    if(!(t.trackHighPurity())) continue;
+    if(!(t.hasTrackDetails())) continue;
+
+    std::cout << i << " -> ";
+
+
+
+
+    std::cout << t.pixelInfos_.size() << " - ";
     auto refTrack = track->refAt(i);
     int pdgId = -9999, momPdgId = -9999;
+
     if(theGenMap->contains(refTrack.id()))
     {
       if(((*theGenMap)[edm::Ref<edm::View<pat::PackedCandidate>>(track, i)]).isNonnull())

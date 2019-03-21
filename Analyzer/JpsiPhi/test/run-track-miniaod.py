@@ -311,6 +311,6 @@ process.dump=cms.EDAnalyzer('EventContentAnalyzer')
 
 #triggering = process.triggerSelection
 
-allsteps = process.TrackProducer * process.dump
+allsteps = process.trackMatch * process.TrackProducer * process.dump
 
 process.p = cms.Path(allsteps)
