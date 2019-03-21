@@ -127,6 +127,7 @@ TrackProducerPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         momPdgId = genParticle->motherRef()->pdgId();
       }
     }
+    std::cout << pdgId << " - " << momPdgId << std::endl;
 
     int noHits = t.hitCoords_.size();
     int maxHits = 25;
