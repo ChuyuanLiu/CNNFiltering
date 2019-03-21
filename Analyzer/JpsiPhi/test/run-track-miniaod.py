@@ -304,6 +304,7 @@ process.unpackPatTriggers = cms.EDProducer("PATTriggerObjectStandAloneUnpacker",
 
 process.TrackProducer = cms.EDProducer('TrackProducerPAT',
     PFCandidates        = cms.InputTag('packedPFCandidates'),
+    TrackMatcher        = cms.InputTag("trackMatch"),
 )
 
 process.dump=cms.EDAnalyzer('EventContentAnalyzer')
