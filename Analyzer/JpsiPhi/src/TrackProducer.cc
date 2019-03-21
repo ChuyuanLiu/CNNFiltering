@@ -129,12 +129,12 @@ TrackProducerPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     int minHits = -std::max(maxHits,noHits);
     int featureSize = t.pixelInfos_[0].size() + t.pixelADC_[0].size() + t.pixelADCx_[0].size() + t.pixelADCy_[0].size() + t.stripInfos_[0].size() + t.stripADC_[0].size();
 
-    assert(hitCoords_.size() == t.pixelInfos_.size());
-    assert(hitCoords_.size() == t.pixelADC_.size());
-    assert(hitCoords_.size() == t.pixelADCx_.size());
-    assert(hitCoords_.size() == t.pixelADCy_.size());
-    assert(hitCoords_.size() == t.stripInfos_.size());
-    assert(hitCoords_.size() == t.stripADC_.size());
+    assert(t.hitCoords_.size() == t.pixelInfos_.size());
+    assert(t.hitCoords_.size() == t.pixelADC_.size());
+    assert(t.hitCoords_.size() == t.pixelADCx_.size());
+    assert(t.hitCoords_.size() == t.pixelADCy_.size());
+    assert(t.hitCoords_.size() == t.stripInfos_.size());
+    assert(t.hitCoords_.size() == t.stripADC_.size());
 
     for(int j = 0; j<minHits;j++)
     {
