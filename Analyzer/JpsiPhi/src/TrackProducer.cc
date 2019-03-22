@@ -116,18 +116,11 @@ TrackProducerPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     if(!(t.trackHighPurity())) continue;
     if(!(t.hasTrackDetails())) continue;
 
-    std::cout << i << " -> ";
 
 
 
 
-    std::cout << t.pixelInfos_.size() << " - ";
-    std::cout << t.pixelADC_.size() << " - ";
-    std::cout << t.pixelADCx_.size() << " - ";
-    std::cout << t.pixelADCy_.size() << " - ";
-    std::cout << t.stripInfos_.size() << " - ";
-    std::cout << t.stripADC_.size() << " - ";
-    
+
     auto refTrack = track->refAt(i);
     int pdgId = -9999, momPdgId = -9999;
 
@@ -143,7 +136,22 @@ TrackProducerPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         momPdgId = genParticle->motherRef()->pdgId();
       }
     }
-    std::cout << pdgId << " - " << momPdgId << std::endl;
+
+    if(pdgId>-9999)
+    {
+      std::cout << i << " -> ";
+
+      std::cout << t.hitCoords_.size() << " - ";
+      std::cout << t.pixelInfos_.size() << " - ";
+      std::cout << t.pixelADC_.size() << " - ";
+      std::cout << t.pixelADCx_.size() << " - ";
+      std::cout << t.pixelADCy_.size() << " - ";
+      std::cout << t.stripInfos_.size() << " - ";
+      std::cout << t.stripADC_.size() << " - ";
+
+      std::cout << pdgId << " - " << momPdgId << std::endl;
+    }
+
 
     int noHits = t.hitCoords_.size();
     int maxHits = 25;
