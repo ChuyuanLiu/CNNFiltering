@@ -101,6 +101,8 @@ input_file = par.filein #runb2018 #gen_file
 
 filename = "data" + par.dataset
 
+from all2018Hlts import *
+
 '''
 if par.isLocal:
 
@@ -212,7 +214,7 @@ if "2016" in par.dataset:
 
 hlts = {}
 
-hlts["2018"] = charmoniumHLT
+hlts["2018"] = all2018Hlts
 
 hlts["2017"] =["HLT_DoubleMu2_Jpsi_DoubleTrk1_Phi",
     "HLT_Dimuon25_Jpsi",
@@ -302,9 +304,10 @@ process.unpackPatTriggers = cms.EDProducer("PATTriggerObjectStandAloneUnpacker",
   unpackFilterLabels          = cms.bool( True )
 )
 
-process.TrackProducer = cms.EDProducer('TrackProducerPAT',
+process.TrackProducer   = cms.EDProducer('TrackProducerPAT',
     PFCandidates        = cms.InputTag('packedPFCandidates'),
     TrackMatcher        = cms.InputTag("trackMatch"),
+    HLTs                = hltpaths
 )
 
 process.dump=cms.EDAnalyzer('EventContentAnalyzer')
