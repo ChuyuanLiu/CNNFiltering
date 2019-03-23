@@ -115,6 +115,9 @@ TrackProducerPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByToken(muons_,muons);
 
   std::cout << "Tracks" << std::endl;
+
+  int muonTracks = 0;
+
   for (size_t i = 0; i < track->size(); i++) {
 
     auto t = track->at(i);
@@ -200,8 +203,8 @@ TrackProducerPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     outTrack << 5421369 << std::endl;
 
-  }
 
+  }
   int muonCounter = 0;
   for (size_t i = 0; i < muons->size(); i++) {
 
@@ -215,6 +218,7 @@ TrackProducerPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   std::cout << "Track muon pdg   : " << muonTracks << std::endl;
   std::cout << "Muons with track : " << muonCounter << std::endl;
+
 
   /*
   edm::Handle< edm::TriggerResults > triggerResults_handle;
@@ -825,86 +829,6 @@ iEvent.put(std::move(oniaOutput));
 }
 
 
-bool
-TrackProducerPAT::isAbHadron(int pdgID) {
-
-  if (abs(pdgID) == 511 || abs(pdgID) == 521 || abs(pdgID) == 531 || abs(pdgID) == 5122) return true;
-  return false;
-
-}
-
-bool
-TrackProducerPAT::isAMixedbHadron(int pdgID, int momPdgID) {
-
-  if ((abs(pdgID) == 511 && abs(momPdgID) == 511 && pdgID*momPdgID < 0) ||
-  (abs(pdgID) == 531 && abs(momPdgID) == 531 && pdgID*momPdgID < 0))
-  return true;
-  return false;
-
-}
-
-std::pair<int, float>
-TrackProducerPAT::findJpsiMCInfo(reco::GenParticleRef genJpsi) {
-
-  // std::cout << "findJpsiMCInfo 1 " << std::endl;
-  int momJpsiID = 0;
-  float trueLife = -99.;
-
-  if (genJpsi->numberOfMothers()>0) {
-
-    // std::cout << "findJpsiMCInfo 1 " << std::endl;
-    //std::coutug  12" << std::endl;
-    TVector3 trueVtx(0.0,0.0,0.0);
-    TVector3 trueP(0.0,0.0,0.0);
-    TVector3 trueVtxMom(0.0,0.0,0.0);
-
-    trueVtx.SetXYZ(genJpsi->vertex().x(),genJpsi->vertex().y(),genJpsi->vertex().z());
-    trueP.SetXYZ(genJpsi->momentum().x(),genJpsi->momentum().y(),genJpsi->momentum().z());
-
-    bool aBhadron = false;
-    reco::GenParticleRef Jpsimom = genJpsi->motherRef();       // find mothers
-    // std::cout << "findJpsiMCInfo 1 " << std::endl;
-    if (Jpsimom.isNull()) {
-      std::pair<int, float> result = std::make_pair(momJpsiID, trueLife);
-      return result;
-    } else {
-      reco::GenParticleRef Jpsigrandmom = Jpsimom->motherRef();
-      if (isAbHadron(Jpsimom->pdgId())) {
-        if (Jpsigrandmom.isNonnull() && isAMixedbHadron(Jpsimom->pdgId(),Jpsigrandmom->pdgId())) {
-          momJpsiID = Jpsigrandmom->pdgId();
-          trueVtxMom.SetXYZ(Jpsigrandmom->vertex().x(),Jpsigrandmom->vertex().y(),Jpsigrandmom->vertex().z());
-        } else {
-          momJpsiID = Jpsimom->pdgId();
-          trueVtxMom.SetXYZ(Jpsimom->vertex().x(),Jpsimom->vertex().y(),Jpsimom->vertex().z());
-        }
-        aBhadron = true;
-      } else {
-        if (Jpsigrandmom.isNonnull() && isAbHadron(Jpsigrandmom->pdgId())) {
-          reco::GenParticleRef JpsiGrandgrandmom = Jpsigrandmom->motherRef();
-          if (JpsiGrandgrandmom.isNonnull() && isAMixedbHadron(Jpsigrandmom->pdgId(),JpsiGrandgrandmom->pdgId())) {
-            momJpsiID = JpsiGrandgrandmom->pdgId();
-            trueVtxMom.SetXYZ(JpsiGrandgrandmom->vertex().x(),JpsiGrandgrandmom->vertex().y(),JpsiGrandgrandmom->vertex().z());
-          } else {
-            momJpsiID = Jpsigrandmom->pdgId();
-            trueVtxMom.SetXYZ(Jpsigrandmom->vertex().x(),Jpsigrandmom->vertex().y(),Jpsigrandmom->vertex().z());
-          }
-          aBhadron = true;
-        }
-      }
-      if (!aBhadron) {
-        momJpsiID = Jpsimom->pdgId();
-        trueVtxMom.SetXYZ(Jpsimom->vertex().x(),Jpsimom->vertex().y(),Jpsimom->vertex().z());
-      }
-    }
-    std::cout << "Debug  13" << std::endl;
-    TVector3 vdiff = trueVtx - trueVtxMom;
-    //trueLife = vdiff.Perp()*3.09688/trueP.Perp();
-    trueLife = vdiff.Perp()*genJpsi->mass()/trueP.Perp();
-  }
-  std::pair<int, float> result = std::make_pair(momJpsiID, trueLife);
-  return result;
-
-}
 
 // ------------ method called once each job just before starting event loop  ------------
 void
