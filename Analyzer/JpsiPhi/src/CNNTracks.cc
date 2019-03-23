@@ -240,7 +240,7 @@ UInt_t CNNTracks::getTriggerBits(const edm::Event& iEvent, int triggerChunk) {
      const edm::TriggerNames & TheTriggerNames = iEvent.triggerNames(*triggerResults_handle);
      unsigned int NTRIGGERS = HLTs_.size();
 
-     int lastTrig = triggerChunk*12;
+     unsigned int lastTrig = triggerChunk*12;
 
      for (unsigned int i = 0; i < lastTrig; i++) {
        if(lastTrig > NTRIGGERS) continue;
