@@ -80,6 +80,8 @@ class CNNTracks:public edm::EDAnalyzer {
   edm::EDGetTokenT<edm::TriggerResults> TriggerResults_;
   std::vector<std::string>  HLTs_;
 
+  int nevents, ntracks;
+
 	UInt_t    run;
 	ULong64_t event;
   UInt_t    lumiblock;
@@ -117,6 +119,10 @@ ThePVs_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("pr
 TriggerResults_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("TriggerResults"))),
 HLTs_(iConfig.getParameter<std::vector<std::string>>("HLTs"))
 {
+
+  nevents = 0;
+  ntracks = 0;
+
   edm::Service < TFileService > fs;
   track_tree = fs->make < TTree > ("CnnTracks", "Tree of Tracks");
 
@@ -288,6 +294,8 @@ void CNNTracks::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetu
 
   bool atLeastOne = false;
 
+  nevents++;
+
   for (size_t i = 0; i < track->size(); i++) {
 
     auto t = track->at(i);
@@ -313,6 +321,8 @@ void CNNTracks::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetu
     int noHits = t.hitCoords_.size();
     int maxHits = 25;
     int minHits = -std::max(maxHits,noHits);
+
+    ntracks++;
 
     pt  = t.pt();
     eta = t.eta();
@@ -375,7 +385,16 @@ void CNNTracks::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetu
 void CNNTracks::beginJob() {}
 
 // ------------ method called once each job just after ending the event loop  ------------
-void CNNTracks::endJob() {}
+void CNNTracks::endJob() {
+
+  std::cout << "#########################################" << std::endl;
+  std::cout << "CNNTracks Candidate producer report:" << std::endl;
+  std::cout << "#########################################" << std::endl;
+  std::cout << "Used " << nevents << " Events" << std::endl;
+  std::cout << "No.candidates " << ntracks << std::endl;
+  std::cout << "#########################################" << std::endl;
+
+}
 
 // ------------ method called when starting to processes a run  ------------
 void CNNTracks::beginRun(edm::Run const &, edm::EventSetup const &) {}

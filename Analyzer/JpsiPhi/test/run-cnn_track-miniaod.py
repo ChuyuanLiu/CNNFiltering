@@ -174,7 +174,7 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2018_realistic', '
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
 
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 500
+process.MessageLogger.cerr.FwkReport.reportEvery = 5
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(input_file),
@@ -306,7 +306,7 @@ process.unpackPatTriggers = cms.EDProducer("PATTriggerObjectStandAloneUnpacker",
 
 process.TrackProducer   = cms.EDProducer('CNNTracks',
     PFCandidates        = cms.InputTag('packedPFCandidates'),
-    Muons               = cms.InputTag("slimmedMuons"),
+    muons               = cms.InputTag("slimmedMuons"),
     TrackMatcher        = cms.InputTag("trackMatch"),
     HLTs                = hltpaths,
     TriggerResults      = cms.InputTag( "TriggerResults", "", "HLT" ),
