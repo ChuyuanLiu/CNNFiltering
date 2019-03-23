@@ -253,7 +253,7 @@ void CNNTracks::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetu
   edm::Handle<edm::View<pat::PackedCandidate> > track;
   iEvent.getByToken(TrakCollection_,track);
 
-  edm::Handle< View<pat::Muon> > muons;
+  edm::Handle<edm::View<pat::Muon> > muons;
   iEvent.getByToken(Muons_,muons);
 
   run       = iEvent.id().run();
