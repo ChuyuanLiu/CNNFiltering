@@ -56,7 +56,8 @@ resolveAmbiguity_(iConfig.getParameter<bool>("resolvePileUpAmbiguity")),
 addMCTruth_(iConfig.getParameter<bool>("addMCTruth")),
 HLTFilters_(iConfig.getParameter<std::vector<std::string>>("HLTFilters"))
 */
-TrakCollection_(consumes<edm::View<pat::PackedCandidate>>(iConfig.getParameter<edm::InputTag>("PFCandidates")))
+TrakCollection_(consumes<edm::View<pat::PackedCandidate>>(iConfig.getParameter<edm::InputTag>("PFCandidates"))),
+Muons_(consumes<edm::View<pat::Muon>>(iConfig.getParameter<edm::InputTag>("muons"))),
 {
   produces<pat::CompositeCandidateCollection>();
 
@@ -106,19 +107,19 @@ TrackProducerPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   // std::vector < std::array <float,7> > stripInfos_;
   // //dimension first ampsize charge merged splitClusterError id
   // std::vector < std::array <float,20> > stripADC_;
-  std::cout << "ptr" << std::endl;
+
   edm::Handle<edm::View<pat::PackedCandidate> > track;
   iEvent.getByToken(TrakCollection_,track);
-  std::cout << "tracks" << std::endl;
+
+  edm::Handle< View<pat::Muon> > muons;
+  iEvent.getByToken(muons_,muons);
+
+  std::cout << "Tracks" << std::endl;
   for (size_t i = 0; i < track->size(); i++) {
 
     auto t = track->at(i);
     if(!(t.trackHighPurity())) continue;
     if(!(t.hasTrackDetails())) continue;
-
-
-
-
 
 
     auto refTrack = track->refAt(i);
@@ -139,6 +140,7 @@ TrackProducerPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     if(pdgId>-9999)
     {
+      if(pdgId == 13 || pdgId == -13) muonTracks++;
       std::cout << i << " -> ";
 
       std::cout << t.hitCoords_.size() << " - ";
@@ -199,6 +201,20 @@ TrackProducerPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     outTrack << 5421369 << std::endl;
 
   }
+
+  int muonCounter = 0;
+  for (size_t i = 0; i < muons->size(); i++) {
+
+      auto m = muons->at(i);
+      // both must pass low quality
+      if (!(m.track().isNonnull())) continue;
+      if (!(m.innerTrack().isNonnull())) continue;
+      if (!(m.track()->pt()>muonPtCut_)) continue
+      muonCounter++;
+  }
+
+  std::cout << "Track muon pdg   : " << muonTracks << std::endl;
+  std::cout << "Muons with track : " << muonCounter << std::endl;
 
   /*
   edm::Handle< edm::TriggerResults > triggerResults_handle;
