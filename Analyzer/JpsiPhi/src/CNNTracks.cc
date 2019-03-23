@@ -182,22 +182,22 @@ ThePVs_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("pr
 
     for (size_t i = 0; i < 20; i++)
     {
-      track_tree->Branch(("pix_adc_" + std::to_string(j) + "_" + std::to_string(i),        &pixelADC[j][i], ( "pix_adc_" + std::to_string(j) + "_" + std::to_string(i) + "/D");
+      track_tree->Branch(("pix_adc_" + std::to_string(j) + "_" + std::to_string(i),        &pixelADC[j][i], ( "pix_adc_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
     }
 
     for (size_t i = 0; i < 20; i++)
     {
-      track_tree->Branch(("pix_adcX_" + std::to_string(j) + "_" + std::to_string(i),        &pixelADCX[j][i], ( "pix_adcX_" + std::to_string(j) + "_" + std::to_string(i) + "/D");
+      track_tree->Branch(("pix_adcX_" + std::to_string(j) + "_" + std::to_string(i),        &pixelADCX[j][i], ( "pix_adcX_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
     }
 
     for (size_t i = 0; i < 20; i++)
     {
-      track_tree->Branch(("pix_adcY_" + std::to_string(j) + "_" + std::to_string(i),        &pixelADCY[j][i], ( "pix_adcY_" + std::to_string(j) + "_" + std::to_string(i) + "/D");
+      track_tree->Branch(("pix_adcY_" + std::to_string(j) + "_" + std::to_string(i),        &pixelADCY[j][i], ( "pix_adcY_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
     }
 
     for (size_t i = 0; i < 20; i++)
     {
-      track_tree->Branch(("strip_adc_" + std::to_string(j) + "_" + std::to_string(i),        &stripADCY[j][i], ( "strip_adc_" + std::to_string(j) + "_" + std::to_string(i) + "/D");
+      track_tree->Branch(("strip_adc_" + std::to_string(j) + "_" + std::to_string(i),        &stripADCY[j][i], ( "strip_adc_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
     }
 
 
