@@ -1,5 +1,5 @@
 import FWCore.ParameterSet.Config as cms
-process = cms.Process('cnn_track')
+process = cms.Process('cnnTracks')
 
 from FWCore.ParameterSet.VarParsing import VarParsing
 
@@ -308,7 +308,9 @@ process.TrackProducer   = cms.EDProducer('CNNTracks',
     PFCandidates        = cms.InputTag('packedPFCandidates'),
     Muons               = cms.InputTag("slimmedMuons"),
     TrackMatcher        = cms.InputTag("trackMatch"),
-    HLTs                = hltpaths
+    HLTs                = hltpaths,
+    TriggerResults      = cms.InputTag( "TriggerResults", "", "HLT" ),
+    primaryVertexTag    = cms.InputTag("offlinePrimaryVertices")
 )
 
 process.dump=cms.EDAnalyzer('EventContentAnalyzer')
