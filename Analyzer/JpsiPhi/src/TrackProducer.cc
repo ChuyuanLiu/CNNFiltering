@@ -46,7 +46,7 @@ TrackGenMap_(consumes<edm::Association<reco::GenParticleCollection>>(iConfig.get
 /*muons_(consumes<edm::View<pat::Muon>>(iConfig.getParameter<edm::InputTag>("muons"))),
 muonPtCut_(iConfig.existsAs<double>("MuonPtCut") ? iConfig.getParameter<double>("MuonPtCut") : 0.7),
 thebeamspot_(consumes<reco::BeamSpot>(iConfig.getParameter<edm::InputTag>("beamSpotTag"))),
-thePVs_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("primaryVertexTag"))),
+
 TriggerCollection_(consumes<std::vector<pat::TriggerObjectStandAlone>>(iConfig.getParameter<edm::InputTag>("TriggerInput"))),
 triggerResults_Label(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("TriggerResults"))),
 dimuonSelection_(iConfig.existsAs<std::string>("dimuonSelection") ? iConfig.getParameter<std::string>("dimuonSelection") : ""),
@@ -57,7 +57,7 @@ addMCTruth_(iConfig.getParameter<bool>("addMCTruth")),
 HLTFilters_(iConfig.getParameter<std::vector<std::string>>("HLTFilters"))
 */
 TrakCollection_(consumes<edm::View<pat::PackedCandidate>>(iConfig.getParameter<edm::InputTag>("PFCandidates"))),
-Muons_(consumes<edm::View<pat::Muon>>(iConfig.getParameter<edm::InputTag>("muons"))),
+Muons_(consumes<edm::View<pat::Muon>>(iConfig.getParameter<edm::InputTag>("muons")))
 {
   produces<pat::CompositeCandidateCollection>();
 

@@ -59,7 +59,7 @@ class CNNTracks:public edm::EDAnalyzer {
 	static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
 
       private:
-        UInt_t getTriggerBits(const edm::Event &);
+        UInt_t getTriggerBits(const edm::Event &, int t);
         bool   isAncestor(const reco::Candidate *, const reco::Candidate *);
         const  reco::Candidate* GetAncestor(const reco::Candidate *);
 
@@ -187,12 +187,12 @@ ThePVs_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("pr
 
     for (size_t i = 0; i < 20; i++)
     {
-      track_tree->Branch(("pix_adcX_" + std::to_string(j) + "_" + std::to_string(i),        &pixelADCX[j][i], ( "pix_adcX_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
+      track_tree->Branch(("pix_adcX_" + std::to_string(j) + "_" + std::to_string(i),        &pixelADCx[j][i], ( "pix_adcX_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
     }
 
     for (size_t i = 0; i < 20; i++)
     {
-      track_tree->Branch(("pix_adcY_" + std::to_string(j) + "_" + std::to_string(i),        &pixelADCY[j][i], ( "pix_adcY_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
+      track_tree->Branch(("pix_adcY_" + std::to_string(j) + "_" + std::to_string(i),        &pixelADCy[j][i], ( "pix_adcY_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
     }
 
     for (size_t i = 0; i < 20; i++)
@@ -262,6 +262,9 @@ void CNNTracks::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetu
   edm::Handle<reco::VertexCollection> primaryVertices_handle;
   iEvent.getByToken(ThePVs_, primaryVertices_handle);
 
+  edm::Handle<edm::Association<reco::GenParticleCollection>> theGenMap;
+  iEvent.getByToken(TrackGenMap_,theGenMap);
+
   edm::Handle<edm::View<pat::PackedCandidate> > track;
   iEvent.getByToken(TrakCollection_,track);
 
@@ -275,7 +278,7 @@ void CNNTracks::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetu
   pu = 0;
   if (primaryVertices_handle.isValid()) pu = (int) primaryVertices_handle->size();
 
-  for (size_t i = 0; i < 64; i++)
+  for (int i = 0; i < 64; i++)
   {
     hltword[i] = getTriggerBits(iEvent,i+1);
   }
