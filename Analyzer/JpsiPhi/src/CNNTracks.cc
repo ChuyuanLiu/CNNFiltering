@@ -186,22 +186,22 @@ HLTs_(iConfig.getParameter<std::vector<std::string>>("HLTs"))
 
     for (size_t i = 0; i < 20; i++)
     {
-      track_tree->Branch(("pix_adc_" + std::to_string(j) + "_" + std::to_string(i)),        &pixelADC[j][i], ( "pix_adc_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
+      track_tree->Branch(("pix_adc_" + std::to_string(j) + "_" + std::to_string(i)).c_str(),        &pixelADC[j][i], ( "pix_adc_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
     }
 
     for (size_t i = 0; i < 20; i++)
     {
-      track_tree->Branch(("pix_adcX_" + std::to_string(j) + "_" + std::to_string(i)),        &pixelADCx[j][i], ( "pix_adcX_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
+      track_tree->Branch(("pix_adcX_" + std::to_string(j) + "_" + std::to_string(i)).c_str(),        &pixelADCx[j][i], ( "pix_adcX_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
     }
 
     for (size_t i = 0; i < 20; i++)
     {
-      track_tree->Branch(("pix_adcY_" + std::to_string(j) + "_" + std::to_string(i)),        &pixelADCy[j][i], ( "pix_adcY_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
+      track_tree->Branch(("pix_adcY_" + std::to_string(j) + "_" + std::to_string(i)).c_str(),        &pixelADCy[j][i], ( "pix_adcY_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
     }
 
     for (size_t i = 0; i < 20; i++)
     {
-      track_tree->Branch(("strip_adc_" + std::to_string(j) + "_" + std::to_string(i)),        &stripADC[j][i], ( "strip_adc_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
+      track_tree->Branch(("strip_adc_" + std::to_string(j) + "_" + std::to_string(i)).c_str(),        &stripADC[j][i], ( "strip_adc_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
     }
 
 
