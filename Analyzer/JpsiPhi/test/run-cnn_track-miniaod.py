@@ -304,7 +304,7 @@ process.unpackPatTriggers = cms.EDProducer("PATTriggerObjectStandAloneUnpacker",
   unpackFilterLabels          = cms.bool( True )
 )
 
-process.TrackProducer   = cms.EDProducer('CNNTracks',
+process.TrackProducer   = cms.EDAnalyzer('CNNTracks',
     PFCandidates        = cms.InputTag('packedPFCandidates'),
     muons               = cms.InputTag("slimmedMuons"),
     TrackMatcher        = cms.InputTag("trackMatch"),
