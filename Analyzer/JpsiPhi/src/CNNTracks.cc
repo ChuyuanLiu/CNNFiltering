@@ -77,6 +77,7 @@ class CNNTracks:public edm::EDAnalyzer {
   edm::EDGetTokenT<edm::View<pat::PackedCandidate>> TrakCollection_;
   edm::EDGetTokenT<edm::View<pat::Muon>> Muons_;
   edm::EDGetTokenT<reco::VertexCollection> ThePVs_;
+  edm::EDGetTokenT<edm::TriggerResults> TriggerResults_;
 
 	UInt_t    run;
 	ULong64_t event;
@@ -111,7 +112,8 @@ CNNTracks::CNNTracks(const edm::ParameterSet & iConfig):
 TrackGenMap_(consumes<edm::Association<reco::GenParticleCollection>>(iConfig.getParameter<edm::InputTag>("TrackMatcher"))),
 TrakCollection_(consumes<edm::View<pat::PackedCandidate>>(iConfig.getParameter<edm::InputTag>("PFCandidates"))),
 Muons_(consumes<edm::View<pat::Muon>>(iConfig.getParameter<edm::InputTag>("muons"))),
-ThePVs_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("primaryVertexTag")))
+ThePVs_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("primaryVertexTag"))),
+TriggerResults_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("TriggerResults")))
 {
   edm::Service < TFileService > fs;
   track_tree = fs->make < TTree > ("CnnTracks", "Tree of Tracks");
@@ -197,7 +199,7 @@ ThePVs_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("pr
 
     for (size_t i = 0; i < 20; i++)
     {
-      track_tree->Branch(("strip_adc_" + std::to_string(j) + "_" + std::to_string(i),        &stripADCY[j][i], ( "strip_adc_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
+      track_tree->Branch(("strip_adc_" + std::to_string(j) + "_" + std::to_string(i),        &stripADC[j][i], ( "strip_adc_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
     }
 
 
@@ -230,7 +232,7 @@ UInt_t CNNTracks::getTriggerBits(const edm::Event& iEvent, int triggerChunk) {
   UInt_t trigger = 0;
 
   edm::Handle< edm::TriggerResults > triggerResults_handle;
-  iEvent.getByToken( triggerResults_Label , triggerResults_handle);
+  iEvent.getByToken( TriggerResults_ , triggerResults_handle);
 
   if (triggerResults_handle.isValid()) {
      const edm::TriggerNames & TheTriggerNames = iEvent.triggerNames(*triggerResults_handle);
