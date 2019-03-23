@@ -1,5 +1,5 @@
 import FWCore.ParameterSet.Config as cms
-process = cms.Process('2mu2k')
+process = cms.Process('cnn_track')
 
 from FWCore.ParameterSet.VarParsing import VarParsing
 
@@ -26,7 +26,7 @@ par.register ('filein',
                                   "Inputfile")
 
 par.register ('dataset',
-                                  "Av1",
+                                  "QCD_Soft",
                                   VarParsing.multiplicity.singleton,
                                   VarParsing.varType.string,
                                   "Dataset")
@@ -314,6 +314,8 @@ process.dump=cms.EDAnalyzer('EventContentAnalyzer')
 
 #triggering = process.triggerSelection
 
-allsteps = process.trackMatch * process.TrackProducer * process.dump
+allsteps = process.trackMatch * process.TrackProducer
 
+if args.isDebug:
+    allsteps = allsteps * process.dump
 process.p = cms.Path(allsteps)
