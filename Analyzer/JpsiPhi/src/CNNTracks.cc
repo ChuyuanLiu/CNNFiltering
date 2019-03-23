@@ -149,55 +149,55 @@ ThePVs_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("pr
   for(int j = 0; j < 25; j++)
   {
 
-    track_tree->Branch("n_" + std::to_string(j),   &hitCoords[j][0], "n_" + std::to_string(j) + "/D");
-    track_tree->Branch("x_" + std::to_string(j),   &hitCoords[j][1], "x_" + std::to_string(j) + "/D");
-    track_tree->Branch("y_" + std::to_string(j),   &hitCoords[j][2], "y_" + std::to_string(j) + "/D");
-    track_tree->Branch("z_" + std::to_string(j),   &hitCoords[j][3], "z_" + std::to_string(j) + "/D");
-    track_tree->Branch("phi_" + std::to_string(j), &hitCoords[j][4], "phi_" + std::to_string(j) + "/D");
-    track_tree->Branch("r_" + std::to_string(j),   &hitCoords[j][5], "r_" + std::to_string(j) + "/D");
-    track_tree->Branch("ax1_" + std::to_string(j), &hitCoords[j][6], "ax1_" + std::to_string(j) + "/D");
-    track_tree->Branch("ax2_" + std::to_string(j), &hitCoords[j][7], "ax2_" + std::to_string(j) + "/D");
+    track_tree->Branch(("n_" + std::to_string(j)).c_str(),   &hitCoords[j][0], ( "n_" + std::to_string(j) + "/D").c_str());
+    track_tree->Branch(("x_" + std::to_string(j)).c_str(),   &hitCoords[j][1], ( "x_" + std::to_string(j) + "/D").c_str());
+    track_tree->Branch(("y_" + std::to_string(j)).c_str(),   &hitCoords[j][2], ( "y_" + std::to_string(j) + "/D").c_str());
+    track_tree->Branch(("z_" + std::to_string(j)).c_str(),   &hitCoords[j][3], ( "z_" + std::to_string(j) + "/D").c_str());
+    track_tree->Branch(("phi_" + std::to_string(j)).c_str(), &hitCoords[j][4], ( "phi_" + std::to_string(j) + "/D").c_str());
+    track_tree->Branch(("r_" + std::to_string(j)).c_str(),   &hitCoords[j][5], ( "r_" + std::to_string(j) + "/D").c_str());
+    track_tree->Branch(("ax1_" + std::to_string(j)).c_str(), &hitCoords[j][6], ( "ax1_" + std::to_string(j) + "/D").c_str());
+    track_tree->Branch(("ax2_" + std::to_string(j)).c_str(), &hitCoords[j][7], ( "ax2_" + std::to_string(j) + "/D").c_str());
 
-    track_tree->Branch("pix_n_" + std::to_string(j),      &pixelInfos[j][0], "pix_n_" + std::to_string(j) + "/D");
-    track_tree->Branch("pix_x_" + std::to_string(j),      &pixelInfos[j][1], "pix_x_" + std::to_string(j) + "/D");
-    track_tree->Branch("pix_y_" + std::to_string(j),      &pixelInfos[j][2], "pix_y_" + std::to_string(j) + "/D");
-    track_tree->Branch("pix_size_" + std::to_string(j),   &pixelInfos[j][3], "pix_size_" + std::to_string(j) + "/D");
-    track_tree->Branch("pix_sizeX_" + std::to_string(j),  &pixelInfos[j][4], "pix_sizeX_" + std::to_string(j) + "/D");
-    track_tree->Branch("pix_sizeY_" + std::to_string(j),  &pixelInfos[j][5], "pix_sizeY_" + std::to_string(j) + "/D");
-    track_tree->Branch("pix_charge_" + std::to_string(j), &pixelInfos[j][6], "pix_charge_" + std::to_string(j) + "/D");
-    track_tree->Branch("pix_ovfX_" + std::to_string(j),   &pixelInfos[j][7], "pix_ovfX_" + std::to_string(j) + "/D");
-    track_tree->Branch("pix_ovfY_" + std::to_string(j),   &pixelInfos[j][8], "pix_ovfY_" + std::to_string(j) + "/D");
-    track_tree->Branch("pix_skew_" + std::to_string(j),   &pixelInfos[j][9], "pix_skew_" + std::to_string(j) + "/D");
-    track_tree->Branch("pix_big_" + std::to_string(j),    &pixelInfos[j][10], "pix_big_" + std::to_string(j) + "/D");
-    track_tree->Branch("pix_bad_" + std::to_string(j),    &pixelInfos[j][11], "pix_bad_" + std::to_string(j) + "/D");
-    track_tree->Branch("pix_edg_" + std::to_string(j),    &pixelInfos[j][12], "pix_edg_" + std::to_string(j) + "/D");
+    track_tree->Branch(("pix_n_" + std::to_string(j)).c_str(),      &pixelInfos[j][0], ( "pix_n_" + std::to_string(j) + "/D").c_str());
+    track_tree->Branch(("pix_x_" + std::to_string(j)).c_str(),      &pixelInfos[j][1], ( "pix_x_" + std::to_string(j) + "/D").c_str());
+    track_tree->Branch(("pix_y_" + std::to_string(j)).c_str(),      &pixelInfos[j][2], ( "pix_y_" + std::to_string(j) + "/D").c_str());
+    track_tree->Branch(("pix_size_" + std::to_string(j)).c_str(),   &pixelInfos[j][3], ( "pix_size_" + std::to_string(j) + "/D").c_str());
+    track_tree->Branch(("pix_sizeX_" + std::to_string(j)).c_str(),  &pixelInfos[j][4], ( "pix_sizeX_" + std::to_string(j) + "/D").c_str());
+    track_tree->Branch(("pix_sizeY_" + std::to_string(j)).c_str(),  &pixelInfos[j][5], ( "pix_sizeY_" + std::to_string(j) + "/D").c_str());
+    track_tree->Branch(("pix_charge_" + std::to_string(j)).c_str(), &pixelInfos[j][6], ( "pix_charge_" + std::to_string(j) + "/D").c_str());
+    track_tree->Branch(("pix_ovfX_" + std::to_string(j)).c_str(),   &pixelInfos[j][7], ( "pix_ovfX_" + std::to_string(j) + "/D").c_str());
+    track_tree->Branch(("pix_ovfY_" + std::to_string(j)).c_str(),   &pixelInfos[j][8], ( "pix_ovfY_" + std::to_string(j) + "/D").c_str());
+    track_tree->Branch(("pix_skew_" + std::to_string(j)).c_str(),   &pixelInfos[j][9], ( "pix_skew_" + std::to_string(j) + "/D").c_str());
+    track_tree->Branch(("pix_big_" + std::to_string(j)).c_str(),    &pixelInfos[j][10], ( "pix_big_" + std::to_string(j) + "/D").c_str());
+    track_tree->Branch(("pix_bad_" + std::to_string(j)).c_str(),    &pixelInfos[j][11], ( "pix_bad_" + std::to_string(j) + "/D").c_str());
+    track_tree->Branch(("pix_edg_" + std::to_string(j)).c_str(),    &pixelInfos[j][12], ( "pix_edg_" + std::to_string(j) + "/D").c_str());
 
-    track_tree->Branch("strip_n_" + std::to_string(j),        &stripInfos[j][0], "strip_n_" + std::to_string(j) + "/D");
-    track_tree->Branch("strip_dim_" + std::to_string(j),      &stripInfos[j][1], "strip_dim_" + std::to_string(j) + "/D");
-    track_tree->Branch("strip_charge_" + std::to_string(j),   &stripInfos[j][2], "strip_charge_" + std::to_string(j) + "/D");
-    track_tree->Branch("strip_baryc_" + std::to_string(j),    &stripInfos[j][3], "strip_baryc_" + std::to_string(j) + "/D");
-    track_tree->Branch("strip_first_" + std::to_string(j),    &stripInfos[j][4], "strip_first_" + std::to_string(j) + "/D");
-    track_tree->Branch("strip_merge_" + std::to_string(j),    &stripInfos[j][5], "strip_merge_" + std::to_string(j) + "/D");
-    track_tree->Branch("strip_size_" + std::to_string(j),     &stripInfos[j][6], "strip_size_" + std::to_string(j) + "/D");
+    track_tree->Branch(("strip_n_" + std::to_string(j)).c_str(),        &stripInfos[j][0], ( "strip_n_" + std::to_string(j) + "/D").c_str());
+    track_tree->Branch(("strip_dim_" + std::to_string(j)).c_str(),      &stripInfos[j][1], ( "strip_dim_" + std::to_string(j) + "/D").c_str());
+    track_tree->Branch(("strip_charge_" + std::to_string(j)).c_str(),   &stripInfos[j][2], ( "strip_charge_" + std::to_string(j) + "/D").c_str());
+    track_tree->Branch(("strip_baryc_" + std::to_string(j)).c_str(),    &stripInfos[j][3], ( "strip_baryc_" + std::to_string(j) + "/D").c_str());
+    track_tree->Branch(("strip_first_" + std::to_string(j)).c_str(),    &stripInfos[j][4], ( "strip_first_" + std::to_string(j) + "/D").c_str());
+    track_tree->Branch(("strip_merge_" + std::to_string(j)).c_str(),    &stripInfos[j][5], ( "strip_merge_" + std::to_string(j) + "/D").c_str());
+    track_tree->Branch(("strip_size_" + std::to_string(j)).c_str(),     &stripInfos[j][6], ( "strip_size_" + std::to_string(j) + "/D").c_str());
 
     for (size_t i = 0; i < 20; i++)
     {
-      track_tree->Branch("pix_adc_" + std::to_string(j) + "_" + std::to_string(i),        &pixelADC[j][i], "pix_adc_" + std::to_string(j) + "_" + std::to_string(i) + "/D");
+      track_tree->Branch(("pix_adc_" + std::to_string(j) + "_" + std::to_string(i),        &pixelADC[j][i], ( "pix_adc_" + std::to_string(j) + "_" + std::to_string(i) + "/D");
     }
 
     for (size_t i = 0; i < 20; i++)
     {
-      track_tree->Branch("pix_adcX_" + std::to_string(j) + "_" + std::to_string(i),        &pixelADCX[j][i], "pix_adcX_" + std::to_string(j) + "_" + std::to_string(i) + "/D");
+      track_tree->Branch(("pix_adcX_" + std::to_string(j) + "_" + std::to_string(i),        &pixelADCX[j][i], ( "pix_adcX_" + std::to_string(j) + "_" + std::to_string(i) + "/D");
     }
 
     for (size_t i = 0; i < 20; i++)
     {
-      track_tree->Branch("pix_adcY_" + std::to_string(j) + "_" + std::to_string(i),        &pixelADCY[j][i], "pix_adcY_" + std::to_string(j) + "_" + std::to_string(i) + "/D");
+      track_tree->Branch(("pix_adcY_" + std::to_string(j) + "_" + std::to_string(i),        &pixelADCY[j][i], ( "pix_adcY_" + std::to_string(j) + "_" + std::to_string(i) + "/D");
     }
 
     for (size_t i = 0; i < 20; i++)
     {
-      track_tree->Branch("strip_adc_" + std::to_string(j) + "_" + std::to_string(i),        &stripADCY[j][i], "strip_adc_" + std::to_string(j) + "_" + std::to_string(i) + "/D");
+      track_tree->Branch(("strip_adc_" + std::to_string(j) + "_" + std::to_string(i),        &stripADCY[j][i], ( "strip_adc_" + std::to_string(j) + "_" + std::to_string(i) + "/D");
     }
 
 
