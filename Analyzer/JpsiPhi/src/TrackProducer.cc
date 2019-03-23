@@ -112,7 +112,7 @@ TrackProducerPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByToken(TrakCollection_,track);
 
   edm::Handle< View<pat::Muon> > muons;
-  iEvent.getByToken(muons_,muons);
+  iEvent.getByToken(Muons_,muons);
 
   std::cout << "Tracks" << std::endl;
 
@@ -212,7 +212,7 @@ TrackProducerPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       // both must pass low quality
       if (!(m.track().isNonnull())) continue;
       if (!(m.innerTrack().isNonnull())) continue;
-      if (!(m.track()->pt()>muonPtCut_)) continue
+
       muonCounter++;
   }
 
