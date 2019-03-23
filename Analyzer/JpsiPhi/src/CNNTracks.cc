@@ -34,6 +34,19 @@
 #include "TLorentzVector.h"
 #include "TTree.h"
 
+#include <DataFormats/PatCandidates/interface/CompositeCandidate.h>
+#include <DataFormats/PatCandidates/interface/Muon.h>
+#include "DataFormats/PatCandidates/interface/TriggerObjectStandAlone.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
+#include "FWCore/Common/interface/TriggerNames.h"
+
+#include <CommonTools/UtilAlgos/interface/StringCutObjectSelector.h>
+#include "RecoVertex/VertexTools/interface/InvariantMassFromVertex.h"
+
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+
+#include "DataFormats/PatCandidates/interface/PackedCandidate.h"
+
 //
 // class declaration
 //
@@ -137,14 +150,14 @@ ThePVs_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("pr
   for(int j = 0; j < 25; j++)
   {
 
-    track_tree->Branch("n_" + std::to_string(j),   hitCoords[j][0], "n_" + std::to_string(j) + "/D");
-    track_tree->Branch("x_" + std::to_string(j),   hitCoords[j][1], "x_" + std::to_string(j) + "/D");
-    track_tree->Branch("y_" + std::to_string(j),   hitCoords[j][2], "y_" + std::to_string(j) + "/D");
-    track_tree->Branch("z_" + std::to_string(j),   hitCoords[j][3], "z_" + std::to_string(j) + "/D");
-    track_tree->Branch("phi_" + std::to_string(j), hitCoords[j][4], "phi_" + std::to_string(j) + "/D");
-    track_tree->Branch("r_" + std::to_string(j),   hitCoords[j][5], "r_" + std::to_string(j) + "/D");
-    track_tree->Branch("ax1_" + std::to_string(j), hitCoords[j][6], "ax1_" + std::to_string(j) + "/D");
-    track_tree->Branch("ax2_" + std::to_string(j), hitCoords[j][7], "ax2_" + std::to_string(j) + "/D");
+    track_tree->Branch(("n_" + std::to_string(j)).c_str(),   hitCoords[j][0], "n_" + std::to_string(j) + "/D");
+    track_tree->Branch(("x_" + std::to_string(j)).c_str(),   hitCoords[j][1], "x_" + std::to_string(j) + "/D");
+    track_tree->Branch(("y_" + std::to_string(j)).c_str(),   hitCoords[j][2], "y_" + std::to_string(j) + "/D");
+    track_tree->Branch(("z_" + std::to_string(j)).c_str(),   hitCoords[j][3], "z_" + std::to_string(j) + "/D");
+    track_tree->Branch(("phi_" + std::to_string(j)).c_str(), hitCoords[j][4], "phi_" + std::to_string(j) + "/D");
+    track_tree->Branch(("r_" + std::to_string(j)).c_str(),   hitCoords[j][5], "r_" + std::to_string(j) + "/D");
+    track_tree->Branch(("ax1_" + std::to_string(j)).c_str(), hitCoords[j][6], "ax1_" + std::to_string(j) + "/D");
+    track_tree->Branch(("ax2_" + std::to_string(j)).c_str(), hitCoords[j][7], "ax2_" + std::to_string(j) + "/D");
 
     track_tree->Branch("pix_n_" + std::to_string(j),      pixelInfos[j][0], "pix_n_" + std::to_string(j) + "/D");
     track_tree->Branch("pix_x_" + std::to_string(j),      pixelInfos[j][1], "pix_x_" + std::to_string(j) + "/D");
