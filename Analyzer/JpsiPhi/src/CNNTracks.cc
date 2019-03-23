@@ -78,6 +78,7 @@ class CNNTracks:public edm::EDAnalyzer {
   edm::EDGetTokenT<edm::View<pat::Muon>> Muons_;
   edm::EDGetTokenT<reco::VertexCollection> ThePVs_;
   edm::EDGetTokenT<edm::TriggerResults> TriggerResults_;
+  std::vector<std::string>  HLTs_;
 
 	UInt_t    run;
 	ULong64_t event;
@@ -113,7 +114,8 @@ TrackGenMap_(consumes<edm::Association<reco::GenParticleCollection>>(iConfig.get
 TrakCollection_(consumes<edm::View<pat::PackedCandidate>>(iConfig.getParameter<edm::InputTag>("PFCandidates"))),
 Muons_(consumes<edm::View<pat::Muon>>(iConfig.getParameter<edm::InputTag>("muons"))),
 ThePVs_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("primaryVertexTag"))),
-TriggerResults_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("TriggerResults")))
+TriggerResults_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("TriggerResults"))),
+HLTs_(iConfig.getParameter<std::vector<std::string>>("HLTs"))
 {
   edm::Service < TFileService > fs;
   track_tree = fs->make < TTree > ("CnnTracks", "Tree of Tracks");
@@ -184,22 +186,22 @@ TriggerResults_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag
 
     for (size_t i = 0; i < 20; i++)
     {
-      track_tree->Branch(("pix_adc_" + std::to_string(j) + "_" + std::to_string(i),        &pixelADC[j][i], ( "pix_adc_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
+      track_tree->Branch(("pix_adc_" + std::to_string(j) + "_" + std::to_string(i)),        &pixelADC[j][i], ( "pix_adc_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
     }
 
     for (size_t i = 0; i < 20; i++)
     {
-      track_tree->Branch(("pix_adcX_" + std::to_string(j) + "_" + std::to_string(i),        &pixelADCx[j][i], ( "pix_adcX_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
+      track_tree->Branch(("pix_adcX_" + std::to_string(j) + "_" + std::to_string(i)),        &pixelADCx[j][i], ( "pix_adcX_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
     }
 
     for (size_t i = 0; i < 20; i++)
     {
-      track_tree->Branch(("pix_adcY_" + std::to_string(j) + "_" + std::to_string(i),        &pixelADCy[j][i], ( "pix_adcY_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
+      track_tree->Branch(("pix_adcY_" + std::to_string(j) + "_" + std::to_string(i)),        &pixelADCy[j][i], ( "pix_adcY_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
     }
 
     for (size_t i = 0; i < 20; i++)
     {
-      track_tree->Branch(("strip_adc_" + std::to_string(j) + "_" + std::to_string(i),        &stripADC[j][i], ( "strip_adc_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
+      track_tree->Branch(("strip_adc_" + std::to_string(j) + "_" + std::to_string(i)),        &stripADC[j][i], ( "strip_adc_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
     }
 
 
@@ -239,10 +241,9 @@ UInt_t CNNTracks::getTriggerBits(const edm::Event& iEvent, int triggerChunk) {
      unsigned int NTRIGGERS = HLTs_.size();
 
      int lastTrig = triggerChunk*12;
-     if(lastTrig > NTRIGGERS) continue;
 
      for (unsigned int i = 0; i < lastTrig; i++) {
-       if(trigger)
+       if(lastTrig > NTRIGGERS) continue;
         for (int version = 1; version < 20; version++) {
            std::stringstream ss;
            ss << HLTs_[i] << "_v" << version;
