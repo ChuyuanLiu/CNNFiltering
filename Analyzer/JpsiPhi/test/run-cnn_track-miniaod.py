@@ -319,6 +319,6 @@ process.dump=cms.EDAnalyzer('EventContentAnalyzer')
 
 allsteps = process.trackMatch * process.TrackProducer
 
-if args.isDebug:
+if par.isDebug:
     allsteps = allsteps * process.dump
 process.p = cms.Path(allsteps)
