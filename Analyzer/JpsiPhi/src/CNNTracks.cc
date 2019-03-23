@@ -122,7 +122,7 @@ ThePVs_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("pr
 
   for (size_t i = 1; i < 65; i++)
   {
-    track_tree->Branch(("hlt_word_" + std::to_string(i)).c_str(),    &hltword[i-1], "hlt_word_" + std::to_string(i) + "/D");
+    track_tree->Branch(("hlt_word_" + std::to_string(i)).c_str(),    &hltword[i-1], ("hlt_word_" + std::to_string(i) + "/D").c_str());
   }
 
   track_tree->Branch("pu",    &pu,    "pu/i");
