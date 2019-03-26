@@ -52,27 +52,27 @@
 //
 
 class CNNTracks:public edm::EDAnalyzer {
-      public:
-	explicit CNNTracks(const edm::ParameterSet &);
-	~CNNTracks() override;
+public:
+  explicit CNNTracks(const edm::ParameterSet &);
+  ~CNNTracks() override;
 
-	static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
+  static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
 
-      private:
-        UInt_t getTriggerBits(const edm::Event &, int t);
-        bool   isAncestor(const reco::Candidate *, const reco::Candidate *);
-        const  reco::Candidate* GetAncestor(const reco::Candidate *);
+private:
+  UInt_t getTriggerBits(const edm::Event &, int t);
+  bool   isAncestor(const reco::Candidate *, const reco::Candidate *);
+  const  reco::Candidate* GetAncestor(const reco::Candidate *);
 
-	void beginJob() override;
-	void analyze(const edm::Event &, const edm::EventSetup &) override;
-	void endJob() override;
+  void beginJob() override;
+  void analyze(const edm::Event &, const edm::EventSetup &) override;
+  void endJob() override;
 
-	void beginRun(edm::Run const &, edm::EventSetup const &) override;
-	void endRun(edm::Run const &, edm::EventSetup const &) override;
-	void beginLuminosityBlock(edm::LuminosityBlock const &, edm::EventSetup const &) override;
-	void endLuminosityBlock(edm::LuminosityBlock const &, edm::EventSetup const &) override;
+  void beginRun(edm::Run const &, edm::EventSetup const &) override;
+  void endRun(edm::Run const &, edm::EventSetup const &) override;
+  void beginLuminosityBlock(edm::LuminosityBlock const &, edm::EventSetup const &) override;
+  void endLuminosityBlock(edm::LuminosityBlock const &, edm::EventSetup const &) override;
 
-	// ----------member data ---------------------------
+  // ----------member data ---------------------------
   edm::EDGetTokenT<edm::Association<reco::GenParticleCollection>> TrackGenMap_;
   edm::EDGetTokenT<edm::View<pat::PackedCandidate>> TrakCollection_;
   edm::EDGetTokenT<edm::View<pat::Muon>> Muons_;
@@ -82,8 +82,8 @@ class CNNTracks:public edm::EDAnalyzer {
 
   int nevents, ntracks;
 
-	UInt_t    run;
-	ULong64_t event;
+  UInt_t    run;
+  ULong64_t event;
   UInt_t    lumiblock;
   UInt_t    pu;
 
@@ -101,7 +101,7 @@ class CNNTracks:public edm::EDAnalyzer {
   std::array< std::array <double,20>, 25 > stripADC;
 
 
-	TTree *track_tree;
+  TTree *track_tree;
 
 
 
@@ -229,10 +229,10 @@ CNNTracks::~CNNTracks() {}
 
 
 /* Grab Trigger information. Save it in variable trigger, trigger is an uint between 0 and 256, in binary it is:
-   (pass 2)(pass 1)(pass 0)
-   ex. 7 = pass 0, 1 and 2
-   ex. 6 = pass 1, 2
-   ex. 1 = pass 0
+(pass 2)(pass 1)(pass 0)
+ex. 7 = pass 0, 1 and 2
+ex. 6 = pass 1, 2
+ex. 1 = pass 0
 */
 
 
@@ -244,26 +244,26 @@ UInt_t CNNTracks::getTriggerBits(const edm::Event& iEvent, int triggerChunk) {
   iEvent.getByToken( TriggerResults_ , triggerResults_handle);
 
   if (triggerResults_handle.isValid()) {
-     const edm::TriggerNames & TheTriggerNames = iEvent.triggerNames(*triggerResults_handle);
-     unsigned int NTRIGGERS = HLTs_.size();
+    const edm::TriggerNames & TheTriggerNames = iEvent.triggerNames(*triggerResults_handle);
+    unsigned int NTRIGGERS = HLTs_.size();
 
-     unsigned int lastTrig = triggerChunk*12;
+    unsigned int lastTrig = triggerChunk*12;
 
-     for (unsigned int i = 0; i < lastTrig; i++) {
-       if(lastTrig > NTRIGGERS) continue;
-        for (int version = 1; version < 20; version++) {
-           std::stringstream ss;
-           ss << HLTs_[i] << "_v" << version;
-           unsigned int bit = TheTriggerNames.triggerIndex(edm::InputTag(ss.str()).label());
-           if (bit < triggerResults_handle->size() && triggerResults_handle->accept(bit) && !triggerResults_handle->error(bit)) {
-              trigger += (1<<i);
-              break;
-           }
+    for (unsigned int i = 0; i < lastTrig; i++) {
+      if(lastTrig > NTRIGGERS) continue;
+      for (int version = 1; version < 20; version++) {
+        std::stringstream ss;
+        ss << HLTs_[i] << "_v" << version;
+        unsigned int bit = TheTriggerNames.triggerIndex(edm::InputTag(ss.str()).label());
+        if (bit < triggerResults_handle->size() && triggerResults_handle->accept(bit) && !triggerResults_handle->error(bit)) {
+          trigger += (1<<i);
+          break;
         }
-     }
-   } else std::cout << "*** NO triggerResults found " << iEvent.id().run() << "," << iEvent.id().event() << std::endl;
+      }
+    }
+  } else std::cout << "*** NO triggerResults found " << iEvent.id().run() << "," << iEvent.id().event() << std::endl;
 
-   return trigger;
+  return trigger;
 }
 
 // ------------ method called for each event  ------------
@@ -430,13 +430,12 @@ void CNNTracks::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetu
 
 
 
-
-
-    }
+    if(atLeastOne)
+    track_tree->Fill();
 
   }
-  if(atLeastOne)
-    track_tree->Fill();
+
+
 
 }
 
@@ -469,11 +468,11 @@ void CNNTracks::endLuminosityBlock(edm::LuminosityBlock const &, edm::EventSetup
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void CNNTracks::fillDescriptions(edm::ConfigurationDescriptions & descriptions) {
-	//The following says we do not know what parameters are allowed so do no validation
-	// Please change this to state exactly what you do use, even if it is no parameters
-	edm::ParameterSetDescription desc;
-	desc.setUnknown();
-	descriptions.addDefault(desc);
+  //The following says we do not know what parameters are allowed so do no validation
+  // Please change this to state exactly what you do use, even if it is no parameters
+  edm::ParameterSetDescription desc;
+  desc.setUnknown();
+  descriptions.addDefault(desc);
 }
 
 //define this as a plug-in
