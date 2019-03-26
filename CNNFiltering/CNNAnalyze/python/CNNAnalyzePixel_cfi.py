@@ -35,7 +35,6 @@ pixelPairStepCNN = cms.EDAnalyzer('CNNAnalyze',
 )
 
 
-CNNDoubletsPixelSequence = cms.Sequence(pixelPairStepCNN *
-                                   )
+CNNDoubletsPixelSequence = cms.Sequence(pixelPairStepCNN)
                                    #pixelPairStepCNN *
                                    #jetCoreRegionalStepCNN)
