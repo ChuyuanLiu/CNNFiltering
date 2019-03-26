@@ -321,7 +321,7 @@ void CNNTracks::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetu
 
     atLeastOne = true;
 
-    for (size_t j = 0; j < 25; i++) {
+    for (size_t j = 0; j < 25; j++) {
       for (size_t i = 0; i < 8; i++)
       {
         hitCoords[j][i] = -9999.;
@@ -431,7 +431,7 @@ void CNNTracks::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetu
 
 
     if(atLeastOne)
-    track_tree->Fill();
+      track_tree->Fill();
 
   }
 
