@@ -104,26 +104,7 @@ filename = "data" + par.dataset
 from all2018Hlts import *
 
 if par.isLocal:
-    from qcd_filelist.py import *
-    from bujpsiphi_filelist import *
-    from bsjpsiphi_filelist import *
-    from bbbar_filelist import *
-    from bbbar_soft_filelist import *
-    from y4140_lhcb_filelist import *
-    from y4140_zero_filelist import *
-    from y4273_lhcb_filelist import *
-    from y4273_zero_filelist import *
-    from y4704_zero_filelist import *
-    from y4704_lhcb_filelist import *
-    from y4506_lhcb_filelist import *
-    from y4506_zero_filelist import *
-    #from y4273_spin_filelist import *
-    #from y4506_spin_filelist import *
-    from qcd_ml_filelist import *
-    from bbbar_ml_filelist import *
-    from bstojpsiphi_softqcd_filelist import *
-    from bbhook_filelist import *
-    from BBbar_Hook_Samet import *
+    from qcd_filelist import *
 
     filename = par.mc
 
