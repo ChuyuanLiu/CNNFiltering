@@ -88,7 +88,7 @@ class CNNTracks:public edm::EDAnalyzer {
   UInt_t    pu;
 
   Double_t pt, eta, phi, pdg, mompdg;
-  Double_t charge, dxy, dz, NPixelHits, NStripHits, NTrackhits;
+  Double_t charge, dxy, dz, nHits, NPixelHits, NStripHits, NTrackhits;
   Double_t NBPixHits, NPixLayers, NTraLayers, NStrLayers, NBPixLayers;
 
   std::array<double,20> hltword;
@@ -147,6 +147,7 @@ HLTs_(iConfig.getParameter<std::vector<std::string>>("HLTs"))
   track_tree->Branch("pdg",     &pdg,     "pdg/D");
   track_tree->Branch("mompdg",  &mompdg,  "mompdg/D");
 
+  track_tree->Branch("nHits",  &nHits,  "nHits/D");
   track_tree->Branch("NPixelHits",  &NPixelHits,  "NPixelHits/D");
   track_tree->Branch("NStripHits",  &NStripHits,  "NStripHits/D");
   track_tree->Branch("NTrackhits",  &NTrackhits,  "NTrackhits/D");
@@ -318,60 +319,116 @@ void CNNTracks::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetu
       }
     }
 
-    int noHits = t.hitCoords_.size();
+    atLeastOne = true;
+
+    for (size_t i = 0; i < 25; i++) {
+      for (size_t i = 0; i < 8; i++)
+      {
+        hitCoords[j][i] = -9999.;
+      }
+      for (size_t i = 0; i < 13; i++)
+      {
+        pixelInfos[j][i] = -9999.;
+      }
+
+      for (size_t i = 0; i < 20; i++)
+      {
+        pixelADC[j][i] = -9999.;
+        pixelADCx[j][i] = -9999.;
+        pixelADCy[j][i] = -9999.;
+        stripADC[j][i] = -9999.;
+      }
+      for (size_t i = 0; i < 7; i++)
+      {
+        stripInfos[j][i] = -9999.;
+      }
+    }
+
+
     int maxHits = 25;
     int minHits = -std::max(maxHits,noHits);
-
+    int noHits = t.hitCoords_.size();
     ntracks++;
 
-    pt  = t.pt();
-    eta = t.eta();
-    phi = t.phi();
-    charge = t.charge();
-    dxy = t.bestTrack()->dxy();
-    dz  = t.bestTrack()->dz();
-    NPixelHits = t.bestTrack()->hitPattern().numberOfValidPixelHits();
-    NStripHits = t.bestTrack()->hitPattern().numberOfValidStripHits();
-    NTrackhits = t.bestTrack()->hitPattern().numberOfValidTrackerHits();
-    NBPixHits  = t.bestTrack()->hitPattern().numberOfValidStripHits();
-    NPixLayers = t.bestTrack()->hitPattern().pixelLayersWithMeasurement();
-    NTraLayers = t.bestTrack()->hitPattern().trackerLayersWithMeasurement();
-    NStrLayers = t.bestTrack()->hitPattern().stripLayersWithMeasurement();
-    NBPixLayers = t.bestTrack()->hitPattern().pixelBarrelLayersWithMeasurement();
+    nHits = (Double_t) noHits;
+
+    pt  = (Double_t) t.pt();
+    eta = (Double_t) t.eta();
+    phi = (Double_t) t.phi();
+    charge = (Double_t) t.charge();
+    dxy = (Double_t) t.bestTrack()->dxy();
+    dz  = (Double_t) t.bestTrack()->dz();
+
+    NPixelHits = (Double_t) t.bestTrack()->hitPattern().numberOfValidPixelHits();
+    NStripHits = (Double_t) t.bestTrack()->hitPattern().numberOfValidStripHits();
+    NTrackhits = (Double_t) t.bestTrack()->hitPattern().numberOfValidTrackerHits();
+    NBPixHits  = (Double_t) t.bestTrack()->hitPattern().numberOfValidStripHits();
+    NPixLayers = (Double_t) t.bestTrack()->hitPattern().pixelLayersWithMeasurement();
+    NTraLayers = (Double_t) t.bestTrack()->hitPattern().trackerLayersWithMeasurement();
+    NStrLayers = (Double_t) t.bestTrack()->hitPattern().stripLayersWithMeasurement();
+    NBPixLayers = (Double_t) t.bestTrack()->hitPattern().pixelBarrelLayersWithMeasurement();
 
     pdg = pdgId;
     mompdg = momPdgId;
+
     for(int j = 0; j<minHits;j++)
     {
-
       auto coords  = t.hitCoords_[j];
+      for (size_t i = 0; i < 8; i++)
+      {
+        hitCoords[j][i] = (Double_t) coords[i];
+      }
+    }
+
+    minHits = -std::max(maxHits,noHits);
+    noHits = t.pixelInfos_.size();
+    ntracks++;
+
+    for(int j = 0; j<minHits;j++)
+    {
       auto pixinf  = t.pixelInfos_[j];
       auto pixadc  = t.pixelADC_[j];
       auto pixadx  = t.pixelADCx_[j];
       auto pixady  = t.pixelADCy_[j];
+
+      for (size_t i = 0; i < 13; i++)
+      {
+        pixelInfos[j][i] = (Double_t) pixinf[i];
+      }
+
+      for (size_t i = 0; i < 20; i++)
+      {
+        pixelADC[j][i] = (Double_t) pixadc[i];
+        pixelADCx[j][i] = (Double_t) pixadx[i];
+        pixelADCy[j][i] = (Double_t) pixady[i];
+      }
+    }
+
+    minHits = -std::max(maxHits,noHits);
+    noHits = t.stripInfos_.size();
+    ntracks++;
+
+    for(int j = 0; j<minHits;j++)
+    {
       auto strinf  = t.stripInfos_[j];
       auto stradc  = t.stripADC_[j];
 
-      for (size_t i = 0; i < 8; i++)
-      {
-        hitCoords[j][i] = coords[i];
-      }
-      for (size_t i = 0; i < 13; i++)
-      {
-        pixelInfos[j][i] = pixinf[i];
-      }
       for (size_t i = 0; i < 20; i++)
       {
-        pixelADC[j][i] = pixadc[i];
-        pixelADCx[j][i] = pixadx[i];
-        pixelADCy[j][i] = pixady[i];
-        stripADC[j][i] = stradc[i];
+
+        stripADC[j][i] = (Double_t) stradc[i];
       }
 
       for (size_t i = 0; i < 7; i++)
       {
-        stripInfos[j][i] = strinf[i];
+        stripInfos[j][i] = (Double_t) strinf[i];
       }
+    }
+
+
+
+
+
 
     }
 
