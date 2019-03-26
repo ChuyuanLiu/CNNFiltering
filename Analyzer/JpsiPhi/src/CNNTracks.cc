@@ -348,7 +348,7 @@ void CNNTracks::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetu
     int maxHits = 25;
 
     int noHits = t.hitCoords_.size();
-    int minHits = -std::max(maxHits,noHits);
+    int minHits = -std::max(-maxHits,-noHits);
 
     ntracks++;
 
@@ -383,7 +383,7 @@ void CNNTracks::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetu
     }
 
     noHits = t.pixelInfos_.size();
-    minHits = -std::max(maxHits,noHits);
+    minHits = -std::max(-maxHits,-noHits);
     ntracks++;
 
     for(int j = 0; j<minHits;j++)
@@ -407,7 +407,7 @@ void CNNTracks::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetu
     }
 
     noHits = t.stripInfos_.size();
-    minHits = -std::max(maxHits,noHits);
+    minHits = -std::max(-maxHits,-noHits);
     ntracks++;
 
     for(int j = 0; j<minHits;j++)
