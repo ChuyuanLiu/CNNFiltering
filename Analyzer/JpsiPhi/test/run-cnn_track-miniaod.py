@@ -103,9 +103,8 @@ filename = "data" + par.dataset
 
 from all2018Hlts import *
 
-'''
 if par.isLocal:
-
+    from qcd_filelist.py import *
     from bujpsiphi_filelist import *
     from bsjpsiphi_filelist import *
     from bbbar_filelist import *
@@ -128,25 +127,9 @@ if par.isLocal:
 
     filename = par.mc
 
-    fileLists = {"qcd_ml" : qcd_ml_filelist,"bbbar_hard" : bbbar_file_list, "bbbar_soft" : bbbar_soft_filelist,
-		 "bbhook_samet": BBbar_Hook_Samet,
-                 "y4273_zero" : y4273_zero_filelist, "y4273_lhcb" : y4273_lhcb_filelist ,
-                 "y4140_lhcb" : y4140_lhcb_filelist, "y4140_zero" : y4140_zero_filelist,
-                 "y4506_lhcb" : y4506_lhcb_filelist, "y4506_zero" : y4506_zero_filelist,
-                 "y4704_lhcb" : y4704_lhcb_filelist, "y4704_zero" : y4704_zero_filelist,
-                # "y4273_spin" : y4273_spin_filelist, "y4506_spin" : y4506_spin_filelist,
-                 "bstojpsiphi_softqcd" : bstojpsiphi_softqcd_file_list, "bsjpsiphi" : bsjpsiphi_filelist,
-                 "bujpsiphi" : bujpsiphi_filelist, "bbbar_hook": bbhook_filelist}
+    fileLists = {"qcd_ml" : qcd_filelist}
 
-    gtags = {"qcd_ml" : "100X_upgrade2018_realistic_v10", "bbhook_samet" : "100X_upgrade2018_realistic_v10", "bbbar_hard" : "100X_upgrade2018_realistic_v10",
-                 "bbbar_soft" : "100X_upgrade2018_realistic_v10", "bbbar_hook" : "100X_upgrade2018_realistic_v10",
-                 "y4273_zero" : "100X_upgrade2018_realistic_v10",  "y4273_lhcb" : "100X_upgrade2018_realistic_v10"  ,
-                 "y4140_lhcb" : "100X_upgrade2018_realistic_v10",  "y4140_zero" : "100X_upgrade2018_realistic_v10",
-                 "y4506_lhcb" : "100X_upgrade2018_realistic_v10",  "y4506_zero" : "100X_upgrade2018_realistic_v10",
-                 "y4704_lhcb" : "100X_upgrade2018_realistic_v10",  "y4704_zero" : "100X_upgrade2018_realistic_v10",
-                 "y4273_spin" : "100X_upgrade2018_realistic_v10",  "y4506_spin" : "100X_upgrade2018_realistic_v10",
-                 "bujpsiphi" : "100X_upgrade2018_realistic_v10", "bsjpsiphi" : "100X_upgrade2018_realistic_v10",
-                 "bstojpsiphi_softqcd" : "94X_mc2017_realistic_v10" }
+    gtags = {"qcd_ml" : 'auto:phase1_2018_realistic'}
 
     par.gtag = gtags[filename]
     n= par.n
@@ -155,7 +138,7 @@ if par.isLocal:
     size = (len(filelist) + n) / n
     input_file = filelist[min(i*size,len(filelist)):min((i+1)*size,len(filelist))]
     print min((i+1)*size,len(filelist))
-'''
+
 
 if par.isGen:
     filename = filename + "_genOnly_"
@@ -170,7 +153,7 @@ from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 #process.GlobalTag = GlobalTag(process.GlobalTag, '94X_dataRun2_ReReco_EOY17_v2') #F
 #process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v11')
 #process.GlobalTag = GlobalTag(process.GlobalTag, par.gtag)
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2018_realistic', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, par.gtag, '')
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
 
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
