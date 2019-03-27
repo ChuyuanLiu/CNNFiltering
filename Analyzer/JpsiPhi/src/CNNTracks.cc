@@ -324,23 +324,23 @@ void CNNTracks::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetu
     for (size_t j = 0; j < 25; j++) {
       for (size_t i = 0; i < 8; i++)
       {
-        hitCoords[j][i] = -9999.;
+        hitCoords[j][i] = -0.000012345678;
       }
       for (size_t i = 0; i < 13; i++)
       {
-        pixelInfos[j][i] = -9999.;
+        pixelInfos[j][i] = -1.2345678;
       }
 
       for (size_t i = 0; i < 20; i++)
       {
-        pixelADC[j][i] = -9999.;
-        pixelADCx[j][i] = -9999.;
-        pixelADCy[j][i] = -9999.;
-        stripADC[j][i] = -9999.;
+        pixelADC[j][i] = -1.2345678;
+        pixelADCx[j][i] = -1.2345678;
+        pixelADCy[j][i] = -1.2345678;
+        stripADC[j][i] = -1.2345678;
       }
       for (size_t i = 0; i < 7; i++)
       {
-        stripInfos[j][i] = -9999.;
+        stripInfos[j][i] = -1.2345678;
       }
     }
 
