@@ -178,6 +178,9 @@ namespace {
         for (int ny = 0; ny < padSize; ++ny)
           zeroPad.push_back(0.0);
 
+      for (int iP = 0; iP < padSize*padSize*cnnLayers*2*numOfDoublets; ++iP)
+        vPad[iP] = 0.0;
+
       std::vector<int> inIndex, outIndex;
       for (int iD = 0; iD < numOfDoublets; iD++)
       {
@@ -187,11 +190,11 @@ namespace {
 
         std::vector< std::vector< float>> hitPads,inHitPads,outHitPads;
 
-        for(int i = 0; i < cnnLayers; ++i)
-        {
-          inHitPads.push_back(zeroPad);
-          outHitPads.push_back(zeroPad);
-        }
+        // for(int i = 0; i < cnnLayers; ++i)
+        // {
+        //   inHitPads.push_back(zeroPad);
+        //   outHitPads.push_back(zeroPad);
+        // }
 
         float deltaA = 0.0, deltaADC = 0.0, deltaS = 0.0, deltaR = 0.0;
         float deltaPhi = 0.0, deltaZ = 0.0, zZero = 0.0;
@@ -219,10 +222,6 @@ namespace {
         //
         hitPads.push_back(inPad);
         hitPads.push_back(outPad);
-
-        //Pad Initialization
-        for (int iP = 0; iP < padSize*padSize*cnnLayers*2; ++iP)
-          vPad[iP + doubOffset + j*padSize*padSize*cnnLayers] = 0.0;
 
         for(int j = 0; j < 2; ++j)
         {
@@ -339,10 +338,11 @@ namespace {
 
         }
 
-        for (int nx = 0; nx < padSize*padSize; ++nx)
-            inHitPads[layerIds[0]][nx] = hitPads[0][nx];
-        for (int nx = 0; nx < padSize*padSize; ++nx)
-            outHitPads[layerIds[1]][nx] = hitPads[1][nx];
+        // for (int nx = 0; nx < padSize*padSize; ++nx)
+        //     inHitPads[layerIds[0]][nx] = hitPads[0][nx];
+        // for (int nx = 0; nx < padSize*padSize; ++nx)
+        //     outHitPads[layerIds[1]][nx] = hitPads[1][nx];
+
         int inPadOffset = padSize*padSize*layerIds[0];
         int outPadOffset = padSize*padSize*layerIds[1] + padSize*padSize*10;
 
