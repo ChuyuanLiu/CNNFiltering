@@ -129,7 +129,7 @@ namespace {
 
       std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}, layerIds;
 
-      tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/freeze_models/dense_pix_model_final.pb");
+      tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/OPENDATA/NewOpenData/cnn_layermap_model.pb");
       //tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/srv/CMSSW_10_3_0_pre5/dense_pix_model_final.pb");
       tensorflow::Session* session = tensorflow::createSession(graphDef,16);
 
