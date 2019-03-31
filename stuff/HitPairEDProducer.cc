@@ -126,9 +126,9 @@ namespace {
 
       // Load graph
       tensorflow::setLogging("0");
-  
+
       std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}, layerIds;
-  
+
       //tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/freeze_models/dense_pix_model_final.pb");
       //tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/srv/CMSSW_10_3_0_pre5/dense_pix_model_final.pb");
       tensorflow::Session* session = tensorflow::createSession(graphDef,16);
@@ -184,19 +184,19 @@ namespace {
         //copyDoublets.add()
         std::vector <unsigned int> subDetIds, detIds ;
 
-        // std::vector< std::vector< float>> hitPads,inHitPads,outHitPads;
+        std::vector< std::vector< float>> hitPads,inHitPads,outHitPads;
 
-        // for(int i = 0; i < cnnLayers; ++i)
-        // {
-        //   inHitPads.push_back(zeroPad);
-        //   outHitPads.push_back(zeroPad);
-        // }
+        for(int i = 0; i < cnnLayers; ++i)
+        {
+          inHitPads.push_back(zeroPad);
+          outHitPads.push_back(zeroPad);
+        }
 
         float deltaA = 0.0, deltaADC = 0.0, deltaS = 0.0, deltaR = 0.0;
         float deltaPhi = 0.0, deltaZ = 0.0, zZero = 0.0;
 
         int iLab = 0;
-        int infoOffset = (infoSize)*iD;       
+        int infoOffset = (infoSize)*iD;
 
         std::vector< RecHitsSortedInPhi::Hit> hits;
         std::vector< const SiPixelRecHit*> siHits;
@@ -215,11 +215,15 @@ namespace {
 
         if (! (((subDetIds[0]==1) || (subDetIds[0]==2)) && ((subDetIds[1]==1) || (subDetIds[1]==2)))) continue;
         //
-        // hitPads.push_back(inPad);
-        // hitPads.push_back(outPad);
+        hitPads.push_back(inPad);
+        hitPads.push_back(outPad);
+
+        //Pad Initialization
+        for (int iP = 0; iP < padSize*padSize*cnnLayers*2; ++iP)
+          vPad[iP + doubOffset + j*padSize*padSize*cnnLayers] = 0.0;
 
         for(int j = 0; j < 2; ++j)
-        { 
+        {
 
           vLab[iLab + infoOffset] = (float)(siHits[j]->globalState()).position.x(); iLab++;
           vLab[iLab + infoOffset] = (float)(siHits[j]->globalState()).position.y(); iLab++;
@@ -292,31 +296,31 @@ namespace {
           deltaR   -= copyDoublets.r(iD,layers[j]); deltaR *= -1.0;
           deltaPhi -= phi; deltaPhi *= -1.0;
 
-          // TH2F hClust("hClust","hClust",
-          // padSize,
-          // thisCluster->x()-padSize/2,
-          // thisCluster->x()+padSize/2,
-          // padSize,
-          // thisCluster->y()-padSize/2,
-          // thisCluster->y()+padSize/2);
-          //
-          // //Initialization
-          // for (int nx = 0; nx < padSize; ++nx)
-          // for (int ny = 0; ny < padSize; ++ny)
-          // hClust.SetBinContent(nx,ny,0.0);
-          //
-          // for (int k = 0; k < thisCluster->size(); ++k)
-          // hClust.SetBinContent(hClust.FindBin((float)thisCluster->pixel(k).x, (float)thisCluster->pixel(k).y),(float)thisCluster->pixel(k).adc);
-          //
-          //
-          // for (int ny = padSize; ny>0; --ny)
-          // {
-          //   for(int nx = 0; nx<padSize; nx++)
-          //   {
-          //     int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
-          //     hitPads[j].push_back(hClust.GetBinContent(n));
-          //   }
-          // }
+          TH2F hClust("hClust","hClust",
+          padSize,
+          thisCluster->x()-padSize/2,
+          thisCluster->x()+padSize/2,
+          padSize,
+          thisCluster->y()-padSize/2,
+          thisCluster->y()+padSize/2);
+
+          //Initialization
+          for (int nx = 0; nx < padSize; ++nx)
+          for (int ny = 0; ny < padSize; ++ny)
+          hClust.SetBinContent(nx,ny,0.0);
+
+          for (int k = 0; k < thisCluster->size(); ++k)
+            hClust.SetBinContent(hClust.FindBin((float)thisCluster->pixel(k).x, (float)thisCluster->pixel(k).y),(float)thisCluster->pixel(k).adc);
+
+
+          for (int ny = padSize; ny>0; --ny)
+          {
+            for(int nx = 0; nx<padSize; nx++)
+            {
+              int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
+              hitPads[j].push_back(hClust.GetBinContent(n));
+            }
+          }
 
 
           // //Pad Initialization
@@ -333,10 +337,18 @@ namespace {
 
         }
 
-        // for (int nx = 0; nx < padSize*padSize; ++nx)
-        //     inHitPads[layerIds[0]][nx] = hitPads[0][nx];
-        // for (int nx = 0; nx < padSize*padSize; ++nx)
-        //     outHitPads[layerIds[1]][nx] = hitPads[1][nx];
+        for (int nx = 0; nx < padSize*padSize; ++nx)
+            inHitPads[layerIds[0]][nx] = hitPads[0][nx];
+        for (int nx = 0; nx < padSize*padSize; ++nx)
+            outHitPads[layerIds[1]][nx] = hitPads[1][nx];
+        int inPadOffset = padSize*padSize*layerIds[0];
+        int outPadOffset = padSize*padSize*layerIds[1] + padSize*padSize*10;
+
+
+        for (int nx = 0; nx < padSize*padSize; ++nx)
+          vPad[inPadOffset + nx] = hitPads[0][nx];
+        for (int nx = 0; nx < padSize*padSize; ++nx)
+          vPad[outPadOffset + nx] = hitPads[1][nx];
 
         // std::cout << "Inner hit layer : " << innerLayer->seqNum() << " - " << layerIds[0]<< std::endl;
         //
@@ -395,15 +407,15 @@ namespace {
         // std::cout << "iLab = "<<iLab << std::endl;
 
       }
-      // std::cout << "Making Inference" << std::endl;
+      std::cout << "Making Inference" << std::endl;
 
       auto finishData = std::chrono::high_resolution_clock::now();
 
       auto startInf = std::chrono::high_resolution_clock::now();
-      // tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
-      //               { "output/Softmax" }, &outputs);
-      tensorflow::run(session, { { "info_input", inputFeat } },
+      tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
                     { "output/Softmax" }, &outputs);
+      //tensorflow::run(session, { { "info_input", inputFeat } },
+      //              { "output/Softmax" }, &outputs);
       auto finishInf = std::chrono::high_resolution_clock::now();
       // std::cout << "Cleaning doublets" << std::endl;
 
