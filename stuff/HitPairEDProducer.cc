@@ -353,9 +353,9 @@ namespace {
 
 
         for (int nx = 0; nx < padSize*padSize; ++nx)
-          vPad[inPadOffset + nx] = hitPads[0][nx];
+          vPad[nx*20 + layerIds[0]] = hitPads[0][nx];
         for (int nx = 0; nx < padSize*padSize; ++nx)
-          vPad[outPadOffset + nx] = hitPads[1][nx];
+          vPad[nx*20 + layerIds[1] + 10] = hitPads[1][nx];
 
         // std::cout << "Inner hit layer : " << innerLayer->seqNum() << " - " << layerIds[0]<< std::endl;
         //
