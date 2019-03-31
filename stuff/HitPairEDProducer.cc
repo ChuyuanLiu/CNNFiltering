@@ -386,19 +386,19 @@ namespace {
         //
         // }
         //
-        // std::cout << "TF Translation" << std::endl;
-        // for(int i = 0; i < cnnLayers*2; ++i)
-        // {
-        //   std::cout << i << std::endl;
-        //   int theOffset = i*padSize*padSize;
-        //   for (int nx = 0; nx < padSize; ++nx)
-        //     for (int ny = 0; ny < padSize; ++ny)
-        //     {
-        //       std::cout << vPad[(ny + nx*padSize) + theOffset + doubOffset] << " ";
-        //     }
-        //     std::cout << std::endl;
-        //
-        // }
+        std::cout << "TF Translation" << std::endl;
+        for(int i = 0; i < cnnLayers*2; ++i)
+        {
+          std::cout << i << std::endl;
+          int theOffset = i*padSize*padSize;
+          for (int nx = 0; nx < padSize; ++nx)
+            for (int ny = 0; ny < padSize; ++ny)
+            {
+              std::cout << vPad[(ny + nx*padSize) + theOffset + doubOffset] << " ";
+            }
+            std::cout << std::endl;
+
+        }
 
         zZero = (siHits[0]->globalState()).position.z();
         zZero -= copyDoublets.r(iD,layers[0]) * (deltaZ/deltaR);
@@ -412,6 +412,12 @@ namespace {
         vLab[iLab + infoOffset] = zZero    ; iLab++;
 
         // std::cout << "iLab = "<<iLab << std::endl;
+        std::cout << "INFOS" << std::endl;
+        for(int i = 0; i < infoSize; ++i)
+        {
+          std::cout << vLab[i] << " ";
+        }
+        std::cout << std::endl;
 
       }
       std::cout << "Making Inference" << std::endl;
