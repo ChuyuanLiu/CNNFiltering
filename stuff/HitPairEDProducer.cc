@@ -27,6 +27,9 @@
 #include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
 #include "TH2F.h"
 
+#include <iostream>
+#include <string>
+#include <fstream>
 #include <chrono>
 
 // #include <algorithm>
@@ -423,16 +426,19 @@ namespace {
       auto finishInf = std::chrono::high_resolution_clock::now();
       // std::cout << "Cleaning doublets" << std::endl;
 
-      std::string fileName = "infered/" + std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
-      fileName += "_" + processName_ + "_dnn_doublets.txt";
-      std::ofstream outCNNFile(fileName, std::ofstream::app);
+      std::ofstream outScore("inference.txt", std::ofstream::app);
 
       auto startPush = std::chrono::high_resolution_clock::now();
       copyDoublets.clear();
       float* score = outputs[0].flat<float>().data();
       for (int i = 0; i < numOfDoublets; i++)
+      {
+        outScore << score[i*2 + 1] << std::endl;
         if(score[i*2 + 1]>t_)
+        {
           copyDoublets.add(inIndex[i],outIndex[i]);
+        }
+      }
       auto finishPush = std::chrono::high_resolution_clock::now();
 
       std::chrono::duration<double> elapsedInf  = finishInf - startInf;
