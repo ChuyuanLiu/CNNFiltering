@@ -129,7 +129,7 @@ namespace {
 
       std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}, layerIds;
 
-      //tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/freeze_models/dense_pix_model_final.pb");
+      tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/freeze_models/dense_pix_model_final.pb");
       //tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/srv/CMSSW_10_3_0_pre5/dense_pix_model_final.pb");
       tensorflow::Session* session = tensorflow::createSession(graphDef,16);
 
@@ -141,7 +141,8 @@ namespace {
         }
       }
 
-      int numOfDoublets = thisDoublets.size(), padSize = 16 , infoSize = 67;
+      int numOfDoublets = thisDoublets.size(), padSize = 16 , infoSize = 67, cnnLayers = 10;
+      int doubletSize = padSize * padSize * cnnLayers*2;
 
       tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {numOfDoublets,padSize,padSize,cnnLayers*2});
       tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {numOfDoublets,infoSize});
@@ -197,6 +198,7 @@ namespace {
 
         int iLab = 0;
         int infoOffset = (infoSize)*iD;
+        int doubOffset = (doubletSize)*iD;
 
         std::vector< RecHitsSortedInPhi::Hit> hits;
         std::vector< const SiPixelRecHit*> siHits;
