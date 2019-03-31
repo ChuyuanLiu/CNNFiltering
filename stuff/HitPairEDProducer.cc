@@ -150,6 +150,8 @@ namespace {
       float* vPad = inputPads.flat<float>().data();
       float* vLab = inputFeat.flat<float>().data();
 
+      float theMean = 13382.0011321, theStd = 10525.1252954;
+
       HitDoublets copyDoublets = std::move(thisDoublets);
 
       // std::cout << "copyDoublets.size()=" << copyDoublets.size() << std::endl;
@@ -319,7 +321,7 @@ namespace {
             for(int nx = 0; nx<padSize; nx++)
             {
               int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
-              hitPads[j].push_back(hClust.GetBinContent(n));
+              hitPads[j].push_back(((hClust.GetBinContent(n) - theMean) / theStd));
             }
           }
 
@@ -414,12 +416,16 @@ namespace {
       auto finishData = std::chrono::high_resolution_clock::now();
 
       auto startInf = std::chrono::high_resolution_clock::now();
-      tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
-                    { "output/Softmax" }, &outputs);
+      tensorflow::run(session, { { "hit_shape_input_1", inputPads }, { "info_input_1", inputFeat } },
+                    { "output_1/Softmax" }, &outputs);
       //tensorflow::run(session, { { "info_input", inputFeat } },
       //              { "output/Softmax" }, &outputs);
       auto finishInf = std::chrono::high_resolution_clock::now();
       // std::cout << "Cleaning doublets" << std::endl;
+
+      std::string fileName = "infered/" + std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
+      fileName += "_" + processName_ + "_dnn_doublets.txt";
+      std::ofstream outCNNFile(fileName, std::ofstream::app);
 
       auto startPush = std::chrono::high_resolution_clock::now();
       copyDoublets.clear();
