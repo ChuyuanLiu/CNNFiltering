@@ -145,10 +145,10 @@ namespace {
       }
 
       int numOfDoublets = thisDoublets.size(), padSize = 16 , infoSize = 67, cnnLayers = 10;
-      int doubletSize = padSize * padSize * cnnLayers*2;
+      int doubletSize = padSize * padSize * cnnLayers*2, batchSize = 25000, batchCounter = 0; dCounter=0;
 
-      tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {numOfDoublets,padSize,padSize,cnnLayers*2});
-      tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {numOfDoublets,infoSize});
+      tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {batchSize,padSize,padSize,cnnLayers*2}); //25k batches
+      tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {batchSize,infoSize}); //25k batches
 
       float* vPad = inputPads.flat<float>().data();
       float* vLab = inputFeat.flat<float>().data();
@@ -178,15 +178,17 @@ namespace {
 
       HitDoublets::layer layers[2] = {HitDoublets::inner, HitDoublets::outer};
 
+      std::vector < float > scores;
       std::vector < float > zeroPad;
       for (int nx = 0; nx < padSize; ++nx)
         for (int ny = 0; ny < padSize; ++ny)
           zeroPad.push_back(0.0);
 
-      for (int iP = 0; iP < padSize*padSize*cnnLayers*2*numOfDoublets; ++iP)
+      for (int iP = 0; iP < padSize*padSize*cnnLayers*2*batchSize; ++iP)
         vPad[iP] = 0.0;
 
       std::vector<int> inIndex, outIndex;
+
       for (int iD = 0; iD < numOfDoublets; iD++)
       {
 
@@ -200,6 +202,8 @@ namespace {
         //   inHitPads.push_back(zeroPad);
         //   outHitPads.push_back(zeroPad);
         // }
+
+        std::ofstream outScore("inference.txt", std::ofstream::app);
 
         float deltaA = 0.0, deltaADC = 0.0, deltaS = 0.0, deltaR = 0.0;
         float deltaPhi = 0.0, deltaZ = 0.0, zZero = 0.0;
@@ -411,6 +415,38 @@ namespace {
         vLab[iLab + infoOffset] = deltaZ   ; iLab++;
         vLab[iLab + infoOffset] = zZero    ; iLab++;
 
+
+        dCounter++;
+        if(dCounter == batchSize)
+        {
+          dCounter = 0;
+          std::cout << "Making Inference - " << batchCounter << std::endl;
+
+          auto startInf = std::chrono::high_resolution_clock::now();
+          tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
+                        { "output/Softmax" }, &outputs);
+          //tensorflow::run(session, { { "info_input", inputFeat } },
+          //              { "output/Softmax" }, &outputs);
+          auto finishInf = std::chrono::high_resolution_clock::now();
+          std::chrono::duration<double> elapsedInf  = finishInf - startInf;
+
+          for (int iP = 0; iP < padSize*padSize*cnnLayers*2*batchSize; ++iP)
+            vPad[iP] = 0.0;
+          for (int iP = 0; iP < padSize*padSize*cnnLayers*2*batchSize; ++iP)
+            vLab[iP] = 0.0;
+
+          float* score = outputs[0].flat<float>().data();
+
+          for (int i = 0; i < batchSize; i++)
+          {
+            outScore << score[i*2 + 1] << std::endl;
+            scores.push_back(score[i*2 + 1]);
+          }
+
+          infTime = infTime + elapsedInf.count();
+
+          batchCounter++;
+        }
         // std::cout << "iLab = "<<iLab << std::endl;
         // std::cout << "INFOS" << std::endl;
         // for(int i = 0; i < infoSize; ++i)
@@ -420,27 +456,22 @@ namespace {
         // std::cout << std::endl;
 
       }
-      std::cout << "Making Inference" << std::endl;
+
 
       auto finishData = std::chrono::high_resolution_clock::now();
 
-      auto startInf = std::chrono::high_resolution_clock::now();
-      tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
-                    { "output/Softmax" }, &outputs);
-      //tensorflow::run(session, { { "info_input", inputFeat } },
-      //              { "output/Softmax" }, &outputs);
-      auto finishInf = std::chrono::high_resolution_clock::now();
+
       // std::cout << "Cleaning doublets" << std::endl;
 
-      std::ofstream outScore("inference.txt", std::ofstream::app);
+
 
       auto startPush = std::chrono::high_resolution_clock::now();
       copyDoublets.clear();
-      float* score = outputs[0].flat<float>().data();
+      // float* score = outputs[0].flat<float>().data();
       for (int i = 0; i < numOfDoublets; i++)
       {
         outScore << score[i*2 + 1] << std::endl;
-        if(score[i*2 + 1]>t_)
+        if(scores[i]>t_)
         {
           copyDoublets.add(inIndex[i],outIndex[i]);
         }
@@ -455,8 +486,8 @@ namespace {
       //
       std::cout << "Staring size       : " << numOfDoublets << std::endl;
       std::cout << "New size           : " << copyDoublets.size() << std::endl;
-      std::cout << "Elapsed time (data): " << elapsedData.count() << " s\n";
-      std::cout << "Elapsed time (inf) : " << elapsedInf.count() << " s\n";
+      std::cout << "Elapsed time (data): " << elapsedData.count() - infTime << " s\n";
+      std::cout << "Elapsed time (inf) : " << infTime << " s\n";
       std::cout << "Elapsed time (push): " << elapsedPush.count() << " s\n";
       std::cout << "Tot     time       : " << elapsedAll.count() << " s\n";
 
