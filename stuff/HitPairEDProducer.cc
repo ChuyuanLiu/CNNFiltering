@@ -135,13 +135,13 @@ namespace {
       tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/OPENDATA/NewOpenData/cnn_layermap_model.pb");
       //tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/srv/CMSSW_10_3_0_pre5/dense_pix_model_final.pb");
 
-      for (int i = 0; i < graphDef->node_size(); ++i)
-      {
-        auto node = graphDef->mutable_node(i);
-        if (node->device().empty()) {
-          node->set_device("/device:GPU:0");
-        }
-      }
+      // for (int i = 0; i < graphDef->node_size(); ++i)
+      // {
+      //   auto node = graphDef->mutable_node(i);
+      //   if (node->device().empty()) {
+      //     node->set_device("/device:GPU:0");
+      //   }
+      // }
 
       int numOfDoublets = thisDoublets.size(), padSize = 16 , infoSize = 67, cnnLayers = 10;
       int doubletSize = padSize * padSize * cnnLayers*2, batchSize = 25000, batchCounter = 0, dCounter=0;
