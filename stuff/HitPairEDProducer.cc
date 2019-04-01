@@ -145,7 +145,7 @@ namespace {
       }
 
       int numOfDoublets = thisDoublets.size(), padSize = 16 , infoSize = 67, cnnLayers = 10;
-      int doubletSize = padSize * padSize * cnnLayers*2, batchSize = 25000, batchCounter = 0; dCounter=0;
+      int doubletSize = padSize * padSize * cnnLayers*2, batchSize = 25000, batchCounter = 0, dCounter=0;
 
       tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {batchSize,padSize,padSize,cnnLayers*2}); //25k batches
       tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {batchSize,infoSize}); //25k batches
@@ -188,6 +188,8 @@ namespace {
         vPad[iP] = 0.0;
 
       std::vector<int> inIndex, outIndex;
+
+      double infTime = 0.0;
 
       for (int iD = 0; iD < numOfDoublets; iD++)
       {
@@ -432,7 +434,7 @@ namespace {
 
           for (int iP = 0; iP < padSize*padSize*cnnLayers*2*batchSize; ++iP)
             vPad[iP] = 0.0;
-          for (int iP = 0; iP < padSize*padSize*cnnLayers*2*batchSize; ++iP)
+          for (int iP = 0; iP < infoSize*batchSize; ++iP)
             vLab[iP] = 0.0;
 
           float* score = outputs[0].flat<float>().data();
@@ -460,17 +462,11 @@ namespace {
 
       auto finishData = std::chrono::high_resolution_clock::now();
 
-
-      // std::cout << "Cleaning doublets" << std::endl;
-
-
-
       auto startPush = std::chrono::high_resolution_clock::now();
       copyDoublets.clear();
       // float* score = outputs[0].flat<float>().data();
       for (int i = 0; i < numOfDoublets; i++)
       {
-        outScore << score[i*2 + 1] << std::endl;
         if(scores[i]>t_)
         {
           copyDoublets.add(inIndex[i],outIndex[i]);
@@ -479,7 +475,6 @@ namespace {
 
       auto finishPush = std::chrono::high_resolution_clock::now();
 
-      std::chrono::duration<double> elapsedInf  = finishInf - startInf;
       std::chrono::duration<double> elapsedData = finishData - startData;
       std::chrono::duration<double> elapsedPush = finishPush - startPush;
       std::chrono::duration<double> elapsedAll  = finishPush - startData;
