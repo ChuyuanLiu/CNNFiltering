@@ -449,7 +449,7 @@ namespace {
           }
 
           dCounter = 0;
-          
+
           score = 0;
 
           infTime = infTime + elapsedInf.count();
@@ -466,7 +466,6 @@ namespace {
 
       }
 
-      score = 0;
       vPad = 0;
       vLab = 0;
 
