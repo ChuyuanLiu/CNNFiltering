@@ -134,7 +134,6 @@ namespace {
 
       tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/OPENDATA/NewOpenData/cnn_layermap_model.pb");
       //tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/srv/CMSSW_10_3_0_pre5/dense_pix_model_final.pb");
-      tensorflow::Session* session = tensorflow::createSession(graphDef,16);
 
       for (int i = 0; i < graphDef->node_size(); ++i)
       {
@@ -425,6 +424,8 @@ namespace {
 
           std::cout << "Making Inference - " << batchCounter << std::endl;
 
+          tensorflow::Session* session = tensorflow::createSession(graphDef,16);
+
           auto startInf = std::chrono::high_resolution_clock::now();
           tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
                         { "output/Softmax" }, &outputs);
@@ -455,6 +456,11 @@ namespace {
           infTime = infTime + elapsedInf.count();
 
           batchCounter++;
+
+          session->Close();
+
+          delete session;
+
         }
         // std::cout << "iLab = "<<iLab << std::endl;
         // std::cout << "INFOS" << std::endl;
