@@ -424,7 +424,7 @@ namespace {
 
           std::cout << "Making Inference - " << batchCounter << std::endl;
 
-          tensorflow::Session* session = tensorflow::createSession(graphDef,16);
+          tensorflow::Session* session = tensorflow::createSession(graphDef,2);
 
           auto startInf = std::chrono::high_resolution_clock::now();
           tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
