@@ -211,8 +211,8 @@ namespace {
         float deltaPhi = 0.0, deltaZ = 0.0, zZero = 0.0;
 
         int iLab = 0;
-        int infoOffset = (infoSize)*iD;
-        int doubOffset = (doubletSize)*iD;
+        int infoOffset = (infoSize)*dCounter;
+        int doubOffset = (doubletSize)*dCounter;
 
         std::vector< RecHitsSortedInPhi::Hit> hits;
         std::vector< const SiPixelRecHit*> siHits;
@@ -431,6 +431,8 @@ namespace {
           //              { "output/Softmax" }, &outputs);
           auto finishInf = std::chrono::high_resolution_clock::now();
           std::chrono::duration<double> elapsedInf  = finishInf - startInf;
+
+          std::cout << "Elapsed time (inf) : " << elapsedInf.count() << " s\n";
 
           for (int iP = 0; iP < padSize*padSize*cnnLayers*2*batchSize; ++iP)
             vPad[iP] = 0.0;
