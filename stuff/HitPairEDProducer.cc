@@ -88,7 +88,7 @@ namespace {
   ImplBase::ImplBase(const edm::ParameterSet& iConfig):
     maxElement_(iConfig.getParameter<unsigned int>("maxElement")),
     doInference_(iConfig.existsAs<bool>("doInference") ? iConfig.getParameter<bool>("doInference") : true),
-    t_(iConfig.existsAs<double>("thresh") ? iConfig.getParameter<double>("thresh") : 0.5),
+    t_(iConfig.existsAs<double>("thresh") ? iConfig.getParameter<double>("thresh") : 0.02867),
     generator_(0, 1, nullptr, maxElement_), // these indices are dummy, TODO: cleanup HitPairGeneratorFromLayerPair
     layerPairBegins_(iConfig.getParameter<std::vector<unsigned> >("layerPairs"))
   {
@@ -425,8 +425,8 @@ namespace {
       auto finishData = std::chrono::high_resolution_clock::now();
 
       auto startInf = std::chrono::high_resolution_clock::now();
-      tensorflow::run(session, { { "hit_shape_input_1", inputPads }, { "info_input_1", inputFeat } },
-                    { "output_1/Softmax" }, &outputs);
+      tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
+                    { "output/Softmax" }, &outputs);
       //tensorflow::run(session, { { "info_input", inputFeat } },
       //              { "output/Softmax" }, &outputs);
       auto finishInf = std::chrono::high_resolution_clock::now();
@@ -445,17 +445,20 @@ namespace {
           copyDoublets.add(inIndex[i],outIndex[i]);
         }
       }
+
       auto finishPush = std::chrono::high_resolution_clock::now();
 
       std::chrono::duration<double> elapsedInf  = finishInf - startInf;
       std::chrono::duration<double> elapsedData = finishData - startData;
       std::chrono::duration<double> elapsedPush = finishPush - startPush;
+      std::chrono::duration<double> elapsedAll  = finishPush - startData;
       //
       std::cout << "Staring size       : " << numOfDoublets << std::endl;
       std::cout << "New size           : " << copyDoublets.size() << std::endl;
       std::cout << "Elapsed time (data): " << elapsedData.count() << " s\n";
       std::cout << "Elapsed time (inf) : " << elapsedInf.count() << " s\n";
       std::cout << "Elapsed time (push): " << elapsedPush.count() << " s\n";
+      std::cout << "Tot     time       : " << elapsedAll.count() << " s\n";
 
       return copyDoublets;
 
