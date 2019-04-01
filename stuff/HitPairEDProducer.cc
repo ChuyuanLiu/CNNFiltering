@@ -178,7 +178,7 @@ namespace {
 
       HitDoublets::layer layers[2] = {HitDoublets::inner, HitDoublets::outer};
 
-      std::vector < float > scores;
+      std::vector < float > theScores;
       std::vector < float > zeroPad;
       for (int nx = 0; nx < padSize; ++nx)
         for (int ny = 0; ny < padSize; ++ny)
@@ -444,7 +444,7 @@ namespace {
           for (int i = 0; i < dCounter; i++)
           {
             outScore << score[i*2 + 1] << std::endl;
-            scores.push_back(score[i*2 + 1]);
+            theScores.push_back(score[i*2 + 1]);
           }
 
           infTime = infTime + elapsedInf.count();
@@ -462,6 +462,7 @@ namespace {
       }
 
 
+
       auto finishData = std::chrono::high_resolution_clock::now();
 
       auto startPush = std::chrono::high_resolution_clock::now();
@@ -469,7 +470,7 @@ namespace {
       // float* score = outputs[0].flat<float>().data();
       for (int i = 0; i < numOfDoublets; i++)
       {
-        if(scores[i]>t_)
+        if(theScores[i]>t_)
         {
           copyDoublets.add(inIndex[i],outIndex[i]);
         }
@@ -487,6 +488,7 @@ namespace {
       std::cout << "Elapsed time (inf) : " << infTime << " s\n";
       std::cout << "Elapsed time (push): " << elapsedPush.count() << " s\n";
       std::cout << "Tot     time       : " << elapsedAll.count() << " s\n";
+      std::cout << theScores.size() << std::endl;
 
       return copyDoublets;
 
