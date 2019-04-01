@@ -133,6 +133,7 @@ namespace {
       std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}, layerIds;
 
       tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/OPENDATA/NewOpenData/cnn_layermap_model.pb");
+      tensorflow::Session* session = tensorflow::createSession(graphDef,32);
 
       //tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/srv/CMSSW_10_3_0_pre5/dense_pix_model_final.pb");
 
@@ -424,7 +425,7 @@ namespace {
 
           std::cout << "Making Inference - " << batchCounter << std::endl;
 
-          tensorflow::Session* session = tensorflow::createSession(graphDef,32);
+
           // session->Open();
           auto startInf = std::chrono::high_resolution_clock::now();
           tensorflow::run(session, { { "hit_shape_input", inputPads }, { "info_input", inputFeat } },
