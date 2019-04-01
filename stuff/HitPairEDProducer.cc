@@ -419,7 +419,7 @@ namespace {
 
 
         dCounter++;
-        if(dCounter == batchSize)
+        if(dCounter == batchSize || iD == numOfDoublets - 1)
         {
           dCounter = 0;
           std::cout << "Making Inference - " << batchCounter << std::endl;
@@ -441,7 +441,7 @@ namespace {
 
           float* score = outputs[0].flat<float>().data();
 
-          for (int i = 0; i < batchSize; i++)
+          for (int i = 0; i < dCounter; i++)
           {
             outScore << score[i*2 + 1] << std::endl;
             scores.push_back(score[i*2 + 1]);
