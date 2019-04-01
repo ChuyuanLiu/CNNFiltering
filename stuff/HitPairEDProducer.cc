@@ -180,20 +180,19 @@ namespace {
 
       std::vector < float > theScores;
 
-
+      float* vPad = inputPads.flat<float>().data();
+      float* vLab = inputFeat.flat<float>().data();
 
       std::vector<int> inIndex, outIndex;
 
       double infTime = 0.0;
 
+      for (int iP = 0; iP < padSize*padSize*cnnLayers*2*batchSize; ++iP)
+        vPad[iP] = 0.0;
+
       for (int iD = 0; iD < numOfDoublets; iD++)
       {
 
-        float* vPad = inputPads.flat<float>().data();
-        float* vLab = inputFeat.flat<float>().data();
-
-        for (int iP = 0; iP < padSize*padSize*cnnLayers*2*batchSize; ++iP)
-          vPad[iP] = 0.0;
 
         //copyDoublets.add()
         std::vector <unsigned int> subDetIds, detIds ;
