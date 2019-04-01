@@ -460,11 +460,16 @@ namespace {
 
           session->Close();
 
+          vPad = 0;
+          vLab = 0;
+
+          vPad = inputPads.flat<float>().data();
+          vLab = inputFeat.flat<float>().data();
+
 
         }
 
-        vPad = 0;
-        vLab = 0;
+
         // std::cout << "iLab = "<<iLab << std::endl;
         // std::cout << "INFOS" << std::endl;
         // for(int i = 0; i < infoSize; ++i)
