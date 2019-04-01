@@ -354,8 +354,8 @@ namespace {
         // for (int nx = 0; nx < padSize*padSize; ++nx)
         //     outHitPads[layerIds[1]][nx] = hitPads[1][nx];
 
-        int inPadOffset = padSize*padSize*layerIds[0];
-        int outPadOffset = padSize*padSize*layerIds[1] + padSize*padSize*10;
+        // int inPadOffset = padSize*padSize*layerIds[0];
+        // int outPadOffset = padSize*padSize*layerIds[1] + padSize*padSize*10;
 
 
         for (int nx = 0; nx < padSize*padSize; ++nx)
