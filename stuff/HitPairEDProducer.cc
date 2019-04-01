@@ -132,8 +132,9 @@ namespace {
 
       std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}, layerIds;
 
-      tensorflow::Session* session = tensorflow::createSession(graphDef,2);
       tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/OPENDATA/NewOpenData/cnn_layermap_model.pb");
+      tensorflow::Session* session = tensorflow::createSession(graphDef,16);
+
       //tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/srv/CMSSW_10_3_0_pre5/dense_pix_model_final.pb");
 
       // for (int i = 0; i < graphDef->node_size(); ++i)
@@ -150,8 +151,7 @@ namespace {
       tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {batchSize,padSize,padSize,cnnLayers*2}); //25k batches
       tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {batchSize,infoSize}); //25k batches
 
-      float* vPad = inputPads.flat<float>().data();
-      float* vLab = inputFeat.flat<float>().data();
+
 
       float theMean = 13382.0011321, theStd = 10525.1252954;
 
@@ -179,13 +179,8 @@ namespace {
       HitDoublets::layer layers[2] = {HitDoublets::inner, HitDoublets::outer};
 
       std::vector < float > theScores;
-      std::vector < float > zeroPad;
-      for (int nx = 0; nx < padSize; ++nx)
-        for (int ny = 0; ny < padSize; ++ny)
-          zeroPad.push_back(0.0);
 
-      for (int iP = 0; iP < padSize*padSize*cnnLayers*2*batchSize; ++iP)
-        vPad[iP] = 0.0;
+
 
       std::vector<int> inIndex, outIndex;
 
@@ -193,6 +188,12 @@ namespace {
 
       for (int iD = 0; iD < numOfDoublets; iD++)
       {
+
+        float* vPad = inputPads.flat<float>().data();
+        float* vLab = inputFeat.flat<float>().data();
+
+        for (int iP = 0; iP < padSize*padSize*cnnLayers*2*batchSize; ++iP)
+          vPad[iP] = 0.0;
 
         //copyDoublets.add()
         std::vector <unsigned int> subDetIds, detIds ;
@@ -462,6 +463,9 @@ namespace {
 
 
         }
+
+        vPad = 0;
+        vLab = 0;
         // std::cout << "iLab = "<<iLab << std::endl;
         // std::cout << "INFOS" << std::endl;
         // for(int i = 0; i < infoSize; ++i)
@@ -472,8 +476,7 @@ namespace {
 
       }
 
-      vPad = 0;
-      vLab = 0;
+
 
       auto finishData = std::chrono::high_resolution_clock::now();
 
