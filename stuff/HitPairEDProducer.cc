@@ -27,6 +27,10 @@
 #include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
 #include "TH2F.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -84,6 +88,8 @@ namespace {
 
     HitPairGeneratorFromLayerPair generator_;
     std::vector<unsigned> layerPairBegins_;
+    edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
+
   };
   ImplBase::ImplBase(const edm::ParameterSet& iConfig):
     maxElement_(iConfig.getParameter<unsigned int>("maxElement")),
@@ -92,6 +98,9 @@ namespace {
     generator_(0, 1, nullptr, maxElement_), // these indices are dummy, TODO: cleanup HitPairGeneratorFromLayerPair
     layerPairBegins_(iConfig.getParameter<std::vector<unsigned> >("layerPairs"))
   {
+
+    tpMap_ = consumes<reco::ClusterTPAssociation>((edm::InputTag)"tpClusterProducerPixelTrackingOnly");
+
     if(layerPairBegins_.empty())
       throw cms::Exception("Configuration") << "HitPairEDProducer requires at least index for layer pairs (layerPairs parameter), none was given";
   }
@@ -116,8 +125,139 @@ namespace {
     //                           const edm::EventSetup& es,
     //                           HitDoublets& copyDoublets,SeedingLayerSetsHits::SeedingLayerSet layerSet,
     //                           LayerHitMapCache & layerCache) const
+
+    HitDoublets fastInference(HitDoublets& thisDoublets, ClusterTPAssociation& tpClust)
+    {
+
+      // const RecHitsSortedInPhi & innerHitsMap = layerCache(layerSet[0], region, es);
+      // const RecHitsSortedInPhi& outerHitsMap = layerCache(layerSet[1], region, es);
+      //
+      // HitDoublets result(innerHitsMap,outerHitsMap); result.reserve(std::max(innerHitsMap.size(),outerHitsMap.size()));
+
+      int iSecret, iGuess;
+
+
+      srand (time(NULL));
+
+      auto startData = std::chrono::high_resolution_clock::now();
+
+      std::vector< float > inPad, outPad;
+
+      // Load graph
+      tensorflow::setLogging("0");
+
+      std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}, layerIds;
+
+      tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/OPENDATA/NewOpenData/cnn_layermap_model.pb");
+      tensorflow::Session* session = tensorflow::createSession(graphDef,32);
+
+      //tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/srv/CMSSW_10_3_0_pre5/dense_pix_model_final.pb");
+
+      // for (int i = 0; i < graphDef->node_size(); ++i)
+      // {
+      //   auto node = graphDef->mutable_node(i);
+      //   if (node->device().empty()) {
+      //     node->set_device("/device:GPU:0");
+      //   }
+      // }
+
+      int numOfDoublets = thisDoublets.size(), padSize = 16 , infoSize = 67, cnnLayers = 10;
+      int doubletSize = padSize * padSize * cnnLayers*2, batchSize = 25000, batchCounter = 0, dCounter=0;
+
+      tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {batchSize,padSize,padSize,cnnLayers*2}); //25k batches
+      tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {batchSize,infoSize}); //25k batches
+
+
+
+      float theMean = 13382.0011321, theStd = 10525.1252954;
+
+      HitDoublets copyDoublets = std::move(thisDoublets);
+
+      if(copyDoublets.size()<1)
+      {
+        return copyDoublets;
+      }
+
+      DetLayer const * innerLayer = copyDoublets.detLayer(HitDoublets::inner);
+      DetLayer const * outerLayer = copyDoublets.detLayer(HitDoublets::outer);
+
+
+      HitDoublets::layer layers[2] = {HitDoublets::inner, HitDoublets::outer};
+
+      std::vector <unsigned int> subDetIds, detIds ;
+
+
+
+      detIds.push_back(copyDoublets.hit(0, HitDoublets::inner)->hit()->geographicalId());
+      subDetIds.push_back((copyDoublets.hit(0, HitDoublets::inner)->hit()->geographicalId()).subdetId());
+
+      detIds.push_back(copyDoublets.hit(0, HitDoublets::outer)->hit()->geographicalId());
+      subDetIds.push_back((copyDoublets.hit(0, HitDoublets::outer)->hit()->geographicalId()).subdetId());
+
+
+      if (! (((subDetIds[0]==1) || (subDetIds[0]==2)) && ((subDetIds[1]==1) || (subDetIds[1]==2))))
+      {
+        return copyDoublets;
+      };
+
+      std::vector<int> inIndex, outIndex;
+
+      for (int iD = 0; iD < numOfDoublets; iD++)
+      {
+
+        std::vector< RecHitsSortedInPhi::Hit> hits;
+        std::vector< const SiPixelRecHit*> siHits;
+
+        siHits.push_back(dynamic_cast<const SiPixelRecHit*>(copyDoublets.hit(iD, HitDoublets::inner)->hit()));
+        siHits.push_back(dynamic_cast<const SiPixelRecHit*>(copyDoublets.hit(iD, HitDoublets::outer)->hit()));
+
+
+        //Tp Matching
+        auto rangeIn = tpClust->equal_range(hits[0]->firstClusterRef());
+        auto rangeOut = tpClust->equal_range(hits[1]->firstClusterRef());
+
+        // std::cout << "Doublet no. "  << i << " hit no. " << lIt->doublets().innerHitId(i) << std::endl;
+
+        std::vector< std::pair<int,int> > kPdgIn, kPdgOut, kIntersection;
+
+        for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
+        kPdgIn.push_back({ip->second.key(),(*ip->second).pdgId()});
+
+        for(auto ip=rangeOut.first; ip != rangeOut.second; ++ip)
+        kPdgOut.push_back({ip->second.key(),(*ip->second).pdgId()});
+
+        // if(rangeIn.first == rangeIn.second) std::cout<<"In unmatched"<<std::endl;
+        std::set_intersection(kPdgIn.begin(), kPdgIn.end(),kPdgOut.begin(), kPdgOut.end(), std::back_inserter(kIntersection));
+
+        if (kIntersection.size()>0)
+        {
+          float flip = (rand() % 1000 + 1)/100.0;
+          if(flip < 99.0)
+          {
+            inIndex.push_back(copyDoublets.index(iD,HitDoublets::inner));
+            outIndex.push_back(copyDoublets.index(iD,HitDoublets::outer));
+          }
+
+        }
+        else
+        {
+          float flip = (rand() % 1000 + 1)/100.0;
+          if(flip < 55.0)
+          {
+            inIndex.push_back(copyDoublets.index(iD,HitDoublets::inner));
+            outIndex.push_back(copyDoublets.index(iD,HitDoublets::outer));
+          }
+
+        }
+
+      }
+
+
+    }
     HitDoublets cnnInference(HitDoublets& thisDoublets)
     {
+
+
       // const RecHitsSortedInPhi & innerHitsMap = layerCache(layerSet[0], region, es);
       // const RecHitsSortedInPhi& outerHitsMap = layerCache(layerSet[1], region, es);
       //
@@ -514,8 +654,13 @@ namespace {
     }
 
 
+
+
     void produce(const bool clusterCheckOk, edm::Event& iEvent, const edm::EventSetup& iSetup) override {
       auto regionsLayers = regionsLayers_.beginEvent(iEvent);
+
+      edm::Handle<ClusterTPAssociation> tpClust;
+      iEvent.getByToken(tpMap_,tpClust);
 
       auto seedingHitSetsProducer = T_SeedingHitSets(&localRA_);
       auto intermediateHitDoubletsProducer = T_IntermediateHitDoublets(regionsLayers.seedingLayerSetsHitsPtr());
