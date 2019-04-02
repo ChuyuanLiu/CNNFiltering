@@ -1043,7 +1043,7 @@ void HitPairEDProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   edm::Handle<ClusterTPAssociation> tpClust;
   iEvent.getByToken(tpMap_,tpClust);
 
-  impl_->produce(clusterCheckOk, iEvent, iSetup);
+  impl_->produce(tpClust,clusterCheckOk, iEvent, iSetup);
 }
 
 #include "FWCore/PluginManager/interface/ModuleDef.h"
