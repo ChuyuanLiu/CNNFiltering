@@ -101,8 +101,6 @@ namespace {
     layerPairBegins_(iConfig.getParameter<std::vector<unsigned> >("layerPairs"))
   {
 
-    //tpMap_ = consumes<reco::ClusterTPAssociation>((edm::InputTag)"tpClusterProducerPixelTrackingOnly");
-
     if(layerPairBegins_.empty())
       throw cms::Exception("Configuration") << "HitPairEDProducer requires at least index for layer pairs (layerPairs parameter), none was given";
   }
@@ -135,12 +133,12 @@ namespace {
       // const RecHitsSortedInPhi& outerHitsMap = layerCache(layerSet[1], region, es);
       //
       // HitDoublets result(innerHitsMap,outerHitsMap); result.reserve(std::max(innerHitsMap.size(),outerHitsMap.size()));
+      std::cout << "Fast Inference" << std::endl;
 
       srand (time(NULL));
 
       auto startData = std::chrono::high_resolution_clock::now();
 
-      std::vector< float > inPad, outPad;
 
       int numOfDoublets = thisDoublets.size();
 
@@ -150,6 +148,8 @@ namespace {
       {
         return copyDoublets;
       }
+
+      std::cout << "Good size" << std::endl;
 
       std::vector <unsigned int> subDetIds, detIds ;
 
@@ -171,11 +171,13 @@ namespace {
       {
 
         std::vector< RecHitsSortedInPhi::Hit> hits;
-        std::vector< const SiPixelRecHit*> siHits;
+        // std::vector< const SiPixelRecHit*> siHits;
+        //
+        // siHits.push_back(dynamic_cast<const SiPixelRecHit*>(copyDoublets.hit(iD, HitDoublets::inner)->hit()));
+        // siHits.push_back(dynamic_cast<const SiPixelRecHit*>(copyDoublets.hit(iD, HitDoublets::outer)->hit()));
 
-        siHits.push_back(dynamic_cast<const SiPixelRecHit*>(copyDoublets.hit(iD, HitDoublets::inner)->hit()));
-        siHits.push_back(dynamic_cast<const SiPixelRecHit*>(copyDoublets.hit(iD, HitDoublets::outer)->hit()));
-
+        hits.push_back(copyDoublets.hit(iD, HitDoublets::inner)); //TODO CHECK EMPLACEBACK
+        hits.push_back(copyDoublets.hit(iD, HitDoublets::outer));
 
         //Tp Matching
         auto rangeIn = tpClust.equal_range(hits[0]->firstClusterRef());
@@ -1022,7 +1024,7 @@ HitPairEDProducer::HitPairEDProducer(const edm::ParameterSet& iConfig) {
   auto clusterCheckTag = iConfig.getParameter<edm::InputTag>("clusterCheck");
   if(clusterCheckTag.label() != "")
     clusterCheckToken_ = consumes<bool>(clusterCheckTag);
-
+  tpMap_ = consumes<ClusterTPAssociation>((edm::InputTag)"tpClusterProducerPixelTrackingOnly");
   impl_->produces(*this);
 }
 
