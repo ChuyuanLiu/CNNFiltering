@@ -225,7 +225,7 @@ namespace {
           copyDoublets.add(inIndex[i],outIndex[i]);
       }
 
-      auto finishPush = std::chrono::high_resolution_clock::now();
+      auto finishData = std::chrono::high_resolution_clock::now();
 
       std::chrono::duration<double> elapsedData = finishData - startData;
 
