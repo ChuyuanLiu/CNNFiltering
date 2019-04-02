@@ -139,7 +139,7 @@ namespace {
 
       auto startData = std::chrono::high_resolution_clock::now();
 
-      bool bypass = false
+      bool bypass = false;
 
       int numOfDoublets = thisDoublets.size();
 
