@@ -17,6 +17,8 @@
 #include "RecoTracker/TkHitPairs/interface/IntermediateHitDoublets.h"
 #include "RecoTracker/TkHitPairs/interface/RegionsSeedingHitSets.h"
 
+#include "SimTracker/TrackerHitAssociation/interface/ClusterTPAssociation.h"
+
 #include "PhysicsTools/TensorFlow/interface/TensorFlow.h"
 #include "tensorflow/core/graph/default_device.h"
 
@@ -65,7 +67,7 @@ public:
 
 private:
   edm::EDGetTokenT<bool> clusterCheckToken_;
-
+  edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
   std::unique_ptr<::ImplBase> impl_;
 };
 
@@ -77,7 +79,7 @@ namespace {
 
     virtual void produces(edm::ProducerBase& producer) const = 0;
 
-    virtual void produce(const bool clusterCheckOk, edm::Event& iEvent, const edm::EventSetup& iSetup) = 0;
+    virtual void produce(ClusterTPAssociation& tpClust, const bool clusterCheckOk, edm::Event& iEvent, const edm::EventSetup& iSetup) = 0;
 
   protected:
     edm::RunningAverage localRA_;
@@ -88,7 +90,7 @@ namespace {
 
     HitPairGeneratorFromLayerPair generator_;
     std::vector<unsigned> layerPairBegins_;
-    edm::EDGetTokenT<ClusterTPAssociation> tpMap_;
+    //
 
   };
   ImplBase::ImplBase(const edm::ParameterSet& iConfig):
@@ -99,7 +101,7 @@ namespace {
     layerPairBegins_(iConfig.getParameter<std::vector<unsigned> >("layerPairs"))
   {
 
-    tpMap_ = consumes<reco::ClusterTPAssociation>((edm::InputTag)"tpClusterProducerPixelTrackingOnly");
+    //tpMap_ = consumes<reco::ClusterTPAssociation>((edm::InputTag)"tpClusterProducerPixelTrackingOnly");
 
     if(layerPairBegins_.empty())
       throw cms::Exception("Configuration") << "HitPairEDProducer requires at least index for layer pairs (layerPairs parameter), none was given";
@@ -628,11 +630,9 @@ namespace {
 
 
 
-    void produce(const bool clusterCheckOk, edm::Event& iEvent, const edm::EventSetup& iSetup) override {
+    void produce(ClusterTPAssociation& tpClust, const bool clusterCheckOk, edm::Event& iEvent, const edm::EventSetup& iSetup) override {
       auto regionsLayers = regionsLayers_.beginEvent(iEvent);
 
-      edm::Handle<ClusterTPAssociation> tpClust;
-      iEvent.getByToken(tpMap_,tpClust);
 
       auto seedingHitSetsProducer = T_SeedingHitSets(&localRA_);
       auto intermediateHitDoubletsProducer = T_IntermediateHitDoublets(regionsLayers.seedingLayerSetsHitsPtr());
@@ -662,7 +662,7 @@ namespace {
           {
             // std::cout << "HitPairEDProducer created " << doublets.size() << " doublets for layers " << layerSet[0].index() << "," << layerSet[1].index();
             //auto cleanDoublets = cnnInference(doublets);
-            auto cleanDoublets = fastInference(doublets);
+            auto cleanDoublets = fastInference(doublets,tpClust);
             seedingHitSetsProducer.fill(std::get<1>(hitCachePtr_filler_shs), cleanDoublets);
             intermediateHitDoubletsProducer.fill(std::get<1>(hitCachePtr_filler_ihd), layerSet, std::move(cleanDoublets));
           }else
@@ -1039,6 +1039,9 @@ void HitPairEDProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     iEvent.getByToken(clusterCheckToken_, hclusterCheck);
     clusterCheckOk = *hclusterCheck;
   }
+
+  edm::Handle<ClusterTPAssociation> tpClust;
+  iEvent.getByToken(tpMap_,tpClust);
 
   impl_->produce(clusterCheckOk, iEvent, iSetup);
 }
