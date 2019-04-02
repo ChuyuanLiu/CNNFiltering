@@ -215,7 +215,7 @@ namespace {
         else
         {
           float flip = (rand() % 1000 + 1)/100.0;
-          if(!bypss && flip < 55.0)
+          if(!bypass && flip < 55.0)
           {
             inIndex.push_back(copyDoublets.index(iD,HitDoublets::inner));
             outIndex.push_back(copyDoublets.index(iD,HitDoublets::outer));
