@@ -232,7 +232,7 @@ namespace {
         if (kIntersection.size()>0)
         {
           float flip = (rand() % 1000 + 1)/100.0;
-          if(flip < 99.0)
+          if(true) //if(flip < 99.0)
           {
             inIndex.push_back(copyDoublets.index(iD,HitDoublets::inner));
             outIndex.push_back(copyDoublets.index(iD,HitDoublets::outer));
@@ -242,7 +242,7 @@ namespace {
         else
         {
           float flip = (rand() % 1000 + 1)/100.0;
-          if(flip < 55.0)
+          if(false)//if(flip < 55.0)
           {
             inIndex.push_back(copyDoublets.index(iD,HitDoublets::inner));
             outIndex.push_back(copyDoublets.index(iD,HitDoublets::outer));
@@ -252,6 +252,15 @@ namespace {
 
       }
 
+      copyDoublets.clear();
+      // float* score = outputs[0].flat<float>().data();
+      for (size_t i = 0; i < inIndex.size(); i++)
+      {
+
+          copyDoublets.add(inIndex[i],outIndex[i]);
+      }
+
+      return copyDoublets;
 
     }
     HitDoublets cnnInference(HitDoublets& thisDoublets)
@@ -689,7 +698,8 @@ namespace {
           if(doInference_ && layerSet[0].index() <10 && layerSet[0].index() > -1 && layerSet[1].index() < 10 && layerSet[1].index() > -1)
           {
             // std::cout << "HitPairEDProducer created " << doublets.size() << " doublets for layers " << layerSet[0].index() << "," << layerSet[1].index();
-            auto cleanDoublets = cnnInference(doublets);
+            //auto cleanDoublets = cnnInference(doublets);
+            auto cleanDoublets = fastInference(doublets);
             seedingHitSetsProducer.fill(std::get<1>(hitCachePtr_filler_shs), cleanDoublets);
             intermediateHitDoubletsProducer.fill(std::get<1>(hitCachePtr_filler_ihd), layerSet, std::move(cleanDoublets));
           }else
