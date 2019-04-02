@@ -79,7 +79,7 @@ namespace {
 
     virtual void produces(edm::ProducerBase& producer) const = 0;
 
-    virtual void produce(ClusterTPAssociation& tpClust, const bool clusterCheckOk, edm::Event& iEvent, const edm::EventSetup& iSetup) = 0;
+    virtual void produce(const ClusterTPAssociation& tpClust, const bool clusterCheckOk, edm::Event& iEvent, const edm::EventSetup& iSetup) = 0;
 
   protected:
     edm::RunningAverage localRA_;
@@ -128,7 +128,7 @@ namespace {
     //                           HitDoublets& copyDoublets,SeedingLayerSetsHits::SeedingLayerSet layerSet,
     //                           LayerHitMapCache & layerCache) const
 
-    HitDoublets fastInference(HitDoublets& thisDoublets, ClusterTPAssociation& tpClust)
+    HitDoublets fastInference(HitDoublets& thisDoublets, const ClusterTPAssociation& tpClust)
     {
 
       // const RecHitsSortedInPhi & innerHitsMap = layerCache(layerSet[0], region, es);
@@ -630,7 +630,7 @@ namespace {
 
 
 
-    void produce(ClusterTPAssociation& tpClust, const bool clusterCheckOk, edm::Event& iEvent, const edm::EventSetup& iSetup) override {
+    void produce(const ClusterTPAssociation& tpClust, const bool clusterCheckOk, edm::Event& iEvent, const edm::EventSetup& iSetup) override {
       auto regionsLayers = regionsLayers_.beginEvent(iEvent);
 
 
