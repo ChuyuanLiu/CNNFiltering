@@ -134,42 +134,13 @@ namespace {
       //
       // HitDoublets result(innerHitsMap,outerHitsMap); result.reserve(std::max(innerHitsMap.size(),outerHitsMap.size()));
 
-      int iSecret, iGuess;
-
-
       srand (time(NULL));
 
       auto startData = std::chrono::high_resolution_clock::now();
 
       std::vector< float > inPad, outPad;
 
-      // Load graph
-      tensorflow::setLogging("0");
-
-      std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}, layerIds;
-
-      tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/OPENDATA/NewOpenData/cnn_layermap_model.pb");
-      tensorflow::Session* session = tensorflow::createSession(graphDef,32);
-
-      //tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/srv/CMSSW_10_3_0_pre5/dense_pix_model_final.pb");
-
-      // for (int i = 0; i < graphDef->node_size(); ++i)
-      // {
-      //   auto node = graphDef->mutable_node(i);
-      //   if (node->device().empty()) {
-      //     node->set_device("/device:GPU:0");
-      //   }
-      // }
-
-      int numOfDoublets = thisDoublets.size(), padSize = 16 , infoSize = 67, cnnLayers = 10;
-      int doubletSize = padSize * padSize * cnnLayers*2, batchSize = 25000, batchCounter = 0, dCounter=0;
-
-      tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {batchSize,padSize,padSize,cnnLayers*2}); //25k batches
-      tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {batchSize,infoSize}); //25k batches
-
-
-
-      float theMean = 13382.0011321, theStd = 10525.1252954;
+      int numOfDoublets = thisDoublets.size();
 
       HitDoublets copyDoublets = std::move(thisDoublets);
 
@@ -178,15 +149,7 @@ namespace {
         return copyDoublets;
       }
 
-      DetLayer const * innerLayer = copyDoublets.detLayer(HitDoublets::inner);
-      DetLayer const * outerLayer = copyDoublets.detLayer(HitDoublets::outer);
-
-
-      HitDoublets::layer layers[2] = {HitDoublets::inner, HitDoublets::outer};
-
       std::vector <unsigned int> subDetIds, detIds ;
-
-
 
       detIds.push_back(copyDoublets.hit(0, HitDoublets::inner)->hit()->geographicalId());
       subDetIds.push_back((copyDoublets.hit(0, HitDoublets::inner)->hit()->geographicalId()).subdetId());
