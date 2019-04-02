@@ -663,6 +663,8 @@ namespace {
       seedingHitSetsProducer.reserve(regionsLayers.regionsSize());
       intermediateHitDoubletsProducer.reserve(regionsLayers.regionsSize());
 
+      int originalSize = 0, finalSize = 0;
+
       for(const auto& regionLayers: regionsLayers) {
         const TrackingRegion& region = regionLayers.region();
         auto hitCachePtr_filler_shs = seedingHitSetsProducer.beginRegion(&region, nullptr);
@@ -680,6 +682,8 @@ namespace {
             // std::cout << "HitPairEDProducer created " << doublets.size() << " doublets for layers " << layerSet[0].index() << "," << layerSet[1].index();
             //auto cleanDoublets = cnnInference(doublets);
             auto cleanDoublets = fastInference(doublets,tpClust);
+            originalSize += doublets.size();
+            finalSize += cleanDoublets.size();
             seedingHitSetsProducer.fill(std::get<1>(hitCachePtr_filler_shs), cleanDoublets);
             intermediateHitDoubletsProducer.fill(std::get<1>(hitCachePtr_filler_ihd), layerSet, std::move(cleanDoublets));
           }else
@@ -691,6 +695,11 @@ namespace {
         }
       }
 
+      int eveNumber = iEvent.id().event();
+      int runNumber = iEvent.id().run();
+      int lumNumber = iEvent.id().luminosityBlock();
+
+      std::cout << "Doublets: " << originalSize << "\t" << finalSize << "\t" << eveNumber << "\t" << lumNumber << "\t" << runNumber << std::endl;
       seedingHitSetsProducer.put(iEvent);
       intermediateHitDoubletsProducer.put(iEvent);
     }
