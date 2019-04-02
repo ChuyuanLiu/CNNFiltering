@@ -178,8 +178,8 @@ namespace {
 
 
         //Tp Matching
-        auto rangeIn = tpClust->equal_range(hits[0]->firstClusterRef());
-        auto rangeOut = tpClust->equal_range(hits[1]->firstClusterRef());
+        auto rangeIn = tpClust.equal_range(hits[0]->firstClusterRef());
+        auto rangeOut = tpClust.equal_range(hits[1]->firstClusterRef());
 
         // std::cout << "Doublet no. "  << i << " hit no. " << lIt->doublets().innerHitId(i) << std::endl;
 
