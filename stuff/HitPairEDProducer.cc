@@ -139,12 +139,18 @@ namespace {
 
       auto startData = std::chrono::high_resolution_clock::now();
 
+      bool bypass = false
 
       int numOfDoublets = thisDoublets.size();
 
       HitDoublets copyDoublets = std::move(thisDoublets);
 
       if(copyDoublets.size()<1)
+      {
+        return copyDoublets;
+      }
+
+      if(numOfDoublets < 100 && !bypass)
       {
         return copyDoublets;
       }
@@ -199,7 +205,7 @@ namespace {
         if (kIntersection.size()>0)
         {
           float flip = (rand() % 1000 + 1)/100.0;
-          if(true) //if(flip < 99.0)
+          if(bypass || flip < 99.0)
           {
             inIndex.push_back(copyDoublets.index(iD,HitDoublets::inner));
             outIndex.push_back(copyDoublets.index(iD,HitDoublets::outer));
@@ -209,7 +215,7 @@ namespace {
         else
         {
           float flip = (rand() % 1000 + 1)/100.0;
-          if(false)//if(flip < 55.0)
+          if(!bypss && flip < 55.0)
           {
             inIndex.push_back(copyDoublets.index(iD,HitDoublets::inner));
             outIndex.push_back(copyDoublets.index(iD,HitDoublets::outer));
