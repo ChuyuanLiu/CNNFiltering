@@ -232,8 +232,7 @@ namespace {
       //
       std::cout << "Staring size       : " << numOfDoublets << std::endl;
       std::cout << "New size           : " << copyDoublets.size() << std::endl;
-      std::cout << "Elapsed time (data): " << elapsedData.count() - infTime << " s\n";
-      std::cout << theScores.size() << std::endl;
+      std::cout << "Elapsed time (data): " << elapsedData.count()<< " s\n";
 
       return copyDoublets;
 
