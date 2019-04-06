@@ -181,6 +181,13 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<ClusterTPAssociation> tpClust;
   iEvent.getByToken(tpMap_,tpClust);
 
+  edm::ESHandle<TrackerGeometry> trkgeo;
+  iSetup.get<TrackerDigiGeometryRecord>().get("",trkgeo);
+
+  edm::ESHandle<MagneticField> magneticField;
+  setup.get<IdealMagneticFieldRecord>().get(magneticField);
+
+
   // test = iEvent.id().event();
   //
   // cnntree->Fill();
@@ -242,7 +249,9 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::vector< float > inHitPars, outHitPars;
   std::vector< float > inTP, outTP, theTP;
 
-  float ax1, ax2, deltaADC = 0.0, deltaPhi = 0.0, deltaR = 0.0, deltaA = 0.0, deltaS = 0.0, deltaZ = 0.0, zZero = 0.0;
+  float ax1, ax2, ax3, ax4, dZ, dX, dY, pixPhi, pixTheta;
+
+  float deltaADC = 0.0, deltaPhi = 0.0, deltaR = 0.0, deltaA = 0.0, deltaS = 0.0, deltaZ = 0.0, zZero = 0.0;
 
   for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt = iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
   {
@@ -306,6 +315,18 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       for(int j = 0; j < 2; ++j)
       {
 
+        GlobalVector bField(magneticField->inTesla(geomDets[j]->surface().position()));
+        //const LocalVector bFieldLocal(geomDets[j]>surface().toLocal(bField));
+
+        LocalPoint
+  //       GlobalPoint zpos = trkgeo->idToDet(*det)->toGlobal(locz);
+  // GlobalPoint xpos = trkgeo->idToDet(*det)->toGlobal(locx);
+  // GlobalPoint ypos = trkgeo->idToDet(*det)->toGlobal(locy);
+  // GlobalVector posvect = position - origin;
+  // GlobalVector dz = zpos - position;
+  // GlobalVector dx = xpos - position;
+  // GlobalVector dy = ypos - position;
+
         //4
         hitPars[j].push_back((hits[j]->hit()->globalState()).position.x()); //1
         hitPars[j].push_back((hits[j]->hit()->globalState()).position.y());
@@ -343,10 +364,20 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         //Module orientation
         ax1 = geomDets[j]->surface().toGlobal(Local3DPoint(0.,0.,0.)).perp(); //15
         ax2 = geomDets[j]->surface().toGlobal(Local3DPoint(0.,0.,1.)).perp();
+        ax3 = geomDets[j]->surface().toGlobal(Local3DPoint(0.,1.,0.)).perp();
+        ax4 = geomDets[j]->surface().toGlobal(Local3DPoint(1.,0.,0.)).perp();
+        dZ  = geomDets[j]->bounds().thickness();
 
         hitPars[j].push_back(float(ax1<ax2)); //isFlipped
-        hitPars[j].push_back(ax1); //Module orientation y
-        hitPars[j].push_back(ax2); //Module orientation x
+        hitPars[j].push_back(ax1);
+        hitPars[j].push_back(ax2);
+        hitPars[j].push_back(ax3);
+        hitPars[j].push_back(ax4);
+        hitPars[j].push_back(bField.x());
+        hitPars[j].push_back(bField.y());
+        hitPars[j].push_back(bField.z());
+
+
 
 
         //TODO check CLusterRef & OmniClusterRef
@@ -377,14 +408,55 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         clusters[j]->y()-padHalfSize,
         clusters[j]->y()+padHalfSize);
 
+        TH2F xClust("xClust","xClust",
+        padSize,
+        clusters[j]->x()-padHalfSize,
+        clusters[j]->x()+padHalfSize,
+        padSize,
+        clusters[j]->y()-padHalfSize,
+        clusters[j]->y()+padHalfSize);
+
+        TH2F yClust("yClust","yClust",
+        padSize,
+        clusters[j]->x()-padHalfSize,
+        clusters[j]->x()+padHalfSize,
+        padSize,
+        clusters[j]->y()-padHalfSize,
+        clusters[j]->y()+padHalfSize);
+
+        TH2F zClust("zClust","zClust",
+        padSize,
+        clusters[j]->x()-padHalfSize,
+        clusters[j]->x()+padHalfSize,
+        padSize,
+        clusters[j]->y()-padHalfSize,
+        clusters[j]->y()+padHalfSize);
+
+        Local2DPoint minPoint();
+
         //Initialization
         for (int nx = 0; nx < padSize; ++nx)
         for (int ny = 0; ny < padSize; ++ny)
-        hClust.SetBinContent(nx,ny,0.0);
+        {
+          hClust.SetBinContent(nx,ny,0.0);
+          xClust.SetBinContent(nx,ny,0.0);
+          yClust.SetBinContent(nx,ny,0.0);
+          zClust.SetBinContent(nx,ny,0.0);
+
+        }
 
         for (int k = 0; k < clusters[j]->size(); ++k)
         hClust.SetBinContent(hClust.FindBin((float)clusters[j]->pixel(k).x, (float)clusters[j]->pixel(k).y),(float)clusters[j]->pixel(k).adc);
 
+        for (int k = 0; k < clusters[j]->size(); ++k)
+        {
+          Local2DPoint point((float)clusters[j]->pixel(k).x,(float)clusters[j]->pixel(k).y);
+          auto globPoint = geomDets[j]->surface().toGlobal(point);
+          xClust.SetBinContent(point.x(),point.y(),globPoint.x());
+          yClust.SetBinContent(point.x(),point.y(),globPoint.y());
+          zClust.SetBinContent(point.x(),point.y(),globPoint.z());
+
+        }
         //Linearizing the cluster
 
         for (int ny = padSize; ny>0; --ny)
@@ -392,10 +464,47 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
           for(int nx = 0; nx<padSize; nx++)
           {
             int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
+
             hitPars[j].push_back(hClust.GetBinContent(n));
           }
         }
 
+        for (int ny = padSize; ny>0; --ny)
+        {
+          for(int nx = 0; nx<padSize; nx++)
+          {
+            int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
+
+            hitPars[j].push_back(xClust.GetBinContent(n));
+          }
+        }
+
+        for (int ny = padSize; ny>0; --ny)
+        {
+          for(int nx = 0; nx<padSize; nx++)
+          {
+            int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
+
+            hitPars[j].push_back(yClust.GetBinContent(n));
+          }
+        }
+
+        for (int ny = padSize; ny>0; --ny)
+        {
+          for(int nx = 0; nx<padSize; nx++)
+          {
+            int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
+
+            hitPars[j].push_back(zClust.GetBinContent(n));
+          }
+        }
+
+        // if(clusters[j]->size()<2)
+        // {
+        //   dX = 0.0;
+        //   dY = 0.0;
+        //   pixTheta
+        // }
 
         //ADC sum
         hitPars[j].push_back(float(clusters[j]->charge()));
