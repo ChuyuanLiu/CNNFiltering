@@ -20,6 +20,7 @@ Implementation:
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
+#include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
 
 #include "MagneticField/Engine/interface/MagneticField.h"
 #include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
@@ -322,7 +323,6 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         GlobalVector bField(magneticField->inTesla(geomDets[j]->surface().position()));
         //const LocalVector bFieldLocal(geomDets[j]>surface().toLocal(bField));
 
-        LocalPoint
   //       GlobalPoint zpos = trkgeo->idToDet(*det)->toGlobal(locz);
   // GlobalPoint xpos = trkgeo->idToDet(*det)->toGlobal(locx);
   // GlobalPoint ypos = trkgeo->idToDet(*det)->toGlobal(locy);
@@ -377,6 +377,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         hitPars[j].push_back(ax2);
         hitPars[j].push_back(ax3);
         hitPars[j].push_back(ax4);
+        hitPars[j].push_back(dZ);
         hitPars[j].push_back(bField.x());
         hitPars[j].push_back(bField.y());
         hitPars[j].push_back(bField.z());
