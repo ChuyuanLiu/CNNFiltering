@@ -19,6 +19,10 @@ Implementation:
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/one/EDAnalyzer.h"
+#include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
+
+#include "MagneticField/Engine/interface/MagneticField.h"
+#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
 
 // system include files
 #include <memory>
@@ -185,7 +189,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   iSetup.get<TrackerDigiGeometryRecord>().get("",trkgeo);
 
   edm::ESHandle<MagneticField> magneticField;
-  setup.get<IdealMagneticFieldRecord>().get(magneticField);
+  iSetup.get<IdealMagneticFieldRecord>().get(magneticField);
 
 
   // test = iEvent.id().event();
@@ -366,7 +370,7 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         ax2 = geomDets[j]->surface().toGlobal(Local3DPoint(0.,0.,1.)).perp();
         ax3 = geomDets[j]->surface().toGlobal(Local3DPoint(0.,1.,0.)).perp();
         ax4 = geomDets[j]->surface().toGlobal(Local3DPoint(1.,0.,0.)).perp();
-        dZ  = geomDets[j]->bounds().thickness();
+        dZ  = geomDets[j]->surface().bounds().thickness();
 
         hitPars[j].push_back(float(ax1<ax2)); //isFlipped
         hitPars[j].push_back(ax1);
