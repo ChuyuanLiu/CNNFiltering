@@ -451,15 +451,20 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         }
 
         for (int k = 0; k < clusters[j]->size(); ++k)
-        hClust.SetBinContent(hClust.FindBin((float)clusters[j]->pixel(k).x, (float)clusters[j]->pixel(k).y),(float)clusters[j]->pixel(k).adc);
+
 
         for (int k = 0; k < clusters[j]->size(); ++k)
         {
           Local2DPoint point((float)clusters[j]->pixel(k).x,(float)clusters[j]->pixel(k).y);
           auto globPoint = geomDets[j]->surface().toGlobal(point);
-          xClust.SetBinContent(point.x(),point.y(),globPoint.x());
-          yClust.SetBinContent(point.x(),point.y(),globPoint.y());
-          zClust.SetBinContent(point.x(),point.y(),globPoint.z());
+          auto xBin = hClust.FindBin((float)clusters[j]->pixel(k).x;
+          auto yBin = hClust.FindBin((float)clusters[j]->pixel(k).y;
+
+          hClust.SetBinContent(xBin, yBin,(float)clusters[j]->pixel(k).adc);
+
+          xClust.SetBinContent(xBin,yBin,globPoint.x());
+          yClust.SetBinContent(xBin,yBin,globPoint.y());
+          zClust.SetBinContent(xBin,yBin,globPoint.z());
 
         }
         //Linearizing the cluster
