@@ -10,7 +10,7 @@ from dataset import * #helper class to hanlde the dataset
 import pandas as pd
 
 
-def npDoubletsLoad(path,fileslimit,cols):
+def npDoubletsLoad(path):
     print ("======================================================================")
 
     start = time.time()
