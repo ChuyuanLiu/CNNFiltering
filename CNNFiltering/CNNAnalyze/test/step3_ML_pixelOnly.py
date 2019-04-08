@@ -2,6 +2,10 @@ import FWCore.ParameterSet.Config as cms
 from FWCore.ParameterSet.VarParsing import VarParsing
 from Configuration.StandardSequences.Eras import eras
 
+
+if not os.path.exists("doublets"):
+    os.makedirs("doublets")
+
 process = cms.Process('RECOPatatrack',eras.Run2_2018)
 
 # import of standard configurations
