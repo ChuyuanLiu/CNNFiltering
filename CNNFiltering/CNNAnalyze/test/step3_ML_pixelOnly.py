@@ -2,6 +2,7 @@ import FWCore.ParameterSet.Config as cms
 from FWCore.ParameterSet.VarParsing import VarParsing
 from Configuration.StandardSequences.Eras import eras
 
+import os
 
 if not os.path.exists("doublets"):
     os.makedirs("doublets")

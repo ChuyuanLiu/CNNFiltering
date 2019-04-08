@@ -7,6 +7,8 @@ import FWCore.ParameterSet.Config as cms
 from FWCore.ParameterSet.VarParsing import VarParsing
 from Configuration.StandardSequences.Eras import eras
 
+import os
+
 process = cms.Process('RECOPatatrack',eras.Run2_2018)
 
 # import of standard configurations
