@@ -47,10 +47,7 @@ def npDoubletsLoad(path,fileslimit,cols):
                 continue
         with open(path + "/" + d, 'rb') as df:
             print("Reading file no." + str(no+1) + ": " + d)
-            if d.lower().endswith(("txt")):
-                dfDoublets = pd.read_table(df, sep="\t", header = None)
-            if d.lower().endswith(("gz")):
-                dfDoublets = pd.read_table(df, sep="\t", header = None,compression="gzip")
+            dfDoublets = pd.read_table(df, sep="\t", header = None)
 
             print("--Dumping unbalanced data")
             dfDoublets.columns = dataLab
@@ -62,6 +59,8 @@ def npDoubletsLoad(path,fileslimit,cols):
             theData.from_dataframe(dfDoublets)
             theData.balance_data()
             theData.save(bal_dir + idName + "_bal_" + d.replace(".txt",".h5"))
+
+            os.remove(df)
 
 
     end = time.time()
