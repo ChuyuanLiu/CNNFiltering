@@ -1,14 +1,13 @@
 import os
 from os import listdir
 from os.path import isfile, join
+
 import sys, time
 import argparse
 
-from math import floor
-from dataset import *
+from dataset import * #helper class to hanlde the dataset
 
 import pandas as pd
-import numpy as np
 
 
 def npDoubletsLoad(path,fileslimit,cols):
@@ -18,7 +17,7 @@ def npDoubletsLoad(path,fileslimit,cols):
     bal_dir = path + "/bal_data/"
     new_dir = path + "/unbal_data/"
 
-    datafiles = np.array([f for f in listdir(path) if (isfile(join(path, f)) and  f.lower().endswith(("txt","gz")) and "dnn_doublets" in f)])
+    datafiles = [f for f in listdir(path) if (isfile(join(path, f)) and  f.lower().endswith(("txt","gz")) and "dnn_doublets" in f)]
 
     print("Loading " + str(len(datafiles)) + " dataset file(s) . . .")
 
@@ -72,17 +71,8 @@ def npDoubletsLoad(path,fileslimit,cols):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(prog="dataToHDF")
-    parser.add_argument('--read', type=str, default="./",help='files path')
-    parser.add_argument('--flimit', type=int, default=-1,help='max no. of files')
-    parser.add_argument('--offset', type=int, default=0,help='offset no. of files')
-    parser.add_argument('--tracks','-t',action='store_true')
-    parser.add_argument('--columns','-c',action='store_true')
-    parser.add_argument('--preprocess','-pre',action='store_true')
-
-    #parser.add_argument('--debug', type=bool, default=False,help='debug printouts')
+    parser.add_argument('--read', type=str, default="doublets/",help='files path')
     args = parser.parse_args()
 
-    if not args.tracks:
-        npDoubletsLoad(args.read,args.flimit,args.columns)
     else:
         npTracksLoad(args)
