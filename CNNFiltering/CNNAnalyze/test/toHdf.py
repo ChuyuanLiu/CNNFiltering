@@ -59,7 +59,7 @@ def npDoubletsLoad(path,fileslimit,cols):
             theData.balance_data()
             theData.save(bal_dir + idName + "_bal_" + d.replace(".txt",".h5"))
 
-            os.remove(df)
+            os.remove(path + "/" + d)
 
 
     end = time.time()
