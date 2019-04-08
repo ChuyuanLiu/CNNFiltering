@@ -74,5 +74,4 @@ if __name__ == '__main__':
     parser.add_argument('--read', type=str, default="doublets/",help='files path')
     args = parser.parse_args()
 
-    else:
-        npTracksLoad(args)
+    npDoubletsLoad(args.read)
