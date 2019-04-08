@@ -6,7 +6,6 @@ import argparse
 
 from math import floor
 from dataset import *
-import tracks
 
 import pandas as pd
 import numpy as np

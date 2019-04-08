@@ -1,7 +1,7 @@
 # Auto generated configuration file
-# using: 
-# Revision: 1.19 
-# Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
+# using:
+# Revision: 1.19
+# Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v
 # with command line options: step3 --conditions 102X_upgrade2018_design_v9 --pileup_input das:/RelValMinBias_13/CMSSW_10_2_0-102X_upgrade2018_design_v6_gcc7-v1/GEN-SIM -n 10 --era Run2_2018 --eventcontent RECOSIM,DQM --runUnscheduled -s RAW2DIGI,RECO:reconstruction_trackingOnly,VALIDATION:@trackingOnlyValidation,DQM:@trackingOnlyDQM --datatier GEN-SIM-RECO,DQMIO --geometry DB:Extended --filein file:step2.root --fileout file:step3.root --no_exec --pileup AVE_50_BX_25ns --mc
 import FWCore.ParameterSet.Config as cms
 from FWCore.ParameterSet.VarParsing import VarParsing
@@ -24,16 +24,14 @@ process.load('DQMOffline.Configuration.DQMOfflineMC_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load('CNNFiltering.CNNAnalyze.CNNAnalyze_cfi')
 
-options = VarParsing ('analysis')
+options = VarParsing ('PatatrackML')
 options.register ('pileUp',50,VarParsing.multiplicity.singleton,VarParsing.varType.int,"Pileup")
 options.register ('skipEvent',0,VarParsing.multiplicity.singleton,VarParsing.varType.int,"Skip Events")
 options.register ('numEvents',100,VarParsing.multiplicity.singleton,VarParsing.varType.int,"Max Events")
 options.register ('numFile',2,VarParsing.multiplicity.singleton,VarParsing.varType.int,"File Number")
 options.parseArguments()
 
-fileName = 'file:step3_opendata_ttbar_' + str(options.numEvents) + '_pu_' + str(options.pileUp) + '_skip_' + str(options.skipEvent) + '_file_' + str(options.numFile)
-
-allfiles = [
+opendata = [
 "file:/lustre/cms/store/user/adiflori/OpenData/opendatas/017E1C89-5F83-D94E-8FE2-93CBE7369C11.root",
 "file:/lustre/cms/store/user/adiflori/OpenData/opendatas/18987864-CE50-9341-88A2-47FD4ACD1AE9.root",
 "file:/lustre/cms/store/user/adiflori/OpenData/opendatas/2EE8FE78-2D94-A642-B040-395425C4B375.root",
@@ -70,31 +68,9 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    annotation = cms.untracked.string('step3 nevts:10'),
-    name = cms.untracked.string('Applications'),
-    version = cms.untracked.string('$Revision: 1.19 $')
-)
-
-# Output definition
-
-process.RECOSIMoutput = cms.OutputModule("PoolOutputModule",
-    dataset = cms.untracked.PSet(
-        dataTier = cms.untracked.string('GEN-SIM-RECO'),
-        filterName = cms.untracked.string('')
-    ),
-    fileName = cms.untracked.string(fileName + '.root'),
-    outputCommands = process.RECOSIMEventContent.outputCommands,
-    splitLevel = cms.untracked.int32(0)
-)
-
-process.DQMoutput = cms.OutputModule("DQMRootOutputModule",
-    dataset = cms.untracked.PSet(
-        dataTier = cms.untracked.string('DQMIO'),
-        filterName = cms.untracked.string('')
-    ),
-    fileName = cms.untracked.string(fileName + '_inDQM.root'),
-    outputCommands = process.DQMEventContent.outputCommands,
-    splitLevel = cms.untracked.int32(0)
+    annotation = cms.untracked.string('PatatrackML Offline'),
+    name = cms.untracked.string('PatatrackML Offline'),
+    version = cms.untracked.string('')
 )
 
 # Additional output definition
@@ -124,14 +100,14 @@ process.DQMoutput_step = cms.EndPath(process.DQMoutput)
 process.CNN_step = cms.Path(process.CNNDoubletsSequence)
 
 # Schedule definition
-process.schedule = cms.Schedule(process.raw2digi_step,process.reconstruction_step,process.prevalidation_step,process.validation_step,process.dqmoffline_step,process.dqmofflineOnPAT_step,process.RECOSIMoutput_step,process.DQMoutput_step,process.CNN_step)
+process.schedule = cms.Schedule(process.raw2digi_step,process.reconstruction_step,process.prevalidation_step,process.validation_step,process.CNN_step)
 from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
 associatePatAlgosToolsTask(process)
 
 # customisation of the process.
 
 # Automatic addition of the customisation function from SimGeneral.MixingModule.fullMixCustomize_cff
-from SimGeneral.MixingModule.fullMixCustomize_cff import setCrossingFrameOn 
+from SimGeneral.MixingModule.fullMixCustomize_cff import setCrossingFrameOn
 
 #call to customisation function setCrossingFrameOn imported from SimGeneral.MixingModule.fullMixCustomize_cff
 process = setCrossingFrameOn(process)

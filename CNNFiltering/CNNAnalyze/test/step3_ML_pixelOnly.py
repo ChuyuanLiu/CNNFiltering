@@ -1,8 +1,3 @@
-# Auto generated configuration file
-# using: 
-# Revision: 1.19 
-# Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: step3 --conditions auto:phase1_2018_realistic -n 10 --era Run2_2018 --eventcontent RECOSIM,DQM --runUnscheduled -s RAW2DIGI:RawToDigi_pixelOnly,RECO:reconstruction_pixelTrackingOnly,VALIDATION:@pixelTrackingOnlyValidation,DQM:@pixelTrackingOnlyDQM --datatier GEN-SIM-RECO,DQMIO --geometry DB:Extended --filein file:step2.root --fileout file:step3_PixelOnly.root --no_exec --pileup_input das:/MinBias_TuneCP5_13TeV-pythia8/RunIIFall18GS-102X_upgrade2018_realistic_v9-v1/GEN-SIM --pileup AVE_50_BX_25ns --python_filename step3_RAW2DIGI_RECO_VALIDATION_DQM_PU_OpenData_PixelOnly.py
 import FWCore.ParameterSet.Config as cms
 from FWCore.ParameterSet.VarParsing import VarParsing
 from Configuration.StandardSequences.Eras import eras
@@ -32,9 +27,7 @@ options.register ('numEvents',100,VarParsing.multiplicity.singleton,VarParsing.v
 options.register ('numFile',2,VarParsing.multiplicity.singleton,VarParsing.varType.int,"File Number")
 options.parseArguments()
 
-fileName = 'file:step3_opendata_ttbar_' + str(options.numEvents) + '_pu_' + str(options.pileUp) + '_skip_' + str(options.skipEvent) + '_file_' + str(options.numFile)
-
-allfiles = [
+opendata = [
 "file:/lustre/cms/store/user/adiflori/OpenData/opendatas/017E1C89-5F83-D94E-8FE2-93CBE7369C11.root",
 "file:/lustre/cms/store/user/adiflori/OpenData/opendatas/18987864-CE50-9341-88A2-47FD4ACD1AE9.root",
 "file:/lustre/cms/store/user/adiflori/OpenData/opendatas/2EE8FE78-2D94-A642-B040-395425C4B375.root",
@@ -49,10 +42,10 @@ allfiles = [
 ]
 
 
-process.Timing = cms.Service("Timing",
-  summaryOnly = cms.untracked.bool(False),
-  useJobReport = cms.untracked.bool(True)
-)
+#process.Timing = cms.Service("Timing",
+#  summaryOnly = cms.untracked.bool(False),
+#  useJobReport = cms.untracked.bool(True)
+#)
 
 process.maxEvents = cms.untracked.PSet(
 	input = cms.untracked.int32(options.numEvents),
@@ -60,7 +53,7 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(allfiles[options.numFile]),
+    fileNames = cms.untracked.vstring(opendata[options.numFile]),
     secondaryFileNames = cms.untracked.vstring(),
     skipEvents=cms.untracked.uint32(options.skipEvent),
 )
@@ -71,42 +64,19 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    annotation = cms.untracked.string('step3 nevts:10'),
-    name = cms.untracked.string('Applications'),
-    version = cms.untracked.string('$Revision: 1.19 $')
+    annotation = cms.untracked.string('PatatrackML Online'),
+    name = cms.untracked.string('PatatrackML Online'),
+    version = cms.untracked.string('')
 )
 
-# Output definition
-
-process.RECOSIMoutput = cms.OutputModule("PoolOutputModule",
-    dataset = cms.untracked.PSet(
-        dataTier = cms.untracked.string('GEN-SIM-RECO'),
-        filterName = cms.untracked.string('')
-    ),
-    fileName = cms.untracked.string( fileName + '_PixelOnly.root'),
-    outputCommands = process.RECOSIMEventContent.outputCommands,
-    splitLevel = cms.untracked.int32(0)
-)
-
-process.DQMoutput = cms.OutputModule("DQMRootOutputModule",
-    dataset = cms.untracked.PSet(
-        dataTier = cms.untracked.string('DQMIO'),
-        filterName = cms.untracked.string('')
-    ),
-    fileName = cms.untracked.string(fileName + 'PixelOnly_inDQM.root'),
-    outputCommands = process.DQMEventContent.outputCommands,
-    splitLevel = cms.untracked.int32(0)
-)
 
 # Additional output definition
 
 # Other statements
 process.mix.input.nbPileupEvents.averageNumber = cms.double(options.pileUp)
 process.mix.bunchspace = cms.int32(25)
-process.mix.minBunch = cms.int32(-12)
+process.mix.minBunch = cms.int32(-3)
 process.mix.maxBunch = cms.int32(3)
-mixFiles = ['/store/relval/CMSSW_10_2_0/RelValMinBias_13/GEN-SIM/102X_upgrade2018_design_v6_gcc7-v1/10000/8C5E86AA-C188-E811-99AC-0CC47A7C3610.root', '/store/relval/CMSSW_10_2_0/RelValMinBias_13/GEN-SIM/102X_upgrade2018_design_v6_gcc7-v1/10000/6A1599B1-C288-E811-BF90-0025905B8606.root', '/store/relval/CMSSW_10_2_0/RelValMinBias_13/GEN-SIM/102X_upgrade2018_design_v6_gcc7-v1/10000/B6F16778-C388-E811-AAEB-0025905A6060.root', '/store/relval/CMSSW_10_2_0/RelValMinBias_13/GEN-SIM/102X_upgrade2018_design_v6_gcc7-v1/10000/9ECF6DF6-C488-E811-B4BB-0025905A60A0.root', '/store/relval/CMSSW_10_2_0/RelValMinBias_13/GEN-SIM/102X_upgrade2018_design_v6_gcc7-v1/10000/526A5CCA-C788-E811-93A2-0CC47A78A45A.root', '/store/relval/CMSSW_10_2_0/RelValMinBias_13/GEN-SIM/102X_upgrade2018_design_v6_gcc7-v1/10000/E2741019-CB88-E811-A3A3-0CC47A78A4B8.root']
-#process.mix.input.fileNames = cms.untracked.vstring(mixFiles)
 process.mix.playback = True
 process.mix.digitizers = cms.PSet()
 for a in process.aliases: delattr(process, a)
@@ -133,7 +103,7 @@ associatePatAlgosToolsTask(process)
 # customisation of the process.
 
 # Automatic addition of the customisation function from SimGeneral.MixingModule.fullMixCustomize_cff
-from SimGeneral.MixingModule.fullMixCustomize_cff import setCrossingFrameOn 
+from SimGeneral.MixingModule.fullMixCustomize_cff import setCrossingFrameOn
 
 #call to customisation function setCrossingFrameOn imported from SimGeneral.MixingModule.fullMixCustomize_cff
 process = setCrossingFrameOn(process)
