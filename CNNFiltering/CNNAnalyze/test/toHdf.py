@@ -15,15 +15,14 @@ def npDoubletsLoad(path):
 
     start = time.time()
     bal_dir = path + "/bal_data/"
-    new_dir = path + "/unbal_data/"
+    new_dir = path + "/original/"
 
     datafiles = [f for f in listdir(path) if (isfile(join(path, f)) and  f.lower().endswith(("txt","gz")) and "dnn_doublets" in f)]
 
     print("Loading " + str(len(datafiles)) + " dataset file(s) . . .")
 
-    print("Dumping dataset in   : " + path)
-    print("Saving unbalanced in   : " + new_dir)
-    print("Saving balanced in     : " + bal_dir)
+    print("Saving  original in   : " + new_dir)
+    print("Saving  balanced in     : " + bal_dir)
 
     if not os.path.exists(bal_dir):
         os.makedirs(bal_dir)
