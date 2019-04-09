@@ -94,9 +94,10 @@ private:
   std::array<double,20> hltword;
   std::array< std::array <double,8>, 25 > hitCoords;
   std::array< std::array <double,13>, 25 > pixelInfos;
-  std::array< std::array <double,20>, 25 > pixelADC;
-  std::array< std::array <double,20>, 25 > pixelADCx;
-  std::array< std::array <double,20>, 25 > pixelADCy;
+  std::array< std::array <double,256>, 25 > pixelADC;
+  // std::array< std::array <double,20>, 25 > pixelADC;
+  // std::array< std::array <double,20>, 25 > pixelADCx;
+  // std::array< std::array <double,20>, 25 > pixelADCy;
   std::array< std::array <double,7>, 25 > stripInfos;
   std::array< std::array <double,20>, 25 > stripADC;
 
@@ -168,7 +169,10 @@ HLTs_(iConfig.getParameter<std::vector<std::string>>("HLTs"))
     track_tree->Branch(("r_" + std::to_string(j)).c_str(),   &hitCoords[j][5], ( "r_" + std::to_string(j) + "/D").c_str());
     track_tree->Branch(("ax1_" + std::to_string(j)).c_str(), &hitCoords[j][6], ( "ax1_" + std::to_string(j) + "/D").c_str());
     track_tree->Branch(("ax2_" + std::to_string(j)).c_str(), &hitCoords[j][7], ( "ax2_" + std::to_string(j) + "/D").c_str());
+  }
 
+  for(int j = 0; j < 10; j++)
+  {
     track_tree->Branch(("pix_n_" + std::to_string(j)).c_str(),      &pixelInfos[j][0], ( "pix_n_" + std::to_string(j) + "/D").c_str());
     track_tree->Branch(("pix_x_" + std::to_string(j)).c_str(),      &pixelInfos[j][1], ( "pix_x_" + std::to_string(j) + "/D").c_str());
     track_tree->Branch(("pix_y_" + std::to_string(j)).c_str(),      &pixelInfos[j][2], ( "pix_y_" + std::to_string(j) + "/D").c_str());
@@ -183,6 +187,15 @@ HLTs_(iConfig.getParameter<std::vector<std::string>>("HLTs"))
     track_tree->Branch(("pix_bad_" + std::to_string(j)).c_str(),    &pixelInfos[j][11], ( "pix_bad_" + std::to_string(j) + "/D").c_str());
     track_tree->Branch(("pix_edg_" + std::to_string(j)).c_str(),    &pixelInfos[j][12], ( "pix_edg_" + std::to_string(j) + "/D").c_str());
 
+    for (size_t i = 0; i < 256; i++)
+    {
+      track_tree->Branch(("pix_adc_" + std::to_string(j) + "_" + std::to_string(i)).c_str(),        &pixelADC[j][i], ( "pix_adc_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
+    }
+
+  }
+
+  for(int j = 0; j < 15; j++)
+  {
     track_tree->Branch(("strip_n_" + std::to_string(j)).c_str(),        &stripInfos[j][0], ( "strip_n_" + std::to_string(j) + "/D").c_str());
     track_tree->Branch(("strip_dim_" + std::to_string(j)).c_str(),      &stripInfos[j][1], ( "strip_dim_" + std::to_string(j) + "/D").c_str());
     track_tree->Branch(("strip_charge_" + std::to_string(j)).c_str(),   &stripInfos[j][2], ( "strip_charge_" + std::to_string(j) + "/D").c_str());
@@ -193,29 +206,22 @@ HLTs_(iConfig.getParameter<std::vector<std::string>>("HLTs"))
 
     for (size_t i = 0; i < 20; i++)
     {
-      track_tree->Branch(("pix_adc_" + std::to_string(j) + "_" + std::to_string(i)).c_str(),        &pixelADC[j][i], ( "pix_adc_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
-    }
-
-    for (size_t i = 0; i < 20; i++)
-    {
-      track_tree->Branch(("pix_adcX_" + std::to_string(j) + "_" + std::to_string(i)).c_str(),        &pixelADCx[j][i], ( "pix_adcX_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
-    }
-
-    for (size_t i = 0; i < 20; i++)
-    {
-      track_tree->Branch(("pix_adcY_" + std::to_string(j) + "_" + std::to_string(i)).c_str(),        &pixelADCy[j][i], ( "pix_adcY_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
-    }
-
-    for (size_t i = 0; i < 20; i++)
-    {
       track_tree->Branch(("strip_adc_" + std::to_string(j) + "_" + std::to_string(i)).c_str(),        &stripADC[j][i], ( "strip_adc_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
     }
 
-
-
-
-
   }
+
+
+    // for (size_t i = 0; i < 20; i++)
+    // {
+    //   track_tree->Branch(("pix_adcX_" + std::to_string(j) + "_" + std::to_string(i)).c_str(),        &pixelADCx[j][i], ( "pix_adcX_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
+    // }
+    //
+    // for (size_t i = 0; i < 20; i++)
+    // {
+    //   track_tree->Branch(("pix_adcY_" + std::to_string(j) + "_" + std::to_string(i)).c_str(),        &pixelADCy[j][i], ( "pix_adcY_" + std::to_string(j) + "_" + std::to_string(i) + "/D").c_str());
+    // }
+
 
 
 
@@ -285,6 +291,9 @@ void CNNTracks::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetu
   event     = iEvent.id().event();
   lumiblock = iEvent.id().luminosityBlock();
 
+  float padHalfSize = 8.0;
+  int padSize = 16;
+
   pu = 0;
   if (primaryVertices_handle.isValid()) pu = (int) primaryVertices_handle->size();
 
@@ -333,10 +342,13 @@ void CNNTracks::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetu
 
       for (size_t i = 0; i < 20; i++)
       {
-        pixelADC[j][i] = -1.2345678;
-        pixelADCx[j][i] = -1.2345678;
-        pixelADCy[j][i] = -1.2345678;
+        // pixelADCx[j][i] = -1.2345678;
+        // pixelADCy[j][i] = -1.2345678;
         stripADC[j][i] = -1.2345678;
+      }
+      for (size_t i = 0; i < 256; i++)
+      {
+        pixelADC[j][i] = -1.2345678;
       }
       for (size_t i = 0; i < 7; i++)
       {
@@ -383,7 +395,7 @@ void CNNTracks::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetu
     }
 
     noHits = t.pixelInfos_.size();
-    minHits = -std::max(-maxHits,-noHits);
+    minHits = -std::max(-10,-noHits);
     ntracks++;
 
     for(int j = 0; j<minHits;j++)
@@ -393,21 +405,44 @@ void CNNTracks::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetu
       auto pixadx  = t.pixelADCx_[j];
       auto pixady  = t.pixelADCy_[j];
 
+      TH2F hPixel("hPixel","hPixel",
+      padSize,
+      pixelInfos[j][1]-padHalfSize,
+      pixelInfos[j][1]+padHalfSize,
+      padSize,
+      pixelInfos[j][2]-padHalfSize,
+      pixelInfos[j][2]+padHalfSize);
+
+      for (int nx = 0; nx < padSize; ++nx)
+        for (int ny = 0; ny < padSize; ++ny)
+          hPixel.SetBinContent(nx,ny,0.0);
+
+      for (int k = 0; k < 20; ++k)
+        hPixel.SetBinContent(hPixel.FindBin(pixadx[i], pixady[i]),pixadc[i]);
+
+      int c = 0;
+      for (int ny = padSize; ny>0; --ny)
+      {
+        for(int nx = 0; nx<padSize; nx++)
+        {
+
+          int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
+          pixelADC[i][c] = (double)hClust.GetBinContent(n);
+          c++;
+        }
+      }
+
+
       for (size_t i = 0; i < 13; i++)
       {
         pixelInfos[j][i] = (Double_t) pixinf[i];
       }
 
-      for (size_t i = 0; i < 20; i++)
-      {
-        pixelADC[j][i] = (Double_t) pixadc[i];
-        pixelADCx[j][i] = (Double_t) pixadx[i];
-        pixelADCy[j][i] = (Double_t) pixady[i];
-      }
+
     }
 
     noHits = t.stripInfos_.size();
-    minHits = -std::max(-maxHits,-noHits);
+    minHits = -std::max(-10,-noHits);
     ntracks++;
 
     for(int j = 0; j<minHits;j++)
