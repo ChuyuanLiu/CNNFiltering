@@ -9,6 +9,9 @@ from Configuration.StandardSequences.Eras import eras
 
 import os
 
+if not os.path.exists("doublets"):
+    os.makedirs("doublets")
+
 process = cms.Process('RECOPatatrack',eras.Run2_2018)
 
 # import of standard configurations
@@ -26,7 +29,7 @@ process.load('DQMOffline.Configuration.DQMOfflineMC_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load('CNNFiltering.CNNAnalyze.CNNAnalyze_cfi')
 
-options = VarParsing ('PatatrackML')
+options = VarParsing ('analysis')
 options.register ('pileUp',50,VarParsing.multiplicity.singleton,VarParsing.varType.int,"Pileup")
 options.register ('skipEvent',0,VarParsing.multiplicity.singleton,VarParsing.varType.int,"Skip Events")
 options.register ('numEvents',100,VarParsing.multiplicity.singleton,VarParsing.varType.int,"Max Events")
