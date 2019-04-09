@@ -153,7 +153,7 @@ class Dataset:
 
     def save(self, fname):
         # np.save(fname, self.data.as_matrix())
-        self.data.to_hdf(fname, 'data', mode='w')
+        self.data.to_hdf(fname, 'data', mode='w',append=False,complib="bzip2",complevel=9)
 
     # TODO: pick doublets from same event.
     def balance_data(self, max_ratio=0.5, verbose=True):
