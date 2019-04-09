@@ -5,3 +5,5 @@ CNNFiltering/CNNAnalyze/python/models/cnn_doublet/*
 *.local
 
 *.txt
+
+*.DS_Store
