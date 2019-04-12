@@ -433,7 +433,7 @@ void CNNTracks::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetu
         {
 
           int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
-          pixelADC[i][c] = (double)hPixel.GetBinContent(n);
+          pixelADC[j][c] = (double)hPixel.GetBinContent(n);
           c++;
         }
       }
