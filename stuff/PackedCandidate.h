@@ -528,7 +528,7 @@ namespace pat {
             if(!hit) continue;
 
             const GeomDet* gDet = (hit)->det();
-            float dZ = gDet->bounds().thickness();
+            float dZ = gDet->surface().bounds().thickness();
             float x = (hit)->globalState().position.x();
             float y = (hit)->globalState().position.y();
             float z = (hit)->globalState().position.z();
