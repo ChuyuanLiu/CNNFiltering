@@ -422,8 +422,8 @@ void CNNTracks::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetu
       std::cout << " - " <<  pixinf[2]-padHalfSize << " - " <<  pixinf[2]+padHalfSize << std::endl;
       for (int k = 0; k < 20; ++k)
       {
-        hPixel.SetBinContent(hPixel.FindBin(pixadx[i], pixady[i]),pixadc[i]);
-        std::cout << "Pixel "<< k << pixadx[i] << " - " << pixady[i] << " - " << pixadc[i] << std::endl;
+        hPixel.SetBinContent(hPixel.FindBin(pixadx[k], pixady[k]),pixadc[k]);
+        std::cout << "Pixel "<< k << pixadx[k] << " - " << pixady[k] << " - " << pixadc[k] << std::endl;
       }
 
       int c = 0;
