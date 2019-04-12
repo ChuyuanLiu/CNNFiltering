@@ -419,13 +419,13 @@ void CNNTracks::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetu
         for (int ny = 0; ny < padSize; ++ny)
           hPixel.SetBinContent(nx,ny,0.0);
       std::cout << "Hist limits: " <<  pixelInfos[j][1]-padHalfSize << " - " <<  pixelInfos[j][1]+padHalfSize;
-      std::cout << " - " <<  pixelInfos[j][2]-padHalfSize << " - " <<  pixelInfos[j][2]+padHalfSize << std::cout;
+      std::cout << " - " <<  pixelInfos[j][2]-padHalfSize << " - " <<  pixelInfos[j][2]+padHalfSize << std::endl;
       for (int k = 0; k < 20; ++k)
       {
         hPixel.SetBinContent(hPixel.FindBin(pixadx[i], pixady[i]),pixadc[i]);
-        std::cout << "Pixel "<< k << pixadx[i] << " - " << pixady[i] << " - " << pixadc[i] << std::cout;
+        std::cout << "Pixel "<< k << pixadx[i] << " - " << pixady[i] << " - " << pixadc[i] << std::endl;
       }
-      
+
       int c = 0;
       for (int ny = padSize; ny>0; --ny)
       {
