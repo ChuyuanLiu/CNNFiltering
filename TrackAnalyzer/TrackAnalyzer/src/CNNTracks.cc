@@ -416,14 +416,19 @@ void CNNTracks::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetu
       pixinf[2]+padHalfSize);
 
       for (int nx = 0; nx < padSize; ++nx)
+      {
         for (int ny = 0; ny < padSize; ++ny)
+        {
           hPixel.SetBinContent(nx,ny,0.0);
-      std::cout << "Hist limits: " <<  pixinf[1]-padHalfSize << " - " <<  pixinf[1]+padHalfSize;
-      std::cout << " - " <<  pixinf[2]-padHalfSize << " - " <<  pixinf[2]+padHalfSize << std::endl;
+        }
+      }
+      
+      // std::cout << "Hist limits: " <<  pixinf[1]-padHalfSize << " - " <<  pixinf[1]+padHalfSize;
+      // std::cout << " - " <<  pixinf[2]-padHalfSize << " - " <<  pixinf[2]+padHalfSize << std::endl;
       for (int k = 0; k < 20; ++k)
       {
         hPixel.SetBinContent(hPixel.FindBin(pixadx[k], pixady[k]),pixadc[k]);
-        std::cout << "Pixel "<< k << pixadx[k] << " - " << pixady[k] << " - " << pixadc[k] << std::endl;
+        // std::cout << "Pixel "<< j << " " << k << " : " <<pixadx[k] << " - " << pixady[k] << " - " << pixadc[k] << std::endl;
       }
 
       int c = 0;
@@ -434,9 +439,20 @@ void CNNTracks::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetu
 
           int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
           pixelADC[j][c] = (double)hPixel.GetBinContent(n);
+          // std::cout << c << " " << hPixel.GetBinContent(n) << " " << std::endl;
           c++;
         }
       }
+
+
+      for (size_t i = 0; i < 13; i++)
+      {
+        pixelInfos[j][i] = (Double_t) pixinf[i];
+      }
+
+
+    }
+
 
 
       for (size_t i = 0; i < 13; i++)
