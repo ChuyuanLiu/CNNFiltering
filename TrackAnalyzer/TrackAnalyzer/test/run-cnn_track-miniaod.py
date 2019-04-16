@@ -105,12 +105,13 @@ from all2018Hlts import *
 
 if par.isLocal:
     from qcd_filelist import *
+    from qcd_filelist_2 import *
 
     filename = par.mc
 
-    fileLists = {"qcd_ml" : qcd_filelist}
+    fileLists = {"qcd_ml" : qcd_filelist, "qcd_ml_2" : qcd_filelist_2}
 
-    gtags = {"qcd_ml" : 'auto:phase1_2018_realistic'}
+    gtags = {"qcd_ml" : 'auto:phase1_2018_realistic',"qcd_ml_2": 'auto:phase1_2018_realistic'}
 
     par.gtag = gtags[filename]
     n= par.n
@@ -250,14 +251,15 @@ process.muonMatch = cms.EDProducer("MCMatcher", # cut on deltaR, deltaPt/Pt; pic
     resolveByMatchQuality = cms.bool(True), # False = just match input in order; True = pick lowest deltaR pair first
 )
 
+statuses =
 process.trackMatch = cms.EDProducer("MCMatcher", # cut on deltaR, deltaPt/Pt; pick best by deltaR
     src     = cms.InputTag("packedPFCandidates"), # RECO objects to match
     matched = cms.InputTag("prunedGenParticles"),   # mc-truth particle collection
-    mcPdgId     = cms.vint32(321,211,13,2212), # one or more PDG ID (13 = muon); absolute values (see below)
+    mcPdgId     = cms.vint32(321,211,13,11,2212), # one or more PDG ID (13 = muon); absolute values (see below)
     checkCharge = cms.bool(True), # True = require RECO and MC objects to have the same charge
     mcStatus = cms.vint32(1,3,91,2),     # PYTHIA status code (1 = stable, 2 = shower, 3 = hard scattering)
-    maxDeltaR = cms.double(0.5),  # Minimum deltaR for the match
-    maxDPtRel = cms.double(0.75),  # Minimum deltaPt/Pt for the match
+    maxDeltaR = cms.double(0.1),  # Minimum deltaR for the match
+    maxDPtRel = cms.double(1.0),  # Minimum deltaPt/Pt for the match
     resolveAmbiguities = cms.bool(True),     # Forbid two RECO objects to match to the same GEN object
     resolveByMatchQuality = cms.bool(True), # False = just match input in order; True = pick lowest deltaR pair first
 )

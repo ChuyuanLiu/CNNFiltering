@@ -54,7 +54,7 @@ namespace pat {
       vertex_(new Point(0,0,0)), dphi_(0), deta_(0), dtrkpt_(0),track_(nullptr), pdgId_(0),
       qualityFlags_(0), pvRefKey_(reco::VertexRef::invalidKey()),
       m_(nullptr), packedHits_(0), packedLayers_(0), normalizedChi2_(0),covarianceVersion_(0),covarianceSchema_(0),firstHit_(0),
-      hitCoords_(std::vector<std::array<float,9>>()),
+      hitCoords_(std::vector<std::array<float,10>>()),
       pixelInfos_(std::vector < std::array <float,13> >()),
       pixelADC_(std::vector < std::array <float,20> >()),
       pixelADCx_(std::vector < std::array <float,20> >()),
@@ -74,7 +74,7 @@ namespace pat {
       track_(nullptr), pdgId_(c.pdgId()), qualityFlags_(0), pvRefProd_(pvRefProd),
       pvRefKey_(pvRefKey),m_(nullptr), packedHits_(0), packedLayers_(0),
       normalizedChi2_(0),covarianceVersion_(0), covarianceSchema_(0),firstHit_(0),
-      hitCoords_(std::vector<std::array<float,9>>()),
+      hitCoords_(std::vector<std::array<float,10>>()),
       pixelInfos_(std::vector < std::array <float,13> >()),
       pixelADC_(std::vector < std::array <float,20> >()),
       pixelADCx_(std::vector < std::array <float,20> >()),
@@ -99,7 +99,7 @@ namespace pat {
       track_(nullptr), pdgId_(pdgId),
       qualityFlags_(0), pvRefProd_(pvRefProd), pvRefKey_(pvRefKey),
       m_(nullptr),packedHits_(0), packedLayers_(0),normalizedChi2_(0),covarianceVersion_(0),covarianceSchema_(0),firstHit_(0),
-      hitCoords_(std::vector<std::array<float,9>>()),
+      hitCoords_(std::vector<std::array<float,10>>()),
       pixelInfos_(std::vector < std::array <float,13> >()),
       pixelADC_(std::vector < std::array <float,20> >()),
       pixelADCx_(std::vector < std::array <float,20> >()),
@@ -123,7 +123,7 @@ namespace pat {
       track_(nullptr), pdgId_(pdgId), qualityFlags_(0),
       pvRefProd_(pvRefProd), pvRefKey_(pvRefKey),
       m_(nullptr),packedHits_(0),packedLayers_(0),normalizedChi2_(0),covarianceVersion_(0),covarianceSchema_(0),firstHit_(0),
-      hitCoords_(std::vector<std::array<float,9>>()),
+      hitCoords_(std::vector<std::array<float,10>>()),
       pixelInfos_(std::vector < std::array <float,13> >()),
       pixelADC_(std::vector < std::array <float,20> >()),
       pixelADCx_(std::vector < std::array <float,20> >()),
@@ -527,6 +527,8 @@ namespace pat {
             TrackerSingleRecHit* hit = dynamic_cast<TrackerSingleRecHit* >((*recHit));
             if(!hit) continue;
 
+            DetId detId = (*recHit)->geographicalId();
+
             const GeomDet* gDet = (hit)->det();
             float dZ = gDet->surface().bounds().thickness();
             float x = (hit)->globalState().position.x();
@@ -540,12 +542,9 @@ namespace pat {
             float ax3 = gDet->surface().toGlobal(Local3DPoint(0.,1.,0.)).perp();
             float ax4 = gDet->surface().toGlobal(Local3DPoint(1.,0.,0.)).perp();
 
-            // localPosition()
-            // angolo!
-            //
-
-
-            hitCoords_.push_back(std::array<float,9> {{float(n),x,y,z,phi,r,ax1,ax2,dZ}});
+            float detId = gDet->geographicalId().rawId();
+            
+            hitCoords_.push_back(std::array<float,10> {{float(n),x,y,z,phi,r,ax1,ax2,dZ,detId}});
 
 
             SiPixelRecHit *pixHit = dynamic_cast<SiPixelRecHit*>(hit);
@@ -576,7 +575,7 @@ namespace pat {
 
               pixelInfos_.push_back(pixInf);
 
- 	      std::array <float,20> pixADC, pixADCx, pixADCy;
+ 	            std::array <float,20> pixADC, pixADCx, pixADCy;
 
               int minSize = -std::max(int(-clust->size()),-20);
               for (int k = 0; k<20; ++k)
@@ -1019,7 +1018,7 @@ namespace pat {
     uint16_t firstHit_;
 
 
-    std::vector < std::array <float,9> >  hitCoords_;
+    std::vector < std::array <float,10> >  hitCoords_;
     //n x y z r phi ax1 ax2
     std::vector < std::array <float,13> > pixelInfos_;
     //c_x c_y size size_x size_y charge ovfx ovfy ratio isBig isBad isOnEdge id
