@@ -5,6 +5,7 @@ import sys
 
 import argparse
 
+from time import time
 parser = argparse.ArgumentParser()
 parser.add_argument('--path',  type=str, default="./")
 parser.add_argument('--split', type=str, default=None)
@@ -22,16 +23,13 @@ print("Balancing")
 
 for ff in data_files:
     if not os.path.isfile(ff[:-3]+"_bal.h5"):
-            name = ff[:-3]
 
-            print("Loading: " + name)
-            tmp = pd.read_hdf(ff)
             print("Loading File : " + f.split("/")[-1])
-            bal_name = f[:-3] + "_bal.h5"
+            bal_name = ff[:-3] + "_bal.h5"
 
             t = time()
             tmp = 0
-            tmp = pd.read_hdf(f)
+            tmp = pd.read_hdf(ff)
 
             #uproot.open(cnn_file)["TrackProducer"]["CnnTracks"].pandas.df()
             secondBest = (tmp["pdg"].value_counts().values)[1]
@@ -44,7 +42,7 @@ for ff in data_files:
             tmp = pd.concat([tmp_sig,tmp_bkg])
             tmp_sig = 0
             tmp_bkg = 0
-            tmp.to_hdf(bal_name,"data",append=False,complevel=0,format='table')
+            tmp.to_hdf(bal_name,"data",append=False,complevel=0)#,format='table')
             print("Time : %d s" % (time()-t))
             tmp = 0
     else:
