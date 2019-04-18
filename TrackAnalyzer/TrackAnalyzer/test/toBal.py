@@ -7,13 +7,16 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--path',  type=str, default="./")
-#parser.add_argument('--split', type=int, default=-1)
+parser.add_argument('--split', type=str, default=None)
 #parser.add_argument('--dir',   type=str, default=None)
 #parser.add_argument('--tree',  type=str, default="2mu2kSkimmedTree")
 args = parser.parse_args()
 
 
-data_files = [data_path + f for f in os.listdir(args.path) if f.endswith(".h5")]
+data_files = [args.path + f for f in os.listdir(args.path) if f.endswith(".h5")]
+
+if args.split is not None:
+    data_files = [ f for f in data_files if f.endswith(args.split + ".h5")]
 
 print("Balancing")
 
@@ -41,7 +44,7 @@ for ff in data_files:
             tmp = pd.concat([tmp_sig,tmp_bkg])
             tmp_sig = 0
             tmp_bkg = 0
-            tmp.to_hdf(bal_name,"data",complevel=0,append=False,complevel=0,format='table')
+            tmp.to_hdf(bal_name,"data",append=False,complevel=0,format='table')
             print("Time : %d s" % (time()-t))
             tmp = 0
     else:
