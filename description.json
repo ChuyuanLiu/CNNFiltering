@@ -46,10 +46,10 @@
     "date_published": "2019",
     "distribution": {
       "formats": [
-        "gz"
+        "hdf"
       ],
-      "number_files": 1,
-      "size": FIXME
+      "number_files": 3547,
+      "size": 113.03 GB
     },
     "doi": "FIXME",
     "experiment": "CMS",
