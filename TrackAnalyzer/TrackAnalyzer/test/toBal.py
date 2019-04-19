@@ -9,6 +9,7 @@ from time import time
 parser = argparse.ArgumentParser()
 parser.add_argument('--path',  type=str, default="./")
 parser.add_argument('--split', type=str, default=None)
+parser.add_argument('--partial',action="store_true")
 #parser.add_argument('--dir',   type=str, default=None)
 #parser.add_argument('--tree',  type=str, default="2mu2kSkimmedTree")
 args = parser.parse_args()
@@ -21,29 +22,40 @@ if args.split is not None:
 
 print("Balancing")
 
+main_pdgs = [11.,13.,211.,321.,2212.]
+
 for ff in data_files:
     if not os.path.isfile(ff[:-3]+"_bal.h5"):
 
             print("Loading File : " + f.split("/")[-1])
             bal_name = ff[:-3] + "_bal.h5"
-
+            full_name = ff[:-3] + "_full_bal.h5"
             t = time()
             tmp = 0
             tmp = pd.read_hdf(ff)
 
             #uproot.open(cnn_file)["TrackProducer"]["CnnTracks"].pandas.df()
             secondBest = (tmp["pdg"].value_counts().values)[1]
+            lastBest = (tmp["pdg"].value_counts().values)[-1] - 1
             selection = (tmp["pdg"]>-9000.0)
 
-            tmp_sig = tmp[selection]
-            tmp_bkg = tmp[~selection].sample(n=secondBest)
+            fully_balanced = tmp[~selection].sample(n=lastBest)
+            for p in main_pdgs:
+                fully_balanced = pd.concat([fully_balanced,tmp[tmp["pdg"].abs()==p].sample(n=lastBest)])
+            fully_balanced.to_hdf(full_name,"data",append=False,complevel=0)
+            fully_balanced = 0
 
-            tmp = 0
-            tmp = pd.concat([tmp_sig,tmp_bkg])
-            tmp_sig = 0
-            tmp_bkg = 0
-            tmp.to_hdf(bal_name,"data",append=False,complevel=0)#,format='table')
+            if args.partial:
+                tmp_sig = tmp[selection]
+                tmp_bkg = tmp[~selection].sample(n=secondBest)
+                tmp = 0
+                tmp = pd.concat([tmp_sig,tmp_bkg])
+                tmp_sig = 0
+                tmp_bkg = 0
+                tmp.to_hdf(bal_name,"data",append=False,complevel=0)#,format='table')
             print("Time : %d s" % (time()-t))
             tmp = 0
+
+
     else:
             print ("Already Exists")
