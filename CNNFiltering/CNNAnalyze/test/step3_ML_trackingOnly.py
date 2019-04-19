@@ -12,6 +12,9 @@ import os
 if not os.path.exists("doublets"):
     os.makedirs("doublets")
 
+cmsRelPath = os.environ['CMSSW_BASE']
+print(cmsRelPath)
+
 process = cms.Process('RECOPatatrack',eras.Run2_2018)
 
 # import of standard configurations
@@ -111,9 +114,9 @@ from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
 associatePatAlgosToolsTask(process)
 
 # customisation of the process.
-if option.openDataVM:
+if options.openDataVM:
     myDb = cms.string('sqlite_file:/cvmfs/cms-opendata-conddb.cern.ch/102X_upgrade2018_design_v9.db')
-    recotauDB = cms.string('sqlite_file:/' + cmsRelPath + '/recotautag.db')
+    recotauDB = cms.string('sqlite_file:' + cmsRelPath + '/src/dbs/recotautag.db')
 
     process.GlobalTag.connect = myDb
 

@@ -151,9 +151,8 @@ process.RandomNumberGeneratorService.restoreStateLabel=cms.untracked.string("ran
 from Configuration.AlCa.GlobalTag import GlobalTag
 #process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2018_realistic', '')
 
-cmsrelPath =
 myDb = cms.string('sqlite_file:/cvmfs/cms-opendata-conddb.cern.ch/102X_upgrade2018_design_v9.db')
-recotauDB = cms.string('sqlite_file:/' + cmsRelPath + '/recotautag.db')
+recotauDB = cms.string('sqlite_file:' + cmsRelPath + '/recotautag.db')
 
 process.GlobalTag.connect = myDb
 
