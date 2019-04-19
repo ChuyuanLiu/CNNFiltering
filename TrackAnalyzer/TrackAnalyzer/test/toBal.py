@@ -25,11 +25,14 @@ print("Balancing")
 main_pdgs = [11.,13.,211.,321.,2212.]
 
 for ff in data_files:
-    if not os.path.isfile(ff[:-3]+"_bal.h5"):
+
+    bal_name = ff[:-3] + "_bal.h5"
+    full_name = ff[:-3] + "_full_bal.h5"
+
+    if not os.path.isfile(full_name):
 
             print("Loading File : " + f.split("/")[-1])
-            bal_name = ff[:-3] + "_bal.h5"
-            full_name = ff[:-3] + "_full_bal.h5"
+
             t = time()
             tmp = 0
             tmp = pd.read_hdf(ff)
@@ -45,7 +48,7 @@ for ff in data_files:
             fully_balanced.to_hdf(full_name,"data",append=False,complevel=0)
             fully_balanced = 0
 
-            if args.partial:
+            if args.partial and not os.path.isfile(bal_name):
                 tmp_sig = tmp[selection]
                 tmp_bkg = tmp[~selection].sample(n=secondBest)
                 tmp = 0
