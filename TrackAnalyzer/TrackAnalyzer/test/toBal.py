@@ -15,7 +15,7 @@ parser.add_argument('--partial',action="store_true")
 args = parser.parse_args()
 
 
-data_files = [args.path + f for f in os.listdir(args.path) if f.endswith(".h5")]
+data_files = [args.path + f for f in os.listdir(args.path) if f.endswith(".h5") and "bal" not in f]
 
 if args.split is not None:
     data_files = [ f for f in data_files if f.endswith(args.split + ".h5")]
