@@ -1,4 +1,4 @@
-p// -*- C++ -*-
+// -*- C++ -*-
 //
 // Package:    CNNFiltering/CNNTracksAnalyze
 // Class:      CNNTracksAnalyze
@@ -180,136 +180,11 @@ private:
 //
 CNNTracksAnalyze::CNNTracksAnalyze(const edm::ParameterSet& iConfig):
 alltracks_(consumes<edm::View<reco::Track> >(iConfig.getParameter<edm::InputTag>("tracks"))),
-genParticles_(consumes<reco::GenParticleCollection>(iConfig.getParameter<edm::InputTag>("genParticles"))),
-traParticles_(consumes<TrackingParticleCollection>(iConfig.getParameter<edm::InputTag>("traParticles"))),
 tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap"))),
 // TriggerResults_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("TriggerResults"))),
 // HLTs_(iConfig.getParameter<std::vector<std::string>>("HLTs"))
 {
 
-  padHalfSize = 7.5;
-  padSize = (int)(padHalfSize*2);
-  tParams = 26;
-
-  hitPixels.push_back(hitPixel0);
-  hitPixels.push_back(hitPixel1);
-  hitPixels.push_back(hitPixel2);
-  hitPixels.push_back(hitPixel3);
-  hitPixels.push_back(hitPixel4);
-  hitPixels.push_back(hitPixel5);
-  hitPixels.push_back(hitPixel6);
-  hitPixels.push_back(hitPixel7);
-  hitPixels.push_back(hitPixel8);
-  hitPixels.push_back(hitPixel9);
-
-  for(int i = 0; i<10;i++)
-    for(int j =0;j<padSize*padSize;j++)
-      hitPixels[i].push_back(0.0);
-
-  // for(int i = 0; i<30;i++)
-  // {
-  //   x.push_back(0.0);
-  //   y.push_back(0.0);
-  //   z.push_back(0.0);
-  //   phi_hipush_back(0.0);
-  //   r.push_back(0.0);
-  //   c_x.push_back(0.0);
-  //   c_y.push_back(0.0);
-  //   pdgId.push_back(0.0);
-  //   motherPdgId.push_back(0.0);
-  //   size.push_back(0);
-  //   sizex.push_back(0);
-  //   sizey.push_back(0);
-  //   charge.push_back(0);
-  //   ovfx.push_back(0.0);
-  //   ovfy.push_back(0.0);
-  //   ratio.push_back(0.0);
-  //
-  // }
-
-  // edm::Service<TFileService> fs;
-  // cnntree = fs->make<TTree>("CNNTree","Doublets Tree");
-  //
-  // cnntree->Branch("eveNumber",      &eveNumber,          "eveNumber/I");
-  // cnntree->Branch("runNumber",      &runNumber,          "runNumber/I");
-  // cnntree->Branch("lumNumber",      &lumNumber,          "lumNumber/I");
-  //
-  // cnntree->Branch("pt",      &pt,          "pt/D");
-  // cnntree->Branch("eta",     &eta,          "eta/D");
-  // cnntree->Branch("phi",     &phi,          "phi/D");
-  // cnntree->Branch("p",       &p,          "p/D");
-  // cnntree->Branch("chi2n",   &chi2n,  "chi2n/D");
-  // cnntree->Branch("d0",      &d0,          "d0/D");
-  // cnntree->Branch("dx",      &dx,          "dx/D");
-  // cnntree->Branch("dz",      &dz,          "dz/D");
-  //
-  // cnntree->Branch("sharedFraction",      &sharedFraction,          "sharedFraction/D");
-  //
-  // cnntree->Branch("nhit",      &nhit,            "nhit/I");
-  // cnntree->Branch("nhpxf",      &nhpxf,          "nhpxf/I");
-  // cnntree->Branch("nhtib",      &nhtib,          "nhtib/I");
-  // cnntree->Branch("nhtob",      &nhtob,          "nhtob/I");
-  // cnntree->Branch("nhtid",      &nhtid,          "nhtid/I");
-  // cnntree->Branch("nhtec",      &nhtec,          "nhtec/I");
-  // cnntree->Branch("nhpxb",      &nhpxb,          "nhpxb/I");
-  // cnntree->Branch("nhpxb",      &nhpxb,          "nhpxb/I");
-  // cnntree->Branch("nHits",      &nHits,          "nHits/I");
-  //
-  // cnntree->Branch("trackPdg",      &trackPdg,          "trackPdg/I");
-  //
-  //
-  // for(int i = 0; i<10;i++)
-  // {
-  //   std::string name,tree;
-  //
-  //   for(int j = 0;j<padSize*padSize;j++)
-  //   {
-  //     name = "hit_" + std::to_string(i) + "_Pix_" + std::to_string(j);
-  //     tree = name + "/D";
-  //     cnntree->Branch(name.c_str(),      &hitPixels[i][j],          tree.c_str());
-  //   }
-  //
-  //   name = "hit_" + std::to_string(i) + "_x"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &x[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_y"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &y[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_z"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &z[i],          tree.c_str());
-  //
-  //   name = "hit_" + std::to_string(i) + "_phi_hit"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &phi_hit[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_r"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &r[i],          tree.c_str());
-  //
-  //   name = "hit_" + std::to_string(i) + "_c_x"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &c_x[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_c_y"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &c_y[i],          tree.c_str());
-  //
-  //   name = "hit_" + std::to_string(i) + "_pdgId"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &pdgId[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_motherPdgId"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &motherPdgId[i],          tree.c_str());
-  //
-  //   name = "hit_" + std::to_string(i) + "_size"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &size[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_sizex"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &sizex[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_sizey"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &sizey[i],          tree.c_str());
-  //
-  //   name = "hit_" + std::to_string(i) + "_charge"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &charge[i],          tree.c_str());
-  //
-  //   name = "hit_" + std::to_string(i) + "_ovfx"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &ovfx[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_ovfy"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &ovfy[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_ratio"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &ratio[i],          tree.c_str());
-  //
-  //
-  // }
 
 
   edm::InputTag beamSpotTag = iConfig.getParameter<edm::InputTag>("beamSpot");
@@ -356,6 +231,8 @@ CNNTracksAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   iEvent.getByToken(tpMap_,tpClust);
 
 
+  float padHalfSize = 8.0;
+  int padSize = 16;
   // edm::Handle<reco::GenParticleCollection>  genParticles ;
   // iEvent.getByToken(genParticles_,genParticles);
 
