@@ -77,7 +77,6 @@ private:
   // ----------member data ---------------------------
   edm::EDGetTokenT<edm::Association<reco::GenParticleCollection>> TrackGenMap_;
   edm::EDGetTokenT<edm::View<pat::PackedCandidate>> TrakCollection_;
-  edm::EDGetTokenT<edm::View<pat::Muon>> Muons_;
   edm::EDGetTokenT<reco::VertexCollection> ThePVs_;
   edm::EDGetTokenT<edm::TriggerResults> TriggerResults_;
   std::vector<std::string>  HLTs_;
@@ -117,7 +116,6 @@ private:
 CNNTracks::CNNTracks(const edm::ParameterSet & iConfig):
 TrackGenMap_(consumes<edm::Association<reco::GenParticleCollection>>(iConfig.getParameter<edm::InputTag>("TrackMatcher"))),
 TrakCollection_(consumes<edm::View<pat::PackedCandidate>>(iConfig.getParameter<edm::InputTag>("PFCandidates"))),
-Muons_(consumes<edm::View<pat::Muon>>(iConfig.getParameter<edm::InputTag>("muons"))),
 ThePVs_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("primaryVertexTag"))),
 TriggerResults_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("TriggerResults"))),
 HLTs_(iConfig.getParameter<std::vector<std::string>>("HLTs"))
@@ -286,9 +284,6 @@ void CNNTracks::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetu
   edm::Handle<edm::View<pat::PackedCandidate> > track;
   iEvent.getByToken(TrakCollection_,track);
 
-  edm::Handle<edm::View<pat::Muon> > muons;
-  iEvent.getByToken(Muons_,muons);
-
   run       = iEvent.id().run();
   event     = iEvent.id().event();
   lumiblock = iEvent.id().luminosityBlock();
@@ -422,7 +417,7 @@ void CNNTracks::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetu
           hPixel.SetBinContent(nx,ny,0.0);
         }
       }
-      
+
       // std::cout << "Hist limits: " <<  pixinf[1]-padHalfSize << " - " <<  pixinf[1]+padHalfSize;
       // std::cout << " - " <<  pixinf[2]-padHalfSize << " - " <<  pixinf[2]+padHalfSize << std::endl;
       for (int k = 0; k < 20; ++k)

@@ -315,31 +315,7 @@ CNNTracksAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     sharedFraction = 0.0;
     nHits = 0;
 
-    for(int i = 0; i<10;i++)
-      for(int j =0;j<padSize*padSize;j++)
-        hitPixels[i][j] = 0.0;
 
-    for(int i = 0; i<10;i++)
-    {
-      x[i] = 0.0;
-      y[i] = 0.0;
-      z[i] = 0.0;
-      phi_hit[i] = 0.0;
-      r[i] = 0.0;
-      c_x[i] = 0.0;
-      c_y[i] = 0.0;
-      pdgId[i] = 0.0;
-      motherPdgId[i] = 0.0;
-      size[i] = 0.0;
-      sizex[i] = 0.0;
-      sizey[i] = 0.0;
-      charge[i] = 0.0;
-      ovfx[i] = 0.0;
-      ovfy[i] = 0.0;
-      ratio[i] = 0.0;
-      rawId[i] = 0.0;
-
-    }
     // bool isSimMatched = false;
     //
     // auto tpFound = recSimColl.find(track);
