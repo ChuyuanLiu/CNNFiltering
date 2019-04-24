@@ -3,7 +3,7 @@ Analyzer for CMS Open Data Pixel Seeds ML Applications http://opendata.cern.ch/
 
 Data producer for developing machine learning algorithms to select and filter pixel doublet seeds for tracking applications at CMS experiments.
 
-# Setup
+### Setup
 
 The first step is the creation of a ``CMSSW_10_2_5`` release workarea
 
@@ -15,7 +15,7 @@ scram b -j 2
 cmsenv
 ```
 
-# Dumping doublets in  `` txt `` files
+### Dumping doublets in  `` txt `` files
 
 Once the compilation is completed you are ready to produce the pixel doublets seeds datasets:
  
@@ -65,10 +65,12 @@ Any of these inputs should be parsed as follows:
 
 
 
-# Conversion to `` HDF `` files
+### Conversion to `` HDF `` files
 
 In order to convert the txt datasets in a
 
 [1] https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideIterativeTracking
+
 [2] https://cds.cern.ch/record/2308020
+
 [3] https://cds.cern.ch/record/2293435
