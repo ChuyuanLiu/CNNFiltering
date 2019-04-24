@@ -5,21 +5,70 @@ Data producer for developing machine learning algorithms to select and filter pi
 
 # Setup
 
-The first step is the creation of a ``CMSSW_10_3_5`` release workarea
-
+The first step is the creation of a ``CMSSW_10_2_5`` release workarea
 
 ``` bash
-cmsrel CMSSW_10_3_5
-cd CMSSW_10_3_5/src/
+cmsrel CMSSW_10_2_5
+cd CMSSW_10_2_5/src/
 git clone git@github.com:cms-legacydata-analyses/CNNPixelSeedsProducerTool.git .
 scram b -j 2
 cmsenv
 ```
 
-# Create  `` HDF `` files
+# Dumping doublets in  `` txt `` files
 
-cd CNNFiltering/CNNAnalyze/test/
+Once the compilation is completed you are ready to produce the pixel doublets seeds datasets:
+ 
+``` bash
+cmsrel CMSSW_10_3_5
+cd CMSSW_10_3_5/src/CNNFiltering/CNNAnalyze/test/
+cmsRun step3_ML_trackingOnly.py
+```
 
+This configuration will run the full CMS track reconstruction on simulated (![equation](http://latex.codecogs.com/gif.latex?t\bar{t})) events and will produce in `CMSSW_10_3_5/src/CNNFiltering/CNNAnalyze/test/doublets/` directory (automatically created) a set of text (`txt`) files containing the doublets produced in each of the pixel seed based iterative tracking steps (red boxed in the picture below). For further details about track reconstruction at CMS and iterative tracking see [1],[2],[3]
 
 ![iterativeTracking](https://raw.githubusercontent.com/AdrianoDee/CNNFiltering/open/iterativeTracking.png)
 
+Analogously 
+
+``` bash
+cmsrel CMSSW_10_3_5
+cd CMSSW_10_3_5/src/CNNFiltering/CNNAnalyze/test/
+cmsRun step3_ML_pixelOnly.py
+```
+
+will produce the doublets seeds used as starting blocks for pixel-only tracks reconstruction. The text files generated are named with the following rules:
+
+`_l_r_e_step_dnn_doublets.txt`
+
+with
+
+* l = lumisection number
+* r = run number
+* e = event number
+* step = iterative tracking step name (e.g `pixelTracksHitDoublets` for pixel tracks step)
+
+Both the configuration files (`step3_ML_pixelOnly.py` and `step3_ML_trackingOnly.py`) may receive in input few parameters:
+
+| Name       | Type                 | Default | Description                                                                                    |
+|------------|----------------------|---------|------------------------------------------------------------------------------------------------|
+| pileUp     | int                  | 50      | Average number of simultaneous collisions per event  (for this use case should be kept to 50). |
+| skipEvent  | int                  | 0       | Number of events to be skipped.                                                                |
+| numEvents  | int                  | 100     | Total number of events to be processed (after skipping).                                       |
+| numFile    | int                  | 0       | The index, in the list provided, of the file to be processed.                                  |
+| openDataVM | bool (True or False) | True    | Flag to signal if you are working on an Open Data WM or somewhere else.                        
+|
+
+Any of these inputs should be parsed as follows:
+
+`cmsRun step3_ML_trackingOnly.py inputName=VALUE`
+
+
+
+# Conversion to `` HDF `` files
+
+In order to convert the txt datasets in a
+
+[1] https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideIterativeTracking
+[2] https://cds.cern.ch/record/2308020
+[3] https://cds.cern.ch/record/2293435
