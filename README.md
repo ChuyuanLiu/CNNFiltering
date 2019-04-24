@@ -15,7 +15,7 @@ scram b -j 2
 cmsenv
 ```
 
-### Dumping doublets in  `` txt `` files
+### Dumping doublets in  ` txt ` files
 
 Once the compilation is completed you are ready to produce the pixel doublets seeds datasets:
  
@@ -37,7 +37,7 @@ cd CMSSW_10_3_5/src/CNNFiltering/CNNAnalyze/test/
 cmsRun step3_ML_pixelOnly.py
 ```
 
-will produce the doublets seeds used as starting blocks for pixel-only tracks reconstruction. The text files generated are named with the following rules:
+will produce the doublets seeds used aas starting blocks for pixel-only tracks reconstruction. The text files generated are named with the following rules:
 
 `_l_r_e_step_dnn_doublets.txt`
 
@@ -65,9 +65,25 @@ Any of these inputs should be parsed as follows:
 
 
 
-### Conversion to `` HDF `` files
+### Conversion to ` HDF ` files
 
-In order to convert the txt datasets in a
+In order to convert the txt datasets to hdf table formats simply run (in `CMSSW_10_3_5/src/CNNFiltering/CNNAnalyze/test/`)
+
+` python toHdf.py`
+
+this will automatically read the content of `doublets` directory and produce two hdf files:
+
+* in `doublets/original/` the plain hdf converted file;
+* in `doublets/bal_data/` a new balanced hdf table where the yields of fake and true seeds have been forced to be equal, by sampling the more populated of the two classes;
+
+### The dataset
+
+The dataset created above consists of a collection of pixel doublet seeds that would be used by CMS track reconstruction workflow. Each doublet is characterised by a list of features:
+
+
+
+The notebook in `CNNPixelSeedsProducerTool/notebooks/cnn_filtering.ipynb` is a good starting point to explore and understand the datset features.
+
 
 [1] https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideIterativeTracking
 
