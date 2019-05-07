@@ -1,0 +1,99 @@
+{
+  "created": "FIXME",
+  "id": FIXME,
+  "metadata": {
+    "$schema": "http://opendata.cern.ch/schema/records/record-v1.0.0.json",
+    "abstract": {
+      "description": "
+
+
+      <p>
+      One of the first steps of the track finding workflow is the creation of track seeds,
+      i.e. compatible pairs of hits from different detector layers, that are subsequently
+      fed to to higher level pattern recognition steps. However the set of compatible hit
+      pairs is highly affected by combinatorial background resulting in the next steps of
+      the tracking algorithm to process a significant fraction of fake doublets.
+      <p>
+
+      </p>
+      The daset consist of a collection of pixel doublet seeds,  i.e. the hit pairs that could belong to
+      the same particle. The compatibility between two hits is evaluated only on the basis of geometrical
+      considerations, such as cuts in $\eta$, $\phi$ and $r$. These doublets define the building blocks for
+      further tracks. Each doublet is charcaterised by a set of features, such as its coordinates and the charge
+      released in ther Pixel detector, and the pixel cluster shape, projected on 2D histogram.
+      </p>"
+    },
+    "accelerator": "CERN-LHC",
+    "authors": [
+      {
+        "name": "Di Florio, Adriano"
+      },
+      {
+        "name": "Pantaleo, Felice"
+      },
+      {
+        "name": "Pierini, Maurizio"
+      }
+,
+    ],
+    "collections": [
+      "FIXME Is this needed/necessary, can it be removed: CMS-Validation-Utilities"
+    ],
+    "control_number": "FIXME",
+    "date_created": [
+      "2019"
+    ],
+    "date_published": "2019",
+    "distribution": {
+      "formats": [
+        "hdf"
+      ],
+      "number_files": 3547,
+      "size": 113.03 GB
+    },
+    "doi": "FIXME",
+    "experiment": "CMS",
+    "files": [
+      {
+        "checksum": "FIXME",
+        "filename": "FIXME-1.0.0.tar.gz",
+        "size": 16966,
+        "uri_http": "FIXME",
+        "uri_root": "FIXME"
+      }
+    ],
+    "index_files": [],
+    "license": {
+      "attribution": "GNU General Public License (GPL) version 3"
+    },
+    "publisher": "CERN Open Data Portal",
+    "recid": "FIXME",
+    "run_period": [
+      "Phase2"
+    ],
+    "system_details": {
+      "description": "Use this code with the CMS Open Data VM environment",
+      "recid": "252",
+      "release": "CMSSW_10_3_5"
+    },
+    "title": "FIXME Repo name - an example workflow to apply machine learning techniques in track reconstruction in CMS Phase2 simulated data",
+    "type": {
+      "primary": "Software",
+      "secondary": [
+        "Tool"
+      ]
+    },
+    "usage": {
+      "description": " <p>If you do not have the CERN Virtual Machine for CMS open data installed, follow the instructions in step 1 at <a href=\"/VM/CMS/2011\">How to install a CERN Virtual Machine</a>.  <p>To run the analysis, follow the instructions in FIXME <a href=\"https://github.com/cms-opendata-analyses/FIXME\">https://github.com/cms-opendata-analyses/FIXME</a>.</p> "
+    },
+    "use_with": {
+      "description": "Use this with CMS Phase2 ttbar GEN-SIM-DIGI-RAW and pile-up GEN-SIM datasets:",
+      "links": [
+        {
+          "recid": "FIXME" #2520
+        }
+      ]
+    }
+  },
+  "updated": "FIXME"
+}
