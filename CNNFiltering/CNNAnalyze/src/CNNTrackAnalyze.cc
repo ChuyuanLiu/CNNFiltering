@@ -599,9 +599,9 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       {
         if(r<=allTheBins[1][1] && r>=allTheBins[1][0])
         {
-          if(r<=allTheBins[1][1] && r>=allTheBins[1][0])
+          if(z<=allTheBins[0][1] && z>=allTheBins[0][0])
           {
-              hitBin = 1
+              hitBin = i;
               break;
           }
         }
@@ -679,14 +679,14 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
         ax4[i] = (float)gDet->surface().toGlobal(Local3DPoint(1.,0.,0.)).perp();
         rawId[i] = (float)gDet->geographicalId().rawId();
 
-        p_size[i]  = (float)clust->size();
-        p_sizex[i]  = (float)clust->sizeX();
-        p_sizey[i]  = (float)clust->sizeY();
-        p_x[i]  = (float)clust->x();
-        p_y[i]  = (float)clust->y();
-        p_ovx[i]  = (float)clust->sizeX() > 16.;
-        p_ovy[i]  = (float)clust->sizeY() > 16.;
-        p_skew[i]  = (float)clust->sizeY() / (float)clust->sizeX();
+        p_size[i]  = (float)thisClust->size();
+        p_sizex[i]  = (float)thisClust->sizeX();
+        p_sizey[i]  = (float)thisClust->sizeY();
+        p_x[i]  = (float)thisClust->x();
+        p_y[i]  = (float)thisClust->y();
+        p_ovx[i]  = (float)thisClust->sizeX() > 16.;
+        p_ovy[i]  = (float)thisClust->sizeY() > 16.;
+        p_skew[i]  = (float)thisClust->sizeY() / (float)clust->sizeX();
         p_big[i]  = thisBig;
         p_bad[i]  = thisBad;
         p_edge[i]  = thisEdge;
@@ -730,11 +730,58 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
         if(!siStripHit2D && !siStripHit1D) continue;
 
+        if(siStripHit1D) s_dim[stripBin] = 1.0;
+        if(siStripHit2D) s_dim[stripBin] = 2.0;
+
+        if(siStripHit2D)
+        {
+          auto thisClust = (siStripHit2D->cluster());
+
+          float S_Charge = thisClust->charge();
+
+          if(s_charge[stripBin] !=dummy && fabs(S_Charge)<fabs(s_charge[stripBin])) continue;
+
+          s_center[stripBin] = (float)thisClust->barycenter();
+          s_first[stripBin] = (float)thisClust->firstStrip();
+          s_merged[stripBin] = (float)thisClust->isMerged();
+          s_size[stripBin] = (float)thisClust->amplitudes().size();
+          s_charge[stripBin] = S_Charge;
+
+          int minSize = -std::max(int(-thisClust->amplitudes().size()),-16);
+
+          for(int j =0;j<16;j++)
+            hitStrips[stripBin][j] = dummy;
+
+          for(int j =0;j<minSize;j++)
+            hitStrips[stripBin][j] = (float)thisClust->amplitudes()[j];
+
+        }
+        else
+        if(siStripHit1D)
+        {
+          auto thisClust = (siStripHit1D->cluster());
+
+          float S_Charge = thisClust->charge();
+
+          if(s_charge[stripBin] !=dummy && fabs(S_Charge)<fabs(s_charge[stripBin])) continue;
+
+          s_center[stripBin] = (float)thisClust->barycenter();
+          s_first[stripBin] = (float)thisClust->firstStrip();
+          s_merged[stripBin] = (float)thisClust->isMerged();
+          s_size[stripBin] = (float)thisClust->amplitudes().size();
+          s_charge[stripBin] = S_Charge;
+
+          int minSize = -std::max(int(-thisClust->amplitudes().size()),-16);
+
+          for(int j =0;j<16;j++)
+            hitStrips[stripBin][j] = dummy;
+
+          for(int j =0;j<minSize;j++)
+            hitStrips[stripBin][j] = (float)thisClust->amplitudes()[j];
+        }
+
+
         auto clustRef = h->firstClusterRef();
-
-        float S_Charge = clustRef.charge();
-
-        if(s_charge[stripBin] !=dummy && fabs(S_Charge)<fabs(s_charge[stripBin])) continue;
 
         auto rangeIn = tpClust->equal_range(clustRef);
 
@@ -781,47 +828,6 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
         ax3[i] = (float)gDet->surface().toGlobal(Local3DPoint(0.,1.,0.)).perp();
         ax4[i] = (float)gDet->surface().toGlobal(Local3DPoint(1.,0.,0.)).perp();
         rawId[i] = (float)gDet->geographicalId().rawId();
-
-        if(siStripHit1D) s_dim[stripBin] = 1.0;
-        if(siStripHit2D) s_dim[stripBin] = 2.0;
-
-        if(siStripHit2D)
-        {
-          auto thisClust = (siStripHit2D->cluster());
-          s_center[stripBin] = (float)thisClust->barycenter();
-          s_first[stripBin] = (float)thisClust->firstStrip();
-          s_merged[stripBin] = (float)thisClust->isMerged();
-          s_size[stripBin] = (float)thisClust->amplitudes().size();
-          s_charge[stripBin] = (float)thisClust->charge();
-
-          int minSize = -std::max(int(-thisClust->amplitudes().size()),-16);
-
-          for(int j =0;j<16;j++)
-            hitStrips[stripBin][j] = dummy;
-
-          for(int j =0;j<minSize;j++)
-            hitStrips[stripBin][j] = (float)thisClust->amplitudes()[j];
-
-        }
-        else
-        if(siStripHit1D)
-        {
-          thisClust = *(siStripHit1D->cluster());
-          auto thisClust = (siStripHit2D->cluster());
-          s_center[stripBin] = (float)thisClust->barycenter();
-          s_first[stripBin] = (float)thisClust->firstStrip();
-          s_merged[stripBin] = (float)thisClust->isMerged();
-          s_size[stripBin] = (float)thisClust->amplitudes().size();
-          s_charge[stripBin] = (float)thisClust->charge();
-
-          int minSize = -std::max(int(-thisClust->amplitudes().size()),-16);
-
-          for(int j =0;j<16;j++)
-            hitStrips[stripBin][j] = dummy;
-
-          for(int j =0;j<minSize;j++)
-            hitStrips[stripBin][j] = (float)thisClust->amplitudes()[j];
-        }
 
 
 
