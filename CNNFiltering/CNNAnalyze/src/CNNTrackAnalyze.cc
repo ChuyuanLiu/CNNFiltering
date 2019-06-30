@@ -116,81 +116,81 @@ Implementation:
 // This will improve performance in multithreaded jobs.
 
 
-std::array< std::array < std::array <float,2>, 2>, 73>allTheBins {{
-{{-28.0,28.0},{2.5,5.0}},
-{{-28.0,28.0},{6.0,8.0}},
-{{-28.0,28.0},{10.0,12.5}},
-{{-28.0,28.0},{15.0,17.5}},
-{{-35.0,-29.0},{2.5,17.5}},
-{{29.0,35.0},{2.5,17.5}},
-{{-44.0,-36.0},{2.5,17.5}},
-{{36.0,44.0},{2.5,17.5}},
-{{-53.0,-44.5},{2.5,17.5}},
-{{44.5,53.0},{2.5,17.5}},
-{{-65.0,65.0},{23.0,25.5}},
-{{-65.0,65.0},{25.5,30.0}},
-{{-65.0,65.0},{30.5,33.5}},
-{{-65.0,65.0},{33.5,38.0}},
-{{-65.0,65.0},{38.1,42.0}},
-{{-65.0,65.0},{42.0,46.0}},
-{{-65.0,65.0},{46.5,50.0}},
-{{-65.0,65.0},{50.1,53.0}},
-{{-65.0,65.0},{57.1,61.0}},
-{{-65.0,65.0},{61.1,65.0}},
-{{-65.0,65.0},{65.5,69.0}},
-{{-65.0,65.0},{69.1,73.0}},
-{{-65.0,65.0},{75.0,78.0}},
-{{-65.0,65.0},{78.5,83.5}},
-{{-65.0,65.0},{83.6,87.0}},
-{{-65.0,65.0},{87.1,90.0}},
-{{-65.0,65.0},{92.0,96.5}},
-{{-115.0,-70.0},{25.5,30.0}},
-{{70.0,115.0},{25.5,30.0}},
-{{-115.0,-70.0},{33.1,38.0}},
-{{70.0,115.0},{33.1,38.0}},
-{{-65.0,65.0},{96.8,103.0}},
-{{-115.0,-70.0},{42.0,46.0}},
-{{70.0,115.0},{42.0,46.0}},
-{{-115.0,-70.0},{57.1,61.0}},
-{{70.0,115.0},{57.1,61.0}},
-{{-65.0,65.0},{105.0,115.0}},
-{{-115.0,-70.0},{61.1,65.0}},
-{{70.0,115.0},{61.1,65.0}},
-{{-115.0,-70.0},{65.5,69.0}},
-{{70.0,115.0},{65.5,69.0}},
-{{-115.0,-70.0},{69.1,73.0}},
-{{70.0,115.0},{69.1,73.0}},
-{{-115.0,-70.0},{75.0,78.0}},
-{{70.0,115.0},{75.0,78.0}},
-{{-115.0,-70.0},{78.5,83.5}},
-{{70.0,115.0},{78.5,83.5}},
-{{-115.0,-70.0},{83.6,87.0}},
-{{70.0,115.0},{83.6,87.0}},
-{{-115.0,-70.0},{87.1,90.0}},
-{{70.0,115.0},{87.1,90.0}},
-{{-115.0,-70.0},{92.0,96.5}},
-{{70.0,115.0},{92.0,96.5}},
-{{-115.0,-70.0},{96.8,103.0}},
-{{70.0,115.0},{96.8,103.0}},
-{{-115.0,-70.0},{105.0,115.0}},
-{{70.0,115.0},{105.0,115.0}},
-{{-170.0,-120.0},{25.5,30.0}},
-{{120.0,170.0},{25.5,30.0}},
-{{-230.0,-120.0},{33.1,38.0}},
-{{120.0,230.0},{33.1,38.0}},
-{{120.0,170.0},{105.0,115.0}},
-{{-170.0,-120.0},{105.0,115.0}},
-{{-280.0,-120.0},{42.0,46.0}},
-{{120.0,280.0},{42.0,46.0}},
-{{-280.0,-120.0},{54.5,57.0}},
-{{120.0,280.0},{54.5,57.0}},
-{{-280.0,-120.0},{65.5,69.0}},
-{{120.0,280.0},{65.5,69.0}},
-{{-280.0,-120.0},{77.1,83.5}},
-{{120.0,280.0},{77.1,83.5}},
-{{-280.0,-120.0},{96.8,103.0}},
-{{120.0,280.0},{96.8,103.0}}
-}};
+std::array< float, 292> allTheBins = {
+-28.0,28.0,2.5,5.0;
+-28.0,28.0,6.0,8.0;
+-28.0,28.0,10.0,12.5;
+-28.0,28.0,15.0,17.5;
+-35.0,-29.0,2.5,17.5;
+29.0,35.0,2.5,17.5;
+-44.0,-36.0,2.5,17.5;
+36.0,44.0,2.5,17.5;
+-53.0,-44.5,2.5,17.5;
+44.5,53.0,2.5,17.5;
+-65.0,65.0,23.0,25.5;
+-65.0,65.0,25.5,30.0;
+-65.0,65.0,30.5,33.5;
+-65.0,65.0,33.5,38.0;
+-65.0,65.0,38.1,42.0;
+-65.0,65.0,42.0,46.0;
+-65.0,65.0,46.5,50.0;
+-65.0,65.0,50.1,53.0;
+-65.0,65.0,57.1,61.0;
+-65.0,65.0,61.1,65.0;
+-65.0,65.0,65.5,69.0;
+-65.0,65.0,69.1,73.0;
+-65.0,65.0,75.0,78.0;
+-65.0,65.0,78.5,83.5;
+-65.0,65.0,83.6,87.0;
+-65.0,65.0,87.1,90.0;
+-65.0,65.0,92.0,96.5;
+-115.0,-70.0,25.5,30.0;
+70.0,115.0,25.5,30.0;
+-115.0,-70.0,33.1,38.0;
+70.0,115.0,33.1,38.0;
+-65.0,65.0,96.8,103.0;
+-115.0,-70.0,42.0,46.0;
+70.0,115.0,42.0,46.0;
+-115.0,-70.0,57.1,61.0;
+70.0,115.0,57.1,61.0;
+-65.0,65.0,105.0,115.0;
+-115.0,-70.0,61.1,65.0;
+70.0,115.0,61.1,65.0;
+-115.0,-70.0,65.5,69.0;
+70.0,115.0,65.5,69.0;
+-115.0,-70.0,69.1,73.0;
+70.0,115.0,69.1,73.0;
+-115.0,-70.0,75.0,78.0;
+70.0,115.0,75.0,78.0;
+-115.0,-70.0,78.5,83.5;
+70.0,115.0,78.5,83.5;
+-115.0,-70.0,83.6,87.0;
+70.0,115.0,83.6,87.0;
+-115.0,-70.0,87.1,90.0;
+70.0,115.0,87.1,90.0;
+-115.0,-70.0,92.0,96.5;
+70.0,115.0,92.0,96.5;
+-115.0,-70.0,96.8,103.0;
+70.0,115.0,96.8,103.0;
+-115.0,-70.0,105.0,115.0;
+70.0,115.0,105.0,115.0;
+-170.0,-120.0,25.5,30.0;
+120.0,170.0,25.5,30.0;
+-230.0,-120.0,33.1,38.0;
+120.0,230.0,33.1,38.0;
+120.0,170.0,105.0,115.0;
+-170.0,-120.0,105.0,115.0;
+-280.0,-120.0,42.0,46.0;
+120.0,280.0,42.0,46.0;
+-280.0,-120.0,54.5,57.0;
+120.0,280.0,54.5,57.0;
+-280.0,-120.0,65.5,69.0;
+120.0,280.0,65.5,69.0;
+-280.0,-120.0,77.1,83.5;
+120.0,280.0,77.1,83.5;
+-280.0,-120.0,96.8,103.0;
+120.0,280.0,96.8,103.0;
+}
 
 class CNNTrackAnalyze : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 public:
@@ -597,9 +597,10 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
       for (int i =0; i<73;i++)
       {
-        if(r<=allTheBins[1][1] && r>=allTheBins[1][0])
+
+        if(z<=allTheBins[i*4+1] && z>=allTheBins[i*4])
         {
-          if(z<=allTheBins[0][1] && z>=allTheBins[0][0])
+          if(r<=allTheBins[i*4+3] && r>=allTheBins[i*4+2])
           {
               hitBin = i;
               break;
@@ -640,23 +641,23 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
         if(rangeIn.first!=rangeIn.second)
         {
-          pdgId[i] = (double)((*rangeIn.first->second).pdgId());
-          pdgIds[i] = (double)((*rangeIn.first->second).pdgId());
-          // std::cout << pdgId[i] << std::endl;
+          pdgId[hitBin] = (double)((*rangeIn.first->second).pdgId());
+          pdgIds[hitBin] = (double)((*rangeIn.first->second).pdgId());
+          // std::cout << pdgId[hitBin] << std::endl;
 
           if((*rangeIn.first->second).genParticle_begin()!=(*rangeIn.first->second).genParticle_end())
             if((*(*rangeIn.first->second).genParticle_begin())->mother()!=nullptr)
-              motherPdgId[i] = (double)((*(*rangeIn.first->second).genParticle_begin())->mother()->pdgId());
+              motherPdgId[hitBin] = (double)((*(*rangeIn.first->second).genParticle_begin())->mother()->pdgId());
 
-          if(pdgMomMap.find(motherPdgId[i]) != pdgMomMap.end())
-            ++pdgMomMap[motherPdgId[i]];
+          if(pdgMomMap.find(motherPdgId[hitBin]) != pdgMomMap.end())
+            ++pdgMomMap[motherPdgId[hitBin]];
           else
-            pdgMomMap[motherPdgId[i]] = 1;
+            pdgMomMap[motherPdgId[hitBin]] = 1;
 
-          if(pdgMap.find(pdgId[i]) != pdgMap.end())
-            ++pdgMap[pdgId[i]];
+          if(pdgMap.find(pdgId[hitBin]) != pdgMap.end())
+            ++pdgMap[pdgId[hitBin]];
           else
-            pdgMap[pdgId[i]] = 1;
+            pdgMap[pdgId[hitBin]] = 1;
 
         }
 
@@ -732,12 +733,13 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
         if(siStripHit1D) s_dim[stripBin] = 1.0;
         if(siStripHit2D) s_dim[stripBin] = 2.0;
+        float S_Charge = dummy;
 
         if(siStripHit2D)
         {
           auto clust = (siStripHit2D->cluster());
 
-          float S_Charge = clust->charge();
+          S_Charge = clust->charge();
 
           if(s_charge[stripBin] !=dummy && fabs(S_Charge)<fabs(s_charge[stripBin])) continue;
 
@@ -761,7 +763,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
         {
           auto clust = (siStripHit1D->cluster());
 
-          float S_Charge = clust->charge();
+          S_Charge = clust->charge();
 
           if(s_charge[stripBin] !=dummy && fabs(S_Charge)<fabs(s_charge[stripBin])) continue;
 
@@ -789,23 +791,23 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
         if(rangeIn.first!=rangeIn.second)
         {
-          pdgId[i] = (double)((*rangeIn.first->second).pdgId());
-          pdgIds[i] = (double)((*rangeIn.first->second).pdgId());
-          // std::cout << pdgId[i] << std::endl;
+          pdgId[hitBin] = (double)((*rangeIn.first->second).pdgId());
+          pdgIds[hitBin] = (double)((*rangeIn.first->second).pdgId());
+          // std::cout << pdgId[hitBin] << std::endl;
 
           if((*rangeIn.first->second).genParticle_begin()!=(*rangeIn.first->second).genParticle_end())
             if((*(*rangeIn.first->second).genParticle_begin())->mother()!=nullptr)
-              motherPdgId[i] = (double)((*(*rangeIn.first->second).genParticle_begin())->mother()->pdgId());
+              motherPdgId[hitBin] = (double)((*(*rangeIn.first->second).genParticle_begin())->mother()->pdgId());
 
-          if(pdgMomMap.find(motherPdgId[i]) != pdgMomMap.end())
-            ++pdgMomMap[motherPdgId[i]];
+          if(pdgMomMap.find(motherPdgId[hitBin]) != pdgMomMap.end())
+            ++pdgMomMap[motherPdgId[hitBin]];
           else
-            pdgMomMap[motherPdgId[i]] = 1;
+            pdgMomMap[motherPdgId[hitBin]] = 1;
 
-          if(pdgMap.find(pdgId[i]) != pdgMap.end())
-            ++pdgMap[pdgId[i]];
+          if(pdgMap.find(pdgId[hitBin]) != pdgMap.end())
+            ++pdgMap[pdgId[hitBin]];
           else
-            pdgMap[pdgId[i]] = 1;
+            pdgMap[pdgId[hitBin]] = 1;
 
         }
 
