@@ -116,7 +116,7 @@ Implementation:
 // This will improve performance in multithreaded jobs.
 
 
-std::array< float, 292> allTheBins = {
+std::array< float, 292> allTheBins = {{
 -28.0,28.0,2.5,5.0,
 -28.0,28.0,6.0,8.0,
 -28.0,28.0,10.0,12.5,
@@ -190,7 +190,7 @@ std::array< float, 292> allTheBins = {
 120.0,280.0,77.1,83.5,
 -280.0,-120.0,96.8,103.0,
 120.0,280.0,96.8,103.0
-};
+}};
 
 class CNNTrackAnalyze : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 public:
@@ -598,9 +598,9 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       for (int i =0; i<73;i++)
       {
 
-        if(z<=allTheBins[i*4+1] && z>=allTheBins[i*4])
+        if(hit_z<=allTheBins[i*4+1] && hit_z>=allTheBins[i*4])
         {
-          if(r<=allTheBins[i*4+3] && r>=allTheBins[i*4+2])
+          if(hit_r<=allTheBins[i*4+3] && hit_r>=allTheBins[i*4+2])
           {
               hitBin = i;
               break;
