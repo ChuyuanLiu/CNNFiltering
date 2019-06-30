@@ -116,7 +116,8 @@ Implementation:
 // This will improve performance in multithreaded jobs.
 
 
-std::array< std::pair<std::pair<float,float>,std::pair<float,float>> >allTheBins = { {{-28.0,28.0},{2.5,5.0}},
+std::array< std::array < std::array <float,2>, 2>, 73>allTheBins = {
+{{-28.0,28.0},{2.5,5.0}},
 {{-28.0,28.0},{6.0,8.0}},
 {{-28.0,28.0},{10.0,12.5}},
 {{-28.0,28.0},{15.0,17.5}},
@@ -188,7 +189,8 @@ std::array< std::pair<std::pair<float,float>,std::pair<float,float>> >allTheBins
 {{-280.0,-120.0},{77.1,83.5}},
 {{120.0,280.0},{77.1,83.5}},
 {{-280.0,-120.0},{96.8,103.0}},
-{{120.0,280.0},{96.8,103.0}}}
+{{120.0,280.0},{96.8,103.0}}
+}
 
 class CNNTrackAnalyze : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 public:

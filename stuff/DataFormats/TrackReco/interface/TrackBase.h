@@ -172,7 +172,6 @@ public:
               TrackAlgorithm = undefAlgorithm, TrackQuality quality = undefQuality,
               signed char nloops = 0, uint8_t stopReason = 0);
 
-
     /// virtual destructor
     virtual ~TrackBase();
 
@@ -400,31 +399,9 @@ public:
 
     uint8_t stopReason() const { return stopReason_; }
 
+    void setParticleId(float value) { particleId_ = value; }
 
-    //CNN pId flags
-    //Setters
-    void setKaonId(float value) { kaonId_ = value; }
-    void setElecId(float value) { elecId_ = value; }
-    void setMuonId(float value) { muonId_ = value; }
-    void setPionId(float value) { pionId_ = value; }
-    void setElseId(float value) { elseId_ = value; }
-
-    // //Initializers
-    // void initializeIds()
-    // {
-    //   kaonId_ = 0.0;
-    //   elecId_ = 0.0;
-    //   elseId_ = 0.0;
-    //   pionId_ = 0.0;
-    //   elseId_ = 0.0;
-    // }
-
-    //Getters
-    float getKaonId() const { return kaonId_; }
-    float getElecId() const { return elecId_; }
-    float getMuonId() const { return muonId_; }
-    float getPionId() const { return pionId_; }
-    float getElseId() const { return elseId_; }
+    float getParticleId() const { return particleId_; }
 
 private:
     /// hit pattern
@@ -457,6 +434,7 @@ private:
     /// track algorithm
     uint8_t originalAlgorithm_;
 
+
     /// track quality
     uint8_t quality_;
 
@@ -466,8 +444,9 @@ private:
     /// Stop Reason
     uint8_t stopReason_;
 
-    //pIds
-    float kaonId_, pionId_, elseId_, muonId_, elecId_;
+    //particleId
+    float particleId_;
+
 };
 
 //  Access the hit pattern, indicating in which Tracker layers the track has hits.

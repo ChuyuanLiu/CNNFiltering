@@ -85,7 +85,6 @@ TrackBase::TrackBase() :
             covariance_[idx++] = 0;
         }
     }
-
 }
 
 TrackBase::TrackBase(double chi2, double ndof, const Point &vertex, const Vector &momentum,
@@ -111,9 +110,6 @@ TrackBase::TrackBase(double chi2, double ndof, const Point &vertex, const Vector
         }
     }
     setQuality(quality);
-
-
-
 }
 
 TrackBase::~TrackBase()
