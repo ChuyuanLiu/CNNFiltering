@@ -478,7 +478,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
     // std::cout << " track "<< tt << std::endl;
     // std::cout << "init"<<std::endl;
-    std::vector<double> theData;
+    std::vector<float> theData;
     // // std::cout << "Track ------------------- "<< std::endl;
     // // std::cout << std::endl;
     std::map<int,const TrackerSingleRecHit*> theHits;
@@ -615,6 +615,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
       if (hitBin < 0 || hitBin>72) continue;
 
+      nHits++;
       const GeomDet* gDet = (h)->det();
 
       // std::cout << "binning" <<std::endl;
@@ -883,10 +884,10 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       // // std::cout << tt << " - UnMatched " << std::endl;
     }
 
-    theData.push_back((double)trackPdg);
-    theData.push_back((double)sharedFraction);
-    theData.push_back((double)trackMomPdg);
-    theData.push_back((double)sharedMomFraction);
+    theData.push_back((float)trackPdg);
+    theData.push_back((float)sharedFraction);
+    theData.push_back((float)trackMomPdg);
+    theData.push_back((float)sharedMomFraction);
 
     for(int i = 0; i<73;i++)
     {
