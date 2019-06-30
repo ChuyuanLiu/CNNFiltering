@@ -592,7 +592,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       ++hitCounter;
 
       int hitBin = -1;
-      float hit_r = (h->globalState()).position.r();
+      float hit_r = (h->globalState()).r;
       float hit_z = (h->globalState()).position.z();
 
       for (int i =0; i<73;i++)
@@ -633,7 +633,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           if(!isBad[hitBin] && !thisBad && fabs(P_Charge)<fabs(p_charge[hitBin])) continue;
         }
 
-        auto rangeIn = tpClust->equal_range(hit->firstClusterRef());
+        auto rangeIn = tpClust->equal_range(h->firstClusterRef());
 
         //for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
         //kPdgs.push_back((*ip->second).pdgId());
@@ -785,6 +785,15 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
         if(siStripHit1D) s_dim[stripBin] = 1.0;
         if(siStripHit2D) s_dim[stripBin] = 2.0;
 
+        if(siStripHit2D)
+        {
+          thisClust = *(siStripHit2D->cluster());
+        }
+        else
+        if(siStripHit1D)
+        {
+          thisClust = *(siStripHit1D->cluster());
+        }
 
         s_center[stripBin] = (float)thisClust.barycenter();
         s_first[stripBin] = (float)thisClust.firstStrip();
