@@ -559,26 +559,27 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     if(pixHits < 2)
       continue;
 
-    theData.push_back((double)eveNumber);
-    theData.push_back((double)runNumber);
-    theData.push_back((double)lumNumber);
-    theData.push_back((double)puNumInt);
+    theData.push_back((float)eveNumber);
+    theData.push_back((float)runNumber);
+    theData.push_back((float)lumNumber);
+    theData.push_back((float)puNumInt);
 
-    theData.push_back((double)track->pt());
-    theData.push_back((double)track->eta());
-    theData.push_back((double)track->phi());
-    theData.push_back((double)track->p());
-    theData.push_back((double)track->normalizedChi2());
-    theData.push_back((double)track->numberOfValidHits());
-    theData.push_back((double)track->d0());
-    theData.push_back((double)track->dz());
+    theData.push_back((float)track->pt());
+    theData.push_back((float)track->eta());
+    theData.push_back((float)track->phi());
+    theData.push_back((float)track->p());
+    theData.push_back((float)track->normalizedChi2());
+    theData.push_back((float)track->numberOfValidHits());
+    theData.push_back((float)track->d0());
+    theData.push_back((float)track->dz());
 
-    theData.push_back((double)hitPattern.numberOfValidPixelBarrelHits());
-    theData.push_back((double)hitPattern.numberOfValidPixelEndcapHits());
-    theData.push_back((double)hitPattern.numberOfValidStripTIBHits());
-    theData.push_back((double)hitPattern.numberOfValidStripTOBHits());
-    theData.push_back((double)hitPattern.numberOfValidStripTIDHits());
-    theData.push_back((double)hitPattern.numberOfValidStripTECHits());
+    theData.push_back((float)hitPattern.numberOfValidPixelBarrelHits());
+    theData.push_back((float)hitPattern.numberOfValidPixelEndcapHits());
+    theData.push_back((float)hitPattern.numberOfValidStripTIBHits());
+    theData.push_back((float)hitPattern.numberOfValidStripTOBHits());
+    theData.push_back((float)hitPattern.numberOfValidStripTIDHits());
+    theData.push_back((float)hitPattern.numberOfValidStripTECHits());
+    theData.push_back((float)nHits);
 
     // std::cout << "hit ";
     int hitCounter = -1;
@@ -649,13 +650,13 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
         if(rangeIn.first!=rangeIn.second)
         {
-          pdgId[hitBin] = (double)((*rangeIn.first->second).pdgId());
-          pdgIds[hitBin] = (double)((*rangeIn.first->second).pdgId());
+          pdgId[hitBin] = (float)((*rangeIn.first->second).pdgId());
+          pdgIds[hitBin] = (float)((*rangeIn.first->second).pdgId());
           // // std::cout << pdgId[hitBin] << std::endl;
 
           if((*rangeIn.first->second).genParticle_begin()!=(*rangeIn.first->second).genParticle_end())
             if((*(*rangeIn.first->second).genParticle_begin())->mother()!=nullptr)
-              motherPdgId[hitBin] = (double)((*(*rangeIn.first->second).genParticle_begin())->mother()->pdgId());
+              motherPdgId[hitBin] = (float)((*(*rangeIn.first->second).genParticle_begin())->mother()->pdgId());
 
           if(pdgMomMap.find(motherPdgId[hitBin]) != pdgMomMap.end())
             ++pdgMomMap[motherPdgId[hitBin]];
@@ -800,13 +801,13 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
         if(rangeIn.first!=rangeIn.second)
         {
-          pdgId[hitBin] = (double)((*rangeIn.first->second).pdgId());
-          pdgIds[hitBin] = (double)((*rangeIn.first->second).pdgId());
+          pdgId[hitBin] = (float)((*rangeIn.first->second).pdgId());
+          pdgIds[hitBin] = (float)((*rangeIn.first->second).pdgId());
           // // std::cout << pdgId[hitBin] << std::endl;
 
           if((*rangeIn.first->second).genParticle_begin()!=(*rangeIn.first->second).genParticle_end())
             if((*(*rangeIn.first->second).genParticle_begin())->mother()!=nullptr)
-              motherPdgId[hitBin] = (double)((*(*rangeIn.first->second).genParticle_begin())->mother()->pdgId());
+              motherPdgId[hitBin] = (float)((*(*rangeIn.first->second).genParticle_begin())->mother()->pdgId());
 
           if(pdgMomMap.find(motherPdgId[hitBin]) != pdgMomMap.end())
             ++pdgMomMap[motherPdgId[hitBin]];
