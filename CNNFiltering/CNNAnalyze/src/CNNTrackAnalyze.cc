@@ -189,7 +189,7 @@ std::array< float, 292> allTheBins = {
 -280.0,-120.0,77.1,83.5,
 120.0,280.0,77.1,83.5,
 -280.0,-120.0,96.8,103.0,
-120.0,280.0,96.8,103.0,
+120.0,280.0,96.8,103.0
 };
 
 class CNNTrackAnalyze : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
