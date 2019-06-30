@@ -661,37 +661,37 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
         }
 
-        x[i] = (float)h->globalState().position.y();
-        y[i] = (float)h->globalState().position.y();
-        z[i] = hit_z;
-        phi_hit[i] = (float)h->globalState().phi;
-        r[i] = hit_r;
-        n_seq[i] = (float)hitCounter;
+        x[hitBin] = (float)h->globalState().position.y();
+        y[hitBin] = (float)h->globalState().position.y();
+        z[hitBin] = hit_z;
+        phi_hit[hitBin] = (float)h->globalState().phi;
+        r[hitBin] = hit_r;
+        n_seq[hitBin] = (float)hitCounter;
 
-        charge[i] = P_Charge;
+        charge[hitBin] = P_Charge;
 
-        pdgId[i] = dummy;
-        motherPdgId[i] = dummy;
+        pdgId[hitBin] = dummy;
+        motherPdgId[hitBin] = dummy;
 
-        dZ[i] = (float)gDet->surface().bounds().thickness();
-        ax1[i] = (float)gDet->surface().toGlobal(Local3DPoint(0.,0.,0.)).perp();
-        ax2[i] = (float)gDet->surface().toGlobal(Local3DPoint(0.,0.,1.)).perp();
-        ax3[i] = (float)gDet->surface().toGlobal(Local3DPoint(0.,1.,0.)).perp();
-        ax4[i] = (float)gDet->surface().toGlobal(Local3DPoint(1.,0.,0.)).perp();
-        rawId[i] = (float)gDet->geographicalId().rawId();
+        dZ[hitBin] = (float)gDet->surface().bounds().thickness();
+        ax1[hitBin] = (float)gDet->surface().toGlobal(Local3DPoint(0.,0.,0.)).perp();
+        ax2[hitBin] = (float)gDet->surface().toGlobal(Local3DPoint(0.,0.,1.)).perp();
+        ax3[hitBin] = (float)gDet->surface().toGlobal(Local3DPoint(0.,1.,0.)).perp();
+        ax4[hitBin] = (float)gDet->surface().toGlobal(Local3DPoint(1.,0.,0.)).perp();
+        rawId[hitBin] = (float)gDet->geographicalId().rawId();
 
-        p_size[i]  = (float)clust->size();
-        p_sizex[i]  = (float)clust->sizeX();
-        p_sizey[i]  = (float)clust->sizeY();
-        p_x[i]  = (float)clust->x();
-        p_y[i]  = (float)clust->y();
-        p_ovx[i]  = (float)clust->sizeX() > 16.;
-        p_ovy[i]  = (float)clust->sizeY() > 16.;
-        p_skew[i]  = (float)clust->sizeY() / (float)clust->sizeX();
-        p_big[i]  = thisBig;
-        p_bad[i]  = thisBad;
-        p_edge[i]  = thisEdge;
-        p_charge[i] = P_Charge;
+        p_size[hitBin]  = (float)clust->size();
+        p_sizex[hitBin]  = (float)clust->sizeX();
+        p_sizey[hitBin]  = (float)clust->sizeY();
+        p_x[hitBin]  = (float)clust->x();
+        p_y[hitBin]  = (float)clust->y();
+        p_ovx[hitBin]  = (float)clust->sizeX() > 16.;
+        p_ovy[hitBin]  = (float)clust->sizeY() > 16.;
+        p_skew[hitBin]  = (float)clust->sizeY() / (float)clust->sizeX();
+        p_big[hitBin]  = thisBig;
+        p_bad[hitBin]  = thisBad;
+        p_edge[hitBin]  = thisEdge;
+        p_charge[hitBin] = P_Charge;
 
         TH2F hClust("hClust","hClust",
         padSize,
@@ -811,24 +811,24 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
         }
 
-        x[i] = (float)h->globalState().position.y();
-        y[i] = (float)h->globalState().position.y();
-        z[i] = hit_z;
-        phi_hit[i] = (float)h->globalState().phi;
-        r[i] = hit_r;
-        n_seq[i] = (float)hitCounter;
+        x[hitBin] = (float)h->globalState().position.y();
+        y[hitBin] = (float)h->globalState().position.y();
+        z[hitBin] = hit_z;
+        phi_hit[hitBin] = (float)h->globalState().phi;
+        r[hitBin] = hit_r;
+        n_seq[hitBin] = (float)hitCounter;
 
-        charge[i] = S_Charge;
+        charge[hitBin] = S_Charge;
 
-        pdgId[i] = dummy;
-        motherPdgId[i] = dummy;
+        pdgId[hitBin] = dummy;
+        motherPdgId[hitBin] = dummy;
 
-        dZ[i] = (float)gDet->surface().bounds().thickness();
-        ax1[i] = (float)gDet->surface().toGlobal(Local3DPoint(0.,0.,0.)).perp();
-        ax2[i] = (float)gDet->surface().toGlobal(Local3DPoint(0.,0.,1.)).perp();
-        ax3[i] = (float)gDet->surface().toGlobal(Local3DPoint(0.,1.,0.)).perp();
-        ax4[i] = (float)gDet->surface().toGlobal(Local3DPoint(1.,0.,0.)).perp();
-        rawId[i] = (float)gDet->geographicalId().rawId();
+        dZ[hitBin] = (float)gDet->surface().bounds().thickness();
+        ax1[hitBin] = (float)gDet->surface().toGlobal(Local3DPoint(0.,0.,0.)).perp();
+        ax2[hitBin] = (float)gDet->surface().toGlobal(Local3DPoint(0.,0.,1.)).perp();
+        ax3[hitBin] = (float)gDet->surface().toGlobal(Local3DPoint(0.,1.,0.)).perp();
+        ax4[hitBin] = (float)gDet->surface().toGlobal(Local3DPoint(1.,0.,0.)).perp();
+        rawId[hitBin] = (float)gDet->geographicalId().rawId();
 
 
 
