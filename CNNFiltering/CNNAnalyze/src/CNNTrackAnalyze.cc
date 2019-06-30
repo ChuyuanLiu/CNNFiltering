@@ -820,7 +820,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     }
     else
     {
-      trackPdg = 0.0;
+      trackPdg = -9999.0;
       sharedFraction = 0.0;
       // std::cout << tt << " - UnMatched " << std::endl;
     }
@@ -837,7 +837,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     }
     else
     {
-      trackMomPdg = 0.0;
+      trackMomPdg = -9999.0;
       sharedMomFraction = 0.0;
       // std::cout << tt << " - UnMatched " << std::endl;
     }
@@ -847,47 +847,66 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     theData.push_back((double)trackMomPdg);
     theData.push_back((double)sharedMomFraction);
 
-    for(int i = 0; i<10;i++)
+    for(int i = 0; i<73;i++)
     {
-
-      theData.push_back((double)x[i]);
-      theData.push_back((double)y[i]);
-      theData.push_back((double)z[i]);
-
-      theData.push_back((double)phi_hit[i]);
-      theData.push_back((double)r[i]);
-
-      theData.push_back((double)c_x[i]);
-      theData.push_back((double)c_y[i]);
-      theData.push_back((double)size[i]);
-      theData.push_back((double)sizex[i]);
-      theData.push_back((double)sizey[i]);
-
-      theData.push_back((double)charge[i]);
-
-      theData.push_back((double)ovfx[i]);
-      theData.push_back((double)ovfy[i]);
-
-      theData.push_back((double)ratio[i]);
-
-      theData.push_back((double)motherPdgId[i]);
-      theData.push_back((double)pdgId[i]);
-
+      theData.push_back(x[i]);
+      theData.push_back(y[i]);
+      theData.push_back(z[i]);
+      theData.push_back(phi_hit[i]);
+      theData.push_back(r[i]);
+      theData.push_back(charge[i]);
+      theData.push_back(n_seq[i]);
+      theData.push_back(pdgId[i]);
+      theData.push_back(motherPdgId[i]);
+      theData.push_back(dZ[i]);
+      theData.push_back(ax1[i]);
+      theData.push_back(ax2[i]);
+      theData.push_back(ax3[i]);
+      theData.push_back(ax4[i]);
+      theData.push_back(rawId[i]);
     }
 
     for(int i = 0; i<10;i++)
-      for(int j =0;j<padSize*padSize;j++)
-        theData.push_back((double)(hitPixels[i][j]));
-
-    if(pdgMap.size()>0)
     {
-      for (size_t i = 0; i < theData.size(); i++) {
-        trackFile << theData[i] << "\t";
-      }
-      trackFile << 542.1369 << std::endl;
-
-      //cnntree->Fill();
+      theData.push_back(p_size[i] );
+      theData.push_back(p_sizex[i] );
+      theData.push_back(p_sizey[i] );
+      theData.push_back(p_x[i] );
+      theData.push_back(p_y[i] );
+      theData.push_back(p_ovx[i] );
+      theData.push_back(p_ovy[i] );
+      theData.push_back(p_skew[i] );
+      theData.push_back(p_big[i] );
+      theData.push_back(p_bad[i] );
+      theData.push_back(p_edge[i] );
+      theData.push_back(p_charge[i]);
     }
+
+    for(int i = 0; i<63;i++)
+    {
+      theData.push_back(s_dim[i]);
+      theData.push_back(s_center[i]);
+      theData.push_back(s_first[i]);
+      theData.push_back(s_merged[i]);
+      theData.push_back(s_size[i]);
+      theData.push_back(s_charge[i]);
+    }
+
+    for(int i = 0; i<10;i++)
+      for(int j =0;j<256;j++)
+        theData.push_back(hitPixels[i][j]);
+
+    for(int i = 0; i<63;i++)
+      for(int j =0;j<16;j++)
+        theData.push_back(hitStrips[i][j]);
+
+
+    for (size_t i = 0; i < theData.size(); i++)
+    {
+      trackFile << theData[i] << "\t";
+    }
+    trackFile << 542.1369 << std::endl;
+
   }
 
 // std::cout << "Closing" << std::endl;
