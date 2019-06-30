@@ -635,7 +635,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           if(!isBad[hitBin] && !thisBad && fabs(P_Charge)<fabs(p_charge[hitBin])) continue;
         }
 
-        auto rangeIn = tpClust->equal_range(h->firstClusterRef());
+        auto rangeIn = tpClust->equal_range(hh->firstClusterRef());
 
         //for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
         //kPdgs.push_back((*ip->second).pdgId());
