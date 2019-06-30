@@ -730,13 +730,13 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
         if(!siStripHit2D && !siStripHit1D) continue;
 
-        auto thisClust = h->firstClusterRef();
+        auto clustRef = h->firstClusterRef();
 
-        float S_Charge = thisClust.charge();
+        float S_Charge = clustRef.charge();
 
         if(s_charge[stripBin] !=dummy && fabs(S_Charge)<fabs(s_charge[stripBin])) continue;
 
-        auto rangeIn = tpClust->equal_range(h->firstClusterRef());
+        auto rangeIn = tpClust->equal_range(clustRef);
 
         //for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
         //kPdgs.push_back((*ip->second).pdgId());
@@ -787,27 +787,44 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
         if(siStripHit2D)
         {
-          thisClust = *(siStripHit2D->cluster());
+          auto thisClust = (siStripHit2D->cluster());
+          s_center[stripBin] = (float)thisClust->barycenter();
+          s_first[stripBin] = (float)thisClust->firstStrip();
+          s_merged[stripBin] = (float)thisClust->isMerged();
+          s_size[stripBin] = (float)thisClust->amplitudes().size();
+          s_charge[stripBin] = (float)thisClust->charge();
+
+          int minSize = -std::max(int(-thisClust->amplitudes().size()),-16);
+
+          for(int j =0;j<16;j++)
+            hitStrips[stripBin][j] = dummy;
+
+          for(int j =0;j<minSize;j++)
+            hitStrips[stripBin][j] = (float)thisClust->amplitudes()[j];
+
         }
         else
         if(siStripHit1D)
         {
           thisClust = *(siStripHit1D->cluster());
+          auto thisClust = (siStripHit2D->cluster());
+          s_center[stripBin] = (float)thisClust->barycenter();
+          s_first[stripBin] = (float)thisClust->firstStrip();
+          s_merged[stripBin] = (float)thisClust->isMerged();
+          s_size[stripBin] = (float)thisClust->amplitudes().size();
+          s_charge[stripBin] = (float)thisClust->charge();
+
+          int minSize = -std::max(int(-thisClust->amplitudes().size()),-16);
+
+          for(int j =0;j<16;j++)
+            hitStrips[stripBin][j] = dummy;
+
+          for(int j =0;j<minSize;j++)
+            hitStrips[stripBin][j] = (float)thisClust->amplitudes()[j];
         }
 
-        s_center[stripBin] = (float)thisClust.barycenter();
-        s_first[stripBin] = (float)thisClust.firstStrip();
-        s_merged[stripBin] = (float)thisClust.isMerged();
-        s_size[stripBin] = (float)thisClust.amplitudes().size();
-        s_charge[stripBin] = (float)thisClust.charge();
 
-        int minSize = -std::max(int(-thisClust->amplitudes().size()),-16);
 
-        for(int j =0;j<16;j++)
-          hitStrips[stripBin][j] = dummy;
-
-        for(int j =0;j<minSize;j++)
-          hitStrips[stripBin][j] = (float)thisClust->amplitudes()[j];
 
       }//if strip
 
