@@ -784,32 +784,32 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
         }
 
 
-        // auto rangeIn = tpClust->equal_range(h->firstClusterRef());
-        //
-        // //for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
-        // //kPdgs.push_back((*ip->second).pdgId());
-        //
-        // if(rangeIn.first!=rangeIn.second)
-        // {
-        //   pdgId[hitBin] = (double)((*rangeIn.first->second).pdgId());
-        //   pdgIds[hitBin] = (double)((*rangeIn.first->second).pdgId());
-        //   // std::cout << pdgId[hitBin] << std::endl;
-        //
-        //   if((*rangeIn.first->second).genParticle_begin()!=(*rangeIn.first->second).genParticle_end())
-        //     if((*(*rangeIn.first->second).genParticle_begin())->mother()!=nullptr)
-        //       motherPdgId[hitBin] = (double)((*(*rangeIn.first->second).genParticle_begin())->mother()->pdgId());
-        //
-        //   if(pdgMomMap.find(motherPdgId[hitBin]) != pdgMomMap.end())
-        //     ++pdgMomMap[motherPdgId[hitBin]];
-        //   else
-        //     pdgMomMap[motherPdgId[hitBin]] = 1;
-        //
-        //   if(pdgMap.find(pdgId[hitBin]) != pdgMap.end())
-        //     ++pdgMap[pdgId[hitBin]];
-        //   else
-        //     pdgMap[pdgId[hitBin]] = 1;
-        //
-        // }
+        auto rangeIn = tpClust->equal_range(hh->firstClusterRef());
+
+        //for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
+        //kPdgs.push_back((*ip->second).pdgId());
+
+        if(rangeIn.first!=rangeIn.second)
+        {
+          pdgId[hitBin] = (double)((*rangeIn.first->second).pdgId());
+          pdgIds[hitBin] = (double)((*rangeIn.first->second).pdgId());
+          // std::cout << pdgId[hitBin] << std::endl;
+
+          if((*rangeIn.first->second).genParticle_begin()!=(*rangeIn.first->second).genParticle_end())
+            if((*(*rangeIn.first->second).genParticle_begin())->mother()!=nullptr)
+              motherPdgId[hitBin] = (double)((*(*rangeIn.first->second).genParticle_begin())->mother()->pdgId());
+
+          if(pdgMomMap.find(motherPdgId[hitBin]) != pdgMomMap.end())
+            ++pdgMomMap[motherPdgId[hitBin]];
+          else
+            pdgMomMap[motherPdgId[hitBin]] = 1;
+
+          if(pdgMap.find(pdgId[hitBin]) != pdgMap.end())
+            ++pdgMap[pdgId[hitBin]];
+          else
+            pdgMap[pdgId[hitBin]] = 1;
+
+        }
 
         x[hitBin] = (float)h->globalState().position.y();
         y[hitBin] = (float)h->globalState().position.y();
