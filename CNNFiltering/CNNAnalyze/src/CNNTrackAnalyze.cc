@@ -560,6 +560,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     theData.push_back((double)eveNumber);
     theData.push_back((double)runNumber);
     theData.push_back((double)lumNumber);
+    theData.push_back((double)puNumInt);
 
     theData.push_back((double)track->pt());
     theData.push_back((double)track->eta());
@@ -587,7 +588,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
         continue;
 
       DetId detId = (*recHit)->geographicalId();
-      unsigned int subdetid = detId.subdetId();
+      // unsigned int  subdetid = detId.subdetId();
       if(detId.det() != DetId::Tracker) continue;
       ++hitCounter;
 
@@ -783,8 +784,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
         }
 
 
-        auto clustRef = h->firstClusterRef();
-        auto rangeIn = tpClust->equal_range(clustRef);
+        auto rangeIn = tpClust->equal_range(h->firstClusterRef());
 
         //for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
         //kPdgs.push_back((*ip->second).pdgId());
