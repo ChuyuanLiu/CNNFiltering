@@ -221,7 +221,7 @@ private:
   // edm::GetterOfProducts<IntermediateHitDoublets> getterOfProducts_;
 
   float padHalfSize;
-  int padSize, tParams;
+  int padSize;
 
   float pt, eta, phi, p, chi2n, d0, dx, dz, sharedFraction,sharedMomFraction;
   int nhit, nhpxf, nhtib, nhtob, nhtid, nhtec, nhpxb, nHits, trackPdg,trackMomPdg;
@@ -256,7 +256,7 @@ private:
   // std::array<float,16> hitStrip54, hitStrip55, hitStrip56, hitStrip57, hitStrip58, hitStrip59, hitStrip60;
   // std::array<float,16> hitStrip61, hitStrip62;
 
-  std::array< std::array<float, 16>, 62 > hitStrips;
+  std::array< std::array<float, 16>, 63 > hitStrips;
 
   // TTree* cnntree;
 
@@ -287,9 +287,8 @@ genMap_(consumes<reco::TrackToGenParticleAssociator>(iConfig.getParameter<edm::I
 {
 
   dummy = -0.000053421269;
-  padHalfSize = 7.5;
+  padHalfSize = 8.0;
   padSize = (int)(padHalfSize*2);
-  tParams = 26;
 
   // hitPixels.push_back(hitPixel0);
   // hitPixels.push_back(hitPixel1);
@@ -476,6 +475,9 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
   for(edm::View<reco::Track>::size_type tt=0; tt<trackCollection->size(); ++tt)
   {
+
+    std::cout << " track "<< tt << std::endl;
+    std::cout << "init"<<std::endl;
     std::vector<double> theData;
     // std::cout << "Track ------------------- "<< std::endl;
     // std::cout << std::endl;
@@ -578,10 +580,12 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     theData.push_back((double)hitPattern.numberOfValidStripTIDHits());
     theData.push_back((double)hitPattern.numberOfValidStripTECHits());
 
+    std::cout << "hit ";
     int hitCounter = -1;
     for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
     {
 
+      std::cout << hitCounter <<std::endl;
       TrackerSingleRecHit const * h= dynamic_cast<TrackerSingleRecHit const *>(*recHit);
 
       if(!h)
@@ -613,11 +617,13 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
       const GeomDet* gDet = (h)->det();
 
+      std::cout << "binning" <<std::endl;
 
       //Pixel Hit!
       if(hitBin < 10)
       {
 
+        std::cout << "pixel" <<std::endl;
         const SiPixelRecHit* hh = dynamic_cast<SiPixelRecHit const *>(h);
         if(!hh) continue;
 
@@ -722,10 +728,12 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           }
         }
 
+        std::cout << "pixel end" <<std::endl;
       }//if pix
 
       if(hitBin>9) //Strip Hit!
       {
+        std::cout << "strip" <<std::endl;
         int stripBin = hitBin-10;
         const SiStripRecHit2D* siStripHit2D = dynamic_cast<SiStripRecHit2D const *>(h);
         const SiStripRecHit1D* siStripHit1D = dynamic_cast<SiStripRecHit1D const *>(h);
@@ -832,7 +840,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
 
 
-
+        std::cout << "strip end" <<std::endl;
       }//if strip
 
     } //hit loop
