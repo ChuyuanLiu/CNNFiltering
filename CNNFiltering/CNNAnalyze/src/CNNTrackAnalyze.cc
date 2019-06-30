@@ -116,81 +116,80 @@ Implementation:
 // This will improve performance in multithreaded jobs.
 
 
-std::array< std::array < std::array <float,2>, 2>, 73>allTheBins = {
-{{-28.0,28.0},{2.5,5.0}},
-{{-28.0,28.0},{6.0,8.0}},
-{{-28.0,28.0},{10.0,12.5}},
-{{-28.0,28.0},{15.0,17.5}},
-{{-35.0,-29.0},{2.5,17.5}},
-{{29.0,35.0},{2.5,17.5}},
-{{-44.0,-36.0},{2.5,17.5}},
-{{36.0,44.0},{2.5,17.5}},
-{{-53.0,-44.5},{2.5,17.5}},
-{{44.5,53.0},{2.5,17.5}},
-{{-65.0,65.0},{23.0,25.5}},
-{{-65.0,65.0},{25.5,30.0}},
-{{-65.0,65.0},{30.5,33.5}},
-{{-65.0,65.0},{33.5,38.0}},
-{{-65.0,65.0},{38.1,42.0}},
-{{-65.0,65.0},{42.0,46.0}},
-{{-65.0,65.0},{46.5,50.0}},
-{{-65.0,65.0},{50.1,53.0}},
-{{-65.0,65.0},{57.1,61.0}},
-{{-65.0,65.0},{61.1,65.0}},
-{{-65.0,65.0},{65.5,69.0}},
-{{-65.0,65.0},{69.1,73.0}},
-{{-65.0,65.0},{75.0,78.0}},
-{{-65.0,65.0},{78.5,83.5}},
-{{-65.0,65.0},{83.6,87.0}},
-{{-65.0,65.0},{87.1,90.0}},
-{{-65.0,65.0},{92.0,96.5}},
-{{-115.0,-70.0},{25.5,30.0}},
-{{70.0,115.0},{25.5,30.0}},
-{{-115.0,-70.0},{33.1,38.0}},
-{{70.0,115.0},{33.1,38.0}},
-{{-65.0,65.0},{96.8,103.0}},
-{{-115.0,-70.0},{42.0,46.0}},
-{{70.0,115.0},{42.0,46.0}},
-{{-115.0,-70.0},{57.1,61.0}},
-{{70.0,115.0},{57.1,61.0}},
-{{-65.0,65.0},{105.0,115.0}},
-{{-115.0,-70.0},{61.1,65.0}},
-{{70.0,115.0},{61.1,65.0}},
-{{-115.0,-70.0},{65.5,69.0}},
-{{70.0,115.0},{65.5,69.0}},
-{{-115.0,-70.0},{69.1,73.0}},
-{{70.0,115.0},{69.1,73.0}},
-{{-115.0,-70.0},{75.0,78.0}},
-{{70.0,115.0},{75.0,78.0}},
-{{-115.0,-70.0},{78.5,83.5}},
-{{70.0,115.0},{78.5,83.5}},
-{{-115.0,-70.0},{83.6,87.0}},
-{{70.0,115.0},{83.6,87.0}},
-{{-115.0,-70.0},{87.1,90.0}},
-{{70.0,115.0},{87.1,90.0}},
-{{-115.0,-70.0},{92.0,96.5}},
-{{70.0,115.0},{92.0,96.5}},
-{{-115.0,-70.0},{96.8,103.0}},
-{{70.0,115.0},{96.8,103.0}},
-{{-115.0,-70.0},{105.0,115.0}},
-{{70.0,115.0},{105.0,115.0}},
-{{-170.0,-120.0},{25.5,30.0}},
-{{120.0,170.0},{25.5,30.0}},
-{{-230.0,-120.0},{33.1,38.0}},
-{{120.0,230.0},{33.1,38.0}},
-{{120.0,170.0},{105.0,115.0}},
-{{-170.0,-120.0},{105.0,115.0}},
-{{-280.0,-120.0},{42.0,46.0}},
-{{120.0,280.0},{42.0,46.0}},
-{{-280.0,-120.0},{54.5,57.0}},
-{{120.0,280.0},{54.5,57.0}},
-{{-280.0,-120.0},{65.5,69.0}},
-{{120.0,280.0},{65.5,69.0}},
-{{-280.0,-120.0},{77.1,83.5}},
-{{120.0,280.0},{77.1,83.5}},
-{{-280.0,-120.0},{96.8,103.0}},
-{{120.0,280.0},{96.8,103.0}}
-};
+std::array< std::array < std::array <float,2>, 2>, 73>allTheBins;
+  allTheBins[0] = {{-28.0,28.0},{2.5,5.0}};
+  allTheBins[1] = {{-28.0,28.0},{6.0,8.0}};
+  allTheBins[2] = {{-28.0,28.0},{10.0,12.5}};
+  allTheBins[3] = {{-28.0,28.0},{15.0,17.5}};
+  allTheBins[4] = {{-35.0,-29.0},{2.5,17.5}};
+  allTheBins[5] = {{29.0,35.0},{2.5,17.5}};
+  allTheBins[6] = {{-44.0,-36.0},{2.5,17.5}};
+  allTheBins[7] = {{36.0,44.0},{2.5,17.5}};
+  allTheBins[8] = {{-53.0,-44.5},{2.5,17.5}};
+  allTheBins[9] = {{44.5,53.0},{2.5,17.5}};
+  allTheBins[10] = {{-65.0,65.0},{23.0,25.5}};
+  allTheBins[11] = {{-65.0,65.0},{25.5,30.0}};
+  allTheBins[12] = {{-65.0,65.0},{30.5,33.5}};
+  allTheBins[13] = {{-65.0,65.0},{33.5,38.0}};
+  allTheBins[14] = {{-65.0,65.0},{38.1,42.0}};
+  allTheBins[15] = {{-65.0,65.0},{42.0,46.0}};
+  allTheBins[16] = {{-65.0,65.0},{46.5,50.0}};
+  allTheBins[17] = {{-65.0,65.0},{50.1,53.0}};
+  allTheBins[18] = {{-65.0,65.0},{57.1,61.0}};
+  allTheBins[19] = {{-65.0,65.0},{61.1,65.0}};
+  allTheBins[20] = {{-65.0,65.0},{65.5,69.0}};
+  allTheBins[21] = {{-65.0,65.0},{69.1,73.0}};
+  allTheBins[22] = {{-65.0,65.0},{75.0,78.0}};
+  allTheBins[23] = {{-65.0,65.0},{78.5,83.5}};
+  allTheBins[24] = {{-65.0,65.0},{83.6,87.0}};
+  allTheBins[25] = {{-65.0,65.0},{87.1,90.0}};
+  allTheBins[26] = {{-65.0,65.0},{92.0,96.5}};
+  allTheBins[27] = {{-115.0,-70.0},{25.5,30.0}};
+  allTheBins[28] = {{70.0,115.0},{25.5,30.0}};
+  allTheBins[29] = {{-115.0,-70.0},{33.1,38.0}};
+  allTheBins[30] = {{70.0,115.0},{33.1,38.0}};
+  allTheBins[31] = {{-65.0,65.0},{96.8,103.0}};
+  allTheBins[32] = {{-115.0,-70.0},{42.0,46.0}};
+  allTheBins[33] = {{70.0,115.0},{42.0,46.0}};
+  allTheBins[34] = {{-115.0,-70.0},{57.1,61.0}};
+  allTheBins[35] = {{70.0,115.0},{57.1,61.0}};
+  allTheBins[36] = {{-65.0,65.0},{105.0,115.0}};
+  allTheBins[37] = {{-115.0,-70.0},{61.1,65.0}};
+  allTheBins[38] = {{70.0,115.0},{61.1,65.0}};
+  allTheBins[39] = {{-115.0,-70.0},{65.5,69.0}};
+  allTheBins[40] = {{70.0,115.0},{65.5,69.0}};
+  allTheBins[41] = {{-115.0,-70.0},{69.1,73.0}};
+  allTheBins[42] = {{70.0,115.0},{69.1,73.0}};
+  allTheBins[43] = {{-115.0,-70.0},{75.0,78.0}};
+  allTheBins[44] = {{70.0,115.0},{75.0,78.0}};
+  allTheBins[45] = {{-115.0,-70.0},{78.5,83.5}};
+  allTheBins[46] = {{70.0,115.0},{78.5,83.5}};
+  allTheBins[47] = {{-115.0,-70.0},{83.6,87.0}};
+  allTheBins[48] = {{70.0,115.0},{83.6,87.0}};
+  allTheBins[49] = {{-115.0,-70.0},{87.1,90.0}};
+  allTheBins[50] = {{70.0,115.0},{87.1,90.0}};
+  allTheBins[51] = {{-115.0,-70.0},{92.0,96.5}};
+  allTheBins[52] = {{70.0,115.0},{92.0,96.5}};
+  allTheBins[53] = {{-115.0,-70.0},{96.8,103.0}};
+  allTheBins[54] = {{70.0,115.0},{96.8,103.0}};
+  allTheBins[55] = {{-115.0,-70.0},{105.0,115.0}};
+  allTheBins[56] = {{70.0,115.0},{105.0,115.0}};
+  allTheBins[57] = {{-170.0,-120.0},{25.5,30.0}};
+  allTheBins[58] = {{120.0,170.0},{25.5,30.0}};
+  allTheBins[59] = {{-230.0,-120.0},{33.1,38.0}};
+  allTheBins[60] = {{120.0,230.0},{33.1,38.0}};
+  allTheBins[61] = {{120.0,170.0},{105.0,115.0}};
+  allTheBins[62] = {{-170.0,-120.0},{105.0,115.0}};
+  allTheBins[63] = {{-280.0,-120.0},{42.0,46.0}};
+  allTheBins[64] = {{120.0,280.0},{42.0,46.0}};
+  allTheBins[65] = {{-280.0,-120.0},{54.5,57.0}};
+  allTheBins[66] = {{120.0,280.0},{54.5,57.0}};
+  allTheBins[67] = {{-280.0,-120.0},{65.5,69.0}};
+  allTheBins[68] = {{120.0,280.0},{65.5,69.0}};
+  allTheBins[69] = {{-280.0,-120.0},{77.1,83.5}};
+  allTheBins[70] = {{120.0,280.0},{77.1,83.5}};
+  allTheBins[71] = {{-280.0,-120.0},{96.8,103.0}};
+  allTheBins[72] = {{120.0,280.0},{96.8,103.0}};
 
 class CNNTrackAnalyze : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 public:
@@ -609,18 +608,18 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
       if (hitBin < 0 || hitBin>72) continue;
 
-      const GeomDet* gDet = (hit)->det();
+      const GeomDet* gDet = (h)->det();
 
 
       //Pixel Hit!
       if(hitBin < 10)
       {
 
-        const SiPixelRecHit* hh = dynamic_cast<SiPixelRecHit const *>(hit);
-        if(!pixHit) continue;
+        const SiPixelRecHit* hh = dynamic_cast<SiPixelRecHit const *>(h);
+        if(!hh) continue;
 
-        auto thisClust = hh->cluster();
-        float P_Charge = thisClust->charge();
+        auto clust = hh->cluster();
+        float P_Charge = clust->charge();
 
         bool thisBad,thisEdge,thisBig;
         thisBig  = hh->spansTwoROCs();
@@ -679,14 +678,14 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
         ax4[i] = (float)gDet->surface().toGlobal(Local3DPoint(1.,0.,0.)).perp();
         rawId[i] = (float)gDet->geographicalId().rawId();
 
-        p_size[i]  = (float)thisClust->size();
-        p_sizex[i]  = (float)thisClust->sizeX();
-        p_sizey[i]  = (float)thisClust->sizeY();
-        p_x[i]  = (float)thisClust->x();
-        p_y[i]  = (float)thisClust->y();
-        p_ovx[i]  = (float)thisClust->sizeX() > 16.;
-        p_ovy[i]  = (float)thisClust->sizeY() > 16.;
-        p_skew[i]  = (float)thisClust->sizeY() / (float)clust->sizeX();
+        p_size[i]  = (float)clust->size();
+        p_sizex[i]  = (float)clust->sizeX();
+        p_sizey[i]  = (float)clust->sizeY();
+        p_x[i]  = (float)clust->x();
+        p_y[i]  = (float)clust->y();
+        p_ovx[i]  = (float)clust->sizeX() > 16.;
+        p_ovy[i]  = (float)clust->sizeY() > 16.;
+        p_skew[i]  = (float)clust->sizeY() / (float)clust->sizeX();
         p_big[i]  = thisBig;
         p_bad[i]  = thisBad;
         p_edge[i]  = thisEdge;
@@ -725,8 +724,8 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       if(hitBin>9) //Strip Hit!
       {
         int stripBin = hitBin-10;
-        const SiStripRecHit2D* siStripHit2D = dynamic_cast<SiStripRecHit2D const *>(hit);
-        const SiStripRecHit1D* siStripHit1D = dynamic_cast<SiStripRecHit1D const *>(hit);
+        const SiStripRecHit2D* siStripHit2D = dynamic_cast<SiStripRecHit2D const *>(h);
+        const SiStripRecHit1D* siStripHit1D = dynamic_cast<SiStripRecHit1D const *>(h);
 
         if(!siStripHit2D && !siStripHit1D) continue;
 
@@ -735,54 +734,53 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
         if(siStripHit2D)
         {
-          auto thisClust = (siStripHit2D->cluster());
+          auto clust = (siStripHit2D->cluster());
 
-          float S_Charge = thisClust->charge();
+          float S_Charge = clust->charge();
 
           if(s_charge[stripBin] !=dummy && fabs(S_Charge)<fabs(s_charge[stripBin])) continue;
 
-          s_center[stripBin] = (float)thisClust->barycenter();
-          s_first[stripBin] = (float)thisClust->firstStrip();
-          s_merged[stripBin] = (float)thisClust->isMerged();
-          s_size[stripBin] = (float)thisClust->amplitudes().size();
+          s_center[stripBin] = (float)clust->barycenter();
+          s_first[stripBin] = (float)clust->firstStrip();
+          s_merged[stripBin] = (float)clust->isMerged();
+          s_size[stripBin] = (float)clust->amplitudes().size();
           s_charge[stripBin] = S_Charge;
 
-          int minSize = -std::max(int(-thisClust->amplitudes().size()),-16);
+          int minSize = -std::max(int(-clust->amplitudes().size()),-16);
 
           for(int j =0;j<16;j++)
             hitStrips[stripBin][j] = dummy;
 
           for(int j =0;j<minSize;j++)
-            hitStrips[stripBin][j] = (float)thisClust->amplitudes()[j];
+            hitStrips[stripBin][j] = (float)clust->amplitudes()[j];
 
         }
         else
         if(siStripHit1D)
         {
-          auto thisClust = (siStripHit1D->cluster());
+          auto clust = (siStripHit1D->cluster());
 
-          float S_Charge = thisClust->charge();
+          float S_Charge = clust->charge();
 
           if(s_charge[stripBin] !=dummy && fabs(S_Charge)<fabs(s_charge[stripBin])) continue;
 
-          s_center[stripBin] = (float)thisClust->barycenter();
-          s_first[stripBin] = (float)thisClust->firstStrip();
-          s_merged[stripBin] = (float)thisClust->isMerged();
-          s_size[stripBin] = (float)thisClust->amplitudes().size();
+          s_center[stripBin] = (float)clust->barycenter();
+          s_first[stripBin] = (float)clust->firstStrip();
+          s_merged[stripBin] = (float)clust->isMerged();
+          s_size[stripBin] = (float)clust->amplitudes().size();
           s_charge[stripBin] = S_Charge;
 
-          int minSize = -std::max(int(-thisClust->amplitudes().size()),-16);
+          int minSize = -std::max(int(-clust->amplitudes().size()),-16);
 
           for(int j =0;j<16;j++)
             hitStrips[stripBin][j] = dummy;
 
           for(int j =0;j<minSize;j++)
-            hitStrips[stripBin][j] = (float)thisClust->amplitudes()[j];
+            hitStrips[stripBin][j] = (float)clust->amplitudes()[j];
         }
 
 
         auto clustRef = h->firstClusterRef();
-
         auto rangeIn = tpClust->equal_range(clustRef);
 
         //for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
