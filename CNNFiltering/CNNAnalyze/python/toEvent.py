@@ -5,11 +5,6 @@ from tqdm import tqdm
 
 import sys
 
-import argparse
-
-from track_dataset import *
-from time import time
-from skimage.util.shape import view_as_windows as viewW
 
 cols = ["eveNumber",
 "runNumber",
