@@ -5,6 +5,7 @@ from tqdm import tqdm
 
 import sys
 
+import numpy as np
 
 cols = ["eveNumber",
 "runNumber",
@@ -35,6 +36,7 @@ xs = []
 ys = []
 zs = []
 qs = []
+rs = []
 for i in range(73):
     xs = xs + ["x_"+str(i)]
     ys = ys + ["y_"+str(i)]
@@ -72,11 +74,11 @@ for d in data_files:
     name = d[:-4]
     df = pd.read_table("/lustre/home/adrianodif/CNNTracks/el7/QCD_ML_Crab/0/1_1_1generalTracks_CNN.txt",names=cols)
     df.to_hdf(name + ".h5","data",complevel=0)
-    qq = ev_df[qs].values
-    xx = ev_df[xs].values
-    zz = ev_df[ys].values
-    yy = ev_df[zs].values
-    rr = ev_df[rs].values
+    qq = df[qs].values
+    xx = df[xs].values
+    zz = df[ys].values
+    yy = df[zs].values
+    rr = df[rs].values
 
     cut = (xx!=dummy)
     qq = qq[cut]
