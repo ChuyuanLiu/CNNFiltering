@@ -190,7 +190,7 @@ std::array< std::array < std::array <float,2>, 2>, 73>allTheBins = {
 {{120.0,280.0},{77.1,83.5}},
 {{-280.0,-120.0},{96.8,103.0}},
 {{120.0,280.0},{96.8,103.0}}
-}
+};
 
 class CNNTrackAnalyze : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 public:
@@ -451,7 +451,6 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   //fileName += "_" + processName_ + "_dnn_doublets.txt";
   std::ofstream trackFile(fileName, std::ofstream::app);
 
-  std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}; //seqNumbers of pixel detectors 0,1,2,3 barrel 14,15,16, fwd 29,30,31 bkw
   std::vector<int> partiList{11,13,15,22,111,211,311,321,2212,2112,3122,223};
 
   // reco::Vertex thePrimaryV, theBeamSpotV;
@@ -584,7 +583,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
       TrackerSingleRecHit const * h= dynamic_cast<TrackerSingleRecHit const *>(*recHit);
 
-      if(!hit)
+      if(!h)
         continue;
 
       DetId detId = (*recHit)->geographicalId();
@@ -593,7 +592,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       ++hitCounter;
 
       int hitBin = -1;
-      float hit_r = (h->globalState()).position.r;
+      float hit_r = (h->globalState()).position.r();
       float hit_z = (h->globalState()).position.z();
 
       for (int i =0; i<73;i++)
@@ -731,9 +730,9 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
         if(!siStripHit2D && !siStripHit1D) continue;
 
+        auto thisClust = h->firstClusterRef();
 
-
-        float S_Charge = (h->firstClusterRef())->charge();
+        float S_Charge = thisClust.charge();
 
         if(s_charge[stripBin] !=dummy && fabs(S_Charge)<fabs(s_charge[stripBin])) continue;
 
@@ -786,13 +785,12 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
         if(siStripHit1D) s_dim[stripBin] = 1.0;
         if(siStripHit2D) s_dim[stripBin] = 2.0;
 
-        auto thisClust = h->firstClusterRef();
 
-        s_center[stripBin] = (float)thisClust->barycenter();
-        s_first[stripBin] = (float)thisClust->firstStrip();
-        s_merged[stripBin] = (float)thisClust->isMerged();
-        s_size[stripBin] = (float)thisClust->amplitudes().size();
-        s_charge[stripBin] = (float)thisClust->charge();
+        s_center[stripBin] = (float)thisClust.barycenter();
+        s_first[stripBin] = (float)thisClust.firstStrip();
+        s_merged[stripBin] = (float)thisClust.isMerged();
+        s_size[stripBin] = (float)thisClust.amplitudes().size();
+        s_charge[stripBin] = (float)thisClust.charge();
 
         int minSize = -std::max(int(-thisClust->amplitudes().size()),-16);
 
