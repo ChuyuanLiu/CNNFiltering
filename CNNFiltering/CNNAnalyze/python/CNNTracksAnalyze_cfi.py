@@ -25,7 +25,7 @@ import FWCore.ParameterSet.Config as cms
 # ++IntermediateHitDoublets "tripletElectronHitDoublets" "" "RECO" (productId = 3:320)
 
 tracksCNN = cms.EDAnalyzer('CNNTrackAnalyze',
-        processName     = cms.string( "generalTracks_3_CNN"),
+        processName     = cms.string( "generalTracks_CNN"),
         tracks          = cms.InputTag( "generalTracks" ),
         tpMap           = cms.InputTag( "tpClusterProducer" ),
         trMap           = cms.InputTag("trackingParticleRecoTrackAsssociation"),

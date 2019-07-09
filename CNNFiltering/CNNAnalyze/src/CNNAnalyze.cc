@@ -457,8 +457,8 @@ CNNAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         {
           Local2DPoint point((float)clusters[j]->pixel(k).x,(float)clusters[j]->pixel(k).y);
           auto globPoint = geomDets[j]->surface().toGlobal(point);
-          auto xBin = hClust.FindBin((float)clusters[j]->pixel(k).x;
-          auto yBin = hClust.FindBin((float)clusters[j]->pixel(k).y;
+          auto xBin = hClust.FindBin((float)clusters[j]->pixel(k).x);
+          auto yBin = hClust.FindBin((float)clusters[j]->pixel(k).y);
 
           hClust.SetBinContent(xBin, yBin,(float)clusters[j]->pixel(k).adc);
 

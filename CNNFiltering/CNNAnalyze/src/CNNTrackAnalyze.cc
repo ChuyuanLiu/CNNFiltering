@@ -115,6 +115,83 @@ Implementation:
 // constructor "usesResource("TFileService");"
 // This will improve performance in multithreaded jobs.
 
+
+std::array< float, 292> allTheBins = {{
+-28.0,28.0,2.5,5.0,
+-28.0,28.0,6.0,8.0,
+-28.0,28.0,10.0,12.5,
+-28.0,28.0,15.0,17.5,
+-35.0,-29.0,2.5,17.5,
+29.0,35.0,2.5,17.5,
+-44.0,-36.0,2.5,17.5,
+36.0,44.0,2.5,17.5,
+-53.0,-44.5,2.5,17.5,
+44.5,53.0,2.5,17.5,
+-65.0,65.0,23.0,25.5,
+-65.0,65.0,25.5,30.0,
+-65.0,65.0,30.5,33.5,
+-65.0,65.0,33.5,38.0,
+-65.0,65.0,38.1,42.0,
+-65.0,65.0,42.0,46.0,
+-65.0,65.0,46.5,50.0,
+-65.0,65.0,50.1,53.0,
+-65.0,65.0,57.1,61.0,
+-65.0,65.0,61.1,65.0,
+-65.0,65.0,65.5,69.0,
+-65.0,65.0,69.1,73.0,
+-65.0,65.0,75.0,78.0,
+-65.0,65.0,78.5,83.5,
+-65.0,65.0,83.6,87.0,
+-65.0,65.0,87.1,90.0,
+-65.0,65.0,92.0,96.5,
+-115.0,-70.0,25.5,30.0,
+70.0,115.0,25.5,30.0,
+-115.0,-70.0,33.1,38.0,
+70.0,115.0,33.1,38.0,
+-65.0,65.0,96.8,103.0,
+-115.0,-70.0,42.0,46.0,
+70.0,115.0,42.0,46.0,
+-115.0,-70.0,57.1,61.0,
+70.0,115.0,57.1,61.0,
+-65.0,65.0,105.0,115.0,
+-115.0,-70.0,61.1,65.0,
+70.0,115.0,61.1,65.0,
+-115.0,-70.0,65.5,69.0,
+70.0,115.0,65.5,69.0,
+-115.0,-70.0,69.1,73.0,
+70.0,115.0,69.1,73.0,
+-115.0,-70.0,75.0,78.0,
+70.0,115.0,75.0,78.0,
+-115.0,-70.0,78.5,83.5,
+70.0,115.0,78.5,83.5,
+-115.0,-70.0,83.6,87.0,
+70.0,115.0,83.6,87.0,
+-115.0,-70.0,87.1,90.0,
+70.0,115.0,87.1,90.0,
+-115.0,-70.0,92.0,96.5,
+70.0,115.0,92.0,96.5,
+-115.0,-70.0,96.8,103.0,
+70.0,115.0,96.8,103.0,
+-115.0,-70.0,105.0,115.0,
+70.0,115.0,105.0,115.0,
+-170.0,-120.0,25.5,30.0,
+120.0,170.0,25.5,30.0,
+-230.0,-120.0,33.1,38.0,
+120.0,230.0,33.1,38.0,
+120.0,170.0,105.0,115.0,
+-170.0,-120.0,105.0,115.0,
+-280.0,-120.0,42.0,46.0,
+120.0,280.0,42.0,46.0,
+-280.0,-120.0,54.5,57.0,
+120.0,280.0,54.5,57.0,
+-280.0,-120.0,65.5,69.0,
+120.0,280.0,65.5,69.0,
+-280.0,-120.0,77.1,83.5,
+120.0,280.0,77.1,83.5,
+-280.0,-120.0,96.8,103.0,
+120.0,280.0,96.8,103.0
+}};
+
 class CNNTrackAnalyze : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 public:
   explicit CNNTrackAnalyze(const edm::ParameterSet&);
@@ -144,20 +221,42 @@ private:
   // edm::GetterOfProducts<IntermediateHitDoublets> getterOfProducts_;
 
   float padHalfSize;
-  int padSize, tParams;
+  int padSize;
 
   float pt, eta, phi, p, chi2n, d0, dx, dz, sharedFraction,sharedMomFraction;
   int nhit, nhpxf, nhtib, nhtob, nhtid, nhtec, nhpxb, nHits, trackPdg,trackMomPdg;
   int eveNumber, runNumber, lumNumber;
 
-  std::vector<float>  x, y, z, phi_hit, r, c_x, c_y, charge, ovfx, ovfy;
-  std::vector<float> ratio, pdgId, motherPdgId, size, sizex, sizey;
-  //std::vector<TH2> hitClust;
+  float dummy;
 
-  std::vector<float> hitPixel0, hitPixel1, hitPixel2, hitPixel3, hitPixel4;
-  std::vector<float> hitPixel5, hitPixel6, hitPixel7, hitPixel8, hitPixel9;
+  //General Hit
+  std::array<float,73> x, y, z, phi_hit, r, charge, n_seq;
+  std::array<float,73> ax1,ax2,ax3,ax4,dZ,detId;
+  std::array<float,73> pdgId, motherPdgId,rawId;
 
-  std::vector< std::vector<float> > hitPixels;
+  //Pixel Hit
+  std::array<float,10> p_size, p_sizex, p_sizey, p_x, p_y, p_ovx, p_ovy;
+  std::array<float,10> p_skew, p_big, p_bad, p_edge, p_charge;
+
+  // std::array<float,256> hitPixel0, hitPixel1, hitPixel2, hitPixel3, hitPixel4;
+  // std::array<float,256> hitPixel5, hitPixel6, hitPixel7, hitPixel8, hitPixel9;
+
+  std::array< std::array<float,256>, 10> hitPixels;
+
+  //Strip Hits
+  std::array<float,63> s_dim, s_center, s_first, s_merged, s_size, s_charge;
+  // std::array<float,16> hitStrip0, hitStrip1, hitStrip2, hitStrip3, hitStrip4;
+  // std::array<float,16> hitStrip5, hitStrip6, hitStrip7, hitStrip8, hitStrip9, hitStrip10, hitStrip11;
+  // std::array<float,16> hitStrip12, hitStrip13, hitStrip14, hitStrip15, hitStrip16, hitStrip17, hitStrip18;
+  // std::array<float,16> hitStrip19, hitStrip20, hitStrip21, hitStrip22, hitStrip23, hitStrip24, hitStrip25;
+  // std::array<float,16> hitStrip26, hitStrip27, hitStrip28, hitStrip29, hitStrip30, hitStrip31, hitStrip32;
+  // std::array<float,16> hitStrip33, hitStrip34, hitStrip35, hitStrip36, hitStrip37, hitStrip38, hitStrip39;
+  // std::array<float,16> hitStrip40, hitStrip41, hitStrip42, hitStrip43, hitStrip44, hitStrip45, hitStrip46;
+  // std::array<float,16> hitStrip47, hitStrip48, hitStrip49, hitStrip50, hitStrip51, hitStrip52, hitStrip53;
+  // std::array<float,16> hitStrip54, hitStrip55, hitStrip56, hitStrip57, hitStrip58, hitStrip59, hitStrip60;
+  // std::array<float,16> hitStrip61, hitStrip62;
+
+  std::array< std::array<float, 16>, 63 > hitStrips;
 
   // TTree* cnntree;
 
@@ -187,127 +286,111 @@ trMap_(consumes<reco::TrackToTrackingParticleAssociator>(iConfig.getParameter<ed
 genMap_(consumes<reco::TrackToGenParticleAssociator>(iConfig.getParameter<edm::InputTag>("genMap")))
 {
 
-  padHalfSize = 7.5;
+  dummy = -0.000053421269;
+  padHalfSize = 8.0;
   padSize = (int)(padHalfSize*2);
-  tParams = 26;
 
-  hitPixels.push_back(hitPixel0);
-  hitPixels.push_back(hitPixel1);
-  hitPixels.push_back(hitPixel2);
-  hitPixels.push_back(hitPixel3);
-  hitPixels.push_back(hitPixel4);
-  hitPixels.push_back(hitPixel5);
-  hitPixels.push_back(hitPixel6);
-  hitPixels.push_back(hitPixel7);
-  hitPixels.push_back(hitPixel8);
-  hitPixels.push_back(hitPixel9);
-
-  for(int i = 0; i<10;i++)
-    for(int j =0;j<padSize*padSize;j++)
-      hitPixels[i].push_back(0.0);
+  // hitPixels.push_back(hitPixel0);
+  // hitPixels.push_back(hitPixel1);
+  // hitPixels.push_back(hitPixel2);
+  // hitPixels.push_back(hitPixel3);
+  // hitPixels.push_back(hitPixel4);
+  // hitPixels.push_back(hitPixel5);
+  // hitPixels.push_back(hitPixel6);
+  // hitPixels.push_back(hitPixel7);
+  // hitPixels.push_back(hitPixel8);
+  // hitPixels.push_back(hitPixel9);
 
   for(int i = 0; i<10;i++)
-  {
-    x.push_back(0.0);
-    y.push_back(0.0);
-    z.push_back(0.0);
-    phi_hit.push_back(0.0);
-    r.push_back(0.0);
-    c_x.push_back(0.0);
-    c_y.push_back(0.0);
-    pdgId.push_back(0.0);
-    motherPdgId.push_back(0.0);
-    size.push_back(0);
-    sizex.push_back(0);
-    sizey.push_back(0);
-    charge.push_back(0);
-    ovfx.push_back(0.0);
-    ovfy.push_back(0.0);
-    ratio.push_back(0.0);
+    for(int j =0;j<256;j++)
+      hitPixels[i][j] = dummy;
 
-  }
+  for(int i = 0; i<63;i++)
+    for(int j =0;j<16;j++)
+      hitPixels[i][j] = dummy;
 
-  // edm::Service<TFileService> fs;
-  // cnntree = fs->make<TTree>("CNNTree","Doublets Tree");
-  //
-  // cnntree->Branch("eveNumber",      &eveNumber,          "eveNumber/I");
-  // cnntree->Branch("runNumber",      &runNumber,          "runNumber/I");
-  // cnntree->Branch("lumNumber",      &lumNumber,          "lumNumber/I");
-  //
-  // cnntree->Branch("pt",      &pt,          "pt/D");
-  // cnntree->Branch("eta",     &eta,          "eta/D");
-  // cnntree->Branch("phi",     &phi,          "phi/D");
-  // cnntree->Branch("p",       &p,          "p/D");
-  // cnntree->Branch("chi2n",   &chi2n,  "chi2n/D");
-  // cnntree->Branch("d0",      &d0,          "d0/D");
-  // cnntree->Branch("dx",      &dx,          "dx/D");
-  // cnntree->Branch("dz",      &dz,          "dz/D");
-  //
-  // cnntree->Branch("sharedFraction",      &sharedFraction,          "sharedFraction/D");
-  //
-  // cnntree->Branch("nhit",      &nhit,            "nhit/I");
-  // cnntree->Branch("nhpxf",      &nhpxf,          "nhpxf/I");
-  // cnntree->Branch("nhtib",      &nhtib,          "nhtib/I");
-  // cnntree->Branch("nhtob",      &nhtob,          "nhtob/I");
-  // cnntree->Branch("nhtid",      &nhtid,          "nhtid/I");
-  // cnntree->Branch("nhtec",      &nhtec,          "nhtec/I");
-  // cnntree->Branch("nhpxb",      &nhpxb,          "nhpxb/I");
-  // cnntree->Branch("nhpxb",      &nhpxb,          "nhpxb/I");
-  // cnntree->Branch("nHits",      &nHits,          "nHits/I");
-  //
-  // cnntree->Branch("trackPdg",      &trackPdg,          "trackPdg/I");
-  //
-  //
-  // for(int i = 0; i<10;i++)
+  // hitStrips.push_back(hitStrip0);
+  // hitStrips.push_back(hitStrip1);
+  // hitStrips.push_back(hitStrip2);
+  // hitStrips.push_back(hitStrip3);
+  // hitStrips.push_back(hitStrip4);
+  // hitStrips.push_back(hitStrip5);
+  // hitStrips.push_back(hitStrip6);
+  // hitStrips.push_back(hitStrip7);
+  // hitStrips.push_back(hitStrip8);
+  // hitStrips.push_back(hitStrip9);
+  // hitStrips.push_back(hitStrip10);
+  // hitStrips.push_back(hitStrip11);
+  // hitStrips.push_back(hitStrip12);
+  // hitStrips.push_back(hitStrip13);
+  // hitStrips.push_back(hitStrip14);
+  // hitStrips.push_back(hitStrip15);
+  // hitStrips.push_back(hitStrip16);
+  // hitStrips.push_back(hitStrip17);
+  // hitStrips.push_back(hitStrip18);
+  // hitStrips.push_back(hitStrip19);
+  // hitStrips.push_back(hitStrip20);
+  // hitStrips.push_back(hitStrip21);
+  // hitStrips.push_back(hitStrip22);
+  // hitStrips.push_back(hitStrip23);
+  // hitStrips.push_back(hitStrip24);
+  // hitStrips.push_back(hitStrip25);
+  // hitStrips.push_back(hitStrip26);
+  // hitStrips.push_back(hitStrip27);
+  // hitStrips.push_back(hitStrip28);
+  // hitStrips.push_back(hitStrip29);
+  // hitStrips.push_back(hitStrip30);
+  // hitStrips.push_back(hitStrip31);
+  // hitStrips.push_back(hitStrip32);
+  // hitStrips.push_back(hitStrip33);
+  // hitStrips.push_back(hitStrip34);
+  // hitStrips.push_back(hitStrip35);
+  // hitStrips.push_back(hitStrip36);
+  // hitStrips.push_back(hitStrip37);
+  // hitStrips.push_back(hitStrip38);
+  // hitStrips.push_back(hitStrip39);
+  // hitStrips.push_back(hitStrip40);
+  // hitStrips.push_back(hitStrip41);
+  // hitStrips.push_back(hitStrip42);
+  // hitStrips.push_back(hitStrip43);
+  // hitStrips.push_back(hitStrip44);
+  // hitStrips.push_back(hitStrip45);
+  // hitStrips.push_back(hitStrip46);
+  // hitStrips.push_back(hitStrip47);
+  // hitStrips.push_back(hitStrip48);
+  // hitStrips.push_back(hitStrip49);
+  // hitStrips.push_back(hitStrip50);
+  // hitStrips.push_back(hitStrip51);
+  // hitStrips.push_back(hitStrip52);
+  // hitStrips.push_back(hitStrip53);
+  // hitStrips.push_back(hitStrip54);
+  // hitStrips.push_back(hitStrip55);
+  // hitStrips.push_back(hitStrip56);
+  // hitStrips.push_back(hitStrip57);
+  // hitStrips.push_back(hitStrip58);
+  // hitStrips.push_back(hitStrip59);
+  // hitStrips.push_back(hitStrip60);
+  // hitStrips.push_back(hitStrip61);
+  // hitStrips.push_back(hitStrip62);
+
+  // for(int i = 0; i<30;i++)
   // {
-  //   std::string name,tree;
-  //
-  //   for(int j = 0;j<padSize*padSize;j++)
-  //   {
-  //     name = "hit_" + std::to_string(i) + "_Pix_" + std::to_string(j);
-  //     tree = name + "/D";
-  //     cnntree->Branch(name.c_str(),      &hitPixels[i][j],          tree.c_str());
-  //   }
-  //
-  //   name = "hit_" + std::to_string(i) + "_x"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &x[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_y"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &y[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_z"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &z[i],          tree.c_str());
-  //
-  //   name = "hit_" + std::to_string(i) + "_phi_hit"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &phi_hit[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_r"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &r[i],          tree.c_str());
-  //
-  //   name = "hit_" + std::to_string(i) + "_c_x"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &c_x[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_c_y"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &c_y[i],          tree.c_str());
-  //
-  //   name = "hit_" + std::to_string(i) + "_pdgId"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &pdgId[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_motherPdgId"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &motherPdgId[i],          tree.c_str());
-  //
-  //   name = "hit_" + std::to_string(i) + "_size"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &size[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_sizex"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &sizex[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_sizey"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &sizey[i],          tree.c_str());
-  //
-  //   name = "hit_" + std::to_string(i) + "_charge"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &charge[i],          tree.c_str());
-  //
-  //   name = "hit_" + std::to_string(i) + "_ovfx"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &ovfx[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_ovfy"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &ovfy[i],          tree.c_str());
-  //   name = "hit_" + std::to_string(i) + "_ratio"; tree = name + "/D";
-  //   cnntree->Branch(name.c_str(),      &ratio[i],          tree.c_str());
-  //
+  //   x.push_back(0.0);
+  //   y.push_back(0.0);
+  //   z.push_back(0.0);
+  //   phi_hit.push_back(0.0);
+  //   r.push_back(0.0);
+  //   c_x.push_back(0.0);
+  //   c_y.push_back(0.0);
+  //   pdgId.push_back(0.0);
+  //   motherPdgId.push_back(0.0);
+  //   size.push_back(0);
+  //   sizex.push_back(0);
+  //   sizey.push_back(0);
+  //   charge.push_back(0);
+  //   ovfx.push_back(0.0);
+  //   ovfy.push_back(0.0);
+  //   ratio.push_back(0.0);
   //
   // }
 
@@ -344,7 +427,7 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   // int detOnArr[10] = {0,1,2,3,14,15,16,29,30,31};
   // std::vector<int> detOn(detOnArr,detOnArr+sizeof(detOnArr)/sizeof(int));
 
-  // std::cout<<"CNNDoublets Analyzer"<<std::endl;
+  // // std::cout<<"CNNDoublets Analyzer"<<std::endl;
 
   std::string theTrackQuality = "highPurity";
   reco::TrackBase::TrackQuality trackQuality= reco::TrackBase::qualityByName(theTrackQuality);
@@ -358,48 +441,15 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   edm::Handle<reco::TrackToTrackingParticleAssociator> tpTracks;
   iEvent.getByToken(trMap_, tpTracks);
 
-  // edm::Handle<reco::GenParticleCollection>  genParticles ;
-  // iEvent.getByToken(genParticles_,genParticles);
-
-  // const reco::TrackToGenParticleAssociator* genTracks =nullptr;
-  // edm::Handle<reco::TrackToGenParticleAssociator> trackGenAssociatorH;
-  // iEvent.getByToken(genMap_,trackGenAssociatorH);
-  // genTracks = trackGenAssociatorH.product();
-
-  //Reco To GEN association
-  // reco::RecoToGenCollection recGenColl;
-  // recGenColl=genTracks->associateRecoToGen(trackCollection,genParticles);
-
-  //Reco To SIM association
-  // edm::RefToBaseVector<reco::Track> trackRefs;
-  // for(edm::View<reco::Track>::size_type i=0; i<trackCollection->size(); ++i) {
-  //   trackRefs.push_back(trackCollection->refAt(i));
-  // }
-  //
-  // TrackingParticleRefVector tparVec;
-  // const TrackingParticleRefVector *tparPtr = nullptr;
-  // edm::Handle<TrackingParticleCollection> tparCollection;
-  // iEvent.getByToken(traParticles_,tparCollection);
-  // for(size_t i=0, size=tparCollection->size(); i<size; ++i) {
-  //   tparVec.push_back(TrackingParticleRef(tparCollection, i));
-  // }
-  // tparPtr = &tparVec;
-  // TrackingParticleRefVector const & tPartVector = *tparPtr;
-  //
-  // reco::RecoToSimCollection recSimCollL = std::move(tpTracks->associateRecoToSim(trackRefs, tPartVector));
-  // reco::RecoToSimCollection const * recSimCollP = &recSimCollL;
-  // reco::RecoToSimCollection const & recSimColl  = *recSimCollP;
 
   eveNumber = iEvent.id().event();
   runNumber = iEvent.id().run();
   lumNumber = iEvent.id().luminosityBlock();
 
-  std::string fileName = processName_ + ".txt";
-  //std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
+  std::string fileName = std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber) + processName_ + ".txt";
   //fileName += "_" + processName_ + "_dnn_doublets.txt";
-  std::ofstream outCNNFile(fileName, std::ofstream::app);
+  std::ofstream trackFile(fileName, std::ofstream::app);
 
-  std::vector<int> pixelDets{0,1,2,3,14,15,16,29,30,31}; //seqNumbers of pixel detectors 0,1,2,3 barrel 14,15,16, fwd 29,30,31 bkw
   std::vector<int> partiList{11,13,15,22,111,211,311,321,2212,2112,3122,223};
 
   // reco::Vertex thePrimaryV, theBeamSpotV;
@@ -425,9 +475,12 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
   for(edm::View<reco::Track>::size_type tt=0; tt<trackCollection->size(); ++tt)
   {
-    std::vector<double> theData;
-    // std::cout << "Track ------------------- "<< std::endl;
-    // std::cout << std::endl;
+
+    // std::cout << " track "<< tt << std::endl;
+    // std::cout << "init"<<std::endl;
+    std::vector<float> theData;
+    // // std::cout << "Track ------------------- "<< std::endl;
+    // // std::cout << std::endl;
     std::map<int,const TrackerSingleRecHit*> theHits;
     std::map<int,bool> isBad,isEdge,isBig;
     std::map<int,double> hitSize,pdgIds,flagHit;
@@ -437,8 +490,6 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     auto hitPattern = track->hitPattern();
     bool trkQual  = track->quality(trackQuality);
 
-    //track->setTest(0.2);
-
     sharedFraction = 0.0;
     nHits = 0;
 
@@ -446,266 +497,356 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       for(int j =0;j<padSize*padSize;j++)
         hitPixels[i][j] = 0.0;
 
+    for(int i = 0; i<73;i++)
+    {
+      x[i] = dummy;
+      y[i] = dummy;
+      z[i] = dummy;
+      phi_hit[i] = dummy;
+      r[i] = dummy;
+      charge[i] = dummy;
+      n_seq[i] = dummy;
+      pdgId[i] = dummy;
+      motherPdgId[i] = dummy;
+      dZ[i] = dummy;
+      ax1[i] = dummy;
+      ax2[i] = dummy;
+      ax3[i] = dummy;
+      ax4[i] = dummy;
+      rawId[i] = dummy;
+    }
+
     for(int i = 0; i<10;i++)
     {
-      x[i] = 0.0;
-      y[i] = 0.0;
-      z[i] = 0.0;
-      phi_hit[i] = 0.0;
-      r[i] = 0.0;
-      c_x[i] = 0.0;
-      c_y[i] = 0.0;
-      pdgId[i] = 0.0;
-      motherPdgId[i] = 0.0;
-      size[i] = 0.0;
-      sizex[i] = 0.0;
-      sizey[i] = 0.0;
-      charge[i] = 0.0;
-      ovfx[i] = 0.0;
-      ovfy[i] = 0.0;
-      ratio[i] = 0.0;
-
+      p_size[i]  = dummy;
+      p_sizex[i]  = dummy;
+      p_sizey[i]  = dummy;
+      p_x[i]  = dummy;
+      p_y[i]  = dummy;
+      p_ovx[i]  = dummy;
+      p_ovy[i]  = dummy;
+      p_skew[i]  = dummy;
+      p_big[i]  = dummy;
+      p_bad[i]  = dummy;
+      p_edge[i]  = dummy;
+      p_charge[i] = dummy;
     }
-    // bool isSimMatched = false;
-    //
-    // auto tpFound = recSimColl.find(track);
-    // isSimMatched = tpFound != recSimColl.end();
-    //
-    // if (isSimMatched) {
-    //     const auto& tp = tpFound->val;
-    //     //nSimHits = tp[0].first->numberOfTrackerHits();
-    //     sharedFraction = tp[0].second;
-    // }
-    // if(isSimMatched)
-    //   std::cout<< "Good Track - "<<sharedFraction<<std::endl;
-    // else
-    //   std::cout<< "Bad Track"<<std::endl;
+
+    for(int i = 0; i<63;i++)
+    {
+      s_dim[i] = dummy;
+      s_center[i] = dummy;
+      s_first[i] = dummy;
+      s_merged[i] = dummy;
+      s_size[i] = dummy;
+      s_charge[i] = dummy;
+    }
+
+    for(int i = 0; i<10;i++)
+      for(int j =0;j<256;j++)
+        hitPixels[i][j] = dummy;
+
+    for(int i = 0; i<63;i++)
+      for(int j =0;j<16;j++)
+        hitStrips[i][j] = dummy;
+
 
     if(!trkQual)
       continue;
-    // std::cout << "- Track Quality " <<std::endl;
+    // // std::cout << "- Track Quality " <<std::endl;
     int pixHits = hitPattern.numberOfValidPixelHits();
-    // std::cout << "- No Pixel Hits :" << pixHits << std::endl;
-    if(pixHits < 3)
+    // // std::cout << "- No Pixel Hits :" << pixHits << std::endl;
+    if(pixHits < 2)
       continue;
 
-    // pt    = (double)track->pt();
-    // eta   = (double)track->eta();
-    // phi   = (double)track->phi();
-    // p     = (double)track->p();
-    // chi2n = (double)track->normalizedChi2();
-    // nhit  = (double)track->numberOfValidHits();
-    // d0    = (double)track->d0();
-    // dz    = (double)track->dz();
+    theData.push_back((float)eveNumber);
+    theData.push_back((float)runNumber);
+    theData.push_back((float)lumNumber);
+    theData.push_back((float)puNumInt);
 
-    // nhpxb   = hitPattern.numberOfValidPixelBarrelHits();
-    // nhpxf   = hitPattern.numberOfValidPixelEndcapHits();
-    // nhtib   = hitPattern.numberOfValidStripTIBHits();
-    // nhtob   = hitPattern.numberOfValidStripTOBHits();
-    // nhtid   = hitPattern.numberOfValidStripTIDHits();
-    // nhtec   = hitPattern.numberOfValidStripTECHits();
+    theData.push_back((float)track->pt());
+    theData.push_back((float)track->eta());
+    theData.push_back((float)track->phi());
+    theData.push_back((float)track->p());
+    theData.push_back((float)track->normalizedChi2());
+    theData.push_back((float)track->numberOfValidHits());
+    theData.push_back((float)track->d0());
+    theData.push_back((float)track->dz());
 
-    // std::cout<<nhit<<std::endl;
-    theData.push_back((double)eveNumber);
-    theData.push_back((double)runNumber);
-    theData.push_back((double)lumNumber);
+    theData.push_back((float)hitPattern.numberOfValidPixelBarrelHits());
+    theData.push_back((float)hitPattern.numberOfValidPixelEndcapHits());
+    theData.push_back((float)hitPattern.numberOfValidStripTIBHits());
+    theData.push_back((float)hitPattern.numberOfValidStripTOBHits());
+    theData.push_back((float)hitPattern.numberOfValidStripTIDHits());
+    theData.push_back((float)hitPattern.numberOfValidStripTECHits());
+    theData.push_back((float)nHits);
 
-    theData.push_back((double)track->pt());
-    theData.push_back((double)track->eta());
-    theData.push_back((double)track->phi());
-    theData.push_back((double)track->p());
-    theData.push_back((double)track->normalizedChi2());
-    theData.push_back((double)track->numberOfValidHits());
-    theData.push_back((double)track->d0());
-    theData.push_back((double)track->dz());
-
-    theData.push_back((double)hitPattern.numberOfValidPixelBarrelHits());
-    theData.push_back((double)hitPattern.numberOfValidPixelEndcapHits());
-    theData.push_back((double)hitPattern.numberOfValidStripTIBHits());
-    theData.push_back((double)hitPattern.numberOfValidStripTOBHits());
-    theData.push_back((double)hitPattern.numberOfValidStripTIDHits());
-    theData.push_back((double)hitPattern.numberOfValidStripTECHits());
-
+    // std::cout << "hit ";
+    int hitCounter = -1;
     for ( trackingRecHit_iterator recHit = track->recHitsBegin();recHit != track->recHitsEnd(); ++recHit )
     {
-      TrackerSingleRecHit const * hit= dynamic_cast<TrackerSingleRecHit const *>(*recHit);
 
-      if(!hit)
+      // std::cout << hitCounter <<std::endl;
+      TrackerSingleRecHit const * h= dynamic_cast<TrackerSingleRecHit const *>(*recHit);
+
+      if(!h)
         continue;
 
       DetId detId = (*recHit)->geographicalId();
-      unsigned int subdetid = detId.subdetId();
-
+      // unsigned int  subdetid = detId.subdetId();
       if(detId.det() != DetId::Tracker) continue;
-      if (!((subdetid==1) || (subdetid==2))) continue;
+      ++hitCounter;
 
-      const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(hit);
+      int hitBin = -1;
+      float hit_r = (h->globalState()).r;
+      float hit_z = (h->globalState()).position.z();
 
-      int hitLayer = -1;
-
-      if(subdetid==1) //barrel
-        hitLayer = PXBDetId(detId).layer();
-      else
+      for (int i =0; i<73;i++)
       {
-        int side = PXFDetId(detId).side();
-        float z = (hit->globalState()).position.z();
 
-        if(fabs(z)>28.0) hitLayer = 4;
-        if(fabs(z)>36.0) hitLayer = 5;
-        if(fabs(z)>44.0) hitLayer = 6;
-
-        if(side==2.0) hitLayer +=3;
+        if(hit_z<=allTheBins[i*4+1] && hit_z>=allTheBins[i*4])
+        {
+          if(hit_r<=allTheBins[i*4+3] && hit_r>=allTheBins[i*4+2])
+          {
+              hitBin = i;
+              break;
+          }
+        }
       }
 
-      if (pixHit && hitLayer >= 0)
+      if (hitBin < 0 || hitBin>72) continue;
+
+      nHits++;
+      const GeomDet* gDet = (h)->det();
+
+      // std::cout << "binning" <<std::endl;
+
+      //Pixel Hit!
+      if(hitBin < 10)
       {
+
+        // std::cout << "pixel" <<std::endl;
+        const SiPixelRecHit* hh = dynamic_cast<SiPixelRecHit const *>(h);
+        if(!hh) continue;
+
+        auto clust = hh->cluster();
+        float P_Charge = clust->charge();
+
         bool thisBad,thisEdge,thisBig;
+        thisBig  = hh->spansTwoROCs();
+        thisBad  = hh->hasBadPixels();
+        thisEdge = hh->isOnEdge();
 
-        auto thisClust = pixHit->cluster();
-        int thisSize   = thisClust->size();
-
-        thisBig  = pixHit->spansTwoROCs();
-        thisBad  = pixHit->hasBadPixels();
-        thisEdge = pixHit->isOnEdge();
-
-        bool keepThis = false;
-
-        if(flagHit.find(hitLayer) != flagHit.end())
+        if(p_charge[hitBin] !=dummy)
         {
-          //Keeping the good,not on edge,not big, with higher charge
-          if(isBad[hitLayer] || isEdge[hitLayer] || isBig[hitLayer])
-          {
-              if(!(thisBig || thisBad || thisEdge))
-                keepThis = true;
-              else
-              {
-                if(thisSize > hitSize[hitLayer])
-                keepThis = true;
-              }
-          }
+          if(!isBad[hitBin] && thisBad) continue;
+          if(!isBad[hitBin] && !thisBad && fabs(P_Charge)<fabs(p_charge[hitBin])) continue;
+        }
+
+        auto rangeIn = tpClust->equal_range(hh->firstClusterRef());
+
+        //for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
+        //kPdgs.push_back((*ip->second).pdgId());
+
+        if(rangeIn.first!=rangeIn.second)
+        {
+          pdgId[hitBin] = (float)((*rangeIn.first->second).pdgId());
+          pdgIds[hitBin] = (float)((*rangeIn.first->second).pdgId());
+          // // std::cout << pdgId[hitBin] << std::endl;
+
+          if((*rangeIn.first->second).genParticle_begin()!=(*rangeIn.first->second).genParticle_end())
+            if((*(*rangeIn.first->second).genParticle_begin())->mother()!=nullptr)
+              motherPdgId[hitBin] = (float)((*(*rangeIn.first->second).genParticle_begin())->mother()->pdgId());
+
+          if(pdgMomMap.find(motherPdgId[hitBin]) != pdgMomMap.end())
+            ++pdgMomMap[motherPdgId[hitBin]];
           else
-          {
-            if(!(thisBig || thisBad || thisEdge))
-            {
-              if(thisSize > hitSize[hitLayer])
-              keepThis = true;
-            }
-          }
-          //   if(!(thisBad || thisEdge || thisBig))
-          //     keepThis = true;
-          // if(isBad[hitLayer] && !thisBad)
-          //     keepThis = true;
-          // if((isBad[hitLayer] && thisBad)||(!(isBad[hitLayer] || thisBad)))
-          //   if(thisSize > hitSize[hitLayer])
-          //     keepThis = true;
-          // if(thisBad && !isBad[hitLayer])
-          //     keepThis = false;
-        }else
-          keepThis = true;
+            pdgMomMap[motherPdgId[hitBin]] = 1;
 
-        if(keepThis)
-          {
-            theHits[hitLayer] = hit;
-            hitSize[hitLayer] = (double)thisSize;
-            isBad[hitLayer] = thisBad;
-            isEdge[hitLayer] = thisEdge;
-            isBig[hitLayer] = thisBad;
-          }
-        flagHit[hitLayer] = 1.0;
-
-      }
-
-
-    }
-
-    for(int i = 0; i<10;i++)
-    {
-        if(theHits.find(i) != theHits.end())
-        {
-          ++nHits;
-          auto h = theHits[i];
-
-          // std::cout << h->geographicalId().subdetId() << '\n';
-
-          const SiPixelRecHit* pixHit = dynamic_cast<SiPixelRecHit const *>(h);
-
-          //auto rangeIn = tpClust->equal_range(bhit->firstClusterRef());
-          auto clust = pixHit->cluster();
-
-          x[i] = (double)h->globalState().position.y();
-          y[i] = (double)h->globalState().position.y();
-          z[i] = (double)h->globalState().position.z();
-          phi_hit[i] = (double)h->globalState().phi;
-          r[i] = (double)h->globalState().r;
-          c_x[i] =(double)clust->x();
-          c_y[i] =(double)clust->y();
-          size[i] =(double)clust->size();
-          sizex[i] =(double)clust->sizeX();
-          sizey[i] =(double)clust->sizeY();
-          charge[i] =(double)clust->charge();
-          ovfx[i] =(double)clust->sizeX() > padSize;
-          ovfy[i] =(double)clust->sizeY() > padSize;
-          ratio[i] =(double)(clust->sizeY()) / (double)(clust->sizeX());
-
-          TH2F hClust("hClust","hClust",
-          padSize,
-          clust->x()-padHalfSize,
-          clust->x()+padHalfSize,
-          padSize,
-          clust->y()-padHalfSize,
-          clust->y()+padHalfSize);
-
-          //Initialization
-          for (int nx = 0; nx < padSize; ++nx)
-            for (int ny = 0; ny < padSize; ++ny)
-              hClust.SetBinContent(nx,ny,0.0);
-
-          for (int k = 0; k < clust->size(); ++k)
-            hClust.SetBinContent(hClust.FindBin((float)clust->pixel(k).x, (float)clust->pixel(k).y),(float)clust->pixel(k).adc);
-
-
-          auto rangeIn = tpClust->equal_range(h->firstClusterRef());
-
-          //for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
-          //kPdgs.push_back((*ip->second).pdgId());
-
-          if(rangeIn.first!=rangeIn.second)
-            {
-              pdgId[i] = (double)((*rangeIn.first->second).pdgId());
-              pdgIds[i] = (double)((*rangeIn.first->second).pdgId());
-              // std::cout << pdgId[i] << std::endl;
-
-              if((*rangeIn.first->second).genParticle_begin()!=(*rangeIn.first->second).genParticle_end())
-                if((*(*rangeIn.first->second).genParticle_begin())->mother()!=nullptr)
-                  motherPdgId[i] = (double)((*(*rangeIn.first->second).genParticle_begin())->mother()->pdgId());
-
-              if(pdgMomMap.find(motherPdgId[i]) != pdgMomMap.end())
-                ++pdgMomMap[motherPdgId[i]];
-              else
-                pdgMomMap[motherPdgId[i]] = 1;
-
-              if(pdgMap.find(pdgId[i]) != pdgMap.end())
-                ++pdgMap[pdgId[i]];
-              else
-                pdgMap[pdgId[i]] = 1;
-
-            }
-
-
-          int c = 0;
-          for (int ny = padSize; ny>0; --ny)
-          {
-            for(int nx = 0; nx<padSize; nx++)
-            {
-
-              int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
-              hitPixels[i][c] = (double)hClust.GetBinContent(n);
-              c++;
-            }
-          }
+          if(pdgMap.find(pdgId[hitBin]) != pdgMap.end())
+            ++pdgMap[pdgId[hitBin]];
+          else
+            pdgMap[pdgId[hitBin]] = 1;
 
         }
-    }
+
+        x[hitBin] = (float)h->globalState().position.y();
+        y[hitBin] = (float)h->globalState().position.y();
+        z[hitBin] = hit_z;
+        phi_hit[hitBin] = (float)h->globalState().phi;
+        r[hitBin] = hit_r;
+        n_seq[hitBin] = (float)hitCounter;
+
+        charge[hitBin] = P_Charge;
+
+        pdgId[hitBin] = dummy;
+        motherPdgId[hitBin] = dummy;
+
+        dZ[hitBin] = (float)gDet->surface().bounds().thickness();
+        ax1[hitBin] = (float)gDet->surface().toGlobal(Local3DPoint(0.,0.,0.)).perp();
+        ax2[hitBin] = (float)gDet->surface().toGlobal(Local3DPoint(0.,0.,1.)).perp();
+        ax3[hitBin] = (float)gDet->surface().toGlobal(Local3DPoint(0.,1.,0.)).perp();
+        ax4[hitBin] = (float)gDet->surface().toGlobal(Local3DPoint(1.,0.,0.)).perp();
+        rawId[hitBin] = (float)gDet->geographicalId().rawId();
+
+        p_size[hitBin]  = (float)clust->size();
+        p_sizex[hitBin]  = (float)clust->sizeX();
+        p_sizey[hitBin]  = (float)clust->sizeY();
+        p_x[hitBin]  = (float)clust->x();
+        p_y[hitBin]  = (float)clust->y();
+        p_ovx[hitBin]  = (float)clust->sizeX() > 16.;
+        p_ovy[hitBin]  = (float)clust->sizeY() > 16.;
+        p_skew[hitBin]  = (float)clust->sizeY() / (float)clust->sizeX();
+        p_big[hitBin]  = thisBig;
+        p_bad[hitBin]  = thisBad;
+        p_edge[hitBin]  = thisEdge;
+        p_charge[hitBin] = P_Charge;
+
+        TH2F hClust("hClust","hClust",
+        padSize,
+        clust->x()-padHalfSize,
+        clust->x()+padHalfSize,
+        padSize,
+        clust->y()-padHalfSize,
+        clust->y()+padHalfSize);
+
+        //Initialization
+        for (int nx = 0; nx < padSize; ++nx)
+          for (int ny = 0; ny < padSize; ++ny)
+            hClust.SetBinContent(nx,ny,0.0);
+
+        for (int k = 0; k < clust->size(); ++k)
+          hClust.SetBinContent(hClust.FindBin((float)clust->pixel(k).x, (float)clust->pixel(k).y),(float)clust->pixel(k).adc);
+
+        int c = 0;
+        for (int ny = padSize; ny>0; --ny)
+        {
+          for(int nx = 0; nx<padSize; nx++)
+          {
+
+            int n = (ny+2)*(padSize + 2) - 2 -2 - nx - padSize; //see TH2 reference for clarification
+            hitPixels[hitBin][c] = (float)hClust.GetBinContent(n);
+            c++;
+          }
+        }
+
+        // std::cout << "pixel end" <<std::endl;
+      }//if pix
+
+      if(hitBin>9) //Strip Hit!
+      {
+        // std::cout << "strip" <<std::endl;
+        int stripBin = hitBin-10;
+        const SiStripRecHit2D* siStripHit2D = dynamic_cast<SiStripRecHit2D const *>(h);
+        const SiStripRecHit1D* siStripHit1D = dynamic_cast<SiStripRecHit1D const *>(h);
+
+        if(!siStripHit2D && !siStripHit1D) continue;
+
+        if(siStripHit1D) s_dim[stripBin] = 1.0;
+        if(siStripHit2D) s_dim[stripBin] = 2.0;
+        float S_Charge = dummy;
+
+        if(siStripHit2D)
+        {
+          auto clust = (siStripHit2D->cluster());
+
+          S_Charge = clust->charge();
+
+          if(s_charge[stripBin] !=dummy && fabs(S_Charge)<fabs(s_charge[stripBin])) continue;
+
+          s_center[stripBin] = (float)clust->barycenter();
+          s_first[stripBin] = (float)clust->firstStrip();
+          s_merged[stripBin] = (float)clust->isMerged();
+          s_size[stripBin] = (float)clust->amplitudes().size();
+          s_charge[stripBin] = S_Charge;
+
+          int minSize = -std::max(int(-clust->amplitudes().size()),-16);
+
+          for(int j =0;j<16;j++)
+            hitStrips[stripBin][j] = dummy;
+
+          for(int j =0;j<minSize;j++)
+            hitStrips[stripBin][j] = (float)clust->amplitudes()[j];
+
+        }
+        else
+        if(siStripHit1D)
+        {
+          auto clust = (siStripHit1D->cluster());
+
+          S_Charge = clust->charge();
+
+          if(s_charge[stripBin] !=dummy && fabs(S_Charge)<fabs(s_charge[stripBin])) continue;
+
+          s_center[stripBin] = (float)clust->barycenter();
+          s_first[stripBin] = (float)clust->firstStrip();
+          s_merged[stripBin] = (float)clust->isMerged();
+          s_size[stripBin] = (float)clust->amplitudes().size();
+          s_charge[stripBin] = S_Charge;
+
+          int minSize = -std::max(int(-clust->amplitudes().size()),-16);
+
+          for(int j =0;j<16;j++)
+            hitStrips[stripBin][j] = dummy;
+
+          for(int j =0;j<minSize;j++)
+            hitStrips[stripBin][j] = (float)clust->amplitudes()[j];
+        }
+
+
+        auto rangeIn = tpClust->equal_range(h->firstClusterRef());
+
+        //for(auto ip=rangeIn.first; ip != rangeIn.second; ++ip)
+        //kPdgs.push_back((*ip->second).pdgId());
+
+        if(rangeIn.first!=rangeIn.second)
+        {
+          pdgId[hitBin] = (float)((*rangeIn.first->second).pdgId());
+          pdgIds[hitBin] = (float)((*rangeIn.first->second).pdgId());
+          // // std::cout << pdgId[hitBin] << std::endl;
+
+          if((*rangeIn.first->second).genParticle_begin()!=(*rangeIn.first->second).genParticle_end())
+            if((*(*rangeIn.first->second).genParticle_begin())->mother()!=nullptr)
+              motherPdgId[hitBin] = (float)((*(*rangeIn.first->second).genParticle_begin())->mother()->pdgId());
+
+          if(pdgMomMap.find(motherPdgId[hitBin]) != pdgMomMap.end())
+            ++pdgMomMap[motherPdgId[hitBin]];
+          else
+            pdgMomMap[motherPdgId[hitBin]] = 1;
+
+          if(pdgMap.find(pdgId[hitBin]) != pdgMap.end())
+            ++pdgMap[pdgId[hitBin]];
+          else
+            pdgMap[pdgId[hitBin]] = 1;
+
+        }
+
+        x[hitBin] = (float)h->globalState().position.y();
+        y[hitBin] = (float)h->globalState().position.y();
+        z[hitBin] = hit_z;
+        phi_hit[hitBin] = (float)h->globalState().phi;
+        r[hitBin] = hit_r;
+        n_seq[hitBin] = (float)hitCounter;
+
+        charge[hitBin] = S_Charge;
+
+        pdgId[hitBin] = dummy;
+        motherPdgId[hitBin] = dummy;
+
+        dZ[hitBin] = (float)gDet->surface().bounds().thickness();
+        ax1[hitBin] = (float)gDet->surface().toGlobal(Local3DPoint(0.,0.,0.)).perp();
+        ax2[hitBin] = (float)gDet->surface().toGlobal(Local3DPoint(0.,0.,1.)).perp();
+        ax3[hitBin] = (float)gDet->surface().toGlobal(Local3DPoint(0.,1.,0.)).perp();
+        ax4[hitBin] = (float)gDet->surface().toGlobal(Local3DPoint(1.,0.,0.)).perp();
+        rawId[hitBin] = (float)gDet->geographicalId().rawId();
+
+
+
+        // std::cout << "strip end" <<std::endl;
+      }//if strip
+
+    } //hit loop
+
 
     int allMatched = 0;
     trackPdg = 0.0;
@@ -717,14 +858,14 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           if(p.second==modePdg->first)
             ++allMatched;
       sharedFraction = (float)(float(allMatched)/float(nHits));
-      // std::cout << tt << " - " << modePdg->first << " - " << sharedFraction << std::endl;
+      // // std::cout << tt << " - " << modePdg->first << " - " << sharedFraction << std::endl;
       trackPdg = modePdg->first;
     }
     else
     {
-      trackPdg = 0.0;
+      trackPdg = -9999.0;
       sharedFraction = 0.0;
-      // std::cout << tt << " - UnMatched " << std::endl;
+      // // std::cout << tt << " - UnMatched " << std::endl;
     }
 
     if(pdgMomMap.size()>0)
@@ -734,65 +875,84 @@ CNNTrackAnalyze::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
           if(p.second==modePdg->first)
             ++allMatched;
       sharedMomFraction = (float)(float(allMatched)/float(nHits));
-      // std::cout << tt << " - " << modePdg->first << " - " << sharedFraction << std::endl;
+      // // std::cout << tt << " - " << modePdg->first << " - " << sharedFraction << std::endl;
       trackMomPdg = modePdg->first;
     }
     else
     {
-      trackMomPdg = 0.0;
+      trackMomPdg = -9999.0;
       sharedMomFraction = 0.0;
-      // std::cout << tt << " - UnMatched " << std::endl;
+      // // std::cout << tt << " - UnMatched " << std::endl;
     }
 
-    theData.push_back((double)trackPdg);
-    theData.push_back((double)sharedFraction);
-    theData.push_back((double)trackMomPdg);
-    theData.push_back((double)sharedMomFraction);
+    theData.push_back((float)trackPdg);
+    theData.push_back((float)sharedFraction);
+    theData.push_back((float)trackMomPdg);
+    theData.push_back((float)sharedMomFraction);
+
+    for(int i = 0; i<73;i++)
+    {
+      theData.push_back(x[i]);
+      theData.push_back(y[i]);
+      theData.push_back(z[i]);
+      theData.push_back(phi_hit[i]);
+      theData.push_back(r[i]);
+      theData.push_back(charge[i]);
+      theData.push_back(n_seq[i]);
+      theData.push_back(pdgId[i]);
+      theData.push_back(motherPdgId[i]);
+      theData.push_back(dZ[i]);
+      theData.push_back(ax1[i]);
+      theData.push_back(ax2[i]);
+      theData.push_back(ax3[i]);
+      theData.push_back(ax4[i]);
+      theData.push_back(rawId[i]);
+    }
 
     for(int i = 0; i<10;i++)
     {
+      theData.push_back(p_size[i] );
+      theData.push_back(p_sizex[i] );
+      theData.push_back(p_sizey[i] );
+      theData.push_back(p_x[i] );
+      theData.push_back(p_y[i] );
+      theData.push_back(p_ovx[i] );
+      theData.push_back(p_ovy[i] );
+      theData.push_back(p_skew[i] );
+      theData.push_back(p_big[i] );
+      theData.push_back(p_bad[i] );
+      theData.push_back(p_edge[i] );
+      theData.push_back(p_charge[i]);
+    }
 
-      theData.push_back((double)x[i]);
-      theData.push_back((double)y[i]);
-      theData.push_back((double)z[i]);
-
-      theData.push_back((double)phi_hit[i]);
-      theData.push_back((double)r[i]);
-
-      theData.push_back((double)c_x[i]);
-      theData.push_back((double)c_y[i]);
-      theData.push_back((double)size[i]);
-      theData.push_back((double)sizex[i]);
-      theData.push_back((double)sizey[i]);
-
-      theData.push_back((double)charge[i]);
-
-      theData.push_back((double)ovfx[i]);
-      theData.push_back((double)ovfy[i]);
-
-      theData.push_back((double)ratio[i]);
-
-      theData.push_back((double)motherPdgId[i]);
-      theData.push_back((double)pdgId[i]);
-
+    for(int i = 0; i<63;i++)
+    {
+      theData.push_back(s_dim[i]);
+      theData.push_back(s_center[i]);
+      theData.push_back(s_first[i]);
+      theData.push_back(s_merged[i]);
+      theData.push_back(s_size[i]);
+      theData.push_back(s_charge[i]);
     }
 
     for(int i = 0; i<10;i++)
-      for(int j =0;j<padSize*padSize;j++)
-        theData.push_back((double)(hitPixels[i][j]));
+      for(int j =0;j<256;j++)
+        theData.push_back(hitPixels[i][j]);
 
-    if(pdgMap.size()>0)
+    for(int i = 0; i<63;i++)
+      for(int j =0;j<16;j++)
+        theData.push_back(hitStrips[i][j]);
+
+
+    for (size_t i = 0; i < theData.size(); i++)
     {
-      for (size_t i = 0; i < theData.size(); i++) {
-        outCNNFile << theData[i] << "\t";
-      }
-      outCNNFile << 542.1369 << std::endl;
-
-      //cnntree->Fill();
+      trackFile << theData[i] << "\t";
     }
+    trackFile << 542.1369 << std::endl;
+
   }
 
-// std::cout << "Closing" << std::endl;
+// // std::cout << "Closing" << std::endl;
 
 }
 
@@ -807,7 +967,7 @@ CNNTrackAnalyze::beginJob()
 void
 CNNTrackAnalyze::endJob()
 {
-  // std::cout << "Closing" << std::endl;
+  // // std::cout << "Closing" << std::endl;
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
