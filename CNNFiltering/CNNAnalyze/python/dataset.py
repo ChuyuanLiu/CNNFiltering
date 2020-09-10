@@ -245,9 +245,9 @@ class Dataset:
         self.recolumn()
         # Normalize data
         if normalize:
-	        mean, std = (13382.0011321,10525.1252954) #on 2.5M hits PU35
- 	        a_in = a_in / std
-                a_out = a_out / std
+            mean, std = (13382.0011321,10525.1252954) #on 2.5M hits PU35 
+            a_in = a_in / std
+            a_out = a_out / std
 
         if bw_cluster:
             (bw_a_in,bw_a_out) = self.b_w_correction(a_in,a_out)
@@ -288,9 +288,9 @@ class Dataset:
         self.recolumn()
         # Normalize data
         if normalize:
-	        mean, std = (13382.0011321,10525.1252954) #on 2.5M hits PU35
- 	        a_in = a_in / std
-                a_out = a_out / std
+            mean, std = (13382.0011321,10525.1252954) #on 2.5M hits PU35
+            a_in = a_in / std
+            a_out = a_out / std
 
         if bw_cluster:
             (bw_a_in,bw_a_out) = self.b_w_correction(a_in,a_out)
@@ -328,7 +328,7 @@ class Dataset:
         """ filter data keeping only those samples where s[feature_name] = value """
         d = Dataset(self.data[self.data[feature_name] == value])
 
-	d.data =  self.data[self.data[feature_name] == value]
+        d.data =  self.data[self.data[feature_name] == value]
         return d  # to allow method chaining
 
     def get_info_features(self):
@@ -462,7 +462,7 @@ class Dataset:
 
         # mean, std precomputed for data NOPU
         mean, std = (13382.0011321,10525.1252954) #on 2.5M doublets
-#  	mean, std = (668.25684, 3919.5576)
+#      mean, std = (668.25684, 3919.5576)
         a_in = (a_in - mean) / std
         a_out = (a_out - mean) / std
 
@@ -499,7 +499,7 @@ class Dataset:
         for p in main_pdgs:
             labels[(self.data[pdg_lab].abs().as_matrix()==p) & (self.data[target_lab].as_matrix()!=-1.0)] = main_pdgs.index(p) + 2
 
-        print set(labels)
+        print(set(labels))
         return labels
 
     def get_data(self, normalize=True, angular_correction=True, flipped_channels=True,b_w_correction=False):
@@ -531,11 +531,11 @@ class Dataset:
         n_pos = data_pos.shape[0]
         n_neg = data_neg.shape[0]
 
-	if n_pos==0:
-		print("Number of negatives: " + str(n_neg))
-                print("Number of positive: " + str(n_pos))
- 		print("Returning")
-		return self
+        if n_pos==0:
+            print("Number of negatives: " + str(n_neg))
+            print("Number of positive: " + str(n_pos))
+            print("Returning")
+            return self
         if verbose:
             print("Number of negatives: " + str(n_neg))
             print("Number of positive: " + str(n_pos))
@@ -700,8 +700,8 @@ class Dataset:
 class DataGenerator:
 
     def __init__(self, list_IDs, labels, batch_size=32, dim=(32,32,32), n_channels=20,n_classes=2, shuffle=True):
-    	"""Generator Definition"""
-	self.dim = dim
+        """Generator Definition"""
+        self.dim = dim
         self.batch_size = batch_size
         self.labels = labels
         self.list_IDs = list_IDs
@@ -711,13 +711,13 @@ class DataGenerator:
         self.on_epoch_end()
 
     def on_epoch_end(self):
-    	'''Updates indexes after each epoch'''
+        '''Updates indexes after each epoch'''
         self.indexes = np.arange(len(self.list_IDs))
         if self.shuffle == True:
             np.random.shuffle(self.indexes)
 
     def __data_generation(self, list_IDs_temp):
-    	'''Generates data containing batch_size samples''' # X : (n_samples, *dim, n_channels)
+        '''Generates data containing batch_size samples''' # X : (n_samples, *dim, n_channels)
         # Initialization
         X = np.empty((self.batch_size, self.dim, self.n_channels))
         y = np.empty((self.batch_size), dtype=int)
@@ -733,11 +733,11 @@ class DataGenerator:
         return X, keras.utils.to_categorical(y, num_classes=self.n_classes)
 
     def __len__(self):
-    	'''Denotes the number of batches per epoch'''
+        '''Denotes the number of batches per epoch'''
         return int(np.floor(len(self.list_IDs) / self.batch_size))
 
     def __getitem__(self, index):
-    	'''Generate one batch of data'''
+        '''Generate one batch of data'''
         # Generate indexes of the batch
         indexes = self.indexes[index*self.batch_size:(index+1)*self.batch_size]
 

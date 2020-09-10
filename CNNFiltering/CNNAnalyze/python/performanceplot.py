@@ -16,9 +16,10 @@ from dataset import *
 import tensorflow as tf
 layer_ids = [0, 1, 2, 3, 14, 15, 16, 29, 30, 31]
 
+default_path="/eos/cms/store/group/phys_tracking/patatrack/seedingcnn/"
 
 parser = argparse.ArgumentParser(prog="performanceplots")
-parser.add_argument('--read', type=str, default="data/bal_data/",help='files path')
+parser.add_argument('--read', type=str, default=default_path,help='files path')
 parser.add_argument('--chunk', type=int, default="50",help='chunk size')
 parser.add_argument('--three',type=int,default=None,help='serach for train,val,test subdirectories')
 parser.add_argument('--logdir',type=str,default="models/cnn_doublet/2017-10-09_11-00-43/",help='model directory')
