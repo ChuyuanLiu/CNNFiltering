@@ -260,9 +260,9 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   // edm::FileInPath modelFilePath();
   //tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/jpsiphi/MCs/QCDtoPhiML/CMSSW_10_2_1/tmp/test_graph_tfadd.pb");
   //tensorflow::Session* session = tensorflow::createSession(graphDef);
-  tensorflow::GraphDef* graphDef = tensorflow::loadGraphDef("/lustre/home/adrianodif/CNNDoublets/CMSSW/CMSSW_10_3_0_pre4/test.pb");
-  tensorflow::Session* session = tensorflow::createSession(graphDef);
-
+  tensorflow::MetaGraphDef* metaGraphDef = tensorflow::loadMetaGraphDef("/uscms/home/chuyuanl/nobackup/layer_map_model","serve");
+  tensorflow::Session* session = tensorflow::createSession(metaGraphDef,"/uscms/home/chuyuanl/nobackup/layer_map_model");
+  //use loadMetaGraph before CMSSW_11_1_x tf2.1
 
   float ax1, ax2, deltaADC = 0.0, deltaPhi = 0.0, deltaR = 0.0, deltaA = 0.0, deltaS = 0.0, deltaZ = 0.0, zZero = 0.0;
 

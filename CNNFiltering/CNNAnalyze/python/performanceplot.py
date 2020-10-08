@@ -16,14 +16,14 @@ from dataset import *
 import tensorflow as tf
 layer_ids = [0, 1, 2, 3, 14, 15, 16, 29, 30, 31]
 
-default_path="/eos/cms/store/group/phys_tracking/patatrack/seedingcnn/"
+default_path="/eos/cms/store/group/phys_tracking/patatrack/seedingcnn"
 
 parser = argparse.ArgumentParser(prog="performanceplots")
 parser.add_argument('--read', type=str, default=default_path,help='files path')
-parser.add_argument('--chunk', type=int, default="50",help='chunk size')
+parser.add_argument('--chunk', type=int, default="5",help='chunk size')
 parser.add_argument('--three',type=int,default=None,help='serach for train,val,test subdirectories')
-parser.add_argument('--logdir',type=str,default="models/cnn_doublet/2017-10-09_11-00-43/",help='model directory')
-parser.add_argument('--model',type=str,default="random_search_layer_maps",help='model name')
+parser.add_argument('--logdir',type=str,default="models/cnn_doublet/2018-06-15_13-32-26/",help='model directory')
+parser.add_argument('--model',type=str,default="layer_map_model",help='model name')
 parser.add_argument('--debug',type=int,default=None,help='debug mode')
 args = parser.parse_args()
 
@@ -54,9 +54,14 @@ with open(log_dir + '' + best_name + ".json") as f:
     print(" . . . loaded ")
 
     for basedir in dirs:
-        plots_files = [remote_data  + "/" + basedir + "/" + el for el in os.listdir(remote_data  + "/" + basedir + "/")]
+        #plots_files = [remote_data  + "/" + basedir + "/" + el for el in os.listdir(remote_data  + "/" + basedir + "/")]
+        plots_files = [remote_data  + "/" + el for el in os.listdir(remote_data  + "/")]
         if args.debug is not None:
             plots_files = plots_files[:2]
+
+        #randomly load files
+        random.shuffle(plots_files)
+        plots_files=plots_files[:5]
 
         print("loadind files from :" + remote_data + basedir + " . . .")
 
@@ -94,7 +99,7 @@ with open(log_dir + '' + best_name + ".json") as f:
             outdata = plot_data.data
             outdata.columns = dataLab
 
-            print outdata["inX"].values.shape
+            print(outdata["inX"].values.shape)
 
             outdata.drop(inPixels,axis=1)
             outdata.drop(outPixels,axis=1)
@@ -106,7 +111,8 @@ with open(log_dir + '' + best_name + ".json") as f:
 
             print("AUC, just for the sake of curiosity, is . . . " + str(aucs[0]))
 
-            outplotdata = remote_data  + "/" + basedir  + "/" + best_name +  "/plots/"
+            #outplotdata = remote_data  + "/" + basedir  + "/" + best_name +  "/plots/"
+            outplotdata = "./performance"
 
             if not os.path.exists(outplotdata):
                 os.makedirs(outplotdata)

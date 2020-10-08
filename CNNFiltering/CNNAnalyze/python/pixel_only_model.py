@@ -22,13 +22,13 @@ from sklearn.model_selection import StratifiedKFold
 from keras import backend as K
 import tensorflow as tf
 
+\
 DEBUG = os.name == 'nt'  # DEBUG on laptop
 
 pdg = [-211., 211., 321., -321., 2212., -2212., 11., -11., 13., -13.]
 steps = ["detachedQuadStepHitDoublets","detachedTripletStepHitDoublets","initialStepHitDoubletsPreSplitting","lowPtQuadStepHitDoublets","mixedTripletStepHitDoublets","tripletElectronHitDoublets","allSteps"]
 
 #DEBUG = True
-
 if DEBUG:
     print("DEBUG mode")
 
@@ -36,7 +36,7 @@ t_now = '{0:%Y-%m-%d_%H-%M-%S}'.format(datetime.datetime.now())
 default_path="/eos/cms/store/group/phys_tracking/patatrack/seedingcnn/"
 # Model configuration
 parser = argparse.ArgumentParser()
-parser.add_argument('--n_epochs', type=int, default=200 if not DEBUG else 3,
+parser.add_argument('--n_epochs', type=int, default=50 if not DEBUG else 3,
                     help='number of epochs')
 parser.add_argument('--path',type=str,default=default_path)
 parser.add_argument('--batch_size', type=int, default=1024)
@@ -58,7 +58,7 @@ parser.add_argument('--gepochs',type=float,default=1)
 parser.add_argument('--loadw',type=str,default=None)
 parser.add_argument('--phi',action='store_true')
 parser.add_argument('--augm',type=int,default=1)
-parser.add_argument('--limit',type=int,default=None)
+parser.add_argument('--limit',type=int,default=10)
 parser.add_argument('--multiclass',action='store_true')
 parser.add_argument('--kfolding',action='store_true')
 parser.add_argument('--k',type=int,default=1)
@@ -92,7 +92,7 @@ main_files  = [remote_data + el for el in os.listdir(remote_data) if ".h5" in el
 debug_files = main_files[:3]
 shuffle(main_files)
 
-if args.limit >0 and args.limit > len(main_files):
+if args.limit >0 and args.limit < len(main_files):
     main_files = main_files[:args.limit]
 
 train_files = main_files[:int(len(main_files)*0.8)] if not args.debug else debug_files #[remote_data + '/train/' +
@@ -139,6 +139,7 @@ callbacks = [
 #model.fit_generator(batch_generator(train_data.data,args.bsamp),samples_per_epoch = args.bsamp , verbose=args.verbose,callbacks=callbacks,validation_data=(val_input_list, y_val),nb_epoch=args.n_epochs)
 
 history = model.fit(X_hit, y, batch_size=args.batch_size, epochs=args.n_epochs, shuffle=True,validation_data=(X_val_hit,y_val), callbacks=callbacks, verbose=args.verbose)
+print(history.history)
 
 loss, acc = model.evaluate(X_test_hit, y_test, batch_size=args.batch_size)
 test_pred = model.predict(X_test_hit)

@@ -53,12 +53,14 @@ steps = ["detachedQuadStepHitDoublets","detachedTripletStepHitDoublets","initial
 if DEBUG:
     print("DEBUG mode")
 
+default_path="/eos/cms/store/group/phys_tracking/patatrack/seedingcnn/"
+
 t_now = '{0:%Y-%m-%d_%H-%M-%S}'.format(datetime.datetime.now())
 # Model configuration
 parser = argparse.ArgumentParser()
-parser.add_argument('--n_epochs', type=int, default=200 if not DEBUG else 3,
+parser.add_argument('--n_epochs', type=int, default=10 if not DEBUG else 3,
                     help='number of epochs')
-parser.add_argument('--path',type=str,default="data/bal_data/")
+parser.add_argument('--path',type=str,default=default_path)
 parser.add_argument('--batch_size', type=int, default=1024)
 parser.add_argument('--dropout', type=float, default=0.5)
 parser.add_argument('--lr', type=float, default=0.01, help='learning rate')
@@ -114,21 +116,25 @@ if args.step not in steps:
     sys.exit()
 # "/eos/cms/store/cmst3/group/dehep/convPixels/TTBar_13TeV_PU35/"
 
-remote_data = args.path + "/" + args.step + "/"
+remote_data = args.path #+ "/" + args.step + "/"
 #debug_data = ['data/h5data/' + el for el in ['doublets.h5', 'doublets2.h5']]
-debug_data = remote_data + "/debug/"
+#debug_data = remote_data + "/debug/"
 
-debug_files = [ debug_data + el for el in os.listdir(debug_data)]
+#debug_files = [ debug_data + el for el in os.listdir(debug_data)]
 
 
 print("Loading data...")
 main_files  = [remote_data + el for el in os.listdir(remote_data) if ".h5" in el]
 shuffle(main_files)
 
+main_files=main_files[:7]
+debug_files=main_files[:3]
+
 train_files = main_files[:int(len(main_files)*0.8)] if not args.debug else debug_files #[remote_data + '/train/' +
                #el for el in os.listdir(remote_data + 'train/')] if not args.debug else debug_files
 
-val_files = main_files[int(len(main_files)*0.8):] if not args.debug else debug_files
+
+val_files = main_files[int(len(main_files)*0.8):int(len(main_files)*0.9)] if not args.debug else debug_files
 #
 # val_files = [remote_data + 'val/' +
 #              el for el in os.listdir(remote_data + 'val/')]
@@ -137,8 +143,9 @@ val_files = main_files[int(len(main_files)*0.8):] if not args.debug else debug_f
 #
 # print(len(val_files))
 
-test_files = [remote_data + '/test/' +
-             el for el in os.listdir(remote_data + 'test/')]
+#test_files = [remote_data + '/test/' + el for el in os.listdir(remote_data + 'test/')]
+test_files = main_files[int(len(main_files)*0.9):] if not args.debug else debug_files
+
 shuffle(test_files)
 test_files  = test_files[:args.test] if not args.debug else debug_files
 
