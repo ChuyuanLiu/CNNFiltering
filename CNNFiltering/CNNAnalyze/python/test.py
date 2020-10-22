@@ -1,3 +1,8 @@
+# Auto generated configuration file
+# using:
+# Revision: 1.19
+# Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v
+# with command line options: step3 --conditions 102X_upgrade2018_design_v9 --pileup_input das:/RelValMinBias_13/CMSSW_10_2_0-102X_upgrade2018_design_v6_gcc7-v1/GEN-SIM -n 10 --era Run2_2018 --eventcontent RECOSIM,DQM --runUnscheduled -s RAW2DIGI,RECO:reconstruction_trackingOnly,VALIDATION:@trackingOnlyValidation,DQM:@trackingOnlyDQM --datatier GEN-SIM-RECO,DQMIO --geometry DB:Extended --filein file:step2.root --fileout file:step3.root --no_exec --pileup AVE_50_BX_25ns --mc
 import FWCore.ParameterSet.Config as cms
 from FWCore.ParameterSet.VarParsing import VarParsing
 from Configuration.StandardSequences.Eras import eras
@@ -120,7 +125,7 @@ if options.openDataVM:
 
     process.l1conddb.connect = myDb
     process.l1ugmtdb.connect = myDb
-    process.loadRecoTauTagMVAsFromPrepDB.connect = recotauDB
+    #process.loadRecoTauTagMVAsFromPrepDB.connect = recotauDB
 
     process.l1ugmtdb.toGet   = cms.VPSet(
                 cms.PSet(

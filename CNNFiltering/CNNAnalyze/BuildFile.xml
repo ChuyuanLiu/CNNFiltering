@@ -43,6 +43,8 @@
 <use   name="DataFormats/PatCandidates"/>
 <use   name="DataFormats/HepMCCandidate"/>
 <use   name="SimTracker/TrackerHitAssociation"/>
+<use   name="onnxruntime"/>
+<use   name="PhysicsTools/ONNXRuntime"/>
 
 <flags CXXFLAGs="-fpermissive"/>
 <flags LDFLAGs="-fpermissive"/>

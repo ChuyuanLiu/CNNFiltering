@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Package:    CNNFiltering/CNNInference
-// Class:      CNNInference
+// Package:    CNNFiltering/CNNInferenceONNX
+// Class:      CNNInferenceONNX
 //
-/**\class CNNInference CNNInference.cc CNNFiltering/CNNInference/plugins/CNNInference.cc
+/**\class CNNInferenceONNX CNNInferenceONNX.cc CNNFiltering/CNNInferenceONNX/plugins/CNNInferenceONNX.cc
 
 Description: [one line class summary]
 
@@ -76,7 +76,7 @@ Implementation:
 // class declaration
 //
 
-#include "PhysicsTools/TensorFlow/interface/TensorFlow.h"
+#include "PhysicsTools/ONNXRuntime/interface/ONNXRuntime.h"
 
 // If the analyzer does not use TFileService, please remove
 // the template argument to the base class so the class inherits
@@ -84,10 +84,10 @@ Implementation:
 // constructor "usesResource("TFileService");"
 // This will improve performance in multithreaded jobs.
 
-class CNNInference : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
+class CNNInferenceONNX : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 public:
-  explicit CNNInference(const edm::ParameterSet&);
-  ~CNNInference();
+  explicit CNNInferenceONNX(const edm::ParameterSet&);
+  ~CNNInferenceONNX();
 
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
@@ -115,8 +115,10 @@ private:
 
   UInt_t test;
 
-  tensorflow::Session* session;
+  std::unique_ptr<cms::Ort::ONNXRuntime> model;
 
+  std::vector<std::string> input_names;
+  std::vector<std::string> output_names;
 };
 
 //
@@ -130,7 +132,7 @@ private:
 //
 // constructors and destructor
 //
-CNNInference::CNNInference(const edm::ParameterSet& iConfig):
+CNNInferenceONNX::CNNInferenceONNX(const edm::ParameterSet& iConfig):
 processName_(iConfig.getParameter<std::string>("processName")),
 intHitDoublets_(consumes<IntermediateHitDoublets>(iConfig.getParameter<edm::InputTag>("doublets"))),
 tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap")))
@@ -154,15 +156,17 @@ tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap
   cnnLayers = 12;
   infoSize = 67;
 
-  // Load graph
-  tensorflow::setLogging("3");
-  tensorflow::MetaGraphDef* metaGraphDef = tensorflow::loadMetaGraphDef("/uscms/home/chuyuanl/nobackup/layer_map_model",tensorflow::kSavedModelTagServe,4);
-  session = tensorflow::createSession(metaGraphDef,"/uscms/home/chuyuanl/nobackup/layer_map_model",4);
-  //use tensorflow::loadMetaGraph before CMSSW_11_1_x, tf2.1
+  Ort::SessionOptions* session_options = new Ort::SessionOptions();
+  session_options->SetIntraOpNumThreads(2);
+  session_options->SetInterOpNumThreads(1);
+
+  model = std::make_unique<cms::Ort::ONNXRuntime>("/uscms/home/chuyuanl/nobackup/layer_map_model.onnx", session_options);
+  input_names = {"hit_shape_input", "info_input"};
+  output_names = {"output"};
 }
 
 
-CNNInference::~CNNInference()
+CNNInferenceONNX::~CNNInferenceONNX()
 {
 
   // do anything here that needs to be done at desctruction time
@@ -189,7 +193,7 @@ CNNInference::~CNNInference()
 
 // ------------ method called for each event  ------------
 void
-CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+CNNInferenceONNX::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
 
@@ -290,13 +294,15 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     int numOfDoublets = int(lIt->doublets().size());
 
-    tensorflow::Tensor inputPads(tensorflow::DT_FLOAT, {numOfDoublets,padSize,padSize,cnnLayers*2});
-    tensorflow::Tensor inputFeat(tensorflow::DT_FLOAT, {numOfDoublets,infoSize});
-    std::vector<tensorflow::Tensor> outputs;
+    cms::Ort::FloatArrays inputs;
+    cms::Ort::FloatArrays outputs;
+
+    inputs.emplace_back(numOfDoublets*padSize*padSize*cnnLayers*2);
+    inputs.emplace_back(numOfDoublets*infoSize);
     std::vector<float> labels;
 
-    float* vPad = inputPads.flat<float>().data();
-    float* vLab = inputFeat.flat<float>().data();
+    auto vPad = inputs[0];
+    auto vLab = inputs[1];
 
     int padCounter = 0;
     int infoCounter = 0;
@@ -939,9 +945,8 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     std::cout << "Total doublets: " << numOfDoublets << std::endl << "Input Time: " << duration << std::endl;
     start=std::clock();
 
-    tensorflow::run(session, { { "serving_default_hit_shape_input", inputPads }, { "serving_default_info_input", inputFeat } },
-                  { "StatefulPartitionedCall" }, &outputs);
-
+    outputs = model->run(input_names, inputs, output_names, numOfDoublets);
+    
     duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
     std::cout << "Inference Time: " << duration << std::endl;
     start=std::clock();
@@ -983,19 +988,19 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 // ------------ method called once each job just before starting event loop  ------------
 void
-CNNInference::beginJob()
+CNNInferenceONNX::beginJob()
 {
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 void
-CNNInference::endJob()
+CNNInferenceONNX::endJob()
 {
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
-CNNInference::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+CNNInferenceONNX::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   //The following says we do not know what parameters are allowed so do no validation
   // Please change this to state exactly what you do use, even if it is no parameters
   edm::ParameterSetDescription desc;
@@ -1004,4 +1009,4 @@ CNNInference::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(CNNInference);
+DEFINE_FWK_MODULE(CNNInferenceONNX);
