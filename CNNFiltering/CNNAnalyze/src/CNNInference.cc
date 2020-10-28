@@ -116,7 +116,9 @@ private:
   UInt_t test;
 
   tensorflow::Session* session;
-
+  const int intraThreads = 1;
+  
+  std::ofstream inferenceTime;
 };
 
 //
@@ -156,8 +158,8 @@ tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap
 
   // Load graph
   tensorflow::setLogging("3");
-  tensorflow::MetaGraphDef* metaGraphDef = tensorflow::loadMetaGraphDef("/uscms/home/chuyuanl/nobackup/layer_map_model",tensorflow::kSavedModelTagServe,4);
-  session = tensorflow::createSession(metaGraphDef,"/uscms/home/chuyuanl/nobackup/layer_map_model",4);
+  tensorflow::MetaGraphDef* metaGraphDef = tensorflow::loadMetaGraphDef("/uscms/home/chuyuanl/nobackup/layer_map_model",tensorflow::kSavedModelTagServe,intraThreads);
+  session = tensorflow::createSession(metaGraphDef,"/uscms/home/chuyuanl/nobackup/layer_map_model",intraThreads);
   //use tensorflow::loadMetaGraph before CMSSW_11_1_x, tf2.1
 }
 
@@ -167,7 +169,6 @@ CNNInference::~CNNInference()
 
   // do anything here that needs to be done at desctruction time
   // (e.g. close files, deallocate resources etc.)
-
 }
 
 
@@ -250,17 +251,19 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   //   std::cout << handle.provenance()->moduleLabel()<< std::endl;
   // }
 
-  std::string fileName = "doublets/" + std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
-  fileName += "_" + processName_ + "_dnn_doublets.txt";
-  std::ofstream outCNNFile(fileName, std::ofstream::app);
+  // std::string fileName = "doublets/" + std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
+  // fileName += "_" + processName_ + "_dnn_doublets.txt";
+  // std::ofstream outCNNFile(fileName, std::ofstream::app);
 
-  fileName = "doublets/" + std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
-  fileName += "_" + processName_ + "_dnn_doublets_tf.txt";
-  std::ofstream outTFFile(fileName, std::ofstream::app);
+  // fileName = "doublets/" + std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
+  // fileName += "_" + processName_ + "_dnn_doublets_tf.txt";
+  // std::ofstream outTFFile(fileName, std::ofstream::app);
 
-  fileName = "doublets/" + std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
-  fileName += "_" + processName_ + "_dnn_doublets_inf.txt";
-  std::ofstream outInference(fileName, std::ofstream::app);
+  // fileName = "doublets/" + std::to_string(lumNumber) +"_"+std::to_string(runNumber) +"_"+std::to_string(eveNumber);
+  // fileName += "_" + processName_ + "_dnn_doublets_inf.txt";
+  // std::ofstream outInference(fileName, std::ofstream::app);
+
+  inferenceTime.open("doublets/inferenceTimeTF2_"+std::to_string(intraThreads)+".txt",std::ofstream::app);
 
   float ax1, ax2, deltaADC = 0.0, deltaPhi = 0.0, deltaR = 0.0, deltaA = 0.0, deltaS = 0.0, deltaZ = 0.0, zZero = 0.0;
 
@@ -271,10 +274,6 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   for (std::vector<IntermediateHitDoublets::LayerPairHitDoublets>::const_iterator lIt = iHd->layerSetsBegin(); lIt != iHd->layerSetsEnd(); ++lIt)
   {
-    std::clock_t start;
-    double duration;
-    start=std::clock();
-
     DetLayer const * innerLayer = lIt->doublets().detLayer(HitDoublets::inner);
     if(find(pixelDets.begin(),pixelDets.end(),innerLayer->seqNum())==pixelDets.end()) continue;   //TODO change to std::map ?
 
@@ -880,9 +879,9 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       zZero = (hits[0]->hit()->globalState()).position.z();
       zZero -= lIt->doublets().r(i,layers[0]) * (deltaZ/deltaR);
 
-      outCNNFile << runNumber << "\t" << eveNumber << "\t" << lumNumber << "\t" << puNumInt << "\t";
-      outCNNFile <<innerLayer->seqNum() << "\t" << outerLayer->seqNum() << "\t";
-      outCNNFile << bs.x0() << "\t" << bs.y0() << "\t" << bs.z0() << "\t" << bs.sigmaZ() << "\t";
+      // outCNNFile << runNumber << "\t" << eveNumber << "\t" << lumNumber << "\t" << puNumInt << "\t";
+      // outCNNFile <<innerLayer->seqNum() << "\t" << outerLayer->seqNum() << "\t";
+      // outCNNFile << bs.x0() << "\t" << bs.y0() << "\t" << bs.z0() << "\t" << bs.sigmaZ() << "\t";
 
       for (int j = 0; j < 2; j++)
       for (size_t i = 0; i < hitLabs[j].size(); i++)
@@ -898,53 +897,50 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       vLab[ 2 * hitLabs[0].size() + 5 + infoOffset] = deltaZ   ; infoCounter++;
       vLab[ 2 * hitLabs[0].size() + 6 + infoOffset] = zZero    ; infoCounter++;
 
-      for (int j = 0; j < 2; j++)
-        for (size_t i = 0; i < hitPars[j].size(); i++)
-        outCNNFile << hitPars[j][i] << "\t";
+      // for (int j = 0; j < 2; j++)
+      //   for (size_t i = 0; i < hitPars[j].size(); i++)
+      //   outCNNFile << hitPars[j][i] << "\t";
 
-      outCNNFile << deltaA   << "\t";
-      outCNNFile << deltaADC << "\t";
-      outCNNFile << deltaS   << "\t";
-      outCNNFile << deltaR   << "\t";
-      outCNNFile << deltaPhi << "\t";
-      outCNNFile << deltaZ   << "\t";
-      outCNNFile << zZero    << "\t";
+      // outCNNFile << deltaA   << "\t";
+      // outCNNFile << deltaADC << "\t";
+      // outCNNFile << deltaS   << "\t";
+      // outCNNFile << deltaR   << "\t";
+      // outCNNFile << deltaPhi << "\t";
+      // outCNNFile << deltaZ   << "\t";
+      // outCNNFile << zZero    << "\t";
 
-      for (size_t i = 0; i < theTP.size(); i++)
-      outCNNFile << theTP[i] << "\t";
+      // for (size_t i = 0; i < theTP.size(); i++)
+      // outCNNFile << theTP[i] << "\t";
 
-      outCNNFile << 542.1369;
-      outCNNFile << std::endl;
+      // outCNNFile << 542.1369;
+      // outCNNFile << std::endl;
       // outCNNFile << hitPars[0].size() << " -- " <<  hitPars[1].size() << " -- " << theTP.size() << std::endl << std::endl;
       // std::cout << hitPars[0].size() << " " << hitPars[1].size() << " " << theTP.size() << std::endl;
 
-      outTFFile << runNumber << "\t" << eveNumber << "\t" << lumNumber << "\t" << puNumInt << "\t";
-      outTFFile << innerLayer->seqNum() << "\t" << outerLayer->seqNum() << "\t";
-      outTFFile << bs.x0() << "\t" << bs.y0() << "\t" << bs.z0() << "\t" << bs.sigmaZ() << "\t";
+      // outTFFile << runNumber << "\t" << eveNumber << "\t" << lumNumber << "\t" << puNumInt << "\t";
+      // outTFFile << innerLayer->seqNum() << "\t" << outerLayer->seqNum() << "\t";
+      // outTFFile << bs.x0() << "\t" << bs.y0() << "\t" << bs.z0() << "\t" << bs.sigmaZ() << "\t";
 
-      for (int jc = 0; jc < cnnLayers*2*padSize*padSize; jc++)
-        outTFFile << vPad[jc + doubOffset] << "\t";
+      // for (int jc = 0; jc < cnnLayers*2*padSize*padSize; jc++)
+      //   outTFFile << vPad[jc + doubOffset] << "\t";
 
-      for (int ji = 0; ji < infoSize; ji++)
-        outTFFile << vLab[ji + infoOffset] << "\t";
+      // for (int ji = 0; ji < infoSize; ji++)
+      //   outTFFile << vLab[ji + infoOffset] << "\t";
 
-      outTFFile << 542.1369;
-      outTFFile << std::endl;
+      // outTFFile << 542.1369;
+      // outTFFile << std::endl;
 
 
     }//end single doublet
 
-    duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
-    std::cout << "------------------------" << std::endl;
-    std::cout << "Total doublets: " << numOfDoublets << std::endl << "Input Time: " << duration << std::endl;
-    start=std::clock();
+    std::clock_t start=std::clock();
 
     tensorflow::run(session, { { "serving_default_hit_shape_input", inputPads }, { "serving_default_info_input", inputFeat } },
                   { "StatefulPartitionedCall" }, &outputs);
 
     duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
-    std::cout << "Inference Time: " << duration << std::endl;
-    start=std::clock();
+    inferenceTime <<  numOfDoublets << " " << std::fixed << std::setprecision(4)  << duration << std::endl;
+    std::cout << numOfDoublets << " " << std::fixed << std::setprecision(4) << duration << std::endl;
 
     // std::cout << "START" << std::endl;
     // std::cout << outputs[0].DebugString() << std::endl;
@@ -967,7 +963,6 @@ CNNInference::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
 
     //std::cout << "DONE" << std::endl;
-
   }
   // auto range = clusterToTPMap.equal_range(dynamic_cast<const BaseTrackerRecHit&>(hit).firstClusterRef());
   //      for(auto ip=range.first; ip != range.second; ++ip) {
