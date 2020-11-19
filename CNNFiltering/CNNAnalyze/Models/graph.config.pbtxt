@@ -1,0 +1,37 @@
+feed {
+  id {
+    node_name: "hit_shape_input"
+  }
+  shape {
+    dim {
+      size: 1
+    }
+    dim {
+      size: 16
+    }
+    dim {
+      size: 16
+    }
+    dim {
+      size: 24
+    }
+  }
+}
+feed {
+  id {
+    node_name: "info_input"
+  }
+  shape {
+    dim {
+      size: 1
+    }
+    dim {
+      size: 67
+    }
+  }
+}
+fetch {
+  id {
+    node_name: "Identity"
+  }
+}

@@ -27,10 +27,8 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load('CNNFiltering.CNNAnalyze.CNNInferenceONNX_cfi')
 
 options = VarParsing ('analysis')
-options.register ('skipEvent',0,VarParsing.multiplicity.singleton,VarParsing.varType.int,"Skip Events")
-options.register ('numEvents',1,VarParsing.multiplicity.singleton,VarParsing.varType.int,"Max Events")
-options.register ('numFile',2,VarParsing.multiplicity.singleton,VarParsing.varType.int,"File Number")
-opendata = [
+options.register ('numEvents',10,VarParsing.multiplicity.singleton,VarParsing.varType.int,"Max Events")
+data = [
     "file:/uscms/home/chuyuanl/nobackup/TTbar_14TeV/1.root"
 ]
 
@@ -45,7 +43,7 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(opendata[0]),
+    fileNames = cms.untracked.vstring(data[0]),
     secondaryFileNames = cms.untracked.vstring()
 )
 
