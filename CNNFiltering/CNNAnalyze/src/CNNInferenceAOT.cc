@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Package:    CNNFiltering/CNNInferenceONNX
-// Class:      CNNInferenceONNX
+// Package:    CNNFiltering/CNNInferenceAOT
+// Class:      CNNInferenceAOT
 //
-/**\class CNNInferenceONNX CNNInferenceONNX.cc CNNFiltering/CNNInferenceONNX/plugins/CNNInferenceONNX.cc
+/**\class CNNInferenceAOT CNNInferenceAOT.cc CNNFiltering/CNNInferenceAOT/plugins/CNNInferenceAOT.cc
 
 Description: [one line class summary]
 
@@ -75,7 +75,7 @@ Implementation:
 // class declaration
 //
 
-#include "PhysicsTools/ONNXRuntime/interface/ONNXRuntime.h"
+#include "CNNFiltering/CNNAnalyze/interface/tfAOT.h"
 
 // If the analyzer does not use TFileService, please remove
 // the template argument to the base class so the class inherits
@@ -83,11 +83,11 @@ Implementation:
 // constructor "usesResource("TFileService");"
 // This will improve performance in multithreaded jobs.
 
-class CNNInferenceONNX : public edm::one::EDAnalyzer<edm::one::SharedResources>
+class CNNInferenceAOT : public edm::one::EDAnalyzer<edm::one::SharedResources>
 {
 public:
-  explicit CNNInferenceONNX(const edm::ParameterSet &);
-  ~CNNInferenceONNX();
+  explicit CNNInferenceAOT(const edm::ParameterSet &);
+  ~CNNInferenceAOT();
 
   static void fillDescriptions(edm::ConfigurationDescriptions &descriptions);
 
@@ -114,13 +114,9 @@ private:
 
   UInt_t test;
 
-  std::unique_ptr<cms::Ort::ONNXRuntime> model;
-  std::vector<std::string> input_names;
-  std::vector<std::string> output_names;
-  const int intraThreads = 1;
-  const int interThreads = 1;
+  tfAOT::model model;
+  const int batchSize = 500;
   const int maxBatchSize = 10000;
-
   std::ofstream inferenceTimeOutput;
   std::ofstream inferenceCPUTimeOutput;
   bool allLayers = false;
@@ -137,9 +133,9 @@ private:
 //
 // constructors and destructor
 //
-CNNInferenceONNX::CNNInferenceONNX(const edm::ParameterSet &iConfig) : processName_(iConfig.getParameter<std::string>("processName")),
-                                                                       intHitDoublets_(consumes<IntermediateHitDoublets>(iConfig.getParameter<edm::InputTag>("doublets"))),
-                                                                       tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap")))
+CNNInferenceAOT::CNNInferenceAOT(const edm::ParameterSet &iConfig) : processName_(iConfig.getParameter<std::string>("processName")),
+                                                                     intHitDoublets_(consumes<IntermediateHitDoublets>(iConfig.getParameter<edm::InputTag>("doublets"))),
+                                                                     tpMap_(consumes<ClusterTPAssociation>(iConfig.getParameter<edm::InputTag>("tpMap")))
 {
 
   // usesResource("TFileService");
@@ -159,17 +155,9 @@ CNNInferenceONNX::CNNInferenceONNX(const edm::ParameterSet &iConfig) : processNa
   tParams = 26;
   cnnLayers = 12;
   infoSize = 67;
-
-  Ort::SessionOptions *session_options = new Ort::SessionOptions();
-  session_options->SetIntraOpNumThreads(intraThreads);
-  session_options->SetInterOpNumThreads(interThreads);
-
-  model = std::make_unique<cms::Ort::ONNXRuntime>("/uscms/home/chuyuanl/nobackup/layer_map_model.onnx", session_options);
-  input_names = {"hit_shape_input", "info_input"};
-  output_names = {"output"};
 }
 
-CNNInferenceONNX::~CNNInferenceONNX()
+CNNInferenceAOT::~CNNInferenceAOT()
 {
 
   // do anything here that needs to be done at desctruction time
@@ -193,7 +181,7 @@ CNNInferenceONNX::~CNNInferenceONNX()
 //
 
 // ------------ method called for each event  ------------
-void CNNInferenceONNX::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetup)
+void CNNInferenceAOT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetup)
 {
   using namespace edm;
 
@@ -268,8 +256,8 @@ void CNNInferenceONNX::analyze(const edm::Event &iEvent, const edm::EventSetup &
   // fileName += "_" + processName_ + "_dnn_doublets_inf.txt";
   // std::ofstream outInference(fileName, std::ofstream::app);
 
-  inferenceTimeOutput.open("doublets/inferenceTimeONNX.txt", std::ofstream::app);
-  inferenceCPUTimeOutput.open("doublets/inferenceCPUTimeONNX.txt", std::ofstream::app);
+  inferenceTimeOutput.open("doublets/inferenceTimeAOT.txt", std::ofstream::app);
+  inferenceCPUTimeOutput.open("doublets/inferenceCPUTimeAOT.txt", std::ofstream::app);
 
   float ax1, ax2, deltaADC = 0.0, deltaPhi = 0.0, deltaR = 0.0, deltaA = 0.0, deltaS = 0.0, deltaZ = 0.0, zZero = 0.0;
 
@@ -278,8 +266,8 @@ void CNNInferenceONNX::analyze(const edm::Event &iEvent, const edm::EventSetup &
     for (int ny = 0; ny < padSize; ++ny)
       zeroPad.push_back(0.0);
 
-  cms::Ort::FloatArrays inputs;
-  cms::Ort::FloatArrays outputs;
+  std::vector<std::vector<float>> inputs;
+  std::vector<float> outputs(batchSize * 2);
   int totalDoublets = 0;
 
   inputs.emplace_back(0);
@@ -955,27 +943,27 @@ void CNNInferenceONNX::analyze(const edm::Event &iEvent, const edm::EventSetup &
     lIt++;
     if ((!allLayers) | (lIt == iHd->layerSetsEnd()))
     {
-      const int batchSize = 500;
-      for (int i = 0; i < totalDoublets; i += batchSize)
+      const int timeBatchSize = 500;
+      if (totalDoublets >= timeBatchSize)
       {
-        auto c_start = std::clock();
-        auto t_start = std::chrono::high_resolution_clock::now();
+        for (int i = 0; i <= (totalDoublets-timeBatchSize); i += timeBatchSize)
+        {
+          auto c_start = std::clock();
+          auto t_start = std::chrono::high_resolution_clock::now();
 
-        cms::Ort::FloatArrays inputBatch;
+          for (int j = i; j < (i + timeBatchSize); j += batchSize)
+          {
+            model.run(inputs[0].data() + j * padSize * padSize * cnnLayers * 2, inputs[1].data() + j * infoSize, outputs.data());
+          }
+          auto c_end = std::clock();
+          auto t_end = std::chrono::high_resolution_clock::now();
 
-        inputBatch.push_back(std::vector<float>(inputs[0].data() + i * padSize * padSize * cnnLayers * 2,inputs[0].data() + (i+batchSize) * padSize * padSize * cnnLayers * 2));
-        inputBatch.push_back(std::vector<float>(inputs[1].data() + i * infoSize, inputs[1].data() + (i+batchSize) * infoSize));
+          double c_duration = (c_end - c_start) / (double)CLOCKS_PER_SEC;
+          double t_duration = std::chrono::duration<double, std::milli>(t_end - t_start).count() / 1000.0;
 
-        model->run(input_names, inputBatch, output_names, batchSize);
-
-        auto c_end = std::clock();
-        auto t_end = std::chrono::high_resolution_clock::now();
-
-        double c_duration = (c_end - c_start) / (double)CLOCKS_PER_SEC;
-        double t_duration = std::chrono::duration<double, std::milli>(t_end - t_start).count() / 1000.0;
-
-        inferenceTimeOutput << batchSize << " " << std::fixed << std::setprecision(4) << t_duration << " " << batchSize << std::endl;
-        inferenceCPUTimeOutput << batchSize << " " << std::fixed << std::setprecision(4) << c_duration << " " << batchSize << std::endl;
+          inferenceTimeOutput << timeBatchSize << " " << std::fixed << std::setprecision(4) << t_duration << " " << batchSize << std::endl;
+          inferenceCPUTimeOutput << timeBatchSize << " " << std::fixed << std::setprecision(4) << c_duration << " " << batchSize << std::endl;
+        }
       }
     }
     lIt--;
@@ -1011,17 +999,17 @@ void CNNInferenceONNX::analyze(const edm::Event &iEvent, const edm::EventSetup &
 }
 
 // ------------ method called once each job just before starting event loop  ------------
-void CNNInferenceONNX::beginJob()
+void CNNInferenceAOT::beginJob()
 {
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
-void CNNInferenceONNX::endJob()
+void CNNInferenceAOT::endJob()
 {
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
-void CNNInferenceONNX::fillDescriptions(edm::ConfigurationDescriptions &descriptions)
+void CNNInferenceAOT::fillDescriptions(edm::ConfigurationDescriptions &descriptions)
 {
   //The following says we do not know what parameters are allowed so do no validation
   // Please change this to state exactly what you do use, even if it is no parameters
@@ -1031,4 +1019,4 @@ void CNNInferenceONNX::fillDescriptions(edm::ConfigurationDescriptions &descript
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(CNNInferenceONNX);
+DEFINE_FWK_MODULE(CNNInferenceAOT);

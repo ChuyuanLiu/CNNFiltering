@@ -4,12 +4,6 @@ import tensorflow as tf
 import json
 from tensorflow.keras import backend as K
 
-K.set_learning_phase(0)
-f=open('model/layer_map_model.json','r')
-model = tf.keras.models.model_from_json(json.load(f))
-model.load_weights('model/layer_map_model_last.h5')
-f.close()
-
 def freeze_session(session, keep_var_names=None, output_names=None, clear_devices=True):
     from tensorflow.python.framework.graph_util import convert_variables_to_constants
     graph = session.graph
@@ -43,15 +37,14 @@ def loadModel():
         # print all operation names 
         print('\n===== ouptut operation names =====\n')
         for op in sess.graph.get_operations():
-            print(op)
-            break
-        # inference by the model (op name must comes with :0 to specify the index of its output)
-        tensor_output = sess.graph.get_tensor_by_name('import/dense_3/Sigmoid:0')
-        tensor_input = sess.graph.get_tensor_by_name('import/dense_1_input:0')
-        predictions = sess.run(tensor_output, {tensor_input: x})
-        print('\n===== output predicted results =====\n')
-        print(predictions)
+            print(op.name)
         
-frozen_graph = freeze_session(K.get_session(),output_names=[out.op.name for out in model.outputs])
-tf.train.write_graph(frozen_graph, ".", "graph.pb", as_text=False)
-loadModel()
+def savePb(modelName):
+    K.set_learning_phase(0)
+    f=open(modelName + '.json','r')
+    model = tf.keras.models.model_from_json(json.load(f))
+    model.load_weights(modelName + '_last.h5')
+    f.close()
+    frozen_graph = freeze_session(K.get_session(),output_names=[out.op.name for out in model.outputs])
+    tf.train.write_graph(frozen_graph, ".", "graph.pb", as_text=False)
+    K.clear_session()

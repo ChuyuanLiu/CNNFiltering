@@ -45,6 +45,7 @@
 <use   name="SimTracker/TrackerHitAssociation"/>
 <use   name="onnxruntime"/>
 <use   name="PhysicsTools/ONNXRuntime"/>
+<lib   name="tfaot"/>
 
 <flags CXXFLAGs="-fpermissive"/>
 <flags LDFLAGs="-fpermissive"/>

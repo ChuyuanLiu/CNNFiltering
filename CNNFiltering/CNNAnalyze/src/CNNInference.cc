@@ -115,7 +115,7 @@ private:
   UInt_t test;
 
   tensorflow::Session *session;
-  const int intraThreads = 6;
+  const int intraThreads = 1;
   const int maxBatchSize = 6000;
 
   std::ofstream inferenceTimeOutput;
@@ -262,8 +262,8 @@ void CNNInference::analyze(const edm::Event &iEvent, const edm::EventSetup &iSet
   // fileName += "_" + processName_ + "_dnn_doublets_inf.txt";
   // std::ofstream outInference(fileName, std::ofstream::app);
 
-  inferenceTimeOutput.open("doublets/inferenceTimeTF2_" + std::to_string(intraThreads) + ".txt", std::ofstream::app);
-  inferenceCPUTimeOutput.open("doublets/inferenceCPUTimeTF2_" + std::to_string(intraThreads) + ".txt", std::ofstream::app);
+  inferenceTimeOutput.open("doublets/inferenceTimeTF2.txt", std::ofstream::app);
+  inferenceCPUTimeOutput.open("doublets/inferenceCPUTimeTF2.txt", std::ofstream::app);
 
   float ax1, ax2, deltaADC = 0.0, deltaPhi = 0.0, deltaR = 0.0, deltaA = 0.0, deltaS = 0.0, deltaZ = 0.0, zZero = 0.0;
 
